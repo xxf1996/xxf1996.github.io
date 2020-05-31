@@ -99,24 +99,25 @@
 
 
 
-  <meta name="description" content="用途 该博客主要主要用来记录在前端学习或项目中遇到的一些问题和相应的解决办法，以及对前端方面自己的一些认识和总结。  为何？ 该博客基于hexo搭建而成，因为个人觉得技术文章使用Markdown写起来比较顺手，而wordpress的markdown解析还不够完善，自己也懒得折腾，干脆就单独把所有前端技术类的文章用markdown写出来（其实我一般习惯在有道云笔记中写出来，觉得合适了再整理出来），">
-<meta property="og:type" content="website">
-<meta property="og:title" content="关于">
-<meta property="og:url" content="https://note.xiexuefeng.cc/about/index.html">
+  <meta name="description" content="前言 clipboardData属性是ClipboardEvent事件对象的一个属性，其本质上就是一个DataTransfer对象；而ClipboardEvent事件则包括copy、cut和paste这三个原生事件。 通过将剪切板的数据按照DataTransfer对象的方式保存到clipboardData上，可以在相应的事件中来获取或者修改剪切板的数据。">
+<meta name="keywords" content="DOM,H5">
+<meta property="og:type" content="article">
+<meta property="og:title" content="clipboardData属性与DataTransfer对象">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/clipboard-data-and-data-transfer/index.html">
 <meta property="og:site_name" content="snowdream">
-<meta property="og:description" content="用途 该博客主要主要用来记录在前端学习或项目中遇到的一些问题和相应的解决办法，以及对前端方面自己的一些认识和总结。  为何？ 该博客基于hexo搭建而成，因为个人觉得技术文章使用Markdown写起来比较顺手，而wordpress的markdown解析还不够完善，自己也懒得折腾，干脆就单独把所有前端技术类的文章用markdown写出来（其实我一般习惯在有道云笔记中写出来，觉得合适了再整理出来），">
+<meta property="og:description" content="前言 clipboardData属性是ClipboardEvent事件对象的一个属性，其本质上就是一个DataTransfer对象；而ClipboardEvent事件则包括copy、cut和paste这三个原生事件。 通过将剪切板的数据按照DataTransfer对象的方式保存到clipboardData上，可以在相应的事件中来获取或者修改剪切板的数据。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-05-30T08:18:14.344Z">
+<meta property="og:updated_time" content="2020-05-31T13:52:19.828Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="关于">
-<meta name="twitter:description" content="用途 该博客主要主要用来记录在前端学习或项目中遇到的一些问题和相应的解决办法，以及对前端方面自己的一些认识和总结。  为何？ 该博客基于hexo搭建而成，因为个人觉得技术文章使用Markdown写起来比较顺手，而wordpress的markdown解析还不够完善，自己也懒得折腾，干脆就单独把所有前端技术类的文章用markdown写出来（其实我一般习惯在有道云笔记中写出来，觉得合适了再整理出来），">
+<meta name="twitter:title" content="clipboardData属性与DataTransfer对象">
+<meta name="twitter:description" content="前言 clipboardData属性是ClipboardEvent事件对象的一个属性，其本质上就是一个DataTransfer对象；而ClipboardEvent事件则包括copy、cut和paste这三个原生事件。 通过将剪切板的数据按照DataTransfer对象的方式保存到clipboardData上，可以在相应的事件中来获取或者修改剪切板的数据。">
 
 
 
 
 
 
-  <link rel="canonical" href="https://note.xiexuefeng.cc/about/"/>
+  <link rel="canonical" href="https://note.xiexuefeng.cc/post/clipboard-data-and-data-transfer/"/>
 
 
 
@@ -126,7 +127,7 @@
   };
 </script>
 
-  <title>关于 | snowdream</title>
+  <title>clipboardData属性与DataTransfer对象 | snowdream</title>
   
 
 
@@ -221,7 +222,7 @@
         
         
           
-          <li class="menu-item menu-item-about menu-item-active">
+          <li class="menu-item menu-item-about">
     <a href="/about/" rel="section">
       <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
   </li>
@@ -309,75 +310,243 @@
           
             
 
-    
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-    
-
-  
-
-
           
           <div id="content" class="content">
             
 
   <div id="posts" class="posts-expand">
     
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/clipboard-data-and-data-transfer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xuefeng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/photo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+    </span>
+
     
-    
-    <div class="post-block page">
       <header class="post-header">
 
-<h1 class="post-title" itemprop="name headline">关于</h1>
-
-<div class="post-meta">
-  
-  
-
-
-
-</div>
-
-</header>
-
-      
-      
-      
-      <div class="post-body">
         
         
-          <h2 id="用途"><a class="markdownIt-Anchor" href="#用途"></a> 用途</h2>
-<p>该博客主要主要用来记录在前端学习或项目中遇到的一些问题和相应的解决办法，以及对前端方面自己的一些认识和总结。</p>
-<h2 id="为何"><a class="markdownIt-Anchor" href="#为何"></a> 为何？</h2>
-<p>该博客基于<a href="">hexo</a>搭建而成，因为个人觉得技术文章使用<code>Markdown</code>写起来比较顺手，而<code>wordpress</code>的<code>markdown</code>解析还不够完善，自己也懒得折腾，干脆就单独把所有前端技术类的文章用<code>markdown</code>写出来（其实我一般习惯在有道云笔记中写出来，觉得合适了再整理出来），放到这里也比较方便查看。</p>
-
+          <h1 class="post-title" itemprop="name headline">clipboardData属性与DataTransfer对象
+              
+            
+          </h1>
         
-      </div>
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+                
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-31T21:51:35+08:00">2020-05-31</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/笔记/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
       
       
+
+      
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p><code>clipboardData</code>属性是<code>ClipboardEvent</code>事件对象的一个属性，其本质上就是一个<code>DataTransfer</code>对象；而<code>ClipboardEvent</code>事件则包括<code>copy</code>、<code>cut</code>和<code>paste</code>这三个原生事件。</p>
+<p>通过将剪切板的数据按照<code>DataTransfer</code>对象的方式保存到<code>clipboardData</code>上，可以在相应的事件中来获取或者修改剪切板的数据。</p>
+<a id="more"></a>
+<h2 id="常用方法"><a class="markdownIt-Anchor" href="#常用方法"></a> 常用方法</h2>
+<h3 id="getdata"><a class="markdownIt-Anchor" href="#getdata"></a> getData</h3>
+<blockquote>
+<p>DOMString DataTransfer.getData(format);</p>
+</blockquote>
+<p>该方法可以获取到剪切板中对应格式的数据，<code>format</code>参数就是指定数据的格式，其可选值有：</p>
+<ul>
+<li><code>text/plain</code>：普通文本；</li>
+<li><code>text/uri-list</code>：链接文本；</li>
+<li><code>text</code>：等同于<code>text/plain</code>；</li>
+<li><code>url</code>：等同于<code>text/uri-list</code>；</li>
+</ul>
+<blockquote>
+<p>If format equals “text”, change it to “text/plain”. <br><br>
+If format equals “url”, change it to “text/uri-list”. <sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup></p>
+</blockquote>
+<p>如果没有对应的数据，则会返回一个<strong>空字符串</strong>。</p>
+<h3 id="datatransferitem对象"><a class="markdownIt-Anchor" href="#datatransferitem对象"></a> DataTransferItem对象</h3>
+<p>可以看出<code>getData()</code>方法只能获取到文本类型的数据，但是有时候剪切板里面保存的数据可能是文件，比如复制一个图片的时候，要想从剪切板中获取图片内容就无法通过<code>getData()</code>方法了；这时候可以从<code>DataTransfer.items</code>属性入手，<code>items</code>属性是一个<code>DataTransferItemList</code>对象（一个<strong>伪数组对象</strong>），每个元素都是<code>DataTransferItem</code>对象。</p>
+<p>该对象的属性有:</p>
+<ul>
+<li><code>type</code>：拖拽项（或者剪切板中保存的数据项）的类型，为<code>MIME</code>值；</li>
+<li><code>kind</code>：拖拽项的性质，可以是<code>string</code>或者<code>file</code>；</li>
+</ul>
+<p>该对象的<strong>常用</strong>方法有：</p>
+<ul>
+<li><code>getAsFile()</code>：尝试将拖拽项数据包装成一个<code>File</code>对象返回，不是文件就返回<code>null</code>（<code>kind</code>对应<code>file</code>）。</li>
+<li><code>getAsString(callback)</code>：接受一个回调函数，将拖拽项数据解析为字符串后将该字符串传递给回调函数（<code>kind</code>对应<code>string</code>）；</li>
+</ul>
+<p>通过<code>DataTransferItem</code>对象的<code>getAsFile()</code>就可以方便地提取出剪切板中复制的图片等文件，而<code>File</code>对象既可以用于上传，也能转为<code>base64</code>字符串，处理图片就比较便捷了。</p>
+<h2 id="参考文档"><a class="markdownIt-Anchor" href="#参考文档"></a> 参考文档</h2>
+<ul>
+<li><a href="https://www.zhangxinxu.com/wordpress/2018/09/drag-drop-datatransfer-js/" target="_blank" rel="noopener">拖拽献祭中的黑山羊-DataTransfer对象 « 张鑫旭-鑫空间-鑫生活</a></li>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/API/ClipboardEvent/clipboardData" target="_blank" rel="noopener">ClipboardEvent.clipboardData - Web API 接口参考 | MDN</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/DataTransferItem/getAsString" target="_blank" rel="noopener">DataTransferItem.getAsString() - Web APIs | MDN</a></li>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/API/DataTransferItem/getAsFile" target="_blank" rel="noopener">DataTransferItem.getAsFile() - Web API 接口参考 | MDN</a></li>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/API/DataTransferItem" target="_blank" rel="noopener">DataTransferItem - Web API 接口参考 | MDN</a></li>
+</ul>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a href="https://www.w3.org/TR/html51/editing.html#dom-datatransfer-setdata" target="_blank" rel="noopener">HTML 5.1 2nd Edition: 5. User interaction</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
       
     </div>
+
     
+
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>xuefeng</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://note.xiexuefeng.cc/post/clipboard-data-and-data-transfer/" title="clipboardData属性与DataTransfer对象">https://note.xiexuefeng.cc/post/clipboard-data-and-data-transfer/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/DOM/" rel="tag"># DOM</a>
+          
+            <a href="/tags/H5/" rel="tag"># H5</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/post/eslint-config/" rel="next" title="ESLint配置参数">
+                <i class="fa fa-chevron-left"></i> ESLint配置参数
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
 
 
 
-    
-    
-    
+    <div class="post-spread">
+      
+    </div>
   </div>
 
 
@@ -587,7 +756,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#用途"><span class="nav-number">1.</span> <span class="nav-text"> 用途</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为何"><span class="nav-number">2.</span> <span class="nav-text"> 为何？</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用方法"><span class="nav-number">2.</span> <span class="nav-text"> 常用方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#getdata"><span class="nav-number">2.1.</span> <span class="nav-text"> getData</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#datatransferitem对象"><span class="nav-number">2.2.</span> <span class="nav-text"> DataTransferItem对象</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文档"><span class="nav-number">3.</span> <span class="nav-text"> 参考文档</span></a></li></ol></div>
             
 
           </div>

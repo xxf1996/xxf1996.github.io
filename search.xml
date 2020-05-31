@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[clipboardData属性与DataTransfer对象]]></title>
+    <url>%2Fpost%2Fclipboard-data-and-data-transfer%2F</url>
+    <content type="text"><![CDATA[前言 clipboardData属性是ClipboardEvent事件对象的一个属性，其本质上就是一个DataTransfer对象；而ClipboardEvent事件则包括copy、cut和paste这三个原生事件。 通过将剪切板的数据按照DataTransfer对象的方式保存到clipboardData上，可以在相应的事件中来获取或者修改剪切板的数据。 常用方法 getData DOMString DataTransfer.getData(format); 该方法可以获取到剪切板中对应格式的数据，format参数就是指定数据的格式，其可选值有： text/plain：普通文本； text/uri-list：链接文本； text：等同于text/plain； url：等同于text/uri-list； If format equals “text”, change it to “text/plain”. If format equals “url”, change it to “text/uri-list”. [1] 如果没有对应的数据，则会返回一个空字符串。 DataTransferItem对象 可以看出getData()方法只能获取到文本类型的数据，但是有时候剪切板里面保存的数据可能是文件，比如复制一个图片的时候，要想从剪切板中获取图片内容就无法通过getData()方法了；这时候可以从DataTransfer.items属性入手，items属性是一个DataTransferItemList对象（一个伪数组对象），每个元素都是DataTransferItem对象。 该对象的属性有: type：拖拽项（或者剪切板中保存的数据项）的类型，为MIME值； kind：拖拽项的性质，可以是string或者file； 该对象的常用方法有： getAsFile()：尝试将拖拽项数据包装成一个File对象返回，不是文件就返回null（kind对应file）。 getAsString(callback)：接受一个回调函数，将拖拽项数据解析为字符串后将该字符串传递给回调函数（kind对应string）； 通过DataTransferItem对象的getAsFile()就可以方便地提取出剪切板中复制的图片等文件，而File对象既可以用于上传，也能转为base64字符串，处理图片就比较便捷了。 参考文档 拖拽献祭中的黑山羊-DataTransfer对象 « 张鑫旭-鑫空间-鑫生活 ClipboardEvent.clipboardData - Web API 接口参考 | MDN DataTransferItem.getAsString() - Web APIs | MDN DataTransferItem.getAsFile() - Web API 接口参考 | MDN DataTransferItem - Web API 接口参考 | MDN HTML 5.1 2nd Edition: 5. User interaction ↩︎]]></content>
+      <categories>
+        <category>笔记</category>
+      </categories>
+      <tags>
+        <tag>DOM</tag>
+        <tag>H5</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[ESLint配置参数]]></title>
     <url>%2Fpost%2Feslint-config%2F</url>
     <content type="text"><![CDATA[前言 要将代码规范落实不仅是靠个人自觉的遵守，还得需要一个工具可以进行强制性地检测校验，这样就能真正地将规范落实到实处。而ESLint就是用来检测JS(X)/TS(X)代码的不二选择。 常用参数 extends 用来继承已有的ESLint配置，这个配置可以是内置的，也可以是npm插件；其值的格式有字符串和字符串数组两种； 字符串 当只是一个字符串时，这个字符串可以是： 配置文件路径； 共享配置名称（即npm插件）；当npm插件名称为eslint-config-*格式时，可以省略前面的eslint-config-前缀，如：eslint-config-airbnb可以直接写成airbnb； ESLint内置集成的配置；如：eslint:recommended，eslint:all； 字符串数组 数组形式，每个字符串都可以是上述格式；但是数组中后面的配置会覆盖前面的配置（当出现相同规则时）；如： 1234567&#123; extends: [ 'plugin:vue/strongly-recommended', '@vue/standard', '@vue/typescript/recommended' // ts检测 ]&#125; env env参数可以设置代码环境，启用一个环境，eslint就能够自动识别对应环境所有的全局变量；常用的环境有： browser：浏览器环境； node：Node.js环境； shared-node-browser：浏览器和Node.js通用的全局变量； es6：启用除了modules以外的所有ECMAScript 6特性； jquery：jQuery相关全局变量； worker：Web Worker环境； 除了上述的环境，eslint还支持很多比较常用的库作为环境（支持其全局变量），详情可以参考官方文档； env的设置方式很简单，其值为一个对象，当需要开启某个环境时，只需要将对应环境的值设置为true即可： 12345&#123; env: &#123; node: true &#125;&#125; parserOptions parserOptions是用来设置要支持检测的ES语法版本的；其设置值也是一个对象，包含三个选项（键）： ecmaVersion：用来设置支持的ECMAScript语言版本；可以是3，5，6这种经典版本号，也可以是用年份来设置版本号，如：2015（同6），2020（同11）；ES6及其之后的版本就可以使用对应的年份来设置版本号。默认值是5。 sourceType：具体作用细节还不清楚，网上找不到详细的资料；目前有两个选项，一个是script（脚本模式，默认值），另一个是module（ES模块）； ecmaFeatures：用于设置一些额外的语言特性，比如JSX等等； ecmaFeatures 目前支持的额外语言特性有4个： jsx：JSX语法； impliedStrict：全局strict模式； globalReturn：全局作用域使用return语句； experimentalObjectRestSpread：实验性功能，对象属性展开及剩余操作（目前该特性已经为stage-4了，ES2018）； 该属性设置方式同env一样，设置为true则开启，反之false则关闭； 12345678&#123; parserOptions: &#123; ecmaVersion: 2020, ecmaFeatures: &#123; jsx: false // 关闭对jsx的支持 &#125; &#125;&#125; parser 设置ESLint的解析器，解析器用来解析代码的语法树；其默认解析器为Espree，但是还有其他可以兼容的解析器（需要单独安装相应的npm包）： esprima babel-eslint：对babel的封装； @typescript-eslint/parser：支持对TS文件的解析； 好像也可以直接在parserOptions里面设置parser： 12345&#123; parserOptions: &#123; parser: '@typescript-eslint/parser' &#125;&#125; root 由于ESLint配置默认遵循层叠原则，即每级目录可以单独配置.eslintrc.*相关文件，如果该级目录没有文件则会向上一级查找直至根目录；不过如果设置root为true之后，项目中所有的检测文件不再会遵循层叠原则，而是统一以根目录中的配置文件为准来检测代码。 123&#123; root: true&#125; rules 除了继承已有的配置，还能手动修改通过rules属性来手动修改ESLint相关配置；每个检测规则都有其独特的键名，当要修改某条规则时，则使用键名然后设置相应的值即可；ESLint自带的规则表可以查看官方文档，使用其它ESLint插件则需要查看对应插件给出的规则； 每个规则都遵循一些简单的设置： 有些规则可能支持更详细的配置，比如数组，对象等等； 123456789101112131415161718&#123; rules: &#123; 'no-console': 'off', 'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off', 'generator-star-spacing': 'off', 'no-mixed-operators': 0, 'vue/max-attributes-per-line': [ 2, &#123; 'singleline': 5, 'multiline': &#123; 'max': 1, 'allowFirstLine': false &#125; &#125; ] &#125;&#125; overrides overrides可以匹配特定的文件，然后专门为其设置相应的ESLint配置（相当于一个优先级更高的配置文件）； files 通过这个参数可以来匹配特定的文件，其语法遵循glob匹配模式；值的形式为数组，数组中每个字符串代表一个匹配模式，如： 123456789101112131415161718192021&#123; overrides: [ &#123; files: [ '**/__tests__/*.&#123;j,t&#125;s?(x)', // 匹配jsx/tsx '**/tests/unit/**/*.spec.&#123;j,t&#125;s?(x)' // 匹配单元测试脚本 ], env: &#123; jest: true &#125; &#125;, &#123; files: [ '*.js' // 匹配所有的js文件 ], rules: &#123; '@typescript-eslint/no-var-requires': false // 关闭typescript-eslint对js文件检测require语句 &#125; &#125; ]&#125; 相关文档 Configuring ESLint - ESLint中文 Eslint 超简单入门教程 - 简书]]></content>
@@ -57,8 +69,8 @@
         <category>业务</category>
       </categories>
       <tags>
-        <tag>json</tag>
         <tag>H5</tag>
+        <tag>json</tag>
       </tags>
   </entry>
   <entry>
@@ -270,8 +282,8 @@
         <category>笔记</category>
       </categories>
       <tags>
-        <tag>js</tag>
         <tag>DOM</tag>
+        <tag>js</tag>
       </tags>
   </entry>
   <entry>
@@ -481,8 +493,8 @@
         <category>探索</category>
       </categories>
       <tags>
-        <tag>js</tag>
         <tag>DOM</tag>
+        <tag>js</tag>
       </tags>
   </entry>
   <entry>
