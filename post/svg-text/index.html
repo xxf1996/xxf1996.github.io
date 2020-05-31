@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.1.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.1.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.1.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="基本概念  字符：在XML文档中，字符是指带有一个数字值的一个或多个字节，数字值与Unicode标准对应。例如，字母g是Unicode值为103的字符。 符号：符号（glyph）是指字符的视觉呈现。每个字符都可以用很多不同的符号来呈现。   一个符号可能由多个字符构成。一些字体为特定的字母组合（如fl和ff）准备了单独的符号，以使它们更好看，这种特性叫作“连字”（ligature）。有时候，一个">
+<meta name="keywords" content="svg,note">
+<meta property="og:type" content="article">
+<meta property="og:title" content="svg之文本">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/svg-text/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="基本概念  字符：在XML文档中，字符是指带有一个数字值的一个或多个字节，数字值与Unicode标准对应。例如，字母g是Unicode值为103的字符。 符号：符号（glyph）是指字符的视觉呈现。每个字符都可以用很多不同的符号来呈现。   一个符号可能由多个字符构成。一些字体为特定的字母组合（如fl和ff）准备了单独的符号，以使它们更好看，这种特性叫作“连字”（ligature）。有时候，一个">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180531/2JgFLIFaJI.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180531/k7DKGDJdd5.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180531/AmmD7e2JGA.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180531/ALmfED4kAH.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180531/5DaGeeH1dh.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180531/B3i6GH6D48.png?imageslim">
+<meta property="og:updated_time" content="2020-05-30T08:18:14.342Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="svg之文本">
+<meta name="twitter:description" content="基本概念  字符：在XML文档中，字符是指带有一个数字值的一个或多个字节，数字值与Unicode标准对应。例如，字母g是Unicode值为103的字符。 符号：符号（glyph）是指字符的视觉呈现。每个字符都可以用很多不同的符号来呈现。   一个符号可能由多个字符构成。一些字体为特定的字母组合（如fl和ff）准备了单独的符号，以使它们更好看，这种特性叫作“连字”（ligature）。有时候，一个">
+<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/180531/2JgFLIFaJI.png?imageslim">
+
+
+
+
+
+
+  <link rel="canonical" href="https://note.xiexuefeng.cc/post/svg-text/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>svg之文本 | snowdream</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">snowdream</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">record and share</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/svg-text/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xuefeng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/photo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">svg之文本
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+                
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-31T16:04:33+08:00">2018-05-31</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/笔记/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="基本概念"><a class="markdownIt-Anchor" href="#基本概念"></a> 基本概念</h2>
+<ul>
+<li><strong>字符</strong>：在<code>XML</code>文档中，字符是指带有一个数字值的一个或多个字节，数字值与<code>Unicode</code>标准对应。例如，字母<code>g</code>是<code>Unicode</code>值为<code>103</code>的字符。</li>
+<li><strong>符号</strong>：符号（<code>glyph</code>）是指字符的<font color="#39f"><strong>视觉呈现</strong></font>。每个字符都可以用很多不同的符号来呈现。</li>
+</ul>
+<blockquote>
+<p>一个符号可能由多个字符构成。一些字体为特定的字母组合（如fl和ff）准备了单独的符号，以使它们更好看，这种特性叫作“连字”（ligature）。有时候，一个字符也可能由几个符号组合而成，比如打印程序可能会组合符号e和重音符号（ˊ）来打印字符é（Unicode 值为 233）。</p>
+</blockquote>
+<a id="more"></a>
+<ul>
+<li><strong>字体</strong>：字体是指代表某个<strong>字符集合</strong>的一组符号。</li>
+<li><strong>基线</strong>：字体中的所有符号以基线对齐。需要注意的是，<font color="red"><strong>中文字体中的基线概念并没有西文字体那么明确</strong></font>。</li>
+</ul>
+<p><img src="http://pic.xiexuefeng.cc/markdown/180531/2JgFLIFaJI.png?imageslim" alt="mark"></p>
+<ul>
+<li><strong>上坡度</strong>：基线到字体中最高字符顶部的距离称为上坡度（<code>ascent</code>）。</li>
+<li><strong>下坡度</strong>：基线到最深字符底部的距离称为下坡度（<code>descent</code>）。</li>
+<li><strong>em高度</strong>：字符的总高度为上坡度和下坡度之和，也称为em高度。</li>
+<li><strong>em box</strong>：指宽度为em高度的方块。</li>
+<li><strong>大写字母高度</strong>：大写字母高度（<code>cap-height</code>）是指基线上的大写字母的高度。</li>
+<li><strong>x高度</strong>：指基线到小写字母<code>x</code>顶部的高度。<strong>x 高度通常能比em高度更好地衡量一个字体的尺寸和可读性</strong>。</li>
+</ul>
+<h2 id="属性设置"><a class="markdownIt-Anchor" href="#属性设置"></a> 属性设置</h2>
+<h3 id="基本属性"><a class="markdownIt-Anchor" href="#基本属性"></a> 基本属性</h3>
+<p><code>svg</code>字体的基本属性与<code>css</code>的属性基本一致：</p>
+<ul>
+<li>font-family：</li>
+<li>font-size：</li>
+<li>font-weight：</li>
+<li>font-style：</li>
+<li>text-decoration：</li>
+<li>word-spacing：</li>
+<li>letter-spacing：</li>
+</ul>
+<h3 id="文本方向"><a class="markdownIt-Anchor" href="#文本方向"></a> 文本方向</h3>
+<p>可以通过<code>writing-mode</code>属性（<code>css3</code>中也有这个属性）来设置文本排列的方向，如从右往左，从上往下等等；不过在svg中<code>writing-mode</code>属性使用的选项值是按照<code>IE</code>的规则：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-ms-writing-mode: lr-tb | rl-tb | tb-rl | bt-rl | tb-lr | bt-lr | lr-bt | rl-bt | lr | rl | tb</span><br></pre></td></tr></table></figure>
+<p><img src="http://pic.xiexuefeng.cc/markdown/180531/k7DKGDJdd5.png?imageslim" alt="mark"></p>
+<p>不过在实际使用中这些属性值貌似不是每一个都被支持，只有<code>tb</code>（<code>top to bottom</code>，纵向排列）是被支持的：</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/180531/AmmD7e2JGA.png?imageslim" alt="mark"></p>
+<h3 id="文本对齐"><a class="markdownIt-Anchor" href="#文本对齐"></a> 文本对齐</h3>
+<p>可以通过设置<code>&lt;text&gt;</code>元素的<code>x</code>，<code>y</code>属性来确定文本的起点位置，而根据不同的对齐方式，字体符号所呈现的方式有所不同；可以通过<code>text-anchor</code>属性来设置文本与起点坐标的关系，<code>text-anchor</code>属性有以下几个选项：</p>
+<ul>
+<li><strong>start（默认值）</strong>：以文本从左往右排列为例，<code>x</code>表示该文本第一个符号的<code>em box</code>的左侧位置，而<code>y</code>表示基线位置；</li>
+<li><strong>middle</strong>：同理，<code>x</code>表示该文本的水平中点位置，而<code>y</code>表示基线位置；</li>
+<li><strong>end</strong>：<code>x</code>表示该文本最后一个符号的<code>em box</code>的右侧位置，而<code>y</code>表示基线位置；</li>
+</ul>
+<p><img src="http://pic.xiexuefeng.cc/markdown/180531/ALmfED4kAH.png?imageslim" alt="mark"></p>
+<h3 id="文本路径"><a class="markdownIt-Anchor" href="#文本路径"></a> 文本路径</h3>
+<p>通过在<code>&lt;text&gt;</code>元素内使用<code>&lt;textPath&gt;</code>元素可以为文字指定一条<code>path</code>，并按照<code>path</code>的形状进行文字排列；使用方法如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">path</span> <span class="attr">d</span>=<span class="string">"M100 200h150 v100"</span> <span class="attr">id</span>=<span class="string">"pathID"</span> <span class="attr">fill</span>=<span class="string">"none"</span>&gt;</span><span class="tag">&lt;/<span class="name">path</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">text</span>&gt;</span><span class="tag">&lt;<span class="name">textPath</span> <span class="attr">xlink:href</span>=<span class="string">"#pathID"</span>&gt;</span>一段文字<span class="tag">&lt;/<span class="name">textPath</span>&gt;</span><span class="tag">&lt;/<span class="name">text</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这样<code>textPath</code>内包含的文字就会按照所指定的<code>#pathID</code>路径进行排列，这里既可以指定定义在<code>&lt;defs&gt;</code>内的路径，也可以是实际出现过的路径；<font color="red"><strong>需要注意的是只能是<code>&lt;path&gt;</code>元素所定义的路径，像诸如<code>&lt;rect&gt;</code>这样的基本形状是不能被指定为路径的</strong></font>！</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/180531/5DaGeeH1dh.png?imageslim" alt="mark"></p>
+<h3 id="文本长度"><a class="markdownIt-Anchor" href="#文本长度"></a> 文本长度</h3>
+<p>在<code>&lt;text&gt;</code>元素内文本并不会由于超过某一长度就会自动换行，也无法事先知道文本的终点在哪，但是可以通过<code>textLength</code>来控制文字的总长度（若文字原长度超过总长度也会被『压缩』在总长度内），并通过<code>lengthAdjust</code>属性来设置文本符号之间的间距和符号自身的大小；<code>lengthAdjust</code>属性有以下选项：</p>
+<ul>
+<li>
+<p><strong>spacing（默认值）</strong>：只调整符号之间的间距，而不会改变符号本身的尺寸大小；因此当设置的<code>textLength</code>小于文本原有长度时，字符的间距为『负』，也就是会被挤压重叠到一块：</p>
+</li>
+<li>
+<p><strong>spacingAndGlyphs</strong>：间距和符号本身的大小一起调整，按比例缩放。</p>
+</li>
+</ul>
+<p><img src="http://pic.xiexuefeng.cc/markdown/180531/B3i6GH6D48.png?imageslim" alt="mark"></p>
+<h3 id="tspan元素"><a class="markdownIt-Anchor" href="#tspan元素"></a> tspan元素</h3>
+<p><code>&lt;tspan&gt;</code>元素有点类似<code>html</code>中的行内元素<code>&lt;span&gt;</code>，可以用来对<code>&lt;text&gt;</code>内的一段文本进行单独调整；除了基本的文字样式之外，<code>&lt;tspan&gt;</code>元素还可以调整文本的位置和变形。</p>
+<h4 id="位置调整"><a class="markdownIt-Anchor" href="#位置调整"></a> 位置调整</h4>
+<ul>
+<li><strong>x，y</strong>：指定绝对位置坐标；</li>
+<li><strong>dx，dy</strong>：指定相对位置坐标；</li>
+</ul>
+<p>需要注意的是，<font color="red"><strong>设置以上属性会影响该<code>&lt;tspan&gt;</code>后面的文本</strong></font>！</p>
+<ul>
+<li><strong>baseline-shift</strong>：调整文本符号的<font color="#36f"><strong>基线位置</strong></font>，可以是一个长度值，也可以是<code>super</code>（上标）和<code>sub</code>（下标）；该属性只会对<code>&lt;tspan&gt;</code>内产生作用！</li>
+</ul>
+<h4 id="变形"><a class="markdownIt-Anchor" href="#变形"></a> 变形</h4>
+<ul>
+<li><strong>rotate</strong>：对<code>&lt;tspan&gt;</code>内的每个文本符号进行旋转（单独地？），单位为<strong>度数</strong>。</li>
+</ul>
+<h2 id="参考文档"><a class="markdownIt-Anchor" href="#参考文档"></a> 参考文档</h2>
+<ol>
+<li><a href="http://www.zhangxinxu.com/wordpress/2016/04/css-writing-mode/" target="_blank" rel="noopener">改变CSS世界纵横规则的writing-mode属性 « 张鑫旭-鑫空间-鑫生活</a></li>
+<li><a href="http://www.ituring.com.cn/book/1542" target="_blank" rel="noopener">《SVG精髓（第2版）》</a></li>
+</ol>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>xuefeng</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://note.xiexuefeng.cc/post/svg-text/" title="svg之文本">https://note.xiexuefeng.cc/post/svg-text/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/svg/" rel="tag"># svg</a>
+          
+            <a href="/tags/note/" rel="tag"># note</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/post/svg-gradient/" rel="next" title="svg之渐变填充">
+                <i class="fa fa-chevron-left"></i> svg之渐变填充
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/post/css-before-after/" rel="prev" title="css3伪元素探究：before和after">
+                css3伪元素探究：before和after <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/photo.jpg"
+                alt="xuefeng" />
+            
+              <p class="site-author-name" itemprop="name">xuefeng</p>
+              <p class="site-description motion-element" itemprop="description">时不我待</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">59</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">35</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/xxf1996" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#基本概念"><span class="nav-number">1.</span> <span class="nav-text"> 基本概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#属性设置"><span class="nav-number">2.</span> <span class="nav-text"> 属性设置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本属性"><span class="nav-number">2.1.</span> <span class="nav-text"> 基本属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文本方向"><span class="nav-number">2.2.</span> <span class="nav-text"> 文本方向</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文本对齐"><span class="nav-number">2.3.</span> <span class="nav-text"> 文本对齐</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文本路径"><span class="nav-number">2.4.</span> <span class="nav-text"> 文本路径</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文本长度"><span class="nav-number">2.5.</span> <span class="nav-text"> 文本长度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tspan元素"><span class="nav-number">2.6.</span> <span class="nav-text"> tspan元素</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#位置调整"><span class="nav-number">2.6.1.</span> <span class="nav-text"> 位置调整</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#变形"><span class="nav-number">2.6.2.</span> <span class="nav-text"> 变形</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文档"><span class="nav-number">3.</span> <span class="nav-text"> 参考文档</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Gemini</a> v6.1.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.1.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('-1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'manual') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" type="text/css"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+   
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

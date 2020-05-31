@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.1.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.1.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.1.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="在SVG中的图案（pattern），可以理解为通过重复填充某一图形得到的图像。因此被重复填充的那个图形可视为图案的填充单元（tile，直译就是瓷砖），最终得到的图案就取决于如何在整个图案区域中重复这一填充单元以及在分配到的单元格中如何填充这个图形。">
+<meta name="keywords" content="svg,note">
+<meta property="og:type" content="article">
+<meta property="og:title" content="svg之图案填充">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/svg-pattern/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="在SVG中的图案（pattern），可以理解为通过重复填充某一图形得到的图像。因此被重复填充的那个图形可视为图案的填充单元（tile，直译就是瓷砖），最终得到的图案就取决于如何在整个图案区域中重复这一填充单元以及在分配到的单元格中如何填充这个图形。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180517/DDHae38K4F.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180517/iFm6fDK80L.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180517/mffi06Lgl1.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180517/hGFchg5106.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180517/02H94j9EEj.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180517/bfJajb6BA9.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180517/fEDLEkaf4d.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180517/4H10cgGcj8.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180517/5g6E3ce790.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180517/bAffDE19f4.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180517/E6lGhLCG62.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180517/2JEl3k27c0.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180517/DCdIDidlmF.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180517/17A8Cg6684.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180517/b1Bbcj6jBE.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180517/emDdlK2KGG.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180517/6kDDD0k4Bf.png?imageslim">
+<meta property="og:updated_time" content="2020-05-30T08:18:14.341Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="svg之图案填充">
+<meta name="twitter:description" content="在SVG中的图案（pattern），可以理解为通过重复填充某一图形得到的图像。因此被重复填充的那个图形可视为图案的填充单元（tile，直译就是瓷砖），最终得到的图案就取决于如何在整个图案区域中重复这一填充单元以及在分配到的单元格中如何填充这个图形。">
+<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/180517/DDHae38K4F.png?imageslim">
+
+
+
+
+
+
+  <link rel="canonical" href="https://note.xiexuefeng.cc/post/svg-pattern/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>svg之图案填充 | snowdream</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">snowdream</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">record and share</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/svg-pattern/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xuefeng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/photo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">svg之图案填充
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+                
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-17T22:43:11+08:00">2018-05-17</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/笔记/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在<code>SVG</code>中的图案（<code>pattern</code>），可以理解为<font color="red"><strong>通过重复填充某一图形</strong></font>得到的图像。因此被重复填充的那个图形可视为图案的填充单元（<code>tile</code>，直译就是<strong>瓷砖</strong>），最终得到的图案就取决于<font color="#36f"><strong>如何在整个图案区域中重复这一填充单元</strong></font>以及<font color="#36f"><strong>在分配到的单元格中如何填充这个图形</strong></font>。</p>
+<a id="more"></a>
+<h2 id="图案的使用"><a class="markdownIt-Anchor" href="#图案的使用"></a> 图案的使用</h2>
+<h3 id="定义"><a class="markdownIt-Anchor" href="#定义"></a> 定义</h3>
+<p>需要在<code>defs</code>标签内进行定义，然后必须要使用<code>pattern</code>标签包裹<code>path</code>，这样才算是定义了一个图案，也就是说<code>pattern</code>标签内所包裹的所有<code>path</code>标签组成了填充单元；比如：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">defs</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">pattern</span> <span class="attr">id</span>=<span class="string">"t1"</span> <span class="attr">x</span>=<span class="string">"0"</span> <span class="attr">y</span>=<span class="string">"0"</span> <span class="attr">width</span>=<span class="string">"20%"</span> <span class="attr">height</span>=<span class="string">"20%"</span> <span class="attr">patternUnits</span>=<span class="string">"objectBoundingBox"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">path</span> <span class="attr">d</span>=<span class="string">"M 0 0 Q 5 20 10 10 T 20 20"</span> <span class="attr">style</span>=<span class="string">"stroke: black; fill: none;"</span>&gt;</span><span class="tag">&lt;/<span class="name">path</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">path</span> <span class="attr">d</span>=<span class="string">"M 0 0 h 20 v 20 h -20 z"</span> <span class="attr">style</span>=<span class="string">"stroke: gray; fill: none;"</span>&gt;</span><span class="tag">&lt;/<span class="name">path</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">pattern</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">defs</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="使用"><a class="markdownIt-Anchor" href="#使用"></a> 使用</h3>
+<p>使用的时候需要在<code>fill</code>属性中指定图案的路径，可以使用<code>url()</code>来指定；如：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">g</span> <span class="attr">id</span>=<span class="string">"pattern1"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">rect</span> <span class="attr">x</span>=<span class="string">"20"</span> <span class="attr">y</span>=<span class="string">"20"</span> <span class="attr">width</span>=<span class="string">"100"</span> <span class="attr">height</span>=<span class="string">"100"</span> <span class="attr">style</span>=<span class="string">"fill: url(#t1); stroke: black;"</span>&gt;</span><span class="tag">&lt;/<span class="name">rect</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">rect</span> <span class="attr">x</span>=<span class="string">"135"</span> <span class="attr">y</span>=<span class="string">"20"</span> <span class="attr">width</span>=<span class="string">"60"</span> <span class="attr">height</span>=<span class="string">"80"</span> <span class="attr">style</span>=<span class="string">"fill: url(#t1); stroke: black;"</span>&gt;</span><span class="tag">&lt;/<span class="name">rect</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">rect</span> <span class="attr">x</span>=<span class="string">"220"</span> <span class="attr">y</span>=<span class="string">"20"</span> <span class="attr">width</span>=<span class="string">"150"</span> <span class="attr">height</span>=<span class="string">"130"</span> <span class="attr">style</span>=<span class="string">"fill: url(#t1); stroke: black;"</span>&gt;</span><span class="tag">&lt;/<span class="name">rect</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">g</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="图案的设置"><a class="markdownIt-Anchor" href="#图案的设置"></a> 图案的设置</h2>
+<h3 id="patternunits"><a class="markdownIt-Anchor" href="#patternunits"></a> patternUnits</h3>
+<p><code>patternUnits</code>属性定义了图案是如何分配重复单元格的，需要配合<code>width</code>和<code>height</code>属性来使用。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">属性值</th>
+<th style="text-align:center">作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">objectBoundingBox <br>（<strong>默认值</strong>）</td>
+<td style="text-align:center">此时单元格的大小<strong>按比例</strong>计算，即被填充的元素大小为<code>100%</code>，单元格的大小由<code>width</code>和<code>height</code>决定，取值为比例；比如当<code>width='0.1'</code>时，代表一个单元格的宽度为元素宽度的<code>10%</code>，<code>height</code>也同理；</td>
+</tr>
+<tr>
+<td style="text-align:center">userSpaceOnUse</td>
+<td style="text-align:center">此时单元格的大小<strong>按用户坐标系的单位</strong>计算，并且直接铺放在用户空间（即SVG容器内），只不过铺放的起始位置需要通过<code>x</code>和<code>y</code>属性进行设定；因此在该模式下的图案被使用时实际上与元素的位置相关，就像<font color="red"><strong>在固定的图像上截取某一块区域</strong></font>一样！</td>
+</tr>
+</tbody>
+</table>
+<h3 id="patterncontentunits"><a class="markdownIt-Anchor" href="#patterncontentunits"></a> patternContentUnits</h3>
+<p><code>patternContentUnits</code>属性则是用来定义在一个单元格内如何填充<code>tile</code>，即决定图案内所定义的图形（即<code>path</code>标签）使用的单位是什么。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">属性值</th>
+<th style="text-align:center">作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">objectBoundingBox</td>
+<td style="text-align:center">此时图形绘制的单位<strong>按比例</strong>来计算，即以<font color="red"><strong>被填充的元素大小（而非单元格的大小！）</strong></font>为<code>100%</code>，以此进行推算，因此在该模式下<code>path</code>内的数值需要换算成比例，不然会超出！</td>
+</tr>
+<tr>
+<td style="text-align:center">userSpaceOnUse <br>（<strong>默认值</strong>）</td>
+<td style="text-align:center">此时图形绘制<strong>按照用户坐标系的单位</strong>进行计算，并且图形的原点<code>（0,0）</code>位于此单元格的左上角！</td>
+</tr>
+</tbody>
+</table>
+<h3 id="举个栗子"><a class="markdownIt-Anchor" href="#举个栗子"></a> 举个栗子</h3>
+<h4 id="例1"><a class="markdownIt-Anchor" href="#例1"></a> 例1</h4>
+<p>假设使用一个实际大小为<code>20x20</code>的填充单元：</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/180517/DDHae38K4F.png?imageslim" alt="tile"></p>
+<p>当<code>patternUnits</code>属性设置为<code>objectBoundingBox</code>，<code>patternContentUnits</code>属性设置为<code>userSpaceOnUse</code>，<code>width</code>为<code>0.2</code>，<code>height</code>为<code>0.2</code>时，对元素进行填充的效果为：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">svg</span> <span class="attr">width</span>=<span class="string">"200"</span> <span class="attr">height</span>=<span class="string">"200"</span> <span class="attr">id</span>=<span class="string">"container"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">defs</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">pattern</span> <span class="attr">id</span>=<span class="string">"t1"</span> <span class="attr">x</span>=<span class="string">"0"</span> <span class="attr">y</span>=<span class="string">"0"</span> <span class="attr">width</span>=<span class="string">"0.2"</span> <span class="attr">height</span>=<span class="string">"0.2"</span> <span class="attr">patternUnits</span>=<span class="string">"objectBoundingBox"</span> <span class="attr">patternContentUnits</span>=<span class="string">"uesrSpaceOnUse"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">path</span> <span class="attr">d</span>=<span class="string">"M 0 0 Q 5 20 10 10 T 20 20"</span> <span class="attr">style</span>=<span class="string">"stroke: black; fill: none;"</span>&gt;</span><span class="tag">&lt;/<span class="name">path</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">path</span> <span class="attr">d</span>=<span class="string">"M 0 0 h 20 v 20 h -20 z"</span> <span class="attr">style</span>=<span class="string">"stroke: gray; fill: none;"</span>&gt;</span><span class="tag">&lt;/<span class="name">path</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">pattern</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">defs</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">rect</span> <span class="attr">height</span>=<span class="string">"100"</span> <span class="attr">width</span>=<span class="string">"100"</span> <span class="attr">x</span>=<span class="string">"50"</span> <span class="attr">y</span>=<span class="string">"50"</span> <span class="attr">fill</span>=<span class="string">"url(#t1)"</span>&gt;</span><span class="tag">&lt;/<span class="name">rect</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">svg</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="http://pic.xiexuefeng.cc/markdown/180517/iFm6fDK80L.png?imageslim" alt="example1"></p>
+<p><font color="#36f"><strong>分析</strong></font>：由于<code>patternUnits</code>属性设置为<code>objectBoundingBox</code>，所以单元格大小是按照元素的比例进行分配，<code>width</code>和<code>height</code>都为<code>0.2</code>，表明单元格的大小相当于元素大小的<code>20%</code>，而元素大小为<code>100x100</code>，因此得到的单元格大小为<code>20x20</code>，刚好与填充图形的大小一样。而<code>patternContentUnits</code>属性设置为<code>userSpaceOnUse</code>，即表明单元格内使用的单位为用户坐标系的单位（一般默认为<code>px</code>）。</p>
+<p>如果将上述中的元素大小改为<code>130x120</code>时，效果如下：</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/180517/mffi06Lgl1.png?imageslim" alt="mark"></p>
+<p><font color="#36f"><strong>分析</strong></font>：同上，分配到的单元格大小为<code>27.5x24</code>，而绘制的图像只有<code>20x20</code>，因此会出现空余的间隔，而不是想象的填满。</p>
+<p>如果将上述中的元素大小改为<code>80x70</code>时，效果如下：</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/180517/hGFchg5106.png?imageslim" alt="mark"></p>
+<p><font color="#36f"><strong>分析</strong></font>：同上，分配到的单元格大小为<code>16x14</code>，而绘制的图像大小为<code>20x20</code>，因此单元格的大小不够绘制，在<font color="red"><strong>单元格范围外的部分就不会被显示</strong></font>！</p>
+<h4 id="例2"><a class="markdownIt-Anchor" href="#例2"></a> 例2</h4>
+<p>同样使用上面<code>20x20</code>的填充图形；当<code>patternUnits</code>属性设置为<code>userSpaceOnUse</code>，<code>patternContentUnits</code>属性设置为<code>userSpaceOnUse</code>，<code>width</code>为<code>20</code>，<code>height</code>为<code>20</code>时，<code>x=0</code>，<code>y=0</code>，对元素进行填充的效果为：</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/180517/02H94j9EEj.png?imageslim" alt="mark"></p>
+<p><font color="#36f"><strong>分析</strong></font>：由于<code>patternUnits</code>属性设置为<code>userSpaceOnUse</code>，所以单元格的分配实际上就放到<code>SVG</code>画布中去了，与元素本身无关了；<code>width</code>和<code>height</code>都为<code>20</code>，所以单元格的大小为<code>20x20</code>，然后设置的<code>x</code>和<code>y</code>都为<code>0</code>，也就是说图案填充的起点为<code>(0,0)</code>；因此实际上就相当于在画布中<code>(0,0)</code>的开始填充大小为<code>20x20</code>的图形，然后元素所在位置<code>(50,50)</code>截取一块大小为元素本身大小<code>100x100</code>的图案作为填充图案！</p>
+<p>从画布<code>(0,0)</code>开始填充：</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/180517/bfJajb6BA9.png?imageslim" alt="mark"></p>
+<p>然后截取从<code>(50,50)</code>开始截取一块大小为<code>100x100</code>的区域：</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/180517/fEDLEkaf4d.png?imageslim" alt="mark"></p>
+<p>如果将<code>width</code>和<code>height</code>改为<code>10x10</code>，其他的都不变，效果如下：</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/180517/4H10cgGcj8.png?imageslim" alt="mark"></p>
+<p><font color="#36f"><strong>分析</strong></font>：同上，由于单元格的大小变成了<code>25x25</code>，所以在单元格内绘制填充单元后还有剩余空间，所以看起来就有间隔了。</p>
+<p>如果保持单元格大小为<code>25x25</code>，而<code>x</code>和<code>y</code>的坐标变为<code>(15,15)</code>，效果如下：</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/180517/5g6E3ce790.png?imageslim" alt="mark"></p>
+<p><font color="#36f"><strong>分析</strong></font>：同上，实际上就是图案在画布上的填充起点发生了改变了，变成了下面这样：</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/180517/bAffDE19f4.png?imageslim" alt="mark"></p>
+<p>可以看到，<font color="red"><strong>填充的方向实际上是由起点向四周进行</strong></font>，而不是只向右和下进行！</p>
+<h4 id="例3"><a class="markdownIt-Anchor" href="#例3"></a> 例3</h4>
+<p>当<code>patternUnits</code>属性设置为<code>objectBoundingBox</code>，<code>patternContentUnits</code>属性设置为<code>objectBoundingBox</code>，<code>width</code>为<code>0.2</code>，<code>height</code>为<code>0.2</code>时，如果还是使用上面<code>20x20</code>的填充图形；那么对元素进行填充的效果就会变成：</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/180517/E6lGhLCG62.png?imageslim" alt="mark"></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">svg</span> <span class="attr">width</span>=<span class="string">"200"</span> <span class="attr">height</span>=<span class="string">"200"</span> <span class="attr">id</span>=<span class="string">"container"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">defs</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">pattern</span> <span class="attr">id</span>=<span class="string">"t1"</span> <span class="attr">width</span>=<span class="string">"0.2"</span> <span class="attr">height</span>=<span class="string">"0.2"</span> <span class="attr">patternUnits</span>=<span class="string">"objectBoundingBox"</span> <span class="attr">patternContentUnits</span>=<span class="string">"objectBoundingBox"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">path</span> <span class="attr">d</span>=<span class="string">"M 0 0 Q 5 20 10 10 T 20 20"</span> <span class="attr">style</span>=<span class="string">"stroke: black; fill: none;"</span>&gt;</span><span class="tag">&lt;/<span class="name">path</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">path</span> <span class="attr">d</span>=<span class="string">"M 0 0 h 20 v 20 h -20 z"</span> <span class="attr">style</span>=<span class="string">"stroke: gray; fill: none;"</span>&gt;</span><span class="tag">&lt;/<span class="name">path</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">pattern</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">defs</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">rect</span> <span class="attr">width</span>=<span class="string">"100"</span> <span class="attr">height</span>=<span class="string">"100"</span>  <span class="attr">x</span>=<span class="string">"50"</span> <span class="attr">y</span>=<span class="string">"50"</span> <span class="attr">fill</span>=<span class="string">"url(#t1)"</span>&gt;</span><span class="tag">&lt;/<span class="name">rect</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">svg</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><font color="#36f"><strong>分析</strong></font>：<code>patternUnits</code>为<code>objectBoundingBox</code>，且<code>width</code>和<code>height</code>都为<code>0.2</code>，元素本身大小为<code>100x100</code>，因此单元格大小为<code>20x20</code>；但是问题是<code>patternContentUnits</code>为<code>objectBoundingBox</code>，因此图案内部绘制时的单位为比例，而填充图形内<code>stroke-width</code>为<code>1</code>，也就是说<code>stroke-width</code>的大小<font color="red"><strong>实际上为整个元素的大小</strong></font>，因此也就超出了整个单元格！所以需要对填充图形内的<code>path</code>中的单位进行修正，<strong>全部转化为比例</strong>：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">pattern</span> <span class="attr">id</span>=<span class="string">"t1"</span> <span class="attr">width</span>=<span class="string">"0.2"</span> <span class="attr">height</span>=<span class="string">"0.2"</span> <span class="attr">patternUnits</span>=<span class="string">"objectBoundingBox"</span> <span class="attr">patternContentUnits</span>=<span class="string">"objectBoundingBox"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">path</span> <span class="attr">d</span>=<span class="string">"M 0 0 Q 0.05 0.20 0.1 0.1 T 0.20 0.20"</span> <span class="attr">style</span>=<span class="string">"stroke: black; fill: none;stroke-width: 0.01;"</span>&gt;</span><span class="tag">&lt;/<span class="name">path</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">path</span> <span class="attr">d</span>=<span class="string">"M 0 0 h 0.20 v 0.20 h -0.20 z"</span> <span class="attr">style</span>=<span class="string">"stroke: gray; fill: none;stroke-width: 0.01;"</span>&gt;</span><span class="tag">&lt;/<span class="name">path</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">pattern</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>修正填充图形后的效果为：</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/180517/2JEl3k27c0.png?imageslim" alt="mark"></p>
+<p>如果将元素大小改为<code>130x120</code>后，效果如下：</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/180517/DCdIDidlmF.png?imageslim" alt="mark"></p>
+<p><font color="#36f"><strong>分析</strong></font>：同理，单元格大小为<code>27.5x24</code>，但是由于图案内部的填充图形只有<code>0.2</code>的比例大小，而正好与单元格的大小比例一致，因此填充之间没有出现间隙；可以把<code>width</code>和<code>height</code>的大小设置为<code>0.25</code>，此时单元格比例和图案内部的图形的比例不一致，可以看看此时的效果：</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/180517/17A8Cg6684.png?imageslim" alt="mark"></p>
+<p>可以看到填充的图案并没有按比例进行，因为图案内部的填充图形本身只用了<code>0.2</code>的比例大小，而<font color="red"><strong>这个比例是对于被填充元素的本身大小而言</strong></font>，所以此时填充图形并没有单元格大小那么大！所以就相当于单元格内看起来有空余部分。（P.S：<strong>这里真的很有疑问，为啥不把比例相对于单元格进行设计，而是非得相对于被填充元素本身？难道不是对于单元格进行比例设计会更方便一些吗？！！</strong>）</p>
+<h4 id="例4"><a class="markdownIt-Anchor" href="#例4"></a> 例4</h4>
+<p>当<code>patternUnits</code>属性设置为<code>userSpaceOnUse</code>，<code>patternContentUnits</code>属性设置为<code>objectBoundingBox</code>，<code>width</code>为<code>20</code>，<code>height</code>为<code>20</code>时，<code>x</code>和<code>y</code>都为0，使用按比例进行修正的填充图形，效果如下：</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/180517/b1Bbcj6jBE.png?imageslim" alt="mark"></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">svg</span> <span class="attr">width</span>=<span class="string">"200"</span> <span class="attr">height</span>=<span class="string">"200"</span> <span class="attr">id</span>=<span class="string">"container"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">defs</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">pattern</span> <span class="attr">id</span>=<span class="string">"t1"</span> <span class="attr">x</span>=<span class="string">"0"</span> <span class="attr">y</span>=<span class="string">"0"</span> <span class="attr">width</span>=<span class="string">"20"</span> <span class="attr">height</span>=<span class="string">"20"</span> <span class="attr">patternUnits</span>=<span class="string">"userSpaceOnUse"</span> <span class="attr">patternContentUnits</span>=<span class="string">"objectBoundingBox"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">path</span> <span class="attr">d</span>=<span class="string">"M 0 0 Q 0.05 0.20 0.1 0.1 T 0.20 0.20"</span> <span class="attr">style</span>=<span class="string">"stroke: black; fill: none;stroke-width: 0.01;"</span>&gt;</span><span class="tag">&lt;/<span class="name">path</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">path</span> <span class="attr">d</span>=<span class="string">"M 0 0 h 0.20 v 0.20 h -0.20 z"</span> <span class="attr">style</span>=<span class="string">"stroke: gray; fill: none;stroke-width: 0.01;"</span>&gt;</span><span class="tag">&lt;/<span class="name">path</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">pattern</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">defs</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">rect</span> <span class="attr">width</span>=<span class="string">"100"</span> <span class="attr">height</span>=<span class="string">"100"</span>  <span class="attr">x</span>=<span class="string">"50"</span> <span class="attr">y</span>=<span class="string">"50"</span> <span class="attr">fill</span>=<span class="string">"url(#t1)"</span>&gt;</span><span class="tag">&lt;/<span class="name">rect</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">svg</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><font color="#36f"><strong>分析</strong></font>：需要注意的是，这里的单元格仍然是在画布上进行排列，但是对于填充图形的绘制则是相当于被填充元素本身的大小按照比例进行的，而图案内部的填充图形比例为<code>0.2</code>，所以只是刚好与单元格的大小相匹配而已！如果把单元格大小设置为<code>25x25</code>，效果如下：</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/180517/emDdlK2KGG.png?imageslim" alt="mark"></p>
+<p><strong>可以看到单元格分布确实是截取画布上进行排列过的，但是单元格内的填充元素确实是按照被填充元素大小进行比例绘制的</strong>，可以通过两个完全不同大小的元素填充上述的图案进行对比：</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/180517/6kDDD0k4Bf.png?imageslim" alt="mark"></p>
+<p>如图，填充元素大小为<code>200x200</code>和<code>100x100</code>的单元格分布时是一致的，但是可以明显看到填充的图案不同；填充元素大小为<code>200x200</code>时，由于图案内部的填充图形只占了<code>0.2</code>的比例，所以此时绘制出来后大小则为<code>40x40</code>；同理当填充元素大小为<code>100x100</code>时，绘制出来后的大小为<code>20x20</code>，因此图案完全不同！</p>
+<h3 id="例子总结"><a class="markdownIt-Anchor" href="#例子总结"></a> 例子总结</h3>
+<ul>
+<li>当使用<code>patternContentUnits</code>属性的<code>objectBoundingBox</code>时，尤其<font color="red"><strong>需要注意图案绘制时的比例大小是相对于被填充元素本身</strong></font>的！</li>
+</ul>
+<h2 id="图案的嵌套"><a class="markdownIt-Anchor" href="#图案的嵌套"></a> 图案的嵌套</h2>
+<p>一个被定义的图案，可以在其他图案的填充图形中被使用（即在内部的元素中使用<code>fill</code>属性即可），这就是图案的嵌套。</p>
+<h2 id="参考文档"><a class="markdownIt-Anchor" href="#参考文档"></a> 参考文档</h2>
+<ol>
+<li><a href="http://www.ituring.com.cn/book/1542" target="_blank" rel="noopener">《SVG精髓（第2版）》</a></li>
+</ol>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>xuefeng</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://note.xiexuefeng.cc/post/svg-pattern/" title="svg之图案填充">https://note.xiexuefeng.cc/post/svg-pattern/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/svg/" rel="tag"># svg</a>
+          
+            <a href="/tags/note/" rel="tag"># note</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/post/css3-transform-3d/" rel="next" title="css3 3D transform">
+                <i class="fa fa-chevron-left"></i> css3 3D transform
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/post/svg-gradient/" rel="prev" title="svg之渐变填充">
+                svg之渐变填充 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/photo.jpg"
+                alt="xuefeng" />
+            
+              <p class="site-author-name" itemprop="name">xuefeng</p>
+              <p class="site-description motion-element" itemprop="description">时不我待</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">59</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">35</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/xxf1996" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#图案的使用"><span class="nav-number">1.</span> <span class="nav-text"> 图案的使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#定义"><span class="nav-number">1.1.</span> <span class="nav-text"> 定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用"><span class="nav-number">1.2.</span> <span class="nav-text"> 使用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#图案的设置"><span class="nav-number">2.</span> <span class="nav-text"> 图案的设置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#patternunits"><span class="nav-number">2.1.</span> <span class="nav-text"> patternUnits</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#patterncontentunits"><span class="nav-number">2.2.</span> <span class="nav-text"> patternContentUnits</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#举个栗子"><span class="nav-number">2.3.</span> <span class="nav-text"> 举个栗子</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#例1"><span class="nav-number">2.3.1.</span> <span class="nav-text"> 例1</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#例2"><span class="nav-number">2.3.2.</span> <span class="nav-text"> 例2</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#例3"><span class="nav-number">2.3.3.</span> <span class="nav-text"> 例3</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#例4"><span class="nav-number">2.3.4.</span> <span class="nav-text"> 例4</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#例子总结"><span class="nav-number">2.4.</span> <span class="nav-text"> 例子总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#图案的嵌套"><span class="nav-number">3.</span> <span class="nav-text"> 图案的嵌套</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文档"><span class="nav-number">4.</span> <span class="nav-text"> 参考文档</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Gemini</a> v6.1.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.1.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('-1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'manual') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" type="text/css"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+   
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
