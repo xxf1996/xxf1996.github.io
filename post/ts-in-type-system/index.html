@@ -114,7 +114,11 @@
 <meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200614170635.png?imageslim">
 <meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200614170656.png?imageslim">
 <meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200614170722.png?imageslim">
-<meta property="og:updated_time" content="2020-06-14T09:10:40.082Z">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200624175618.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200624175635.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200624175652.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200624175708.png?imageslim">
+<meta property="og:updated_time" content="2020-06-24T09:58:24.204Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="从类型系统的角度看TS">
 <meta name="twitter:description" content="前言 很多时候TS这门语言只被人看作是ES的类型增强版，然而在我看来TS作为ES的超集，ES语法可以看作是一个维度，而多出的类型系统则可以看作是另一个维度；也就是说如果把ES看作是一个一维编程语言，那么TS就是一个二维编程语言； 这篇文章尝试从多出来的一个维度来描述TS类型编程的独特性和一般性；所以，涉及各种类型的定义和用法不再过多阐述。 跟大多数编程语言一样，TS类型编程也遵循程序语言设计的一">
@@ -531,6 +535,20 @@
 <p><img src="http://pic.xiexuefeng.cc/markdown/20200614170722.png?imageslim" alt="img"></p>
 </li>
 </ul>
+<h2 id="对象"><a class="markdownIt-Anchor" href="#对象"></a> 对象</h2>
+<p>类型系统中的对象就是对象类型（可以由<code>interface</code>，<code>type</code>甚至是<code>class</code>创建得到），对象类型具有跟<code>ES</code>中对象相似的结构，只不过键值是类型而已；</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> A &#123;</span><br><span class="line">  name: <span class="built_in">string</span>;</span><br><span class="line">  age: <span class="built_in">number</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> B = &#123;</span><br><span class="line">  readonly ok: <span class="built_in">boolean</span>;</span><br><span class="line">  size: <span class="built_in">number</span>;</span><br><span class="line">  other?: <span class="built_in">string</span>[];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">declare</span> <span class="keyword">class</span> AAA &#123;</span><br><span class="line">  name: <span class="built_in">string</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> some (word: <span class="built_in">string</span>): <span class="built_in">Promise</span>&lt;<span class="built_in">boolean</span>&gt;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="索引访问"><a class="markdownIt-Anchor" href="#索引访问"></a> 索引访问</h3>
+<p>类型系统中的对象也是支持通过索引来访问相应属性的值，只不过<font color="#f00">只能通过<code>[key]</code>（中括号）的方式</font>进行访问，不能像<code>ES</code>中那样通过<code>.</code>（点符号）来访问！</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> C = A[<span class="string">'age'</span>] | B[<span class="string">'ok'</span>] | AAA[<span class="string">'some'</span>] <span class="comment">// 没错，class也能当做对象进行访问</span></span><br></pre></td></tr></table></figure>
+<p><img src="http://pic.xiexuefeng.cc/markdown/20200624175618.png?imageslim" alt="img"></p>
+<p>对象中属性的修饰符（或者类成员的修饰符）则不会被带入到键值，也就是通过索引访问访问只能得到属性值；不过如果是可选属性，那么属性值默认会与<code>undefined</code>进行联合；</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> D = &#123;</span><br><span class="line">  extra: B[<span class="string">'other'</span>]; <span class="comment">// 访问可选属性</span></span><br><span class="line">  some: B[<span class="string">'ok'</span>]; <span class="comment">// 访问readonly属性</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="http://pic.xiexuefeng.cc/markdown/20200624175635.png?imageslim" alt="img"></p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/20200624175652.png?imageslim" alt="img"></p>
+<p>不仅如此，索引访问<font color="#39f">还支持使用集合（也就是联合类型）来进行一次访问多个属性值</font>，且将多个属性值进行联合，最后得到一个集合；</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> E = B[<span class="string">'ok'</span> | <span class="string">'other'</span>] <span class="comment">// 还可以用联合类型来访问多个属性值</span></span><br></pre></td></tr></table></figure>
+<p><img src="http://pic.xiexuefeng.cc/markdown/20200624175708.png?imageslim" alt="img"></p>
 <h2 id="函数"><a class="markdownIt-Anchor" href="#函数"></a> 函数</h2>
 <blockquote>
 <p>注：泛型类型（<code>generic type</code>）指的就是<code>TS</code>中带泛型的类型。</p>
@@ -617,6 +635,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/post/husky-and-git-hooks/" rel="prev" title="husky钩子的一些用法">
+                husky钩子的一些用法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -693,7 +715,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">64</span>
+                    <span class="site-state-item-count">65</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -801,7 +823,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">36</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">38</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -846,7 +872,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据"><span class="nav-number">2.</span> <span class="nav-text"> 数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#标识符"><span class="nav-number">2.1.</span> <span class="nav-text"> 标识符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#值"><span class="nav-number">2.2.</span> <span class="nav-text"> 值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#值类型"><span class="nav-number">2.3.</span> <span class="nav-text"> 值类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据结构类型"><span class="nav-number">2.4.</span> <span class="nav-text"> 数据结构类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#运算"><span class="nav-number">3.</span> <span class="nav-text"> 运算</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#二元运算"><span class="nav-number">3.1.</span> <span class="nav-text"> 二元运算</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三元运算"><span class="nav-number">3.2.</span> <span class="nav-text"> 三元运算</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#集合"><span class="nav-number">4.</span> <span class="nav-text"> 集合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#函数"><span class="nav-number">5.</span> <span class="nav-text"> 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#递归"><span class="nav-number">5.1.</span> <span class="nav-text"> 递归</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#控制语句"><span class="nav-number">6.</span> <span class="nav-text"> 控制语句</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#条件语句"><span class="nav-number">6.1.</span> <span class="nav-text"> 条件语句</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#循环语句"><span class="nav-number">6.2.</span> <span class="nav-text"> 循环语句</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关文档"><span class="nav-number">7.</span> <span class="nav-text"> 相关文档</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据"><span class="nav-number">2.</span> <span class="nav-text"> 数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#标识符"><span class="nav-number">2.1.</span> <span class="nav-text"> 标识符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#值"><span class="nav-number">2.2.</span> <span class="nav-text"> 值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#值类型"><span class="nav-number">2.3.</span> <span class="nav-text"> 值类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据结构类型"><span class="nav-number">2.4.</span> <span class="nav-text"> 数据结构类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#运算"><span class="nav-number">3.</span> <span class="nav-text"> 运算</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#二元运算"><span class="nav-number">3.1.</span> <span class="nav-text"> 二元运算</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三元运算"><span class="nav-number">3.2.</span> <span class="nav-text"> 三元运算</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#集合"><span class="nav-number">4.</span> <span class="nav-text"> 集合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对象"><span class="nav-number">5.</span> <span class="nav-text"> 对象</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#索引访问"><span class="nav-number">5.1.</span> <span class="nav-text"> 索引访问</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#函数"><span class="nav-number">6.</span> <span class="nav-text"> 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#递归"><span class="nav-number">6.1.</span> <span class="nav-text"> 递归</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#控制语句"><span class="nav-number">7.</span> <span class="nav-text"> 控制语句</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#条件语句"><span class="nav-number">7.1.</span> <span class="nav-text"> 条件语句</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#循环语句"><span class="nav-number">7.2.</span> <span class="nav-text"> 循环语句</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关文档"><span class="nav-number">8.</span> <span class="nav-text"> 相关文档</span></a></li></ol></div>
             
 
           </div>
