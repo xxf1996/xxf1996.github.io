@@ -110,7 +110,7 @@
 <meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200628170657.png?imageslim">
 <meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200628170716.gif?imageslim">
 <meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200628170755.gif?imageslim">
-<meta property="og:updated_time" content="2020-06-28T09:09:20.438Z">
+<meta property="og:updated_time" content="2020-07-04T04:03:55.878Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="codepen挑战（2020-6-17）：滑动">
 <meta name="twitter:description" content="前言 codepen每周挑战是codepen网站推出的活动，每周一次；每个挑战都有一个主题，基本上是围绕一个特定的场景或者CSS特性/库这类的，针对性比较强。">
@@ -443,12 +443,14 @@
 </ul>
 <p><img src="http://pic.xiexuefeng.cc/markdown/20200628170755.gif?imageslim" alt="img"></p>
 <p>很有意思，一只看起来百无聊赖的北极熊在冰面上滑动，再加上显眼的<code>MONDAY</code>，寓意很明显。</p>
-<p>北极熊本身是使用<code>SVG</code>进行绘制的，显眼的<code>MONDAY</code><font color="#39f">有三层</font>，中间一层是普通的文字，顶层和底层都是使用了clip-path：text + -webkit-text-fill-color：transparent + 渐变生成的背景这一组合达成的效果；</p>
+<p>北极熊本身是使用<code>SVG</code>进行绘制的，显眼的<code>MONDAY</code><font color="#39f">有四层</font>，中间两层是普通的文字，顶层和底层都是使用了<code>-webkit-background-clip: text</code> + <code>-webkit-text-fill-color：transparent</code> + 渐变生成的背景这一组合达成的效果；</p>
+<p>文字效果相关的尝试：<a href="https://codepen.io/xxf1996/pen/OJMzKYo" target="_blank" rel="noopener">https://codepen.io/xxf1996/pen/OJMzKYo</a></p>
 <h2 id="相关文档"><a class="markdownIt-Anchor" href="#相关文档"></a> 相关文档</h2>
 <ul>
-<li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/offset-path" target="_blank" rel="noopener">offset-path - CSS: Cascading Style Sheets | MDN</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/offset-path" target="_blank" rel="noopener">offset-path - CSS: Cascading Style Sheets | MDN</a>：移动路径</li>
 <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/offset-rotate" target="_blank" rel="noopener">offset-rotate - CSS: Cascading Style Sheets | MDN</a></li>
 <li><a href="https://codepen.io/anthonydugois/full/mewdyZ" target="_blank" rel="noopener">https://codepen.io/anthonydugois/full/mewdyZ</a> ：一个可视化输出<code>SVG path</code>的工具</li>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/-webkit-text-stroke" target="_blank" rel="noopener">-webkit-text-stroke - CSS（层叠样式表） | MDN</a>：用于文字描边</li>
 </ul>
 
       
@@ -508,6 +510,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/post/multi-branch-common-file/" rel="prev" title="解决多分支并行开发公共文件维护的几种方案">
+                解决多分支并行开发公共文件维护的几种方案 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -585,7 +591,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">66</span>
+                    <span class="site-state-item-count">68</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -608,7 +614,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">5</span>
+                      
+                    
+                    <span class="site-state-item-count">6</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -699,7 +707,13 @@
                     
                       
                     
-                    <span class="site-state-item-count">39</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">42</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>

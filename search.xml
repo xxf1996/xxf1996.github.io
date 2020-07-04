@@ -1,9 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[vue-lazyload的一个坑：事件失效]]></title>
+    <url>%2Fpost%2Fvue-lazyload-event-not-work%2F</url>
+    <content type="text"><![CDATA[前言 使用vue-lazyload的lazy-component组件对某个组件进行包裹，然后对组件整体设置懒加载效果时，存在一个坑：该组件内部的自定义组件（即非原生html标签）所有的自定义事件都会失效，且可能视图渲染不完全（多层组件嵌套时）； 可能的原因 初步猜测是lazy-component渲染函数的问题，因为渲染函数可以控制内部子元素的事件和属性等配置的挂载；然后一看该组件源码，其内部渲染函数为： 不知道是不是跟渲染函数的第二个参数为null有关，渲染函数的第二个参数是用来设置attribute相关的参数（即包括指令，自定义事件v-on及props等相关的属性）； 解决办法 首先本能地使用Vue实例自带的$foreUpdate()对组件内部进行强制重新渲染，但是重新渲染后还是存在上述问题；毕竟$foreUpdate()方法本质上就是再次调用组件的渲染函数进行渲染，如果渲染函数本身就存在问题，重新渲染多少次都没用。 直接修改源码也是一种办法，不过发现直接改源码并没有用，因为vue-lazyload包主文件是一个编译后压缩的js文件（大多数包都是编译后的），也就是说如果要通过改源码这一途径来解决就需要对这个包进行编译……这个还是有点麻烦的，毕竟看了一下里面的依赖挺多的； 不过好在发现这个lazy-component有个自定义事件show，看源码应该是在懒加载组件从不可见区域进入可见区域时触发的，有了这个时间点就好办了；只需要利用这个时间点，用lazy-component进行占位，然后列表项进入可见区域后马上隐藏lazy-component且显示真正的列表项组件，因为此时lazy-component组件和要进行懒加载的列表项组件是平级的（即兄弟关系），所以就避免了lazy-component组件渲染的坑，还可以直接利用其懒加载功能； 可以写成一个新的懒加载组件： 123456789&lt;!-- lazy-item组件 --&gt;&lt;template&gt; &lt;div class="item"&gt; &lt;!-- 通过lazy-component组件的show事件来切换真正的内容 --&gt; &lt;lazy-component v-if="showLazy" class="item-lazy" @show="load" /&gt; &lt;!-- 直接透传prop和自定义事件 --&gt; &lt;list-item v-else v-on="$listeners" v-bind="$attrs"/&gt; &lt;/div&gt;&lt;/template&gt; 123456789101112export default class LayzItem extends Vue &#123; name = 'LayzItem' private showLazy = true private load () &#123; console.log('懒加载load') this.$nextTick(() =&gt; &#123; this.showLazy = false &#125;) &#125;&#125; 一个小技巧：透传 所谓的透传就是将父组件的属性直接传给子组件，而不是通过在父组件定义相关的props和事件，然后再传入到子组件上；如： 1&lt;list-item v-else v-on="$listeners" v-bind="$attrs"/&gt; 通过v-on直接绑定父组件的$listeners属性，可以将父组件上绑定的所有事件直接绑定到子组件上；同理，$attrs包含组件的所有attribute属性，通过v-bind则可以直接绑定到子组件上； 透传的好处就是不需要在父组件中重新定义相关属性再中转给子组件，适用于希望将父组件上的相关属性直接传递给子组件的情况；上面这种包装列表项为懒加载组件的情况就很适用，因为直接在懒加载组件（父组件）上绑定的属性和事件就可以原封不动地传给真正的列表项了。 相关文档 修改nodejs项目中node_modules的代码，不能生效吗？ - 知乎 渲染函数 &amp; JSX — Vue.js]]></content>
+      <categories>
+        <category>踩坑</category>
+      </categories>
+      <tags>
+        <tag>vue-lazyload</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[解决多分支并行开发公共文件维护的几种方案]]></title>
+    <url>%2Fpost%2Fmulti-branch-common-file%2F</url>
+    <content type="text"><![CDATA[前言 当项目越来越大，且存在多分支同时开发的时候，就会遇到公共文件维护的问题；比如当在A分支修改某个公共文件时，B分支无法同步该文件的修改，毕竟两个开发分支（迭代）的排期和测试进度是不一样的，不能贸然交叉合并开发分支，否则会造成代码污染的问题。因此需要一种解决方案来专门维护项目公共文件，避免出现公共文件修改不同步造成各种冲突和可能存在的关联性bug出现。 方案一：npm私库 利用npm私库可以把项目公共组件部分独立成npm包，不受分支影响； 优点： 独立性强 可以存在多个版本，有问题时可以快速回滚版本，也可以发版本修复 缺点： 组件调试不方便 文档插件兼容性和引入方式待确认 方案二：git subtree 利用git subtree将公共组件文件夹变成项目的一个子仓库，关于公共组件的修改可以全部同步在子仓库，其他分支可以随时从子仓库pull进行同步； 优点 相对项目内其它文件，子仓库文件比较独立 无需结构更改，可以无缝兼容项目结构 组件调试方便 缺点 子仓库相关更新的subtree命令比较繁琐（不过目测可以通过添加npm script解决） 需要严格遵循子仓库的改动必须使用subtree命令提交 方案三：独立的公共文件维护分支 就是指定一条分支专门维护公共文件（包括公共组件），也就是说所有涉及到公共文件的修改全都必须切到该分支，修改后在该分支进行上传；且该分支不能合并其他任何开发或测试分支的代码，但是可以定期合并主分支代码（已通过测试的）； 优点 利用git分支即可维护项目公共文件，无需额外学习成本 同样兼容已有项目结构 组件调试方便 不仅可以维护组件，还能维护其他公共文件 缺点 需要保证公共文件维护分支的纯洁性，即不能让其他分支污染 优化措施 由于公共文件比较特殊，可以考虑引入一些工具加强规范，减少人为错误，和及时的改动通知等； 公共文件改动群通知：无论是git库，还是单独分支，都可以利用webhook进行钉钉群通知； 规范commit消息，自动生成公共文件changelog：利用一些成熟的工具加强commit消息格式，然后每次自动记录生成规范的changelog文件，以便有清晰的修改记录，而且commit通知也会更具可读性； 针对方案三，可能存在一种强制校验的方式来禁止合并其他代码的分支到公共文件分支：利用git hook来检测本地代码合并是否满足要求，目前也有相关的npm包支持这种git hook，比如：husky。但是由于需要写脚本来验证是否有命令能够支持检测merge来源分支，所以尚不明确； 相关文档 多项目并行开发之公共资源处理：Git Sbutree拆分子仓库 - wl-ui - SegmentFault 思否 git subtree教程 - 个人文章 - SegmentFault 思否 Git管理多个分支的公共部分Howtomanagethecommonpartofmultiplebranches_basicthinker的专栏-CSDN博客 Git subtree: the alternative to Git submodule | Atlassian Git Tutorial 规范你的 commit message 并且根据 commit 自动生成 CHANGELOG.md - 掘金 Git子仓库深入浅出 - 掘金 用 Git Subtree 在多个 Git 项目间双向同步子项目，附简明使用手册Sina Weibo icon：实践总结 使用git钩子对提交代码进行检查(pre-commit) - 简书 git hook实践心得 - 腾讯Web前端 IMWeb 团队社区 | blog | 团队博客 GitHub - typicode/husky: Git hooks made easy 🐶 woof! 手牵手使用Husky &amp; Nodejs自定义你的Git钩子 · Issue #10 · PaicFE/blog · GitHub]]></content>
+      <categories>
+        <category>探索</category>
+      </categories>
+      <tags>
+        <tag>工程</tag>
+        <tag>基建</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[codepen挑战（2020-6-17）：滑动]]></title>
     <url>%2Fpost%2Fcodepen-challenge-sliding%2F</url>
-    <content type="text"><![CDATA[前言 codepen每周挑战是codepen网站推出的活动，每周一次；每个挑战都有一个主题，基本上是围绕一个特定的场景或者CSS特性/库这类的，针对性比较强。 挑战描述 实际上是创建一个关于滑动的动画即可，并不局限于幻灯片切换的那种动画（一开始确实理解错了……）。 想法 Demo地址：https://codepen.io/xxf1996/pen/KKVNzxz 由于一开始理解成幻灯片切换效果动画了，所以创建一个幻灯片进（slide-in）和出（slide-out）的动画； slide-in运用的视觉效果是冲击 + 压缩 + 反弹； slide-out则是沿着一条曲线路径不断旋转，前进和渐隐；主要是运用了新增没几年的offset-path及相关属性； 有趣的案例 https://codepen.io/raczo/full/bGEwRBg 很有意思，一只看起来百无聊赖的北极熊在冰面上滑动，再加上显眼的MONDAY，寓意很明显。 北极熊本身是使用SVG进行绘制的，显眼的MONDAY有三层，中间一层是普通的文字，顶层和底层都是使用了clip-path：text + -webkit-text-fill-color：transparent + 渐变生成的背景这一组合达成的效果； 相关文档 offset-path - CSS: Cascading Style Sheets | MDN offset-rotate - CSS: Cascading Style Sheets | MDN https://codepen.io/anthonydugois/full/mewdyZ ：一个可视化输出SVG path的工具]]></content>
+    <content type="text"><![CDATA[前言 codepen每周挑战是codepen网站推出的活动，每周一次；每个挑战都有一个主题，基本上是围绕一个特定的场景或者CSS特性/库这类的，针对性比较强。 挑战描述 实际上是创建一个关于滑动的动画即可，并不局限于幻灯片切换的那种动画（一开始确实理解错了……）。 想法 Demo地址：https://codepen.io/xxf1996/pen/KKVNzxz 由于一开始理解成幻灯片切换效果动画了，所以创建一个幻灯片进（slide-in）和出（slide-out）的动画； slide-in运用的视觉效果是冲击 + 压缩 + 反弹； slide-out则是沿着一条曲线路径不断旋转，前进和渐隐；主要是运用了新增没几年的offset-path及相关属性； 有趣的案例 https://codepen.io/raczo/full/bGEwRBg 很有意思，一只看起来百无聊赖的北极熊在冰面上滑动，再加上显眼的MONDAY，寓意很明显。 北极熊本身是使用SVG进行绘制的，显眼的MONDAY有四层，中间两层是普通的文字，顶层和底层都是使用了-webkit-background-clip: text + -webkit-text-fill-color：transparent + 渐变生成的背景这一组合达成的效果； 文字效果相关的尝试：https://codepen.io/xxf1996/pen/OJMzKYo 相关文档 offset-path - CSS: Cascading Style Sheets | MDN：移动路径 offset-rotate - CSS: Cascading Style Sheets | MDN https://codepen.io/anthonydugois/full/mewdyZ ：一个可视化输出SVG path的工具 -webkit-text-stroke - CSS（层叠样式表） | MDN：用于文字描边]]></content>
       <categories>
         <category>探索</category>
       </categories>
@@ -268,8 +291,8 @@
       </categories>
       <tags>
         <tag>webGL</tag>
-        <tag>FBO</tag>
         <tag>纹理</tag>
+        <tag>FBO</tag>
       </tags>
   </entry>
   <entry>
