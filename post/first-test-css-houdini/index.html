@@ -99,28 +99,30 @@
 
 
 
-  <meta name="description" content="前言 由于Cloud Studio中每个工作空间只能使用1G的内存，当后台运行进程过多时，如果当前运行的进程需要比较多的内存时，就会造成该进程『killed』（由于可用内存不够导致内存溢出）；比如使用npm run dev或npm run build时，被kill时就会报一个137的错误，对于node可以通过设置--max-old-space-size来限制node或npm本身占用的最大内存；但">
-<meta name="keywords" content="mongodb,mongoose,Node.js,Express">
+  <meta name="description" content="前言 近几年，浏览器的特性频出，特别是一些开放浏览器底层控制的API规范，比如：WebAssembly，CSS Houdini，WebGL2.0等；这些底层API使得我们有机会定制更多的内容，而且拥有更好的性能，因此也就获得了更多的创造性。 关于CSS Houdini也是近两年才听的比较多，只知道大概是一个自定义CSS属性的利器，也没比较详细的去了解，算是比较前沿的CSS规范了；看过一些案例后，">
+<meta name="keywords" content="动效,css">
 <meta property="og:type" content="article">
-<meta property="og:title" content="在node上搭建一个mongodb服务器">
-<meta property="og:url" content="https://note.xiexuefeng.cc/post/node-mongodb-server/index.html">
+<meta property="og:title" content="浅尝 CSS Houdini">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/first-test-css-houdini/index.html">
 <meta property="og:site_name" content="snowdream">
-<meta property="og:description" content="前言 由于Cloud Studio中每个工作空间只能使用1G的内存，当后台运行进程过多时，如果当前运行的进程需要比较多的内存时，就会造成该进程『killed』（由于可用内存不够导致内存溢出）；比如使用npm run dev或npm run build时，被kill时就会报一个137的错误，对于node可以通过设置--max-old-space-size来限制node或npm本身占用的最大内存；但">
+<meta property="og:description" content="前言 近几年，浏览器的特性频出，特别是一些开放浏览器底层控制的API规范，比如：WebAssembly，CSS Houdini，WebGL2.0等；这些底层API使得我们有机会定制更多的内容，而且拥有更好的性能，因此也就获得了更多的创造性。 关于CSS Houdini也是近两年才听的比较多，只知道大概是一个自定义CSS属性的利器，也没比较详细的去了解，算是比较前沿的CSS规范了；看过一些案例后，">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180902/72Jafk7bL8.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180902/gdlE8I6k7I.png?imageslim">
-<meta property="og:updated_time" content="2020-05-30T08:18:14.339Z">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200712180009.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200712180035.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200712180051.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200712180104.gif?imageslim">
+<meta property="og:updated_time" content="2020-07-12T10:02:32.219Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="在node上搭建一个mongodb服务器">
-<meta name="twitter:description" content="前言 由于Cloud Studio中每个工作空间只能使用1G的内存，当后台运行进程过多时，如果当前运行的进程需要比较多的内存时，就会造成该进程『killed』（由于可用内存不够导致内存溢出）；比如使用npm run dev或npm run build时，被kill时就会报一个137的错误，对于node可以通过设置--max-old-space-size来限制node或npm本身占用的最大内存；但">
-<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/180902/72Jafk7bL8.png?imageslim">
+<meta name="twitter:title" content="浅尝 CSS Houdini">
+<meta name="twitter:description" content="前言 近几年，浏览器的特性频出，特别是一些开放浏览器底层控制的API规范，比如：WebAssembly，CSS Houdini，WebGL2.0等；这些底层API使得我们有机会定制更多的内容，而且拥有更好的性能，因此也就获得了更多的创造性。 关于CSS Houdini也是近两年才听的比较多，只知道大概是一个自定义CSS属性的利器，也没比较详细的去了解，算是比较前沿的CSS规范了；看过一些案例后，">
+<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/20200712180009.png?imageslim">
 
 
 
 
 
 
-  <link rel="canonical" href="https://note.xiexuefeng.cc/post/node-mongodb-server/"/>
+  <link rel="canonical" href="https://note.xiexuefeng.cc/post/first-test-css-houdini/"/>
 
 
 
@@ -130,7 +132,7 @@
   };
 </script>
 
-  <title>在node上搭建一个mongodb服务器 | snowdream</title>
+  <title>浅尝 CSS Houdini | snowdream</title>
   
 
 
@@ -333,7 +335,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/node-mongodb-server/">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/first-test-css-houdini/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xuefeng">
@@ -350,7 +352,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">在node上搭建一个mongodb服务器
+          <h1 class="post-title" itemprop="name headline">浅尝 CSS Houdini
               
             
           </h1>
@@ -369,7 +371,7 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-02T18:22:01+08:00">2018-09-02</time>
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-07-12T18:01:31+08:00">2020-07-12</time>
             
 
             
@@ -390,7 +392,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/笔记/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/探索/" itemprop="url" rel="index"><span itemprop="name">探索</span></a></span>
 
                 
                 
@@ -425,86 +427,142 @@
 
       
         <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
-<p>由于<code>Cloud Studio</code>中每个工作空间只能使用<strong>1G</strong>的内存，当后台运行进程过多时，如果当前运行的进程需要比较多的内存时，就会造成该进程『<strong>killed</strong>』（由于可用内存不够导致内存溢出）；比如使用<code>npm run dev</code>或<code>npm run build</code>时，被<code>kill</code>时就会报一个137的错误，对于<code>node</code>可以通过设置<code>--max-old-space-size</code>来限制<code>node</code>或<code>npm</code>本身占用的最大内存；但是限制内存后程序自然就运行得慢了。</p>
-<p>而像<code>mongodb</code>这种进程在后台运行肯定会占用较多的内存，因此决定将其单独设立到另一个主机空间，做成<strong>远程服务器</strong>（即不是集成到当前空间和项目中，而是利用ip或网址进行访问，就是调用<code>API</code>接口的形式）进行连接。</p>
+<p>近几年，浏览器的特性频出，特别是一些开放浏览器底层控制的<code>API</code>规范，比如：<code>WebAssembly</code>，<code>CSS Houdini</code>，<code>WebGL2.0</code>等；这些底层<code>API</code>使得我们有机会定制更多的内容，而且拥有更好的性能，因此也就获得了更多的创造性。</p>
+<p>关于<code>CSS Houdini</code>也是近两年才听的比较多，只知道大概是一个自定义<code>CSS</code>属性的利器，也没比较详细的去了解，算是比较前沿的<code>CSS</code>规范了；看过一些案例后，觉得<code>CSS Houdini</code>确实能够做出一些十分强大的展示和动效，是时候深入了解一下了。</p>
 <a id="more"></a>
-<h2 id="准备工作"><a class="markdownIt-Anchor" href="#准备工作"></a> 准备工作</h2>
-<p>要使用<code>mongodb</code>光在<code>node</code>项目中引入相关依赖包是<strong>不够</strong>的，因为那些包只是对<code>mongodb</code>数据库进行连接和操作的！！！所以，首先必须在主机空间里安装<code>mongodb</code>软件。</p>
-<h3 id="安装mongodb"><a class="markdownIt-Anchor" href="#安装mongodb"></a> 安装mongodb</h3>
-<ol>
-<li>由于<code>Cloud Studio</code>给定的主机是<code>Ubuntu 16.04 x64</code>的，所以需要去<a href="https://www.mongodb.com/download-center#community" target="_blank" rel="noopener">Mongodb官网下载中心</a>选择对应系统版本的安装包，然后下载，如：</li>
-</ol>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-3.6.7.tgz</span><br></pre></td></tr></table></figure>
-<ol start="2">
-<li>下载完安装包后，进行解压：</li>
-</ol>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -xvf mongodb-linux-x86_64-ubuntu1604-3.6.7.tgz</span><br></pre></td></tr></table></figure>
-<p>解压后顺便把文件夹名称一改，因为这文件夹名实在是有点长：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mv mongodb-linux-x86_64-ubuntu1604-3.6.7 mongodb</span><br></pre></td></tr></table></figure>
-<p>现在相当于把<code>mongodb</code>安装在<code>~/path/mongodb</code>文件夹下了。</p>
-<ol start="3">
-<li>添加到环境变量中：</li>
-</ol>
-<p>由于studio使用的命令行是<code>zsh</code>，所以需要在<code>~/.zhsrc</code>的末尾添加：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> MONGODB_HOME=<span class="string">"<span class="variable">$HOME</span>/path/mongodb"</span></span><br><span class="line"><span class="built_in">export</span> PATH=<span class="string">"<span class="variable">$MONGODB_HOME</span>/bin:<span class="variable">$PATH</span>"</span></span><br></pre></td></tr></table></figure>
-<p>添加完后执行更新命令：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> .zshrc</span><br></pre></td></tr></table></figure>
-<p>然后就可以使用<code>mongodb</code>的命令了。</p>
-<h3 id="启动mongodb数据库"><a class="markdownIt-Anchor" href="#启动mongodb数据库"></a> 启动mongodb数据库</h3>
-<p>启动一个<code>mongodb</code>数据库，需要给定一个存放数据库文件的文件夹路径；比如在<code>~</code>下新建了一个<code>dbdata</code>文件夹，然后指定为数据库文件存放路径并启动<code>mongodb</code>数据库：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mongod -dbpath=./dbdata</span><br></pre></td></tr></table></figure>
-<p>启动的数据库默认端口是<code>27017</code>，如果要使数据库一直保持运行（<strong>后台运行</strong>），可以在启动命令的最后添加<code>&amp;</code>即可。</p>
-<h2 id="搭建express服务器"><a class="markdownIt-Anchor" href="#搭建express服务器"></a> 搭建Express服务器</h2>
-<p>显然，只有数据库是无法完成<code>API</code>接口的；因此需要一个用来接收<code>request</code>，返回<code>response</code>的服务器组件。经过一番查询后，发现在<code>Node.js</code>使用较多的是<code>Express</code>这个服务器框架，看了一下确实比较方便，只需要关心输入输出即可，不需要考虑太多的配置，所以决定搭建一个<code>Express</code>服务器来处理<code>request</code>和<code>response</code>。</p>
-<h3 id="安装依赖"><a class="markdownIt-Anchor" href="#安装依赖"></a> 安装依赖</h3>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i express -S</span><br></pre></td></tr></table></figure>
-<h3 id="简单的express服务器"><a class="markdownIt-Anchor" href="#简单的express服务器"></a> 简单的Express服务器</h3>
-<p>在项目文件夹创建一个<code>app.js</code>文件，然后写一个简单的处理<code>request</code>和<code>response</code>的服务器：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> express = <span class="built_in">require</span>(<span class="string">'express'</span>)</span><br><span class="line"><span class="keyword">let</span> app = express() <span class="comment">// 创建一个express服务器</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置路由，根据请求地址的路径来处理request，输出相应的response</span></span><br><span class="line">app.get(<span class="string">'/'</span>, (req, res)=&gt;&#123;</span><br><span class="line">  res.send(<span class="string">'Hello World!'</span>)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// listen函数用来设置监听端口和ip地址</span></span><br><span class="line"><span class="keyword">let</span> server = app.listen(<span class="string">'3000'</span>, <span class="string">'0.0.0.0'</span>, ()=&gt;&#123;</span><br><span class="line">  <span class="keyword">let</span> host = server.address().address</span><br><span class="line">  <span class="keyword">let</span> port = server.address().port</span><br><span class="line"></span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'app listening at http://%s:%s'</span>, host, port)</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<p>上面的代码就相当于建立了一个服务器，这个服务器的地址就是<code>0.0.0.0:3000</code>；然后当使用<code>get</code>方法访问服务器根路径<code>/</code>时，给出的<code>response</code>正文为<code>Hello World!</code>。</p>
-<p>使用<code>node app.js</code>启动服务器，访问效果如下：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/180902/72Jafk7bL8.png?imageslim" alt="mark"></p>
-<h2 id="mongoose"><a class="markdownIt-Anchor" href="#mongoose"></a> Mongoose</h2>
-<p>由于<code>node</code>并不能直接连接<code>mongodb</code>服务器进行数据获取和操作，因此需要能够在<code>node</code>下对<code>mongodb</code>服务器进行操作的工具。事实上<code>mongodb</code>官方早就实现了基于<code>Node.js</code>的<a href="https://mongodb.github.io/node-mongodb-native/" target="_blank" rel="noopener">驱动</a>和<code>API</code>，只需要在<code>node</code>项目中安装<code>mongodb</code>这个依赖包就可以实现对<code>mongodb</code>服务器的连接和操作；但是由于对数据结构没有限定，使用比较自由，所以觉得另一个<font color="red"><strong>基于官方驱动</strong></font>的<code>mongoose</code>更符合我的胃口，因为<code>mongoose</code>的<code>Schema</code>可以实现对数据的<strong>结构和数据类型</strong>进行限定。</p>
-<h3 id="安装"><a class="markdownIt-Anchor" href="#安装"></a> 安装</h3>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i mongoose -S</span><br></pre></td></tr></table></figure>
-<h3 id="连接数据库"><a class="markdownIt-Anchor" href="#连接数据库"></a> 连接数据库</h3>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> mongoose = <span class="built_in">require</span>(<span class="string">'mongoose'</span>)</span><br><span class="line"><span class="keyword">const</span> Schema = mongoose.Schema <span class="comment">// Schema构造函数</span></span><br><span class="line"><span class="comment">// mongodb连接地址：mongodb://ip:port/database</span></span><br><span class="line"><span class="keyword">const</span> url = <span class="string">'mongodb://0.0.0.0:27017/test'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> db = mongoose.createConnection(url) <span class="comment">// 返回数据库的连接对象</span></span><br><span class="line">db.on(<span class="string">'error'</span>, (err)=&gt;&#123; <span class="comment">// 监听数据库连接错误事件</span></span><br><span class="line">    <span class="keyword">throw</span> err</span><br><span class="line">&#125;)</span><br><span class="line">db.once(<span class="string">'open'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123; <span class="comment">// 监听数据库连接成功事件（once就是监听一次）</span></span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'connect success'</span>)</span><br><span class="line">    db.close() <span class="comment">// 关闭数据库连接</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-<p>显然，所有的<code>CRUD</code>操作肯定需要在<strong>连接成功事件</strong>（<code>open</code>）内进行。</p>
-<h3 id="schema-model和document"><a class="markdownIt-Anchor" href="#schema-model和document"></a> Schema、model和document</h3>
-<p>由于<code>mongodb</code>属于<code>nosql</code>类型数据库，对于数据库中的表（在<code>mongodb</code>中并没有表这一说，相对应的是集合（<code>collection</code>），一个集合并<strong>没有数据结构和类型限制</strong>，集合内的数据并<strong>不需要</strong>格式相同）；而<code>Schema</code>算是<code>mongoose</code>对于<code>mongodb</code>没有限定集合内数据结构和类型的<strong>补充</strong>，而<code>model</code>可以看做具有给定<code>Schema</code>的<strong>集合</strong>，而<code>docuement</code>则是<code>model</code>的<strong>实例</strong>，可以看做是该集合内的一条<strong>数据</strong>。</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/180902/gdlE8I6k7I.png?imageslim" alt="mark"></p>
-<h4 id="schema"><a class="markdownIt-Anchor" href="#schema"></a> Schema</h4>
-<p><code>Schema</code>以键值对的形式来定义数据结构和类型，键名就是<strong>字段名称</strong>，而值就是<strong>类型限制或更加详细的设定</strong>；其中可以使用的数据类型有：</p>
+<h2 id="css-houdini-现状"><a class="markdownIt-Anchor" href="#css-houdini-现状"></a> CSS Houdini 现状</h2>
+<p><img src="http://pic.xiexuefeng.cc/markdown/20200712180009.png?imageslim" alt="img"></p>
+<p>上图<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>是截至目前为止（2020-7-11）各浏览器厂商对于<code>CSS Houdini</code>规范各个模块的支持情况，可以看到目前只有<code>blink</code>内核（<code>chrome</code>系）浏览器对于<code>CSS Houdini</code>有较好的支持，而<code>webkit</code>内核则是处于开发中，<code>firefox</code>那就只是有意图去实现，连开发阶段都没有进入；</p>
+<p>而且可以看到，即便是<code>CSS Houdini</code>规范，<code>blink</code>内核对不同模块的支持程度也不一样；目前<code>Paint API</code>，<code>Properties &amp; Values API</code>，<code>Typed OM</code>完全支持；其他模块不是没有开发进度就是很少的部分特性支持，基本上用处不大；</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/20200712180035.png?imageslim" alt="img"></p>
+<p>再看下<a href="https://caniuse.com/#search=houdini" target="_blank" rel="noopener">caniuse网站</a>的统计，<strong>移动端</strong>那就更加惨烈了，只有安卓原生浏览器和安卓<code>Chrome</code>浏览器有支持，而且要求版本还比较高（2020-4月后才支持）；</p>
+<p>所以<code>CSS Houdini</code>目前支持程度有限，仅在<code>blink</code>内核浏览器有用武之处，真实应用场景会大打折扣；</p>
+<h2 id="css-houdini-规范"><a class="markdownIt-Anchor" href="#css-houdini-规范"></a> CSS Houdini 规范</h2>
+<h3 id="背景"><a class="markdownIt-Anchor" href="#背景"></a> 背景</h3>
+<p>那么为何要提出<code>CSS Houdini</code>规范？</p>
+<p>首先，因为目前<code>CSS</code>很多属性在各个内核上可能有表现差异，导致兼容性问题，且原生<code>polyfill</code>几乎没有可能；</p>
+<p>其次，<code>CSS</code>很多新特性从提案，<code>W3C</code>纳入规范再到厂商最终实现可能要面临几年以上的时间，这个流程极大地耗费开发者的耐心及应用推广；因此每次出现新特性提案时大多数人都会调侃说到等几年后再试试；</p>
+<p><code>CSS Houdini</code>规范正是为了解决上述问题而提出的，通过暴露<code>CSS</code>引擎渲染相关的流程，使得渲染不再是黑盒，而是变得可控，这样样式和渲染的决定权就交到了开发者的手里，也就能解决上述的问题（当然，前提是所有浏览器都支持<code>CSS Houdini</code>规范……）。</p>
+<h3 id="作用"><a class="markdownIt-Anchor" href="#作用"></a> 作用</h3>
+<p><img src="http://pic.xiexuefeng.cc/markdown/20200712180051.png?imageslim" alt="img"></p>
+<p>上图<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>解释了<code>CSS Houdini</code>规范中每个模块具体作用于<code>CSS</code>渲染的哪个流程，从图中可以看出<code>CSS Houdini</code>规范的野心很大，试图掌控整个<code>CSS</code>渲染流程（这对于开发者来说肯定是个好消息）；</p>
 <ul>
-<li>String</li>
-<li>Number</li>
-<li>Date</li>
-<li>Buffer</li>
-<li>Boolean</li>
-<li><strong>Mixed</strong>：<code>Schema.Types.Mixed</code>，实际上就相当于一个<code>Object</code>；这种类型无法对其内部数据类型进行准确限定！</li>
-<li>ObjectId</li>
-<li><strong>Array</strong>：数组内元素类型可以是<code>Schema</code>或其它数据类型</li>
-<li>Decimal128</li>
-<li><strong>Schema</strong>：一个已经被定义的<code>Schema</code>可以作为一种类型使用，也就是<code>Schema</code>可以<strong>嵌套</strong>！</li>
+<li><code>CSS Parsing API</code>：用于解析<code>CSS</code>词法结构，也就是对于渲染中解析器工作的部分；</li>
+<li><code>CSS Typed OM</code>：从<code>CSS Houdini</code>规范草案可以看出，<code>CSS Typed OM</code>是<code>CSSOM</code>的高性能版本，是直接将<code>CSS</code>值转化为类<code>JS</code>对象，从而减少中间层的转换；</li>
 </ul>
-<p><font color="red"><strong>P.s</strong></font>：当某个字段的类型为一个对象，且对象的字段全都给定了类型限定，则会被自动转为一个<code>Schema</code>作为该字段的类型！</p>
-<p><strong>实例</strong>：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> mongoose = <span class="built_in">require</span>(<span class="string">'mongoose'</span>)</span><br><span class="line"><span class="keyword">const</span> Schema = mongoose.Schema</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> user = <span class="keyword">new</span> Schema(&#123;</span><br><span class="line">    name: <span class="built_in">String</span></span><br><span class="line">&#125;) <span class="comment">// 一个已定义的Schema</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> group = &#123;</span><br><span class="line">    id: <span class="built_in">Number</span>,</span><br><span class="line">    name: <span class="built_in">String</span></span><br><span class="line">&#125; <span class="comment">// 一个所有字段被限定类型的对象</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> habit = &#123;</span><br><span class="line">    group: <span class="built_in">Number</span>,</span><br><span class="line">    name: <span class="built_in">String</span>,</span><br><span class="line">    tip: <span class="built_in">String</span>,</span><br><span class="line">    start: <span class="built_in">Number</span>,</span><br><span class="line">    theme: <span class="built_in">Number</span>,</span><br><span class="line">    icon: <span class="built_in">Number</span>,</span><br><span class="line">    day: [<span class="built_in">Number</span>]</span><br><span class="line">&#125; <span class="comment">// 一个所有字段被限定类型的对象</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> data = &#123;</span><br><span class="line">    uid: <span class="built_in">Number</span>,</span><br><span class="line">    user: user, <span class="comment">// Schema作为类型使用</span></span><br><span class="line">    habits: [habit], <span class="comment">// 对象作为类型，自动转换成Schema，作为数组元素的类型</span></span><br><span class="line">    group: [group]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> dataType = <span class="keyword">new</span> Schema(data) <span class="comment">// 最终的Schema数据结构和类型</span></span><br></pre></td></tr></table></figure>
-<h4 id="modeldocument"><a class="markdownIt-Anchor" href="#modeldocument"></a> model，document</h4>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 按给定数据结构和类型生成Schema，并绑定到指定集合</span></span><br><span class="line"><span class="keyword">let</span> schema = Schema(schemaType, &#123;<span class="attr">collection</span>: <span class="string">'info'</span>&#125;)</span><br><span class="line"><span class="comment">// 按照给定的Schema生成model</span></span><br><span class="line"><span class="keyword">let</span> model = dbase.model(<span class="string">''</span>, schema)</span><br><span class="line"><span class="comment">// 按照给定的model和参数生成一条数据</span></span><br><span class="line"><span class="keyword">let</span> data = <span class="keyword">new</span> model(&#123;...&#125;)</span><br></pre></td></tr></table></figure>
-<p>事实上，<code>Schema</code>只是格式，真正具有<code>CRUD</code>的是<code>model</code>和<code>document</code>；而<code>model</code>具有最直接的数据操作。</p>
-<h2 id="收尾"><a class="markdownIt-Anchor" href="#收尾"></a> 收尾</h2>
-<p><strong>简单地</strong>来说：<code>mongodb</code><strong>数据库</strong>也有了，<code>Express</code><strong>服务器</strong>也有了，剩下的就是在相应的路由里由<code>mongoose</code>连接数据库进行<code>CRUD</code>操作，并在<code>response</code>中<strong>返回</strong>相应的数据，这样就构成了一个完整的<code>API</code>服务器了。</p>
-<h2 id="参考文档"><a class="markdownIt-Anchor" href="#参考文档"></a> 参考文档</h2>
-<ol>
-<li><a href="https://cnodejs.org/topic/59b8941ab1a5852e67bb7f23" target="_blank" rel="noopener">node+vue+MongoDB从构建项目到服务器部署</a></li>
-<li><a href="https://segmentfault.com/q/1010000005732508/a-1020000005767310" target="_blank" rel="noopener">为什么用NPM安装mongodb开启服务不成功？</a></li>
-<li><a href="https://www.cnblogs.com/mmykdbc/p/8509034.html" target="_blank" rel="noopener">使用vue-cli结合express获取mongodb里面的数据 - 明明一颗大白菜 - 博客园</a></li>
-<li><a href="http://www.expressjs.com.cn/starter/basic-routing.html" target="_blank" rel="noopener">一个简单的 Express 路由</a></li>
-<li><a href="http://www.expressjs.com.cn/4x/api.html#app.listen" target="_blank" rel="noopener">Express 4.x - API 中文手册</a></li>
-<li><a href="https://mongoosedoc.top/docs/index.html" target="_blank" rel="noopener">Mongoose 5.0 中文文档</a></li>
+<blockquote>
+<p>Converting CSSOM value strings into meaningfully typed JavaScript representations and back can incur a significant performance overhead. This specification exposes CSS values as typed JavaScript objects to facilitate their performant manipulation.<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup></p>
+</blockquote>
+<ul>
+<li><code>CSS Properties &amp; Values API</code>：对<code>CSS</code>自定义属性进行指定值类型等相关配置，指定值类型后自定义属性就能够被应用于动画；</li>
+<li><code>CSS Layout API</code>：用于控制渲染中的布局（<code>Layout</code>）流程，从而可以自己增加<code>display</code>类型；</li>
+<li><code>CSS Painting API</code>：用于控制渲染中的绘制（<code>Paint</code>）流程，对于元素样式达到<font color="#39f">像素级</font>的控制，且绘制<code>API</code>是<code>canvas</code>的子集，方便上手；</li>
+<li><code>Worklets</code>：类似于<code>Web Worker</code>，是独立于主线程的脚本文件，只能使用指定的<code>API</code>，专门用于存放注册布局和绘制相关的代码；</li>
+<li><code>Composited Scrolling &amp; Animation</code>：复合滚动和动画<code>API</code>，目的是在<code>worklets</code>中支持滚动（位置）及动画变化，使得相应的属性变化<font color="#f00">不会引起主线程中的重排和重绘</font>，从而拥有高性能的滚动及动画表现；目前<code>blink</code>内核已经实现了一部分<code>Animation Worklet</code><sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup>；</li>
+</ul>
+<h2 id="css-properties-values-api-简介"><a class="markdownIt-Anchor" href="#css-properties-values-api-简介"></a> CSS Properties &amp; Values API 简介</h2>
+<p>这部分的<code>API</code>很简洁，主要是定义了<code>CSS</code>自定义属性的一些性质；<code>API</code>包含<code>CSS.registerProperty()</code>方法和<code>@property</code>规则，而这两个本质上作用是一样的，前者是在<code>JS</code>中使用，后者是在<code>CSS</code>中使用；</p>
+<h3 id="cssregisterproperty"><a class="markdownIt-Anchor" href="#cssregisterproperty"></a> CSS.registerProperty()</h3>
+<blockquote>
+<p>CSS.registerProperty(PropertyDefinition)<sup class="footnote-ref"><a href="#fn5" id="fnref5">[5]</a></sup></p>
+</blockquote>
+<p>该方法接收一个配置对象，该对象有以下几个属性：</p>
+<ul>
+<li><code>name</code>：<font color="#f00">必填</font>，自定义属性名（注意要包含前面的<code>--</code>）；</li>
+<li><code>syntax</code>：可选，指定自定义属性的<font color="#39f">语法值类型</font>；可用的值类型可以参考<a href="https://developer.mozilla.org/zh-CN/docs/Learn/CSS/Building_blocks/Values_and_units" target="_blank" rel="noopener">CSS的值与单位 - 学习 Web 开发 | MDN</a>，默认值为<code>&quot;*&quot;</code>；</li>
+<li><code>inherits</code>：自定义属性值是否可以被继承，默认为<code>false</code>（不能被继承）；</li>
+<li><code>initialValue</code>：可选，自定义属性的初始值；</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 先判断API是否能用</span></span><br><span class="line"><span class="keyword">if</span> (<span class="string">'registerProperty'</span> <span class="keyword">in</span> CSS &amp;&amp; <span class="string">'CSSUnitValue'</span> <span class="keyword">in</span> <span class="built_in">window</span>) &#123;</span><br><span class="line">  CSS.registerProperty(&#123;</span><br><span class="line">    name: <span class="string">'--circle-color'</span>,</span><br><span class="line">    syntax: <span class="string">'&lt;color&gt;'</span>,</span><br><span class="line">    initialValue: <span class="string">'#39f'</span>,</span><br><span class="line">    inherits: <span class="literal">false</span></span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面就是一个注册自定义属性的例子，定义了具体值类型的自定义属性就能够被用于动画了（即可以自动生成关键帧了）；<code>CSSUnitValue</code>是<code>CSS Typed OM</code>规范中的一个<code>API</code>，<code>CSS.registerProperty()</code>对其有依赖；</p>
+<h3 id="property"><a class="markdownIt-Anchor" href="#property"></a> @property</h3>
+<p><code>@property</code>规则语法和<code>CSS.registerProperty()</code>类似：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@<span class="keyword">property</span> --circle-color &#123;</span><br><span class="line">  syntax: '&lt;color&gt;';</span><br><span class="line">  <span class="selector-tag">inherits</span>: <span class="selector-tag">false</span>;</span><br><span class="line">  <span class="selector-tag">initial-value</span>: <span class="selector-id">#39f</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="css-painting-api-简介"><a class="markdownIt-Anchor" href="#css-painting-api-简介"></a> CSS Painting API 简介</h2>
+<p><code>CSS Painting API</code>主要是由<code>PaintWorklet</code>组成，<code>PaintWorklet</code>定义了一套该类型<code>worklet</code>内所能访问的全局对象（<code>PaintWorkletGlobalScope</code>），绘制上下文（<code>PaintRenderingContext2D</code>，是<code>CanvasRenderingContext2D API</code>的子集）及注册和加载方法；</p>
+<h3 id="注册"><a class="markdownIt-Anchor" href="#注册"></a> 注册</h3>
+<p>在<code>worklet</code>文件（也是<code>JS</code>文件）内使用<code>registerPaint()</code>进行注册，该方法接收两个参数：</p>
+<blockquote>
+<p>registerPaint(name, class)<sup class="footnote-ref"><a href="#fn6" id="fnref6">[6]</a></sup></p>
+</blockquote>
+<ul>
+<li><code>name</code>：该<code>paintWorklet</code>的名称，用于在<code>CSS</code>中进行引用；</li>
+<li><code>class</code>：实现该<code>paintWorklet</code>的类；</li>
+</ul>
+<p>其中类可以实现以下（抽象）成员或方法：</p>
+<ul>
+<li>
+<p><code>static get inputProperties()</code>：返回一个数组，包含绘制函数<font color="#39f">所需要的属性</font>（包括自定义属性）；</p>
+</li>
+<li>
+<p><code>static get inputArguments()</code>：返回一个数组，指定传入绘制函数的<font color="#39f">参数语法类型</font>（类似于<code>registerProperty</code>方法中的<code>syntax</code>参数）；</p>
+</li>
+<li>
+<p><code>static get contextOptions()</code>：返回一个配置对象，用于设置绘制上下文（<code>PaintRenderingContext2D</code>）；</p>
+</li>
+<li>
+<p><code>paint(ctx, size, props, args)</code>：<font color="#f00">必须实现</font>；绘制函数接收四个函数：</p>
+<ul>
+<li><code>ctx</code>：绘制上下文，即当前<code>paintWorklet</code>对应的<code>PaintRenderingContext2D</code>实例；</li>
+<li><code>size</code>：<code>PaintSize</code>对象，包含<code>width</code>和<code>height</code>两个属性，即<code>paintWorklet</code>作用的<font color="#39f">元素的尺寸信息</font>；</li>
+<li><code>props</code>：<code>StylePropertyMapReadOnly</code>对象，只能访问由<code>inputProperties</code>属性返回的属性；</li>
+<li><code>args</code>：参数数组，可以接收由<code>CSS paint()</code>函数传入的参数；</li>
+</ul>
+</li>
+</ul>
+<h4 id="关于-stylepropertymapreadonly-对象"><a class="markdownIt-Anchor" href="#关于-stylepropertymapreadonly-对象"></a> 关于 StylePropertyMapReadOnly 对象</h4>
+<p>该对象类似于<code>Map</code>对象，但是不能<code>set</code>，因此是只读的；通过<code>get()</code>方法可以获取到对应属性，不过得到并不是属性值，而是一个<code>CSSStyleValue</code>对象（属于<code>CSS Typed OM</code>），不同<code>syntax</code>类型的属性会有不同类型的<code>CSSStyleValue</code>对象；</p>
+<p>不过一般来说数值类型的属性值可以通过<code>value</code>属性来获取值，颜色类型则通过<code>toString()</code>方法来获取值，如：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> boxColor = props.get(<span class="string">'--box-color'</span>).toString()</span><br><span class="line"><span class="keyword">const</span> boxWidth = props.get(<span class="string">'--box-width'</span>).value</span><br></pre></td></tr></table></figure>
+<h3 id="加载"><a class="markdownIt-Anchor" href="#加载"></a> 加载</h3>
+<p>事实上，worklet的加载方式很类似，都是通过<code>addModule(url)</code>方法来进行：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 先判断paintWorklet是否可用</span></span><br><span class="line"><span class="keyword">if</span> (<span class="string">'paintWorklet'</span> <span class="keyword">in</span> CSS) &#123;</span><br><span class="line">  CSS.paintWorklet.addModule(<span class="string">'worklet-path.js'</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>注</strong>：<font color="#f00"><code>worklet</code>文件地址仅支持<code>https</code>和<code>localhost</code>方式</font>！</p>
+<h3 id="使用"><a class="markdownIt-Anchor" href="#使用"></a> 使用</h3>
+<p><code>paintWorklet</code>加载后就能够在<code>CSS</code>中进行使用了，可以使用<code>paint(name)</code>函数来启用<code>worklet</code>，<code>name</code>就是<font color="#39f">注册时传入的名称</font>；</p>
+<ul>
+<li><code>name</code><font color="#f00">不需要加上引号</font>！</li>
+<li><code>paint()</code>函数返回值类型为<code>&lt;image&gt;</code>，因此<font color="#f00">只能在属性值类型为<code>&lt;image&gt;</code>的属性中</font>进行使用！如：<code>background-imgae</code>，<code>list-style-image</code>等；更多关于<code>&lt;image&gt;</code>类型的信息可以参考<a href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/image" target="_blank" rel="noopener"><image> - CSS（层叠样式表） | MDN</image></a>；</li>
+</ul>
+<h4 id="传参"><a class="markdownIt-Anchor" href="#传参"></a> 传参</h4>
+<p><code>paint()</code>函数也能传参，然后被<code>paintWorklet</code>中的<code>paint()</code>方法所接收：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">paint(paint-name, arg1, arg2, ...)</span><br></pre></td></tr></table></figure>
+<h2 id="一个案例"><a class="markdownIt-Anchor" href="#一个案例"></a> 一个案例</h2>
+<p><img src="http://pic.xiexuefeng.cc/markdown/20200712180104.gif?imageslim" alt="img"></p>
+<p>看到上面这个动画，在不使用<code>CSS Houdini</code>之前，很难想象纯<code>CSS</code>能够得到这样的效果；</p>
+<ul>
+<li><a href="https://codepen.io/xxf1996/full/GRoBRNG" target="_blank" rel="noopener">在线demo</a></li>
+<li><a href="https://github.com/xxf1996/houdini-test/" target="_blank" rel="noopener">demo源码</a></li>
+</ul>
+<h2 id="相关文档"><a class="markdownIt-Anchor" href="#相关文档"></a> 相关文档</h2>
+<ul>
+<li><a href="https://juejin.im/post/5adc091b51882567105f5586" target="_blank" rel="noopener">用CSS Houdini画一片星空 - 掘金</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/20939640" target="_blank" rel="noopener">Houdini：CSS 领域最令人振奋的革新 - 知乎</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/Houdini" target="_blank" rel="noopener">CSS Houdini | MDN</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/CSS_Properties_and_Values_API/guide" target="_blank" rel="noopener">Using the CSS properties and values API - Web APIs | MDN</a></li>
+<li><a href="https://www.w3ctech.com/topic/1816" target="_blank" rel="noopener">Houdini工作小组关于CSS的揭秘 - w3ctech</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/35410151" target="_blank" rel="noopener">和 Houdini, CSS Paint API 打个招呼吧 - 知乎</a>：<code>CSS Paint API</code>入门体验</li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/StylePropertyMapReadOnly" target="_blank" rel="noopener">StylePropertyMapReadOnly - Web APIs | MDN</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model#CSS_Typed_Object_Model" target="_blank" rel="noopener">CSS Object Model (CSSOM) - Web APIs | MDN</a>：<code>CSS Typed OM</code>一览</li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/CSS_Painting_API" target="_blank" rel="noopener">CSS Painting API - Web APIs | MDN</a>：<code>CSS Painting API</code> demo</li>
+</ul>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a href="https://ishoudinireadyyet.com/" target="_blank" rel="noopener">Is Houdini Ready Yet?</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a href="https://zhuanlan.zhihu.com/p/20939640" target="_blank" rel="noopener">Houdini：CSS 领域最令人振奋的革新 - 知乎</a> <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p><a href="https://drafts.css-houdini.org/css-typed-om" target="_blank" rel="noopener">https://drafts.css-houdini.org/css-typed-om</a> <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p><a href="https://developers.google.com/web/updates/2018/10/animation-worklet" target="_blank" rel="noopener">https://developers.google.com/web/updates/2018/10/animation-worklet</a> <a href="#fnref4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p><a href="https://developer.mozilla.org/en-US/docs/Web/API/CSS/RegisterProperty" target="_blank" rel="noopener">CSS.registerProperty() - Web APIs | MDN</a> <a href="#fnref5" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn6" class="footnote-item"><p><a href="https://developer.mozilla.org/en-US/docs/Web/API/PaintWorklet/registerPaint" target="_blank" rel="noopener">PaintWorklet.registerPaint - Web APIs | MDN</a> <a href="#fnref6" class="footnote-backref">↩︎</a></p>
+</li>
 </ol>
+</section>
 
       
     </div>
@@ -526,7 +584,7 @@
     <strong>本文作者： </strong>xuefeng</li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://note.xiexuefeng.cc/post/node-mongodb-server/" title="在node上搭建一个mongodb服务器">https://note.xiexuefeng.cc/post/node-mongodb-server/</a>
+    <a href="https://note.xiexuefeng.cc/post/first-test-css-houdini/" title="浅尝 CSS Houdini">https://note.xiexuefeng.cc/post/first-test-css-houdini/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
@@ -539,13 +597,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/mongodb/" rel="tag"># mongodb</a>
+            <a href="/tags/动效/" rel="tag"># 动效</a>
           
-            <a href="/tags/mongoose/" rel="tag"># mongoose</a>
-          
-            <a href="/tags/Node-js/" rel="tag"># Node.js</a>
-          
-            <a href="/tags/Express/" rel="tag"># Express</a>
+            <a href="/tags/css/" rel="tag"># css</a>
           
         </div>
       
@@ -558,8 +612,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/post/vue-cli-scss/" rel="next" title="在vue-cli项目中使用scss">
-                <i class="fa fa-chevron-left"></i> 在vue-cli项目中使用scss
+              <a href="/post/vue-lazyload-event-not-work/" rel="next" title="vue-lazyload的一个坑：事件失效">
+                <i class="fa fa-chevron-left"></i> vue-lazyload的一个坑：事件失效
               </a>
             
           </div>
@@ -567,10 +621,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/post/css-center-center/" rel="prev" title="css元素水平垂直居中的方法">
-                css元素水平垂直居中的方法 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -815,7 +865,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#准备工作"><span class="nav-number">2.</span> <span class="nav-text"> 准备工作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装mongodb"><span class="nav-number">2.1.</span> <span class="nav-text"> 安装mongodb</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动mongodb数据库"><span class="nav-number">2.2.</span> <span class="nav-text"> 启动mongodb数据库</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#搭建express服务器"><span class="nav-number">3.</span> <span class="nav-text"> 搭建Express服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装依赖"><span class="nav-number">3.1.</span> <span class="nav-text"> 安装依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#简单的express服务器"><span class="nav-number">3.2.</span> <span class="nav-text"> 简单的Express服务器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mongoose"><span class="nav-number">4.</span> <span class="nav-text"> Mongoose</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装"><span class="nav-number">4.1.</span> <span class="nav-text"> 安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#连接数据库"><span class="nav-number">4.2.</span> <span class="nav-text"> 连接数据库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#schema-model和document"><span class="nav-number">4.3.</span> <span class="nav-text"> Schema、model和document</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#schema"><span class="nav-number">4.3.1.</span> <span class="nav-text"> Schema</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#modeldocument"><span class="nav-number">4.3.2.</span> <span class="nav-text"> model，document</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#收尾"><span class="nav-number">5.</span> <span class="nav-text"> 收尾</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文档"><span class="nav-number">6.</span> <span class="nav-text"> 参考文档</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#css-houdini-现状"><span class="nav-number">2.</span> <span class="nav-text"> CSS Houdini 现状</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#css-houdini-规范"><span class="nav-number">3.</span> <span class="nav-text"> CSS Houdini 规范</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#背景"><span class="nav-number">3.1.</span> <span class="nav-text"> 背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#作用"><span class="nav-number">3.2.</span> <span class="nav-text"> 作用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#css-properties-values-api-简介"><span class="nav-number">4.</span> <span class="nav-text"> CSS Properties &amp; Values API 简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#cssregisterproperty"><span class="nav-number">4.1.</span> <span class="nav-text"> CSS.registerProperty()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#property"><span class="nav-number">4.2.</span> <span class="nav-text"> @property</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#css-painting-api-简介"><span class="nav-number">5.</span> <span class="nav-text"> CSS Painting API 简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#注册"><span class="nav-number">5.1.</span> <span class="nav-text"> 注册</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#关于-stylepropertymapreadonly-对象"><span class="nav-number">5.1.1.</span> <span class="nav-text"> 关于 StylePropertyMapReadOnly 对象</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#加载"><span class="nav-number">5.2.</span> <span class="nav-text"> 加载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用"><span class="nav-number">5.3.</span> <span class="nav-text"> 使用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#传参"><span class="nav-number">5.3.1.</span> <span class="nav-text"> 传参</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一个案例"><span class="nav-number">6.</span> <span class="nav-text"> 一个案例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关文档"><span class="nav-number">7.</span> <span class="nav-text"> 相关文档</span></a></li></ol></div>
             
 
           </div>
