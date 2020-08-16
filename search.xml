@@ -1,6 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[transform相关H5案例]]></title>
+    <url>%2Fpost%2Fcss-transform-h5%2F</url>
+    <content type="text"><![CDATA[前言 现在H5中应用了大量的CSS动效，而这些动效很多都与transform属性相关（没办法，transform就是天生适合产生动效的），借助和分析比较典型的H5案例可以更好地应用transform属性； 恕我直言，一看就不是什么正经猫【网易】 活动地址：http://gongyi.163.com/special/meowkingdom/ 活动类型：创意H5游戏 简介：这个活动的主体就是一个模拟俄罗斯方块的游戏，只不过把方块的形状用相应的不正经的猫姿势进行了替换；游戏使用的是PIXI库进行搭建的，其余状态都是都是普通的H5元素，有比较多的动画，动画基本上都是图片拆解，然后部分使用transform进行动态变化； 上面这个是游戏部分，跟transform相关的部分是其他地方； 动画拆解 从上图可以看出，游戏前画面是有多处css动画的，而这些动画大多和transform有关： 中心旋转：即变换中心为默认的center center； 边缘旋转：此处变换中心是图片的右边缘中心，即right center； 缩放 + opacity：放大 + 不透明度变低； 帧图片播放动画：这个马赛克动画实际上就是只有两帧的动画图片，然后循环播放；这个抖动本来还以为也是transform模拟出来的，但看源码实际上就是一个四帧的动画图片进行的播放，毕竟仔细看这个动画有扭曲变化，这个transform目前真的无能无力…… backgroud-position：这个地方看似有点像缩放，但实际上就是图片在y方向变化而已； 2014腾讯互动娱乐年度发布会邀请函 活动地址：http://up.qq.com/2014/invitation/main.html 活动类型：单屏滑动页面 简介：这是一个典型的单屏滑动活动页，基本上就是滑动切换上下屏，每屏有不同的内容；主要关注点就是切换上下屏之间的过渡动画效果，以及每屏出现时小物件的活动轨迹和动画； 从上面看出，这里面确实有大量的CSS动画，而且很多都是和transform相关的，所以还是重点关注一下比较有趣的地方； 值得注意的地方 注：下面的gif图所展现的不一定是原速，因为可能是通过chrome浏览器自带的animation面板进行手动录制的； 关注游戏机这个图标的动画，可以明显的看出这个动画是组合动画，分为几个阶段： 中心旋转 + 放大 + opacity变大 旋转 + 平移：这个阶段动画看起来像是沿着边缘进行旋转，但实际上看源码是边平移边旋转； 这个地方实际上是一组元素形成的扩散动画，每个元素本身的动画都是一致的，就是平移 + 旋转 + 不透明度变化，只是每个元素平移的方向不同，形成了扩散效果； 这个地方的三角形运动轨迹形似S，实际上动画就是利用连续两次的平移 + 旋转，然后旋转方向有所不同，形成连续且丝滑的运动轨迹； 这段开门的动画主要是利用透视投影，然后再进行绕Y轴向后旋转，形成立体的真实感； 相关文档 有什么好的微信H5活动案例？ - 知乎 H5列表：H5案例网站 H5案例分享 - 创意H5案例，一搜即得：H5案例网站 H5玩法知多少？腾讯超多实战案例让你大开眼界！ | 优设网 - UISDC]]></content>
+      <categories>
+        <category>探索</category>
+      </categories>
+      <tags>
+        <tag>H5</tag>
+        <tag>css</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[transform应用场景的探索]]></title>
+    <url>%2Fpost%2Fcss-transform-apply%2F</url>
+    <content type="text"><![CDATA[前言 transform属性是CSS基于图形学中矩阵变换和投影变换实现的产物，因此理论上基于矩阵变换和投影变换的视角效果都可以使用transform实现；诸如canvas/webGL中常见的立体/3D效果，物理运动效果等等，都可以等价转化为transform中的变换函数，只不过CSS的控制粒度目前只能局限于关键帧，无法对动效进行每一帧的控制（那种通过js来修改css的方式也算不上是控制每一帧，倒是目前还在实现中的CSS Houdini规范可以做到）； 下面只是一些简单的初步探索，后续可能会发现更多有趣的应用。 立体hover效果 实现逼真的立体效果，肯定需要开启透视投影；而透视投影可以对某个元素单独设置，也可以对容器元素进行设置； 单个元素：单个元素可以直接使用perspective()这个transform-function，这样当前元素就会具有透视投影效果，而不需要依赖其容器元素； 容器元素：容器元素则可以直接通过perspective属性进行设置，这样就相当于创建了一个独立的相机空间，也就是其子元素默认具有相同的投影设置（前提是容器元素的transform-style``为preserve-3d）；这种方式再配合z坐标（即translateZ或者能够改变z坐标的变换），就能很方便地对整个容器内元素进行立体效果模拟； Demo地址：3D transform button hover effect 模拟物理运动 弹性形变 在真实世界中，物体的运动或者冲击通常会产生形变，如果在类似的运动动画中加上模拟形变的效果，就会显得更加的真实；同样地，transform也可以模拟这些运动形变，模拟的诀窍就是观察这些运动形变的关键帧特点，以及形变和速度变化/大小之间的关系； 上述这些形变都是弹性形变，属于比较简单和直观的，通常是在一个或两个方向上不停地震荡，然后趋于稳定，因此模拟起来比较简单；下面是Demo地址： CodePen - css transform animation: physical movement CodePen - css transform animation: physical movement 2 刚体碰撞 如果是要模拟诸如刚体碰撞这样的效果，那就会有点棘手，因为其中除了会有物体变换，还会有变换中心（transform-origin）的改变，这样就需要观察关键帧在对应时间点应该使用哪个位置作为变换中心了； Demo地址：CodePen - css transform animation: rigid body motion 注：刚体碰撞是刚体运动的一种，所谓的刚体运动简单地来说就是只有旋转和平移变换，即不发生形变； 视差滚动H5 所谓的视差滚动简单的可以理解为：视觉层面上有不同景深（即z坐标）的平面，当滚动时不同景深之间的移动速度有差异，这种差异就会形成视差； 利用transform的透视投影确实可以做到简单的视差滚动效果，但考虑到很多视差效果的H5交互作品通常具有很多场景元素，这时纯靠CSS那显然是吃力的，所以借助成熟的3D渲染框架来实现比较好，比如：PIXI，这类框架一般是基于图形学和游戏制作的框架概念实现的，因此更适合制作较更多元素更复杂的动画/交互展示； 这里有两个优秀的应用视差效果的H5可以推荐一下： 态度日历 让每一天更有趣 别不相信，你是一颗星星 相关文档 Candy Color Button Animation：很棒的按钮hover效果 Rotating Text https://blog.prototypr.io/this-aint-disney-a-practical-guide-to-css-transitions-and-animations-a8b87e7c5531 Android 中基于物理特性的动画简介 - 知乎 https://zh.wikipedia.org/wiki/形變]]></content>
+      <categories>
+        <category>探索</category>
+      </categories>
+      <tags>
+        <tag>计算机图形</tag>
+        <tag>css</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[transform属性的数学原理]]></title>
+    <url>%2Fpost%2Fcss-transform-math%2F</url>
+    <content type="text"><![CDATA[前言 transform本质上就是一个仿射变换（即线性变换 + 平移），从CSS给定的transform-function可以看出，内置的函数将变换分为了2D变换和3D变换两种，但是从CSS规范来看，2D变换函数也只不过是3D变换函数的特殊形式而已，所以transform属性从原理上来说就是一个3D仿射变换函数。 关于仿射变换的详细数学解释，可以参考：如何通俗地讲解「仿射变换」这个概念？ - 马同学的回答 - 知乎 https://www.zhihu.com/question/20666664/answer/157400568 仿射变换的核心就是变换矩阵了，因此transform属性的两个核心函数就是matrix()和matrix3d()； matrix()函数 仿射变换通常是通过齐次坐标进行变换的，因此2D变换矩阵也就相应地变成了3x3的齐次矩阵： [actxbdty001]⋅[xy1]\begin{bmatrix} a &amp; c &amp; t_{x} \\ b &amp; d &amp; t_{y} \\ 0 &amp; 0 &amp; 1 \end{bmatrix} \cdot \begin{bmatrix} x \\ y \\ 1 \end{bmatrix} ⎣⎡​ab0​cd0​tx​ty​1​⎦⎤​⋅⎣⎡​xy1​⎦⎤​ 上面就是matrix()函数的一般数学形式了，其中a,b,c,d,tx,tya, b, c, d, t_{x}, t_{y}a,b,c,d,tx​,ty​就是该函数的六个参数了；属于2D变换的transform-function有： translate/translateX/translateY scale/scaleX/scaleY rotate skew/skewX/skewY 也就是说上面这些变换函数完全可以通过matrix()函数进行等价替换；这里做了一个Demo来体现matrix()函数与这些变换函数等价的体现； 每种仿射变换之间的形式还是有所区别的，有必要弄清楚每种变换对应矩阵形式（之前就是对斜切变换的矩阵一直有误解……）： M平移=[10tx01ty001]M缩放=[sx000sy0001]M旋转=[cosα−sinα0sinαcosα0001]M斜切=[1tanα0tanβ10001]\begin{aligned} M_{平移} &amp;= \begin{bmatrix} 1 &amp; 0 &amp; t_{x} \\ 0 &amp; 1 &amp; t_{y} \\ 0 &amp; 0 &amp; 1 \end{bmatrix} \\[4ex] M_{缩放} &amp;= \begin{bmatrix} s_x &amp; 0 &amp; 0 \\ 0 &amp; s_y &amp; 0 \\ 0 &amp; 0 &amp; 1 \end{bmatrix} \\[4ex] M_{旋转} &amp;= \begin{bmatrix} cos\alpha &amp; -sin\alpha &amp; 0 \\ sin\alpha &amp; cos\alpha &amp; 0 \\ 0 &amp; 0 &amp; 1 \end{bmatrix} \\[4ex] M_{斜切} &amp;= \begin{bmatrix} 1 &amp; tan\alpha &amp; 0 \\ tan\beta &amp; 1 &amp; 0 \\ 0 &amp; 0 &amp; 1 \end{bmatrix} \end{aligned} M平移​M缩放​M旋转​M斜切​​=⎣⎡​100​010​tx​ty​1​⎦⎤​=⎣⎡​sx​00​0sy​0​001​⎦⎤​=⎣⎡​cosαsinα0​−sinαcosα0​001​⎦⎤​=⎣⎡​1tanβ0​tanα10​001​⎦⎤​​ matrix3d()函数 同理，matrix3d()就是3D变换矩阵了，对应的就是4x4齐次矩阵： [a1a2a3a4b1b2b3b4c1c2c3c4d1d2d3d4]⋅[xyz1]\begin{bmatrix} a_1 &amp; a_2 &amp; a_3 &amp; a_4 \\ b_1 &amp; b_2 &amp; b_3 &amp; b_4 \\ c_1 &amp; c_2 &amp; c_3 &amp; c_4 \\ d_1 &amp; d_2 &amp; d_3 &amp; d_4 \end{bmatrix} \cdot \begin{bmatrix} x \\ y \\ z \\ 1 \end{bmatrix} ⎣⎢⎢⎡​a1​b1​c1​d1​​a2​b2​c2​d2​​a3​b3​c3​d3​​a4​b4​c4​d4​​⎦⎥⎥⎤​⋅⎣⎢⎢⎡​xyz1​⎦⎥⎥⎤​ 因此，matrix3d()函数就有16个参数，需要注意参数的顺序是列主导的，也就是： matrix3d(a1, b1, c1, d1, a2, b2, c2, d2, a3, b3, c3, d3, a4, b4, c4, d4) 为何这里不省略一些矩阵元素，像matrix()那样呢？大概是matrix3d除了模拟仿射变换，还要提供透视投影变换，因此需要完整的矩阵元素；属于3D变换的transform-function有： translateZ scaleZ rotateX/rotateY/rotateZ/rotate3d perspective 也就是说上面的变换函数都可以使用matrix3d()函数进行等价替换；平移和缩放的3D变换矩阵形式同2D形式无本质差异，就是相应的扩展了一个维度而已，值得关注的是绕任意轴进行旋转及透视投影相关的变换矩阵； rotate3d()函数 rotate3d()函数实际上就是一个绕任意轴进行旋转的变换，它接受旋转轴的方向及旋转角度； rotate3d(x, y, z, α) 上面就是对应的3D旋转变换矩阵，其中(x,y,z)(x, y, z)(x,y,z)就是旋转轴的方向，α\alphaα为旋转角度； perspective()函数 该变换函数的作用就是设置当前视点距离屏幕（z = 0）平面的距离，从而形成相应的透视投影效果； [10000100001000−1d1]\begin{bmatrix} 1 &amp; 0 &amp; 0 &amp; 0 \\ 0 &amp; 1 &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; 1 &amp; 0 \\ 0 &amp; 0 &amp; -\large{\frac{1}{d}} &amp; 1 \end{bmatrix} ⎣⎢⎢⎡​1000​0100​001−d1​​0001​⎦⎥⎥⎤​ 相关文档 - CSS: Cascading Style Sheets | MDN CSS Transforms Module Level 2：transform第二阶段规范，主要涉及3D变换和投影相关 CSS Transforms Module Level 1：transform第一阶段规范，主要涉及2D变换]]></content>
+      <categories>
+        <category>探索</category>
+      </categories>
+      <tags>
+        <tag>css3</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[CSS滤镜效果]]></title>
     <url>%2Fpost%2Fcss-filter%2F</url>
     <content type="text"><![CDATA[前言 CSS3新增了filter属性用来专门设置元素的滤镜效果，不过目前只支持两种类型： 内置的滤镜函数：一些很常用的滤镜效果。 url()：该方法可以引用一个svg滤镜元素来进行滤镜效果的设置。 CSS滤镜函数一览 滤镜函数 作用 参数 blur() 高斯模糊 模糊范围；&lt;length&gt;类型数据，默认为0；不能为百分比！负值会被忽略； brightness() 亮度调整 亮度值；小数或百分比 为0时全黑，为1时图像不变 可以大于1，大于1时比原图像更亮 contrast() 对比度调整 对比度值；值的设置同亮度一样 drop-shadow() 阴影效果 参数设置同box-shadow()类似 grayscale() 灰度调整 灰度（线性）因子；值在0 - 1之间 1为完全的灰度图像，0则不变 hue-rotate() 色相旋转 色相旋转角度；单位为deg或turn invert() 颜色反转效果 反转（线性）因子；值在0 - 1之间 1为完全反转，0则不变 opacity() 不透明度调整 跟opacity效果一样 saturate() 饱和度调整 饱和度值；指的设置同亮度一样 sepia() 褐色调整 褐色因子；设置同invert 1为深褐色，0则不变 滤镜详解 blur blur()方法的核心算法就是高斯滤波器（滤波器是计算机视觉/图像处理中的一个概念），即利用高斯函数（二维正态分布函数）算出以当前像素点为中心点的矩形区域内所有点的权重，然后将权重归一化处理，权重和各像素点颜色的乘积之和作为当前像素点的新颜色值；因此这种处理效果看起来就是模糊的图像； G(x, y)=12πσ2e−x2+y22σ2G(x,\ y) = \large{\frac{1}{2\pi\sigma^2}e^{-\frac{x^2+y^2}{2\sigma^2}}} G(x, y)=2πσ21​e−2σ2x2+y2​ 上面就是二维正态分布函数，σ\sigmaσ为标准差，对应的就是blur(length)方法中的长度值，可以理解为滤波器的半径，当长度为nnn时，得到的高斯权重矩阵大小就为(2n+1, 2n+1)(2n + 1,\ 2n + 1)(2n+1, 2n+1)；而x, yx,\ yx, y则代表以当前像素点为原点，各个像素点的坐标；以blur(1px)为例，此时σ=1\sigma = 1σ=1，r=1r = 1r=1： 上面就是某个像素点和其周围相邻一个像素点之间的坐标值了；将坐标值(x, y)(x,\ y)(x, y)和标准差代入公式即可得到每个像素点对应的权重值： 显然，权重值相加不等于1，因此需要做归一化处理： 细节问题一：模糊半径 从W3C文档可知，它仅仅规范了高斯滤波器中标准差的来源，而没有说清楚模糊半径（即滤波器半径）怎么取； The passed parameter defines the value of the standard deviation to the Gaussian function. The parameter is specified a CSS length, but does not accept percentage values. [1] 因此，blur()方法规范在这一点上是不严谨的；但是MDN上面对于blur()方法中有个描述值得推敲： The blur() fucntion applies a Gaussian blur to the input image. The value of radius defines the value of the standard deviation to the Gaussian function, or how many pixels on the screen blend into each other, so a larger value will create more blur. [2] 也就是说这个长度也可以用来描述模糊半径，由于这个长度可以是浮点数，但由于滤波器半径是整数，可以大胆推测：滤波器半径（模糊半径）是长度的向上取整值； 细节问题二：模糊效果超出部分 应用模糊滤镜效果时，可以看到模糊效果会向外扩张一定的区域，这个多出的区域大概就是传入blur方法的长度： 12345678910.test &#123; --radius: 10px; width: 200px; height: 200px; padding: var(--radius); border: 1px solid red;&#125;.blur &#123; filter: blur(var(--radius));&#125; 123&lt;div class="test"&gt; &lt;img class="blur" src="https://placekitten.com/200/200"&gt;&lt;/div&gt; 不知模糊滤镜效果为何会超出原本的区域，看起来像是处理边界部分时进行相应宽度的填充导致的，不知道这算不算是副作用？毕竟一般的模糊滤镜处理效果是不会超出图像原本区域的，但是W3C规范也并没有提及边界处理情况，所以有点迷； 当我们并不想要显示模糊滤镜超出的部分怎么办？传统的办法可以套一层父元素，然后利用overflow: hidden进行隐藏；但是，其实有更简单的办法，那就是利用clip-path直接将超出部分裁剪掉： 1234.blur &#123; filter: blur(var(--radius)); clip-path: inset(0 0 0 0);&#125; brightness 亮度滤镜的原理很简单，就把亮度值与原像素值相乘，得到的像素值超出1则为1；其实这个效果很容易用混合模式中的正片叠底进行模拟（当然，亮度超出1时就没法模拟了）； 1234&lt;div class="brightness"&gt; &lt;img class="brightness-item" src="https://placekitten.com/200/200"&gt; &lt;div class="brightness-blend"&gt;&lt;/div&gt;&lt;/div&gt; 12345678910.brightness-item &#123; filter: brightness(0.5);&#125;.brightness-blend &#123; display: inline-block; width: 200px; height: 200px; background-blend-mode: multiply; background: rgba(0, 0, 0, 0.5) url("https://placekitten.com/200/200");&#125; contrast 对比度滤镜计算公式如下： Cresult=(0.5, 0.5, 0.5)∗(1−a)+a∗CoriginC_{result} = (0.5,\ 0.5,\ 0.5)*(1 - a) + a * C_{origin} Cresult​=(0.5, 0.5, 0.5)∗(1−a)+a∗Corigin​ 这里，aaa指的就是对比度系数，即传入contrast()方法中的参数；因此，可以看出当对比度系数为1时，得到图像就是原图像，当对比度系数为0时，得到是纯灰度图像；当对比度系数超出1时，得到的效果就是黑的越黑，白的更白，即对比度上升； drop-shadow A drop shadow is effectively a blurred, offset version of the input image’s alpha mask drawn in a particular color, composited below the image.[3] 由W3C的定义可知，投影滤镜就是复制了图像的透明通道加上了投影颜色组成了新的图层，且在该图层上应用了模糊滤镜效果，该图层位于原图层的下方； 123&lt;div class="drop"&gt; &lt;img class="drop-item" src="https://interactive-examples.mdn.mozilla.net/media/examples/firefox-logo.svg"&gt;&lt;/div&gt; 12345.drop-item &#123; width: 200px; height: 200px; filter: drop-shadow(300px 0 0 red);&#125; 使用一张具有透明通道的图片，加上投影滤镜可以看到新的图层确实复制了原有的透明通道； grayscale 灰度滤镜原理就很简单，就是将原像素颜色与其灰度值按比例进行混合： Cresult=Cgray∗a+Corigin∗(1−a)C_{result} = C_{gray} * a + C_{origin} * (1- a) Cresult​=Cgray​∗a+Corigin​∗(1−a) hue-rotate 色相旋转，顾名思义就是将HSL中的H分量进行旋转；也就是先将颜色转为HSL颜色，再将H分量旋转指定量，然后再将颜色转回RGB颜色；只要理解了HSL色彩模型，就很容易这个色相旋转的本质了； invert 反转滤镜的原理和灰度滤镜原理是类似的，就是将原像素颜色与其互补色按比例进行混合： Cresult=C互补∗a+Corigin∗(1−a)C_{result} = C_{互补} * a + C_{origin} * (1- a) Cresult​=C互补​∗a+Corigin​∗(1−a) 当然，如果是invert(1)时（即完全的互补色），可以利用差值滤色模式来等价模拟： 1234&lt;div class="invert"&gt; &lt;img class="invert-item" src="https://placekitten.com/200/200"&gt; &lt;div class="invert-other"&gt;&lt;/div&gt;&lt;/div&gt; 12345678910.invert-item &#123; filter: invert(1);&#125;.invert-other &#123; display: inline-block; width: 200px; height: 200px; background-blend-mode: difference; background: white url("https://placekitten.com/200/200");&#125; saturate 饱和度滤镜原理同对比度类似，只不过需要先得出原像素颜色的明度值（即HSL颜色中的L分量），然后将明度值与原像素颜色按比例进行混合： L=0.3∗Cr+0.59∗Cg+0.11∗CbCresult=(L,L,L)∗(1−s)+Corigin∗s\begin{aligned} L &amp;= 0.3 * C_r + 0.59 * C_g + 0.11 * C_b \\ C_{result} &amp;= (L, L, L) * (1 - s) + C_{origin} * s \end{aligned} LCresult​​=0.3∗Cr​+0.59∗Cg​+0.11∗Cb​=(L,L,L)∗(1−s)+Corigin​∗s​ sss就是滤镜中设置的饱和度值，可以看出，当s=0s=0s=0时，得到的就是一副灰度图像； sepia 褐色滤镜本质上还是一个混合滤镜，只不过获取一个像素颜色对应的褐色需要多一点计算；不过由于没有在W3C上发现有描述相关的算法，所以在网上找了褐色滤镜的算法[4]： Csepia=(r, g, b)⋅[0.3930.3490.2720.7690.6860.5340.1890.1680.131]Cresult=Cspeia∗a+Corigin∗(1−a)\begin{aligned} C_{sepia} &amp;= (r,\ g,\ b) \cdot \begin{bmatrix} 0.393 &amp; 0.349 &amp; 0.272 \\ 0.769 &amp; 0.686 &amp; 0.534 \\ 0.189 &amp; 0.168 &amp; 0.131 \end{bmatrix} \\[5ex] C_{result} &amp;= C_{speia} * a + C_{origin} * (1 - a) \end{aligned} Csepia​Cresult​​=(r, g, b)⋅⎣⎡​0.3930.7690.189​0.3490.6860.168​0.2720.5340.131​⎦⎤​=Cspeia​∗a+Corigin​∗(1−a)​ 相关文档 你所不知道的 CSS 滤镜技巧与细节 · Issue #30 · chokcoco/iCSS filter - CSS（层叠样式表） | MDN 常用滤镜算法以及WebGL实现 | NewbieWeb FDCon2019大会分享之滤镜与混合模式实录 « 张鑫旭-鑫空间-鑫生活 图像处理的滤镜算法 - 掘金 高斯模糊的算法 - 阮一峰的网络日志 https://en.wikipedia.org/wiki/Gaussian_blur 亮度，饱和度，对比度的计算方法_gaowebber的博客-CSDN博客_对比度计算公式 https://www.w3.org/TR/filter-effects-1/#funcdef-filter-blur ↩︎ filter - CSS: Cascading Style Sheets | MDN ↩︎ https://www.w3.org/TR/filter-effects-1/#funcdef-filter-drop-shadow ↩︎ image processing - How is a sepia tone created? - Stack Overflow ↩︎]]></content>
@@ -31,8 +66,8 @@
         <category>探索</category>
       </categories>
       <tags>
-        <tag>动效</tag>
         <tag>css</tag>
+        <tag>动效</tag>
       </tags>
   </entry>
   <entry>
@@ -43,8 +78,8 @@
         <category>探索</category>
       </categories>
       <tags>
-        <tag>动效</tag>
         <tag>css</tag>
+        <tag>动效</tag>
       </tags>
   </entry>
   <entry>
@@ -350,8 +385,8 @@
         <category>笔记</category>
       </categories>
       <tags>
-        <tag>动效</tag>
         <tag>css</tag>
+        <tag>动效</tag>
       </tags>
   </entry>
   <entry>
