@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.1.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.1.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.1.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="前言 CSS，全称为Cascading Style Sheets，用于定制文档样式；CSS使得网页的呈现更加丰富，这也是初学前端的人最感到新奇的地方； 但是随着对CSS的深入使用才会发现：那些被我们津津乐道的“xx属性的奇淫技巧”这类东西都只不过是浮在CSS最表层的现象而已；这种对于CSS的使用方式在我看来无异于“盲人摸象”，即只能通过观察表面现象来总结使用方法，而不是从本质出发寻找解决方案，因">
+<meta name="keywords" content="计算机图形,css,webGL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="探索CSS的本质">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/the-nature-of-css/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 CSS，全称为Cascading Style Sheets，用于定制文档样式；CSS使得网页的呈现更加丰富，这也是初学前端的人最感到新奇的地方； 但是随着对CSS的深入使用才会发现：那些被我们津津乐道的“xx属性的奇淫技巧”这类东西都只不过是浮在CSS最表层的现象而已；这种对于CSS的使用方式在我看来无异于“盲人摸象”，即只能通过观察表面现象来总结使用方法，而不是从本质出发寻找解决方案，因">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201001120840.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201001120942.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201001121004.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201001121017.png?imageslim">
+<meta property="og:updated_time" content="2020-10-01T04:11:58.289Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="探索CSS的本质">
+<meta name="twitter:description" content="前言 CSS，全称为Cascading Style Sheets，用于定制文档样式；CSS使得网页的呈现更加丰富，这也是初学前端的人最感到新奇的地方； 但是随着对CSS的深入使用才会发现：那些被我们津津乐道的“xx属性的奇淫技巧”这类东西都只不过是浮在CSS最表层的现象而已；这种对于CSS的使用方式在我看来无异于“盲人摸象”，即只能通过观察表面现象来总结使用方法，而不是从本质出发寻找解决方案，因">
+<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/20201001120840.png?imageslim">
+
+
+
+
+
+
+  <link rel="canonical" href="https://note.xiexuefeng.cc/post/the-nature-of-css/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>探索CSS的本质 | snowdream</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">snowdream</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">record and share</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/the-nature-of-css/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xuefeng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/photo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">探索CSS的本质
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+                
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-01T12:06:28+08:00">2020-10-01</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/探索/" itemprop="url" rel="index"><span itemprop="name">探索</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p><code>CSS</code>，全称为<code>Cascading Style Sheets</code>，用于定制文档样式；<code>CSS</code>使得网页的呈现更加丰富，这也是初学前端的人最感到新奇的地方；</p>
+<p>但是随着对<code>CSS</code>的深入使用才会发现：那些被我们津津乐道的“<code>xx</code>属性的奇淫技巧”这类东西都只不过是浮在<code>CSS</code>最表层的现象而已；这种对于<code>CSS</code>的使用方式在我看来无异于“<strong>盲人摸象</strong>”，即<font color="#f00">只能通过观察表面现象来总结使用方法，而不是从本质出发寻找解决方案</font>，因此就可能会陷入永远只能借助表面现象来解决问题的困境。</p>
+<a id="more"></a>
+<h2 id="关于css的定位"><a class="markdownIt-Anchor" href="#关于css的定位"></a> 关于CSS的定位</h2>
+<p>在<a href="https://note.xiexuefeng.cc/post/the-web-browser/">初步了解过浏览器关于网页渲染的机制和原理</a>后，心里有个疑问变得更加突出了，那就是——“<code>CSS</code>在网页渲染中的定位是什么”；我结合了<code>webGL</code>这种单纯的图形渲染<code>API</code>中的图形渲染流程和<code>CSS</code>代码在浏览器中解析后在网页渲染中的作用，得出了一个自己的结论：</p>
+<blockquote>
+<p>CSS是一个用于结构化描述渲染信息的辅助性DSL。</p>
+</blockquote>
+<p>得出这么一个结论主要是基于以下理由：</p>
+<ul>
+<li><strong>结构化描述</strong>：<code>CSS</code>代码可以解析成<code>CSSOM</code>，然后依附于<code>DOM</code>上，这个得益于<code>CSS</code>语法本身就是<font color="#39f">键值对式的对象描述</font>这一特性；</li>
+<li><strong>辅助性</strong>：单独的<code>CSS</code>代码并不能绘制出任何有效的图形，它必须结合<code>HTML</code>解析得到的布局、位置等结点信息才能进行绘制；即<code>CSS</code>代码在渲染过程中<font color="#f00">并不充当着骨架的作用</font>，更多地是<font color="#39f">基于骨架赋予更多样的绘制</font>；</li>
+<li><strong>DSL</strong>：这个就无需多说了，<code>CSS</code>语言本身就不是一门通用性编程语言，它仅仅是针对网页文档的渲染而已，其作用范围与<code>GLSL/HLSL</code>这类着色器编程语言相比简直就是专一得不能再专一了。</li>
+</ul>
+<h2 id="css与绘制"><a class="markdownIt-Anchor" href="#css与绘制"></a> CSS与绘制</h2>
+<p>既然<code>CSS</code>只是辅助渲染的，那么<code>CSS</code>所携带的样式信息又是如何转化成底层的绘制语句呢？</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/20201001120840.png?imageslim" alt="img"></p>
+<p>这里就需要涉及到更详细的浏览器渲染管线流程了，因为光从上图<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>这种大概的<code>pipeline</code>，我们根本无法理解<code>CSS</code>这种<strong>字符串信息</strong>是<font color="#f00">如何在浏览器内部进行解析然后转换成具体的底层绘制命令</font>的。不过好在<code>Google</code>内部发表了一个<font color="#39f"><strong>极为详细的演讲稿</strong></font>来阐述网页中的像素是在经历了一个怎样的<code>pipeline</code>之后才显示的：<a href="https://docs.google.com/presentation/d/1boPxbgNrTU0ddsc144rcXayGA_WF53k96imRH8Mp34Y/edit#slide=id.p" target="_blank" rel="noopener">Life of a Pixel</a>（这篇演讲稿当然是极力推荐阅读的）；多亏了这个演讲稿，我终于不用去从<a href="https://github.com/chromium/chromium" target="_blank" rel="noopener"><code>Chromium</code>项目源码</a>中去一点点查找<code>CSS</code>渲染的蛛丝马迹了……</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/20201001120942.png?imageslim" alt="img"></p>
+<p>上图是我根据上述演讲<code>PPT</code>和自己的理解所总结的一个渲染<code>pipeline</code>，看似很完整，但是实际上并不是浏览器所有的渲染<code>pipeline</code>，这仅仅是一个初步的流程，后续的优化渲染流程还没涉及；由于后面的优化渲染<code>pipeline</code>和更新渲染<code>pipeline</code>比较复杂，以后再单独研究，<font color="#39f">这里总结的流程权当是一个简单的全量渲染<code>pipeline</code></font>；</p>
+<h2 id="模拟css渲染"><a class="markdownIt-Anchor" href="#模拟css渲染"></a> 模拟CSS渲染</h2>
+<p>如果真要模拟上述流程图中所有<code>pipeline</code>，即<code>HTMl + CSS → 像素</code>，那真是一个巨大的工程，实在是有心无力；我最感兴趣的部分实际上是光栅化的部分，即<code>Paint Operator → 像素</code>，因此基于<code>webGL</code>对这个光栅化做了一个<strong>最简化模型</strong>：</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/20201001121004.png?imageslim" alt="img"></p>
+<p>可以看到这个渲染<code>pipeline</code>是十足的简单，<code>IMGUI</code> + 全量式绘制；因为我只想验证所谓的<code>Paint Operator</code>携带的绘制信息到底是如何传入到真正的底层——即着色器内的，我想知道着色器内部是如何消化和理解<code>Paint Operator</code>的；所以上面这个模型只是我个人根据<code>Life of a Pixel</code>一文所想到的一种底层交互模型；</p>
+<h3 id="模拟代码"><a class="markdownIt-Anchor" href="#模拟代码"></a> 模拟代码</h3>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; PaintOperator &#125; <span class="keyword">from</span> <span class="string">'@/types/css-gl'</span></span><br><span class="line"><span class="keyword">import</span> &#123; vec2, vec4 &#125; <span class="keyword">from</span> <span class="string">'gl-matrix'</span></span><br><span class="line"></span><br><span class="line">(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> &#123; CSSGL &#125; = WebGLEngine <span class="comment">// WebGLEngine是自己手写的一个webGL渲染库</span></span><br><span class="line">  <span class="keyword">const</span> ops: PaintOperator[] = <span class="keyword">new</span> <span class="built_in">Array</span>(<span class="number">50</span>).fill(<span class="number">0</span>).map(<span class="function">(<span class="params">val, idx</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> randomPos: vec2 = [</span><br><span class="line">      <span class="built_in">Math</span>.random() * <span class="built_in">window</span>.innerWidth,</span><br><span class="line">      <span class="built_in">Math</span>.random() * <span class="built_in">window</span>.innerHeight</span><br><span class="line">    ]</span><br><span class="line">    <span class="keyword">const</span> randomSize = vec2.create()</span><br><span class="line">    <span class="keyword">const</span> randomBg: vec4 = [</span><br><span class="line">      <span class="built_in">Math</span>.random(),</span><br><span class="line">      <span class="built_in">Math</span>.random(),</span><br><span class="line">      <span class="built_in">Math</span>.random(),</span><br><span class="line">      <span class="number">1.0</span></span><br><span class="line">    ]</span><br><span class="line">    vec2.random(randomSize, <span class="number">200</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">      id: idx,</span><br><span class="line">      shape: &#123;</span><br><span class="line">        pos: randomPos,</span><br><span class="line">        size: randomSize</span><br><span class="line">      &#125;,</span><br><span class="line">      flags: &#123;</span><br><span class="line">        background: randomBg</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;) <span class="comment">// 随机构建50个PaintOperator对象</span></span><br><span class="line">  <span class="keyword">const</span> gl = <span class="keyword">new</span> CSSGL(<span class="string">'test'</span>, ops) <span class="comment">// 解析PaintOperator数据</span></span><br><span class="line">  gl.paint() <span class="comment">// 执行绘制</span></span><br><span class="line">&#125;)()</span><br></pre></td></tr></table></figure>
+<p>解析代码就是上面这些，由于底层代码做了抽象，所以大部分代码都是生成<code>PaintOperator</code>对象的；可以看下预设的着色器代码：</p>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">precision</span> <span class="keyword">highp</span> <span class="type">float</span>; <span class="comment">// 高精度</span></span><br><span class="line"><span class="keyword">uniform</span> <span class="type">vec2</span> u_Screen; <span class="comment">// 屏幕尺寸</span></span><br><span class="line"><span class="keyword">attribute</span> <span class="type">vec2</span> a_Pos; <span class="comment">// 顶点坐标</span></span><br><span class="line"></span><br><span class="line"><span class="type">vec2</span> widthRange = <span class="type">vec2</span>(<span class="number">0.0</span>, u_Screen.x);</span><br><span class="line"><span class="type">vec2</span> heightRange = <span class="type">vec2</span>(<span class="number">0.0</span>, u_Screen.y);</span><br><span class="line"><span class="type">vec2</span> outputRange = <span class="type">vec2</span>(<span class="number">-1.0</span>, <span class="number">1.0</span>); <span class="comment">// NDC坐标范围为[-1, 1]</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 将一个值从原来的范围等比映射到另一个范围</span></span><br><span class="line"><span class="type">float</span> rangeMap (<span class="type">float</span> source, <span class="type">vec2</span> sourceRange, <span class="type">vec2</span> targetRange) &#123;</span><br><span class="line">  <span class="type">float</span> bais = source / (sourceRange.y - sourceRange.x); <span class="comment">// 在范围长度中的占比</span></span><br><span class="line">  <span class="type">float</span> target = bais * (targetRange.y - targetRange.x) + targetRange.x;</span><br><span class="line">  <span class="keyword">return</span> target;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> main() &#123;</span><br><span class="line">  <span class="built_in">gl_Position</span> = <span class="type">vec4</span>(</span><br><span class="line">    rangeMap(a_Pos.x, widthRange, outputRange),</span><br><span class="line">    rangeMap(a_Pos.y, heightRange, outputRange) * <span class="number">-1.0</span>, <span class="comment">// 转换成NDC时y轴需要翻转</span></span><br><span class="line">    <span class="number">0.0</span>,</span><br><span class="line">    <span class="number">1.0</span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">precision</span> <span class="keyword">highp</span> <span class="type">float</span>; <span class="comment">// 高精度</span></span><br><span class="line"><span class="keyword">uniform</span> <span class="type">vec2</span> u_Screen; <span class="comment">// 屏幕尺寸</span></span><br><span class="line"><span class="keyword">uniform</span> <span class="type">vec4</span> u_Background; <span class="comment">// 背景色</span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> main() &#123;</span><br><span class="line">  <span class="built_in">gl_FragColor</span> = u_Background;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由于模型本身很简单，因此对应的着色器也很简单；通过着色器代码不难看出，我所理解的底层着色器接收<code>Paint Operator</code>信息就是通过内置的属性来一一对应，是最原始的方式；</p>
+<h3 id="关于skia"><a class="markdownIt-Anchor" href="#关于skia"></a> 关于Skia</h3>
+<p>上面这个模拟思路其实很简单，所以我也很想去验证这种思路跟具体的<code>Chrome/Chromium</code>底层绘制有啥不同（单纯的感兴趣）；由于<code>Chromium</code>内部几乎所有的图形绘制都交给了<code>Skia</code>图形库，所以只能去<code>Skia</code>源码去查找蛛丝马迹了；</p>
+<p>不过看了一圈<a href="https://github.com/google/skia" target="_blank" rel="noopener">Skia项目源码</a>之后，我发现<code>Skia</code>项目实在是太高度抽象了，层层嵌套，从着色器代码里面压根找不出蛛丝马迹，因为着色器代码里面的信息看起来都是很抽象/通用的数据，无法直接联系到图元绘制；看来需要较长的时间才能找出我想要的答案，虽然有点遗憾，但是也从<code>Skia</code>本身发现了一些不错的地方：</p>
+<ul>
+<li>
+<p><code>Skia</code>内部设计了一个着色器语言，名为<code>SkSL (Skia Shading Language)</code>；<code>SkSL</code>实际上就是基于某一固定版本的<code>GLSL</code>语法进行设计的，其作用应该是抹去不同<code>GPU</code>驱动<code>API</code>着色器语法的差异，以便对于不同的<code>GPU</code>驱动可以进一步输出为目标着色器语言，因此<code>SkSL</code>可以看做是着色器预编译语言<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>；</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/20201001121017.png?imageslim" alt="img"></p>
+</li>
+<li>
+<p><code>Skia</code>的<code>API</code>风格也很有意思，与<code>Canvas API</code>很相似，看一下<a href="https://fiddle.skia.org/c/@shapes" target="_blank" rel="noopener">官网的<code>Demo</code></a>就知道了：</p>
+  <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">draw</span><span class="params">(SkCanvas* canvas)</span> </span>&#123;</span><br><span class="line">    canvas-&gt;drawColor(SK_ColorWHITE);</span><br><span class="line"></span><br><span class="line">    SkPaint paint;</span><br><span class="line">    paint.setStyle(SkPaint::kFill_Style);</span><br><span class="line">    paint.setAntiAlias(<span class="literal">true</span>);</span><br><span class="line">    paint.setStrokeWidth(<span class="number">4</span>);</span><br><span class="line">    paint.setColor(<span class="number">0xff4285F4</span>);</span><br><span class="line"></span><br><span class="line">    SkRect rect = SkRect::MakeXYWH(<span class="number">10</span>, <span class="number">10</span>, <span class="number">100</span>, <span class="number">160</span>);</span><br><span class="line">    canvas-&gt;drawRect(rect, paint);</span><br><span class="line"></span><br><span class="line">    SkRRect oval;</span><br><span class="line">    oval.setOval(rect);</span><br><span class="line">    oval.offset(<span class="number">40</span>, <span class="number">80</span>);</span><br><span class="line">    paint.setColor(<span class="number">0xffDB4437</span>);</span><br><span class="line">    canvas-&gt;drawRRect(oval, paint);</span><br><span class="line"></span><br><span class="line">    paint.setColor(<span class="number">0xff0F9D58</span>);</span><br><span class="line">    canvas-&gt;drawCircle(<span class="number">180</span>, <span class="number">50</span>, <span class="number">25</span>, paint);</span><br><span class="line"></span><br><span class="line">    rect.offset(<span class="number">80</span>, <span class="number">50</span>);</span><br><span class="line">    paint.setColor(<span class="number">0xffF4B400</span>);</span><br><span class="line">    paint.setStyle(SkPaint::kStroke_Style);</span><br><span class="line">    canvas-&gt;drawRoundRect(rect, <span class="number">10</span>, <span class="number">10</span>, paint);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>熟悉的命令式以及图元绘制命名；</p>
+</li>
+<li>
+<p><code>Skia</code>中有三大基类：<code>SkCanvas</code>、<code>SkBitmap</code>和<code>SkPaint</code><sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup>；</p>
+<ul>
+<li><code>SkCanvas</code>：管理绘制相关的API；</li>
+<li><code>SkBitmap</code>：管理bit数据；</li>
+<li><code>SkPaint</code>：管理图元绘制风格相关的状态；</li>
+</ul>
+</li>
+</ul>
+<h2 id="后话"><a class="markdownIt-Anchor" href="#后话"></a> 后话</h2>
+<p>事实上，还有很多感兴趣和有疑问的地方没有来得及探究，每一个点都需要时间来找资料和验证；比如一个<code>DOM</code>结点最终到底<font color="#39f">可以分为多少层矩形</font>来进行绘制？<font color="#39f">圆角矩形及渐变色</font>如何在着色器中进行高效的绘制等等，这些都是很有意思的，以后也得找时间研究一下。</p>
+<h2 id="相关文档"><a class="markdownIt-Anchor" href="#相关文档"></a> 相关文档</h2>
+<ul>
+<li><a href="https://docs.google.com/document/d/1aitSOucL0VHZa9Z2vbRJSyAIsAz24kX8LFByQ5xQnUg/edit" target="_blank" rel="noopener">How Blink works - Google 文档</a>：一个关于<code>Blink</code>渲染引擎的超强概述</li>
+<li><a href="https://blog.ihomura.cn/2019/07/29/Web-IDL-%E7%AE%80%E4%BB%8B/" target="_blank" rel="noopener">Web IDL 简介 | 澪同学的博客</a></li>
+<li><a href="https://www.chromium.org/blink" target="_blank" rel="noopener">https://www.chromium.org/blink</a></li>
+<li><a href="https://blog.mottomo.moe/categories/Tech/zh/2015-09-17-Goodbye-CSS-Shaders/" target="_blank" rel="noopener">再见，CSS Shader (CSS Custom Filter) | 花嫁達の部屋</a>：无意中发现的一个被废弃的规范</li>
+<li><a href="https://www.w3.org/Style/CSS/" target="_blank" rel="noopener">W3C CSS规范主页</a></li>
+<li><a href="https://www.chromium.org/developers/design-documents/graphics-and-skia" target="_blank" rel="noopener">https://www.chromium.org/developers/design-documents/graphics-and-skia</a> ：Chromium项目关于Skia使用的概述</li>
+<li><a href="https://zhuanlan.zhihu.com/p/37640688" target="_blank" rel="noopener">Skia Vulkan Performance - 知乎</a></li>
+<li><a href="https://learnopengl-cn.readthedocs.io/zh/latest/01%20Getting%20started/05%20Shaders/" target="_blank" rel="noopener">着色器 - LearnOpenGL-CN</a></li>
+</ul>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a href="https://docs.google.com/document/d/1aitSOucL0VHZa9Z2vbRJSyAIsAz24kX8LFByQ5xQnUg/edit#heading=h.5bi68m3d1uqo" target="_blank" rel="noopener">https://docs.google.com/document/d/1aitSOucL0VHZa9Z2vbRJSyAIsAz24kX8LFByQ5xQnUg/edit#heading=h.5bi68m3d1uqo</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a href="https://github.com/google/skia/blob/master/src/sksl/README" target="_blank" rel="noopener">https://github.com/google/skia/blob/master/src/sksl/README</a> <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p><a href="https://www.chromium.org/developers/design-documents/graphics-and-skia" target="_blank" rel="noopener">https://www.chromium.org/developers/design-documents/graphics-and-skia</a> <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>xuefeng</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://note.xiexuefeng.cc/post/the-nature-of-css/" title="探索CSS的本质">https://note.xiexuefeng.cc/post/the-nature-of-css/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/计算机图形/" rel="tag"># 计算机图形</a>
+          
+            <a href="/tags/css/" rel="tag"># css</a>
+          
+            <a href="/tags/webGL/" rel="tag"># webGL</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/post/the-web-browser/" rel="next" title="了解浏览器的本质">
+                <i class="fa fa-chevron-left"></i> 了解浏览器的本质
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/post/ts-array-to-object/" rel="prev" title="数组层级到对象层级的TS类型推导">
+                数组层级到对象层级的TS类型推导 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/photo.jpg"
+                alt="xuefeng" />
+            
+              <p class="site-author-name" itemprop="name">xuefeng</p>
+              <p class="site-description motion-element" itemprop="description">时不我待</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">81</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">43</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/xxf1996" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关于css的定位"><span class="nav-number">2.</span> <span class="nav-text"> 关于CSS的定位</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#css与绘制"><span class="nav-number">3.</span> <span class="nav-text"> CSS与绘制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模拟css渲染"><span class="nav-number">4.</span> <span class="nav-text"> 模拟CSS渲染</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#模拟代码"><span class="nav-number">4.1.</span> <span class="nav-text"> 模拟代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关于skia"><span class="nav-number">4.2.</span> <span class="nav-text"> 关于Skia</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#后话"><span class="nav-number">5.</span> <span class="nav-text"> 后话</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关文档"><span class="nav-number">6.</span> <span class="nav-text"> 相关文档</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Gemini</a> v6.1.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.1.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('-1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'manual') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" type="text/css"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+   
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
