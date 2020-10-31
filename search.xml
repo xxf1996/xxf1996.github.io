@@ -1,6 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[一个可行的全路由骨架屏生成方案]]></title>
+    <url>%2Fpost%2Fa-skeleton-generation-method%2F</url>
+    <content type="text"><![CDATA[前言 网上找了一圈关于vue骨架屏生成框架，但是目前最成熟的就是饿了么团队的page-skeleton-webpack-plugin，但是由于该插件只能支持history模式，所以比较受限； 改造 比较理想的自然就是同微信开发者工具给小程序提供的一键生成骨架屏的方案，不过好在确实有一个相近的骨架屏生成插件：famanoder/dps: a way to make skeleton screen, 一种自动生成网页骨架屏的方式；该插件的原理就是通过无头浏览器puppeteer来抓取预渲染的页面，然后根据一套规则对相应DOM结点生成对应的骨架图，最后生成一个HTML文件；不过该插件有以下几个不足： 只能对单个页面进行骨架屏生成 生成的HTML文件比较粗糙 但是，该插件只需要经过一些改动，就完全具备全路由页面的批量骨架屏生成； 利用node环境变量来控制当前生成骨架屏的页面信息，然后用node脚本批量执行命令即可； 该插件开放了一些样式修改及DOM结构修改的函数，可自行修改结构，最重要的是可以利用node函数将骨架屏文件作为一个vue文件进行写入，然后在路由页引用； 基本效果 原始页面 对应的骨架屏页面 结论 根据路由页面自动生成对应结构的骨架屏是完全可行的 要是想提高可控性，完全可以自己利用puppeteerjs替代上述提到的插件，自己解析就好了 相关文档 一种自动化生成骨架屏的方案 · Issue #22 · Jocs/jocs.github.io · GitHub：有很多关于骨架屏生成的细节 网页骨架屏自动生成方案（dps） GitHub - lavas-project/vue-skeleton-webpack-plugin: Lavas webpack plugin: skeleton solution for PWA webshell ElemeFE/page-skeleton-webpack-plugin: Webpack plugin to generate the skeleton page automatically 基于vue-cli实现自动生成Skeleton Page，多页skeleton - 知乎]]></content>
+      <categories>
+        <category>业务</category>
+      </categories>
+      <tags>
+        <tag>H5</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[CSS与CG原理]]></title>
+    <url>%2Fpost%2Fcss-and-cg%2F</url>
+    <content type="text"><![CDATA[注：本文可以看做一篇综述，不会涉及太多细节； 跳出前端，拥抱CS CS：computer science，即计算机科学领域； CG：computer graphics，计算机图形； CV：computer vision，计算机视觉； 前端是多个CS细分领域交叉应用的产物，而CSS本质上就是基于CG原理进行开发的； 为什么？ CSS相关的CG原理 变换矩阵 相关案例 CSS 3D Box with mock shadow：CSS 3D渲染 CSS 3d box - editable content by user 15. Blinn-Phong specular reflect：webGL渲染 字体渲染 阴影生成 text-shadow box-shdow drop-shadow 更多 图片/视频渲染 滤镜与CV/图像处理算法 渐变色生成算法 背景填充与纹理贴图 etc. 相关文档 美国计算机CS专业解析 - 知乎 计算机科学 - 维基百科，自由的百科全书 计算机专业大类下，还有哪些细分的专业，分别是干什么的？ - 知乎 变换 - LearnOpenGL-CN 第三课：矩阵 图形学 光栅化详解（Rasterization） - 简书 认识字体渲染 https://pcwalton.github.io/2015/12/21/drawing-css-box-shadows-in-webrender.html：box-shadow算法 c# - CSS3-like box shadow implementation / algorithm - Stack Overflow]]></content>
+      <categories>
+        <category>探索</category>
+      </categories>
+      <tags>
+        <tag>计算机图形</tag>
+        <tag>css</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[关于Web Vitals指标]]></title>
     <url>%2Fpost%2Fabout-web-vitals%2F</url>
     <content type="text"><![CDATA[前言 Web Vitals是谷歌针对网页加载速度和体验所提出的一套指标，这套指标用于测试网页的加载速度及用户体验等等；谷歌基于这套指标不仅设计了多套测试工具，还针对各种指标提出了相应的优化方法，具有很高的实用价值； Web Vitals is an initiative by Google to provide unified guidance for quality signals that are essential to delivering a great user experience on the web.[1] Web Vitals 核心指标 所谓的核心指标就是Web Vitals中希望所有人都能够引起重视的三个指标，当然也是最重要的三个指标，因为对网页加载速度和用户体验感的影响很大； 指标 GOOD 待提升 POOR 期望覆盖率 LCP ＜2.5s ＜4s ≥4s 75% FID ＜100ms ＜300ms ≥300ms 95~99% CLS ＜0.1 ＜0.25 ≥0.25 75% 上面的表格就是各项指标的评判标准，其中期望覆盖率指的是至少有相应百分比的用户测试可以达到GOOD标准； LCP 概念 LCP（Largest Contentful Paint），即最大内容渲染，指的是视窗（viewport）内所有可见元素中尺寸最大的文本块或图像所需的渲染时间； 与之相近的一个指标是FCP（First Contentful Paint），该指标是用于检测第一个文本块或者图像渲染完成的时间，侧重点不同； 指标作用 这个指标主要是用来弄清用户所看到的页面主体内容何时被渲染出来，之前也有相应的指标用于相似的目的，但是实际上存在很多的不足[2]： load和DOMContentLoaded事件只是反应了代码层面的加载时间结点，而非真实用户所关注的屏幕页面渲染效果，因此很不准确； 而FCP指标也只是关注了最初始的渲染效果，和用户关心的页面整体效果也相差甚远； 后面提出用于关注初始渲染状态之后的加载效果的指标——FMP（First Meaningful Paint）和SI（Speed Index），经实践证明效果不太行，经常出错，而且这两个指标计算很复杂也很难去解释； 由于存在上述问题，Web Vitals基于W3C的相关讨论[3]以及谷歌内部的一些研究得出了一个结论： we’ve found that a more accurate way to measure when the main content of a page is loaded is to look at when the largest element was rendered.[2:1] 如何寻找最大的元素？ 由于LCP关心的只是文本块及图像，因此寻找的元素结点限定为： img元素 svg元素中的image元素 带poster属性的video元素 用url()方法加载背景图的元素 包含文本节点或其它内联文本节点的块级元素 限定了元素范围后，接下来就是从这些元素中找出尺寸最大的元素了，那么如何计算这些元素结点的大小？这里的尺寸大小计算遵循以下原则： 尺寸大小实际上以渲染完成后的大小为准 尺寸不包括padding，border和margin，可以理解为content-box的大小 由于图片资源需要异步加载完成后才会进行渲染以及js代码修改DOM结构和属性等因素的存在，因此这个最大渲染元素可能会发生改变，所以最大渲染元素的检测需要首屏渲染完成后才能最终确认； FID 概念 FID（First Input Delay），即第一次输入事件延迟，指的是用户第一次交互事件触发到主线程接收事件然后反应之间的时间； 指标作用 这个指标主要是从交互响应层面来量化用户对页面的第一印象； 因为新用户对一个网页的第一印象好坏对用户忠诚度影响很大，而第一印象除了网页的加载速度，还与第一次交互时的响应速度有着很大的关系； 这里的延迟指的就是用户交互触发的事件到主线程接收事件之间的延迟，也就是用于判断对于第一次交互时主线程的阻塞程度，延迟越低说明主线程比较空闲，也就利于用户对页面的交互响应速度； 至于为何只关注事件之间的延迟时间，而不是延迟时间 + 事件执行耗时 + UI状态更新耗时的方式，官方给出的解释是： Even though this time is important to the user and does affect the experience, it’s not included in this metric because doing so could incentivize developers to add workarounds that actually make the experience worse—that is, they could wrap their event handler logic in an asynchronous callback (via setTimeout() or requestAnimationFrame()) in order to separate it from the task associated with the event. The result would be an improvement in the metric score but a slower response as perceived by the user.[4] 因为开发者可能为了更好的测试分数而去强行拆分任务到其他线程，从而导致更糟的交互体验； CLS 概念 CLS（Cumulative Layout Shift），即累积布局偏移，指的是首屏页面渲染过程中所有元素结点相对原始位置所发生的位置偏移累积量； 指标作用 该指标主要是为了量化渲染过程中的视觉稳定性（visual stability）；因为渲染过程或者交互过程中发生的非用户期待的视觉改变行为会影响用户的使用满意度，而布局偏移就是其中一种很常见的现象，经常出现在： img/video等媒体元素未指定尺寸，当资源加载完成后渲染尺寸发生改变，通常表现为突然地闪变，以及影响周围元素的位置变化 插入一些DOM结点，导致用户原本关注的区域突然偏移 如何计算CLS？ layout shift score = impact fraction * distance fraction[5] 可以看出影响CLS计算值有两个因素： impact fraction：影响因子，这个参数主要是衡量相邻两个绘制帧之间不稳定元素（即位置发生改变的元素）所带来的影响；计算方法为所有不稳定元素在可视区域内的面积总和（扣除重叠的部分）占视窗面积的比值； distance fraction：距离因子，这个参数主要是衡量不稳定元素移动的距离；计算方法为取所有不稳定元素中偏移量（竖直及水平方向）最大的值除以视窗尺寸维度最大的值；根据上例，其距离因子就是0.25； 根据影响因子和距离因子的概念及计算方法，结合上图示例可以得知，当前帧的布局偏移分数为0.75 * 0.25 = 0.1875；而最终的CLS值则是所有绘制帧得到的布局偏移分数之和，更复杂的计算场景可以查看官方博客； 如何提升核心指标？ 上述的三个核心指标，官方都给出了详细的提升指导文档： Optimize Largest Contentful Paint Optimize Cumulative Layout Shift Optimize First Input Delay Web Vitals 其它指标 其它的一些指标可以作为核心指标的补充，以更加精准地去定位一些性能及体验问题； TTFB（Time to First Byte）：用户浏览器从开始加载网页内容到接收到第一个字节的网页内容之间的耗时，该指标主要侧重于网页加载体验； FCP（First Contentful Paint）：从开始加载网页内容到第一个文本块或者图像渲染完成之间的耗时，该指标主要侧重于网页加载体验； TTI（Time to Interactive）：从开始加载网页内容到开始有足够快的用户交互反应速度时之间的耗时，该指标主要侧重于网页加载体验；一般这个“有足够快的用户交互反应速度”指的就是FCP后长任务（long task，大于50ms的主线程任务）都执行完毕后，实际上就是主线程开始空闲，那自然就对用户交互就有很快的反应速度；可以看下官方文档的TTI计算步骤图[6]： TBT（Total Blocking Time）：FCP到TTI之间阻塞主线程的总耗时，所谓的阻塞就是长任务，而单个长任务的阻塞时间就是任务耗时 - 50ms；该指标主要侧重于网页加载体验，用于量化主线程阻塞的严重程度； Web Vitals 指标分析 光有有指标还不行，实际使用时还需要一个工具集成上述指标来对目标网页进行分析得到数据才行，值得庆幸的是谷歌官方已经给出了多个相应的测试分析工具，可以快速的上手： 分析工具 LCP FID CLS Chrome User Experience Report ✔️ ✔️ ✔️ PageSpeed Insights ☆ ✔️ ✔️ ✔️ Core Web Vitals report - Search Console ✔️ ✔️ ✔️ web-vitals：js包 ✔️ ✔️ ✔️ Lighthouse ☆ ✔️ ❌ ✔️ 上面就是几种常用的Web Vitals指标分析工具，其中比较推荐的是PageSpeed Insights和chrome浏览器内置的Lighthouse，因为这两个工具打开即可使用，而且没有代码侵入性，并且会有相应指标的改进建议； 但是Lighthouse没有FID指标的分析，不过可以使用相近的TBT进行替代； 国内网站测试 京东移动端网页（https://m.jd.com/）： 淘宝桌面版网页（https://world.taobao.com/）： 相关文档 First Contentful Paint (FCP)：FCP指标解读 Reduce server response times (TTFB)：TTFB指标解读 Total Blocking Time (TBT)：TBT指标解读 Web Vitals ↩︎ Largest Contentful Paint (LCP)：LCP指标解读 ↩︎ ↩︎ Web Performance Working Group：W3C关于网页性能的工作小组 ↩︎ First Input Delay (FID)：FID指标解读 ↩︎ Cumulative Layout Shift (CLS)：CLS指标解读 ↩︎ Time to Interactive (TTI)：TTI指标解读 ↩︎]]></content>
@@ -274,8 +297,8 @@
         <category>笔记</category>
       </categories>
       <tags>
-        <tag>DOM</tag>
         <tag>H5</tag>
+        <tag>DOM</tag>
       </tags>
   </entry>
   <entry>
@@ -465,8 +488,8 @@
       </categories>
       <tags>
         <tag>webGL</tag>
-        <tag>纹理</tag>
         <tag>FBO</tag>
+        <tag>纹理</tag>
       </tags>
   </entry>
   <entry>
