@@ -1,6 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[网页加载与阻塞]]></title>
+    <url>%2Fpost%2Fweb-load-and-block%2F</url>
+    <content type="text"><![CDATA[前言 注：本文写于2020年较早的时候，只是最近整理发布，因此关于渲染流程的认识比较肤浅，重点关注阻塞策略部分就好了； 基本流程 相关概念 DOM：Document Object Model，即文档对象模型；用于描述文档的结构及元素属性，是HTML和XML文档的编程接口（和JS进行交互的接口）。 CSSOM：CSS Object Model，即CSS对象模型；跟DOM类似，不过CSSOM是用来描述样式的结构和属性，是CSS的编程接口（和JS进行交互的接口）。 Render Tree：是DOM和CSSOM两者的结构，渲染树即包含可以被渲染的元素节点，同时也包含对应节点的样式信息； 哪些节点是不会被解析到渲染树中？ 不包括head、script、meta等不可见的节点； 某些通过CSS隐藏的节点在渲染树中也会被忽略，比如应用了display:none 规则的节点（visibility: hidden只是视觉不可见，仍占据空间，不会被忽略）[1]； Layout：布局；根据渲染树进一步计算出每个渲染节点的位置和尺寸信息（对应顶点着色器的工作？）； Paint：绘制；根据布局信息，得出渲染节点的像素信息，最终通过显卡绘制到屏幕的相应区域（对应片元着色器的工作？）； 回流：reflow，也叫重排；该流程会重新计算文档中元素的布局信息，某些对DOM或CSS的修改就会引发回流； 重绘：repaint，即重新绘制部分或全部文档元素；当元素的像素信息改变时会触发重绘，很明显，回流必定引发重绘； 阻塞策略 虽然普通的link及script会阻塞DOM的解析，但是有一些方法可以调整原始的阻塞策略； 调整script位置 由于script不论内联还是外部，不论加载与否都会阻塞DOM的解析，因此将script标签移至DOM最后（即&lt;body&gt;闭合标签前），可以最小地影响DOM的解析。 defer/async属性 这两个可以用于非内联script标签（即必须设置src属性），当设置为true时，对应的script标签不会阻塞DOM的解析，但是两个属性的作用还是有所不同的。 defer属性 defer，意为延迟；该属性除了可以使script标签不阻塞DOM解析，还会使对应的script标签的执行阶段延迟到DOM解析完成后，DOMContentLoaded事件触发前；也就是所有的defer脚本都必须在加载完且DOM解析完成后才能执行，且按照顺序执行； async属性 这个属性就比较简单粗暴，仅仅只是不阻塞DOM而已，加载完后对应的script会按顺序执行，因此执行的时机取决于加载完成的时间点（有可能在DOMContentLoaded事件触发前执行，也可能在触发后执行），但是必定会在window的load事件触发前执行； 预加载策略 预加载，顾名思义就是预先加载某些会用到的文件，可以是脚本、样式，也可以是媒体文件等；通过预加载设置可以改变原本的一些文件加载顺序和优先级； 设置link标签的rel属性为preload或prefetch可以开启对应文件的预加载，此时href属性值就是预加载的文件地址，然后通过as属性可以指定文件用途（浏览器内部根据不同的as类型会有不同的加载优先级）； preload 还有许多其他好处。使用 as来指定将要预加载的内容的类型，将使得浏览器能够： 更精确地优化资源加载优先级。 匹配未来的加载需求，在适当的情况下，重复利用同一资源。 为资源应用正确的内容安全策略。 为资源设置正确的 Accept 请求头。[2] 比如，可以通过设置对应的预加载，提前在头部加载脚本文件，然后在底部执行脚本；这样既能避免阻塞DOM解析，又可以提前加载脚本文件； 123456789&lt;head&gt; &lt;!-- ... --&gt; &lt;link href="test.js" rel="preload" as="script"&gt; &lt;!-- ... --&gt;&lt;/head&gt;&lt;body&gt; &lt;!-- ... --&gt; &lt;script src="test.js"&gt;&lt;/script&gt;&lt;/body&gt; preload和prefetch的区别 prefetch虽然也是对资源文件进行预加载，但是其设计目的是为了预加载下一页或之后可能会跳转的页面所需要用到的文件，因此其优先级低于preload。 验证实验 script的执行是否阻塞DOM的解析？ 1234567891011&lt;p id="t1"&gt;t1&lt;/p&gt;&lt;script&gt; for (let i = 1; i &lt; 1000000000; i++) &#123; // 模拟同步执行耗时 &#125; console.log(1, window.t2)&lt;/script&gt;&lt;p id="t2"&gt;t2&lt;/p&gt;&lt;script&gt; console.log(2, window.t2)&lt;/script&gt; 根据上述代码设计，如果script的执行不会阻塞DOM解析，那么第一处打印应该不会是undefined；反之若阻塞DOM解析，则为undefined；实际结果为： 因此答案为：script的执行会阻塞DOM的解析； script的加载是否阻塞DOM的解析？ 123456789101112131415161718&lt;head&gt; &lt;script&gt; let start = Date.now() &lt;/script&gt; &lt;script&gt; setTimeout(() =&gt; &#123; console.log(1, window.t1) &#125;, 10) &lt;/script&gt; &lt;script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.11/vue.js"&gt;&lt;/script&gt;&lt;/head&gt;&lt;body&gt; &lt;p id="t1"&gt;t1&lt;/p&gt; &lt;script&gt; console.log(Date.now() - start) console.log(2, window.t1) &lt;/script&gt;&lt;/body&gt; 根据上述设计，如果外部script的加载不会阻塞DOM解析，那么第一处的打印将不会是undefined；反之则为undefined；测试的时候可以将网速调慢，这样对比更明显： 得到的测试结果为： 因此答案为：script的加载会阻塞DOM的解析； css的加载是否阻塞DOM的解析？ 123456789101112131415161718&lt;head&gt; &lt;script&gt; let start = Date.now() &lt;/script&gt; &lt;script&gt; setTimeout(() =&gt; &#123; console.log(1, window.t1) &#125;, 100) &lt;/script&gt; &lt;link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap-grid.css" rel="stylesheet"&gt;&lt;/head&gt;&lt;body&gt; &lt;p id="t1"&gt;t1&lt;/p&gt; &lt;script&gt; console.log(Date.now() - start) console.log(2, window.t1) &lt;/script&gt;&lt;/body&gt; 同理，首先降低网速，得到的打印结果为： 因此答案为：css的加载不会阻塞DOM的解析； css的加载是否阻塞JS的执行？ 12345678910111213&lt;head&gt; &lt;script&gt; let start = Date.now() &lt;/script&gt; &lt;link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap-grid.css" rel="stylesheet"&gt; &lt;script&gt; console.log(Date.now() - start) console.log(1, window.t1) &lt;/script&gt;&lt;/head&gt;&lt;body&gt; &lt;p id="t1"&gt;t1&lt;/p&gt;&lt;/body&gt; 同样地，降低网速进行测试，得到打印结果： 显然，css文件之后的js是在css文件加载之后才执行的； 因此答案为：css的加载会阻塞JS的执行； css的加载是否阻塞DOM的渲染？ 123456789101112131415161718192021&lt;head&gt; &lt;style&gt; #t1 &#123; color: red; &#125; &lt;/style&gt; &lt;script&gt; let start = Date.now() console.log('start') setTimeout(() =&gt; &#123; console.log(1, window.t1) &#125;, 10) &lt;/script&gt; &lt;link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.css" rel="stylesheet"&gt;&lt;/head&gt;&lt;body&gt; &lt;p id="t1"&gt;t1&lt;/p&gt; &lt;script&gt; console.log(Date.now() - start) &lt;/script&gt;&lt;/body&gt; 同样地，降低网速进行测试，录制结果为： 从录制gif可以明显看到虽然css加载不阻塞DOM的解析，但是加载过程中DOM是不会被渲染到浏览器的，直到css文件加载完成（CSSOM构建完成）才会进行渲染，因此css的加载会阻塞DOM的渲染，造成白屏； 设置defer的script加载是否阻塞DOM的解析？ 1234567891011121314151617181920&lt;head&gt; &lt;script&gt; let start = Date.now() &lt;/script&gt; &lt;script&gt; setTimeout(() =&gt; &#123; console.log(1, window.t1) &#125;, 0) &lt;/script&gt; &lt;script src="./test06.js" defer&gt;&lt;/script&gt;&lt;/head&gt;&lt;body&gt; &lt;p id="t1"&gt;t1&lt;/p&gt; &lt;script&gt; document.addEventListener('DOMContentLoaded', () =&gt; &#123; console.log(Date.now() - start) console.log('DOMContentLoaded', window.t1) &#125;) &lt;/script&gt;&lt;/body&gt; 12// test06.jsconsole.log('外部JS') 同样地，降低网速进行测试，得到打印结果： 从打印结果不难看出加了defer属性的script加载并不会阻塞DOM的解析，而且会在DOMContentLoaded事件之前执行完； 设置async的script加载是否阻塞DOM的解析？ 1234567891011121314151617181920212223&lt;head&gt; &lt;script&gt; let start = Date.now() &lt;/script&gt; &lt;script&gt; setTimeout(() =&gt; &#123; console.log(1, window.t1) &#125;, 0) &lt;/script&gt; &lt;script src="./test07.js" async&gt;&lt;/script&gt;&lt;/head&gt;&lt;body&gt; &lt;p id="t1"&gt;t1&lt;/p&gt; &lt;script&gt; document.addEventListener('DOMContentLoaded', () =&gt; &#123; console.log(Date.now() - start) console.log('DOMContentLoaded', window.t1) &#125;) window.addEventListener('load', () =&gt; &#123; console.log('load') &#125;) &lt;/script&gt;&lt;/body&gt; 同样地，降低网速进行测试，得到打印结果： 结果跟defer类似，不会阻塞DOM的解析，而且async脚本并不会影响到DOMContentLoaded事件的触发，但是会影响到load事件的触发； 进行预加载（preload）的script是否阻塞DOM的解析？ 123456789101112131415&lt;head&gt; &lt;script&gt; let start = Date.now() &lt;/script&gt; &lt;script&gt; setTimeout(() =&gt; &#123; console.log(1, window.t1) &#125;, 0) &lt;/script&gt; &lt;link href="./test08.js" rel="preload" as="script"&gt;&lt;/head&gt;&lt;body&gt; &lt;p id="t1"&gt;t1&lt;/p&gt; &lt;script src="./test08.js"&gt;&lt;/script&gt;&lt;/body&gt; 同样地，降低网速进行测试，得到打印结果： 结果很明显：预加载的script不会阻塞DOM的解析； 但是，如果预加载的script后面有其他DOM，这时仍然会阻塞后面的DOM解析！ 上述实验源码放在这里：https://github.com/xxf1996/web-load-test 实验结论 根据以上实验测试，可以得出： css的加载会阻塞其后的js执行，不会阻塞DOM的解析，但是会阻塞DOM的渲染； js的加载和执行都会阻塞DOM的解析； 给script设置defer或async属性可以避免阻塞DOM的解析； 相关文档 浏览器的渲染：过程与原理 - 知乎 页面渲染：过程分析 - 掘金 浏览器渲染页面过程与页面优化 - 前端小事 - SegmentFault 思否 DOM概述 - Web API 接口参考 | MDN 初探CSS对象模型（CSSOM）_JavaScript, CSS, CSSOM, 会员专栏 教程_w3cplus Preloading content with rel=“preload” - HTML: Hypertext Markup Language | MDN DOMContentLoaded - 事件参考 | MDN css加载会造成阻塞吗？ - 掘金 Script标签和脚本执行顺序 - JavaScript编程语言 页面渲染：过程分析 - 掘金 ↩︎ 通过rel=&quot;preload&quot;进行内容预加载 - HTML（超文本标记语言） | MDN ↩︎]]></content>
+      <categories>
+        <category>探索</category>
+      </categories>
+      <tags>
+        <tag>浏览器</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[TS类型转换：union（联合）转tuple（元组）]]></title>
+    <url>%2Fpost%2Fts-union-to-tuple%2F</url>
+    <content type="text"><![CDATA[需求 需求就是标题所示，需要有一个泛型类型能够把联合类型转化成一个相应顺序的元组类型： 12type SourceUnion = 'key1' | 'key2' | 'key3'type TargetTuple = UnionToTuple&lt;SourceUnion&gt; // ['key1', 'key2', 'key3'] 代码 12345678910111213141516171819202122232425262728293031/** * 将联合类型转为对应的交叉函数类型 * @template U 联合类型 */type UnionToInterFunction&lt;U&gt; = (U extends any ? (k: () =&gt; U) =&gt; void : never) extends ((k: infer I) =&gt; void) ? I : never/** * 获取联合类型中的最后一个类型 * @template U 联合类型 */type GetUnionLast&lt;U&gt; = UnionToInterFunction&lt;U&gt; extends &#123; (): infer A; &#125; ? A : never/** * 在元组类型中前置插入一个新的类型（元素）； * @template Tuple 元组类型 * @template E 新的类型 */type Prepend&lt;Tuple extends any[], E&gt; = [E, ...Tuple]/** * 联合类型转元组类型； * @template Union 联合类型 * @template T 初始元组类型 * @template Last 传入联合类型中的最后一个类型（元素），自动生成，内部使用 */type UnionToTuple&lt;Union, T extends any[] = [], Last = GetUnionLast&lt;Union&gt;&gt; = &#123; 0: T; 1: UnionToTuple&lt;Exclude&lt;Union, Last&gt;, Prepend&lt;T, Last&gt;&gt;&#125;[[Union] extends [never] ? 0 : 1] 思路 简单的来说就是使用递归算法，每次从联合类型（集合）中取出一个类型（元素），将该类型插入到已有的元组类型中，直至联合类型所有类型被取完； 难点 虽然思路说起来简单，但是由于TS类型系统目前很多语法没有被提供，因此无法像手写JS那样能够轻松遍历和递归之类的操作，因此会存在很多难点； 如何取出联合类型中的一个元素？ 虽然联合类型从行为上来看可以视为集合，但是TS本身并没有给联合类型提供类似从集合中取值的操作； 12type Union = 'a' | 'b' | 'c'type E = Union[1] // Property '1' does not exist on type 'Union' 所以要从联合类型中取出某个位置的元素，只能另辟蹊径； 重载的函数在使用infer进行推断时，重载的部分会取最后一个声明： 12345type FF = &#123; (): 'b'; (): 'a';&#125; // 一个重载的函数类型type G = ReturnType&lt;FF&gt; // 'a' ReturnType是内置的泛型类型，会返回函数的返回类型； 1type ReturnType&lt;T extends (...args: any) =&gt; any&gt; = T extends (...args: any) =&gt; infer R ? R : any 将相同形状的函数类型进行交叉，等价于函数重载： 123456type FF = &#123; (): 'b'; (): 'a';&#125;type B = (() =&gt; 'b') &amp; (() =&gt; 'a') // 函数的交叉type G = FF extends B ? true : false // true 基于上述两个特性，就能够实现从联合类型中取出一个元素，只不过这个元素只能是最后一个： 将联合类型转为交叉函数类型（利用函数参数类型可以逆变的特性） 1234567/** * 将联合类型转为对应的交叉函数类型 * @template U 联合类型 */type UnionToInterFunction&lt;U&gt; = (U extends any ? (k: () =&gt; U) =&gt; void : never) extends ((k: infer I) =&gt; void) ? I : never 获取交叉函数类型的返回类型 12345/** * 获取联合类型中的最后一个类型 * @template U 联合类型 */type GetUnionLast&lt;U&gt; = UnionToInterFunction&lt;U&gt; extends &#123; (): infer A; &#125; ? A : never 这样就可以做到获取联合类型中的最后一个元素了： 1type G = GetUnionLast&lt;'a' | 'b'&gt; // 'b' 联合类型如何进行递归？ 在TS类型系统中如果对（嵌套）对象类型进行递归，是可以直接调用自身的，如： 1type DeepReadonly&lt;T&gt; = &#123; readonly [P in keyof T]: DeepReadonly&lt;T[P]&gt; &#125; 如果泛型本身是联合类型，想要通过直接在类型中调用自身就会报错： 12345// Type alias 'UnionToTuple' circularly references itself.type UnionToTuple&lt;Union, T extends any[] = [], Last = GetUnionLast&lt;Union&gt;&gt; = [Union] extends [never] ? T : UnionToTuple&lt;Exclude&lt;Union, Last&gt;, Prepend&lt;T, Last&gt;&gt; 上述递归方式TS会报错，不过好在有一个迂回的解决办法：就是将三元运算结果包装成一个对象类型，然后使用索引访问结果： 12345678910/** * 联合类型转元组类型； * @template Union 联合类型 * @template T 初始元组类型 * @template Last 传入联合类型中的最后一个类型（元素），自动生成，内部使用 */type UnionToTuple&lt;Union, T extends any[] = [], Last = GetUnionLast&lt;Union&gt;&gt; = &#123; 0: T; // true分支 1: UnionToTuple&lt;Exclude&lt;Union, Last&gt;, Prepend&lt;T, Last&gt;&gt; // false分支&#125;[[Union] extends [never] ? 0 : 1] 相关文档 [TypeScript奇技淫巧] union to tuple - 知乎 typescript - How to transform union type to tuple type - Stack Overflow]]></content>
+      <categories>
+        <category>探索</category>
+      </categories>
+      <tags>
+        <tag>TS</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[webGL中圆角矩形的绘制]]></title>
     <url>%2Fpost%2Fdraw-webgl-rounded-rectangle%2F</url>
     <content type="text"><![CDATA[前言 在写HTML这类自带样式设置的渲染语言时，可能写出一个圆角矩形仅仅就是一个样式设置就搞定了；但是有没有想过，直接在webGL中用原生的着色器算法写出一个类似CSS圆角样式的效果怎么做？ 四角等价圆角效果的实现 所谓的四角等价圆角效果就是指：暂时考虑四个角的圆角效果一致，且圆角在水平和竖直方向的半径是一致的，换言之就是四个角共用一个参数；因为像CSS圆角效果目前是可以分别控制四个角以及圆角水平及竖直方向的半径的。 绘制算法简单的来说就是： 找到矩形区域的像素； 抠掉圆角区域外的像素； 圆角边缘区域抗锯齿处理（光滑过渡）； 矩形区域 无论外层抽象数据的矩形区域如何确认，用何种距离单位；输入到顶点着色器内时，都需要将顶点坐标转为NDC坐标（标准化设备坐标），这之间的转换无非就是一个二维坐标系之间的映射； 得到了矩形区域的顶点坐标，输入到片元着色器内就可以得到插值后的片元坐标（可以看做是像素坐标），然后进一步根据片元坐标来判断相应片元是否处于圆角区域之外了； 抠掉圆角区域外的像素 有了插值化的顶点NDC坐标和圆角半径参数就可以对圆角外的区域进行计算了，考虑到实际上是以像素作为单位，因此可以构建一个以矩形左上角为原点，单位为像素的本地化坐标系，这样便于进行计算； 分别计算四个角对应的圆中心位置在矩形本地坐标系中的位置； 判断片元是否位于四个角的区域内； 若片元位于四个角的区域内，判断是否位于中心圆的区域之外，位于区域外即可舍去（抠掉）； 上述做法听起来很不错，但是这种像素级别的图形光栅化都会有一个问题，那就是曲线边缘会出现锯齿： 抗锯齿处理 通用的抗锯齿做法就是在边缘附近做一个光滑过渡，而非粗暴的直接在边缘处进行直接切割； 以边缘处（阈值，此处为圆角半径长度）为中心，将±1像素长度的范围内的值进行插值； 插值函数可以直接用GLSL自带的smoothstep方法即可； 上述方法得到的效果如下： 可以看到圆角边缘处光滑多了； 着色器代码 下面是针对上述算法实现的一个片元着色器，仅供参考； 12345678910111213141516171819202122232425262728293031323334353637383940414243precision highp float; // 高精度uniform vec2 u_Screen; // 屏幕尺寸uniform vec4 u_Background; // 背景色uniform float u_Radius; // 圆角半径uniform vec2 u_Size; // 矩形尺寸（px）varying vec2 v_Local; // 局部坐标uniform bool u_LinearGradient; // 是否为线性渐变填充uniform vec4 u_FromColor;uniform vec4 u_ToColor;vec2 topLeft = vec2(1.0) + u_Radius;vec2 topRight = vec2(u_Size.x - u_Radius, 1.0 + u_Radius);vec2 bottomLeft = vec2(1.0 + u_Radius, u_Size.y - u_Radius);vec2 bottomRight = u_Size - u_Radius;#pragma glslify: linearGradient = require(./shader-function/linearGradient.glsl)/** 判断是否为圆角外区域 */float isCorner() &#123; float d = 0.0; // 距离所属圆角中心的距离 if (v_Local.x &lt; u_Radius + 1.0 &amp;&amp; v_Local.y &lt; u_Radius + 1.0) &#123; // 左上 d = distance(v_Local, topLeft); &#125; if (v_Local.x &gt; u_Size.x - u_Radius &amp;&amp; v_Local.y &lt; u_Radius + 1.0) &#123; // 右上 d = distance(v_Local, topRight); &#125; if (v_Local.x &lt; u_Radius + 1.0 &amp;&amp; v_Local.y &gt; u_Size.y - u_Radius) &#123; // 左下 d = distance(v_Local, bottomLeft); &#125; if (v_Local.x &gt; u_Size.x - u_Radius &amp;&amp; v_Local.y &gt; u_Size.y - u_Radius) &#123; // 右下 d = distance(v_Local, bottomRight); &#125; return 1.0 - smoothstep(u_Radius - 1.0, u_Radius + 1.0, d); // ±1像素的过渡光滑处理&#125;void main() &#123; float corner = isCorner(); vec4 bgColor = u_LinearGradient ? linearGradient(u_FromColor, u_ToColor, u_Size, v_Local) : u_Background; if (corner == 0.0) &#123; discard; // 废弃像素渲染比透明色更好 &#125; else &#123; gl_FragColor = corner * bgColor; &#125;&#125; 相关文档 Smooth corners with CSS Houdini - Vincent De Oliveira：用Houdini绘制光滑圆角 https://pcwalton.github.io/2015/12/21/drawing-css-box-shadows-in-webrender.html [RESOLVED] How to develop a border smooth(anti-aliased) rounded-rect button user control?-VBForums：光滑圆角的绘制 WebGL 和阿尔法通道：webGL中alpha通道混合的一些注意点]]></content>
@@ -240,8 +262,8 @@
         <category>探索</category>
       </categories>
       <tags>
-        <tag>codepen</tag>
         <tag>动效</tag>
+        <tag>codepen</tag>
       </tags>
   </entry>
   <entry>
@@ -309,8 +331,8 @@
         <category>笔记</category>
       </categories>
       <tags>
-        <tag>DOM</tag>
         <tag>H5</tag>
+        <tag>DOM</tag>
       </tags>
   </entry>
   <entry>
@@ -535,8 +557,8 @@
         <category>笔记</category>
       </categories>
       <tags>
-        <tag>js</tag>
         <tag>es6</tag>
+        <tag>js</tag>
       </tags>
   </entry>
   <entry>
@@ -698,8 +720,8 @@
         <category>笔记</category>
       </categories>
       <tags>
-        <tag>mongodb</tag>
         <tag>mongoose</tag>
+        <tag>mongodb</tag>
       </tags>
   </entry>
   <entry>
@@ -756,8 +778,8 @@
         <category>笔记</category>
       </categories>
       <tags>
-        <tag>mongodb</tag>
         <tag>mongoose</tag>
+        <tag>mongodb</tag>
         <tag>Node.js</tag>
         <tag>Express</tag>
       </tags>
