@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[vue3核心原理：响应式数据系统]]></title>
+    <url>%2Fpost%2Fvue3-reactive%2F</url>
+    <content type="text"><![CDATA[前言 以下这几个模块是vue3发布订阅系统和响应式数据的核心组成；事实上vue2也有相应的组成部分，只不过依附在vue实例上，但是vue3把相应的模块独立出来，不再依附于vue实例； ref 模块 ref模块总体作用是对数据进行响应式处理，即进行数据劫持，监听set和get操作；set操作内对比数据改变以便通知订阅者进行更新（使用trigger模块），get操作内则追踪依赖者（使用track模块），也就是所谓的依赖收集，这些依赖者也就是订阅者；画成流程图大致如下： 上图是对ref模块核心代码的大致功能划分，可以看出源码的逻辑很清晰；经过ref函数包裹后得到的数据结构如下： 123456789export interface Ref&lt;T = any&gt; &#123; /** * Type differentiator only. * We need this to be in public d.ts but don't want it to show up in IDE * autocomplete, so we use a private Symbol instead. */ [RefSymbol]: true value: T&#125; 即得到的数据是一个含有value属性的对象，而属性值就是原始数据；为何要包裹成一个对象？原因就是JS中的原始类型值无法进行数据劫持以便构成响应式数据，因此只好包裹成对象。 effect 模块 effect模块是专门用来收集函数内的副作用，当然，这不是说函数所有的副作用都能用effect进行收集；effect能够收集的副作用仅限于响应式数据（即Ref对象或对数据进行类似Ref对象的劫持处理），一般是函数内get了响应式数据； 从上面这个流程图可以看出，effect模块主要包含三个函数： effect：这个函数的作用实际上就是限定当前副作用发生的范围，可以简单地理解为标记当前副作用为活动状态，便于进行依赖收集； track：这个函数的作用就十分明显了，就是收集当前活动的副作用作为依赖，即增加订阅者； trigger：同理，这个函数就是用于通知订阅者进行更新； 所以，effect模块简单地来说就是充当发布者和订阅者之间的桥梁；可以看下effect的构建函数，逻辑十分清晰： comupted 模块 只要理解了effect模块的作用，那就能很快理解computed模块的原理了；所谓的计算属性的核心就是一个getter函数，这个函数是天然的副作用，即这个getter函数必然会依赖其他响应式数据；既然是副作用函数，那就直接借助effect模块就能收集依赖和触发更新了，这一点同Ref对象很像，而从源码就可以看出，computed函数返回的数据就是一个特殊的Ref对象； reactive模块 这个模块从功能上看起来跟ref有点类似，都是构建响应式数据，但是两者之间还是有区别的，这个区别官方文档上也有说明；简单地来说： ref函数适合对原始类型的变量进行响应式数据处理； reactive函数则适合对对象类型的变量进行响应式数据处理； 基于reactive构造得到的响应式数据的特点可知：这种响应式数据只能通过对象属性形式生效，一旦将其中的属性通过解构或者是赋值剥离原对象，则会丧失其响应性；不过官方也提供了toRefs函数来解决这个问题，toRefs函数可以将reactive数据对象的每个属性值包装成Ref对象，因此被剥离原对象也可以保持响应性； 上图只是简单地描述了典型的对象被代理成响应式数据的过程，着重关注于set和get的代理，其他的代理属性和类型可以查看源码； 上图就是reactive构建函数了，从其中逻辑可以看出构造reactive数据的关键就在于设置代理配置了，根据不同的参数及不同的对象类型就可以设置相应的代理配置，从而得到不同的代理效果； 代理配置源码中有一个亮点：在代理深层对象时，并不是一开始就是直接进行递归调用，遍历每层对象属性；而是采用惰性初始模式，延迟递归发生的时机，即把深层次对象的递归放入get代理函数中，因此只有第一次真正get访问到这个深层对象时才会执行初始化函数； 在程式设计中, 惰性初始是一种拖延战术。在第一次需求出现以前，先延迟创建物件、计算值或其它昂贵程序。[1] 这样做有什么好处？除了避免一开始就递归大量属性时的风险，源码注释[2]上也说了： 123456if (isObject(res)) &#123; // Convert returned value into a proxy as well. we do the isObject check // here to avoid invalid value warning. Also need to lazy access readonly // and reactive here to avoid circular dependency. return isReadonly ? readonly(res) : reactive(res)&#125; 这种模式还能避免循环引用时所产生的堆栈溢出的情况，毕竟只有真正get到这个属性时才会执行初始化函数，因此即便对象属性中发生了循环引用，没有通过属性访问符来无限访问就不会引起一般情况下所产生的堆栈溢出； 上面这种用法其实在computed模块中也有类似的应用。 watch 模块 watch模块的本质就是监听响应式数据，当数据更新时执行回调函数；看到响应式数据和更新回调就立马能想到effect模块了，没错，watch模块内部就是构造了一个副作用，从而将副作用加入到响应式数据中的依赖列表中； 上面这个流程图就是对watch模块内部核心逻辑的简单概括； watch模块中还有一个watchEffect函数，看起来好像是用于监听副作用对象的，但是我看源码这个监听好像并没啥用处？有点疑惑…… 相关文档 副作用 (计算机科学) - 维基百科，自由的百科全书 https://zh.wikipedia.org/wiki/惰性初始模式 ↩︎ https://github.com/vuejs/vue-next/blob/d005b578b183f165929e1f921584ce599178cad6/packages/reactivity/src/baseHandlers.ts#L88 ↩︎]]></content>
+      <categories>
+        <category>笔记</category>
+      </categories>
+      <tags>
+        <tag>Vue</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[网页加载与阻塞]]></title>
     <url>%2Fpost%2Fweb-load-and-block%2F</url>
     <content type="text"><![CDATA[前言 注：本文写于2020年较早的时候，只是最近整理发布，因此关于渲染流程的认识比较肤浅，重点关注阻塞策略部分就好了； 基本流程 相关概念 DOM：Document Object Model，即文档对象模型；用于描述文档的结构及元素属性，是HTML和XML文档的编程接口（和JS进行交互的接口）。 CSSOM：CSS Object Model，即CSS对象模型；跟DOM类似，不过CSSOM是用来描述样式的结构和属性，是CSS的编程接口（和JS进行交互的接口）。 Render Tree：是DOM和CSSOM两者的结构，渲染树即包含可以被渲染的元素节点，同时也包含对应节点的样式信息； 哪些节点是不会被解析到渲染树中？ 不包括head、script、meta等不可见的节点； 某些通过CSS隐藏的节点在渲染树中也会被忽略，比如应用了display:none 规则的节点（visibility: hidden只是视觉不可见，仍占据空间，不会被忽略）[1]； Layout：布局；根据渲染树进一步计算出每个渲染节点的位置和尺寸信息（对应顶点着色器的工作？）； Paint：绘制；根据布局信息，得出渲染节点的像素信息，最终通过显卡绘制到屏幕的相应区域（对应片元着色器的工作？）； 回流：reflow，也叫重排；该流程会重新计算文档中元素的布局信息，某些对DOM或CSS的修改就会引发回流； 重绘：repaint，即重新绘制部分或全部文档元素；当元素的像素信息改变时会触发重绘，很明显，回流必定引发重绘； 阻塞策略 虽然普通的link及script会阻塞DOM的解析，但是有一些方法可以调整原始的阻塞策略； 调整script位置 由于script不论内联还是外部，不论加载与否都会阻塞DOM的解析，因此将script标签移至DOM最后（即&lt;body&gt;闭合标签前），可以最小地影响DOM的解析。 defer/async属性 这两个可以用于非内联script标签（即必须设置src属性），当设置为true时，对应的script标签不会阻塞DOM的解析，但是两个属性的作用还是有所不同的。 defer属性 defer，意为延迟；该属性除了可以使script标签不阻塞DOM解析，还会使对应的script标签的执行阶段延迟到DOM解析完成后，DOMContentLoaded事件触发前；也就是所有的defer脚本都必须在加载完且DOM解析完成后才能执行，且按照顺序执行； async属性 这个属性就比较简单粗暴，仅仅只是不阻塞DOM而已，加载完后对应的script会按顺序执行，因此执行的时机取决于加载完成的时间点（有可能在DOMContentLoaded事件触发前执行，也可能在触发后执行），但是必定会在window的load事件触发前执行； 预加载策略 预加载，顾名思义就是预先加载某些会用到的文件，可以是脚本、样式，也可以是媒体文件等；通过预加载设置可以改变原本的一些文件加载顺序和优先级； 设置link标签的rel属性为preload或prefetch可以开启对应文件的预加载，此时href属性值就是预加载的文件地址，然后通过as属性可以指定文件用途（浏览器内部根据不同的as类型会有不同的加载优先级）； preload 还有许多其他好处。使用 as来指定将要预加载的内容的类型，将使得浏览器能够： 更精确地优化资源加载优先级。 匹配未来的加载需求，在适当的情况下，重复利用同一资源。 为资源应用正确的内容安全策略。 为资源设置正确的 Accept 请求头。[2] 比如，可以通过设置对应的预加载，提前在头部加载脚本文件，然后在底部执行脚本；这样既能避免阻塞DOM解析，又可以提前加载脚本文件； 123456789&lt;head&gt; &lt;!-- ... --&gt; &lt;link href="test.js" rel="preload" as="script"&gt; &lt;!-- ... --&gt;&lt;/head&gt;&lt;body&gt; &lt;!-- ... --&gt; &lt;script src="test.js"&gt;&lt;/script&gt;&lt;/body&gt; preload和prefetch的区别 prefetch虽然也是对资源文件进行预加载，但是其设计目的是为了预加载下一页或之后可能会跳转的页面所需要用到的文件，因此其优先级低于preload。 验证实验 script的执行是否阻塞DOM的解析？ 1234567891011&lt;p id="t1"&gt;t1&lt;/p&gt;&lt;script&gt; for (let i = 1; i &lt; 1000000000; i++) &#123; // 模拟同步执行耗时 &#125; console.log(1, window.t2)&lt;/script&gt;&lt;p id="t2"&gt;t2&lt;/p&gt;&lt;script&gt; console.log(2, window.t2)&lt;/script&gt; 根据上述代码设计，如果script的执行不会阻塞DOM解析，那么第一处打印应该不会是undefined；反之若阻塞DOM解析，则为undefined；实际结果为： 因此答案为：script的执行会阻塞DOM的解析； script的加载是否阻塞DOM的解析？ 123456789101112131415161718&lt;head&gt; &lt;script&gt; let start = Date.now() &lt;/script&gt; &lt;script&gt; setTimeout(() =&gt; &#123; console.log(1, window.t1) &#125;, 10) &lt;/script&gt; &lt;script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.11/vue.js"&gt;&lt;/script&gt;&lt;/head&gt;&lt;body&gt; &lt;p id="t1"&gt;t1&lt;/p&gt; &lt;script&gt; console.log(Date.now() - start) console.log(2, window.t1) &lt;/script&gt;&lt;/body&gt; 根据上述设计，如果外部script的加载不会阻塞DOM解析，那么第一处的打印将不会是undefined；反之则为undefined；测试的时候可以将网速调慢，这样对比更明显： 得到的测试结果为： 因此答案为：script的加载会阻塞DOM的解析； css的加载是否阻塞DOM的解析？ 123456789101112131415161718&lt;head&gt; &lt;script&gt; let start = Date.now() &lt;/script&gt; &lt;script&gt; setTimeout(() =&gt; &#123; console.log(1, window.t1) &#125;, 100) &lt;/script&gt; &lt;link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap-grid.css" rel="stylesheet"&gt;&lt;/head&gt;&lt;body&gt; &lt;p id="t1"&gt;t1&lt;/p&gt; &lt;script&gt; console.log(Date.now() - start) console.log(2, window.t1) &lt;/script&gt;&lt;/body&gt; 同理，首先降低网速，得到的打印结果为： 因此答案为：css的加载不会阻塞DOM的解析； css的加载是否阻塞JS的执行？ 12345678910111213&lt;head&gt; &lt;script&gt; let start = Date.now() &lt;/script&gt; &lt;link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap-grid.css" rel="stylesheet"&gt; &lt;script&gt; console.log(Date.now() - start) console.log(1, window.t1) &lt;/script&gt;&lt;/head&gt;&lt;body&gt; &lt;p id="t1"&gt;t1&lt;/p&gt;&lt;/body&gt; 同样地，降低网速进行测试，得到打印结果： 显然，css文件之后的js是在css文件加载之后才执行的； 因此答案为：css的加载会阻塞JS的执行； css的加载是否阻塞DOM的渲染？ 123456789101112131415161718192021&lt;head&gt; &lt;style&gt; #t1 &#123; color: red; &#125; &lt;/style&gt; &lt;script&gt; let start = Date.now() console.log('start') setTimeout(() =&gt; &#123; console.log(1, window.t1) &#125;, 10) &lt;/script&gt; &lt;link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.css" rel="stylesheet"&gt;&lt;/head&gt;&lt;body&gt; &lt;p id="t1"&gt;t1&lt;/p&gt; &lt;script&gt; console.log(Date.now() - start) &lt;/script&gt;&lt;/body&gt; 同样地，降低网速进行测试，录制结果为： 从录制gif可以明显看到虽然css加载不阻塞DOM的解析，但是加载过程中DOM是不会被渲染到浏览器的，直到css文件加载完成（CSSOM构建完成）才会进行渲染，因此css的加载会阻塞DOM的渲染，造成白屏； 设置defer的script加载是否阻塞DOM的解析？ 1234567891011121314151617181920&lt;head&gt; &lt;script&gt; let start = Date.now() &lt;/script&gt; &lt;script&gt; setTimeout(() =&gt; &#123; console.log(1, window.t1) &#125;, 0) &lt;/script&gt; &lt;script src="./test06.js" defer&gt;&lt;/script&gt;&lt;/head&gt;&lt;body&gt; &lt;p id="t1"&gt;t1&lt;/p&gt; &lt;script&gt; document.addEventListener('DOMContentLoaded', () =&gt; &#123; console.log(Date.now() - start) console.log('DOMContentLoaded', window.t1) &#125;) &lt;/script&gt;&lt;/body&gt; 12// test06.jsconsole.log('外部JS') 同样地，降低网速进行测试，得到打印结果： 从打印结果不难看出加了defer属性的script加载并不会阻塞DOM的解析，而且会在DOMContentLoaded事件之前执行完； 设置async的script加载是否阻塞DOM的解析？ 1234567891011121314151617181920212223&lt;head&gt; &lt;script&gt; let start = Date.now() &lt;/script&gt; &lt;script&gt; setTimeout(() =&gt; &#123; console.log(1, window.t1) &#125;, 0) &lt;/script&gt; &lt;script src="./test07.js" async&gt;&lt;/script&gt;&lt;/head&gt;&lt;body&gt; &lt;p id="t1"&gt;t1&lt;/p&gt; &lt;script&gt; document.addEventListener('DOMContentLoaded', () =&gt; &#123; console.log(Date.now() - start) console.log('DOMContentLoaded', window.t1) &#125;) window.addEventListener('load', () =&gt; &#123; console.log('load') &#125;) &lt;/script&gt;&lt;/body&gt; 同样地，降低网速进行测试，得到打印结果： 结果跟defer类似，不会阻塞DOM的解析，而且async脚本并不会影响到DOMContentLoaded事件的触发，但是会影响到load事件的触发； 进行预加载（preload）的script是否阻塞DOM的解析？ 123456789101112131415&lt;head&gt; &lt;script&gt; let start = Date.now() &lt;/script&gt; &lt;script&gt; setTimeout(() =&gt; &#123; console.log(1, window.t1) &#125;, 0) &lt;/script&gt; &lt;link href="./test08.js" rel="preload" as="script"&gt;&lt;/head&gt;&lt;body&gt; &lt;p id="t1"&gt;t1&lt;/p&gt; &lt;script src="./test08.js"&gt;&lt;/script&gt;&lt;/body&gt; 同样地，降低网速进行测试，得到打印结果： 结果很明显：预加载的script不会阻塞DOM的解析； 但是，如果预加载的script后面有其他DOM，这时仍然会阻塞后面的DOM解析！ 上述实验源码放在这里：https://github.com/xxf1996/web-load-test 实验结论 根据以上实验测试，可以得出： css的加载会阻塞其后的js执行，不会阻塞DOM的解析，但是会阻塞DOM的渲染； js的加载和执行都会阻塞DOM的解析； 给script设置defer或async属性可以避免阻塞DOM的解析； 相关文档 浏览器的渲染：过程与原理 - 知乎 页面渲染：过程分析 - 掘金 浏览器渲染页面过程与页面优化 - 前端小事 - SegmentFault 思否 DOM概述 - Web API 接口参考 | MDN 初探CSS对象模型（CSSOM）_JavaScript, CSS, CSSOM, 会员专栏 教程_w3cplus Preloading content with rel=“preload” - HTML: Hypertext Markup Language | MDN DOMContentLoaded - 事件参考 | MDN css加载会造成阻塞吗？ - 掘金 Script标签和脚本执行顺序 - JavaScript编程语言 页面渲染：过程分析 - 掘金 ↩︎ 通过rel=&quot;preload&quot;进行内容预加载 - HTML（超文本标记语言） | MDN ↩︎]]></content>
@@ -262,8 +273,8 @@
         <category>探索</category>
       </categories>
       <tags>
-        <tag>动效</tag>
         <tag>codepen</tag>
+        <tag>动效</tag>
       </tags>
   </entry>
   <entry>
@@ -331,8 +342,8 @@
         <category>笔记</category>
       </categories>
       <tags>
-        <tag>H5</tag>
         <tag>DOM</tag>
+        <tag>H5</tag>
       </tags>
   </entry>
   <entry>
@@ -557,8 +568,8 @@
         <category>笔记</category>
       </categories>
       <tags>
-        <tag>es6</tag>
         <tag>js</tag>
+        <tag>es6</tag>
       </tags>
   </entry>
   <entry>
@@ -720,8 +731,8 @@
         <category>笔记</category>
       </categories>
       <tags>
-        <tag>mongoose</tag>
         <tag>mongodb</tag>
+        <tag>mongoose</tag>
       </tags>
   </entry>
   <entry>
@@ -778,8 +789,8 @@
         <category>笔记</category>
       </categories>
       <tags>
-        <tag>mongoose</tag>
         <tag>mongodb</tag>
+        <tag>mongoose</tag>
         <tag>Node.js</tag>
         <tag>Express</tag>
       </tags>
