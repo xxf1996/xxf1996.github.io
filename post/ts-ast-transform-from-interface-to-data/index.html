@@ -99,23 +99,32 @@
 
 
 
-  <meta name="description" content="时不我待">
-<meta property="og:type" content="website">
-<meta property="og:title" content="snowdream">
-<meta property="og:url" content="https://note.xiexuefeng.cc/page/16/index.html">
+  <meta name="description" content="前言 如果在TS中声明了一些对象类型，使用这些对象类型来注解变量时，这些变量值的初始化往往需要自己手动按对象结构填写一遍，尽管有了TS类型声明和IDE的智能提示的加持下，这个填写过程还是很透明快速的；但是仔细一想，明明在声明这些对象类型的时候已经填过一层结构，为啥在数据初始化的时候又不得不去再填一遍，难道就不能自动根据声明的结构和一些简单的规则直接生成我们想要的初始化数据吗？ 这是可以做到的；答">
+<meta name="keywords" content="TS,AST">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TS AST转换实例：从类型声明生成初始化数据">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/ts-ast-transform-from-interface-to-data/index.html">
 <meta property="og:site_name" content="snowdream">
-<meta property="og:description" content="时不我待">
+<meta property="og:description" content="前言 如果在TS中声明了一些对象类型，使用这些对象类型来注解变量时，这些变量值的初始化往往需要自己手动按对象结构填写一遍，尽管有了TS类型声明和IDE的智能提示的加持下，这个填写过程还是很透明快速的；但是仔细一想，明明在声明这些对象类型的时候已经填过一层结构，为啥在数据初始化的时候又不得不去再填一遍，难道就不能自动根据声明的结构和一些简单的规则直接生成我们想要的初始化数据吗？ 这是可以做到的；答">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20210221225126.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20210221225148.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20210221225214.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20210221225232.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20210221225252.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20210221225319.png?imageslim">
+<meta property="og:updated_time" content="2021-02-21T14:54:30.963Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="snowdream">
-<meta name="twitter:description" content="时不我待">
+<meta name="twitter:title" content="TS AST转换实例：从类型声明生成初始化数据">
+<meta name="twitter:description" content="前言 如果在TS中声明了一些对象类型，使用这些对象类型来注解变量时，这些变量值的初始化往往需要自己手动按对象结构填写一遍，尽管有了TS类型声明和IDE的智能提示的加持下，这个填写过程还是很透明快速的；但是仔细一想，明明在声明这些对象类型的时候已经填过一层结构，为啥在数据初始化的时候又不得不去再填一遍，难道就不能自动根据声明的结构和一些简单的规则直接生成我们想要的初始化数据吗？ 这是可以做到的；答">
+<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/20210221225126.png?imageslim">
 
 
 
 
 
 
-  <link rel="canonical" href="https://note.xiexuefeng.cc/page/16/"/>
+  <link rel="canonical" href="https://note.xiexuefeng.cc/post/ts-ast-transform-from-interface-to-data/"/>
 
 
 
@@ -125,7 +134,7 @@
   };
 </script>
 
-  <title>snowdream</title>
+  <title>TS AST转换实例：从类型声明生成初始化数据 | snowdream</title>
   
 
 
@@ -172,8 +181,7 @@
     
   
 
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left 
-  page-home">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -312,9 +320,9 @@
           
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -329,7 +337,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/svg-text/">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/ts-ast-transform-from-interface-to-data/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xuefeng">
@@ -346,11 +354,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/svg-text/" itemprop="url">
-                  svg之文本
-                </a>
+          <h1 class="post-title" itemprop="name headline">TS AST转换实例：从类型声明生成初始化数据
               
             
           </h1>
@@ -369,7 +373,7 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-31T16:04:33+08:00">2018-05-31</time>
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-21T22:50:32+08:00">2021-02-21</time>
             
 
             
@@ -390,7 +394,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/笔记/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/探索/" itemprop="url" rel="index"><span itemprop="name">探索</span></a></span>
 
                 
                 
@@ -424,506 +428,113 @@
       
 
       
-        
-          <h2 id="基本概念"><a class="markdownIt-Anchor" href="#基本概念"></a> 基本概念</h2>
-<ul>
-<li><strong>字符</strong>：在<code>XML</code>文档中，字符是指带有一个数字值的一个或多个字节，数字值与<code>Unicode</code>标准对应。例如，字母<code>g</code>是<code>Unicode</code>值为<code>103</code>的字符。</li>
-<li><strong>符号</strong>：符号（<code>glyph</code>）是指字符的<font color="#39f"><strong>视觉呈现</strong></font>。每个字符都可以用很多不同的符号来呈现。</li>
-</ul>
-<blockquote>
-<p>一个符号可能由多个字符构成。一些字体为特定的字母组合（如fl和ff）准备了单独的符号，以使它们更好看，这种特性叫作“连字”（ligature）。有时候，一个字符也可能由几个符号组合而成，比如打印程序可能会组合符号e和重音符号（ˊ）来打印字符é（Unicode 值为 233）。</p>
-</blockquote>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/svg-text/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/svg-gradient/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="xuefeng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/photo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="snowdream">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/svg-gradient/" itemprop="url">
-                  svg之渐变填充
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-                
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-18T20:15:11+08:00">2018-05-18</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/笔记/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>与图案（<code>pattern</code>）一样，渐变也只是专门用来被填充的，所以也需要事先在<code>defs</code>中进行定义。</p>
-<p><code>SVG</code>中的渐变分为线性渐变（<code>linearGradient</code>）和径向渐变（<code>radialGradient</code>）两种，从名字就能看出这是两种不同方向的渐变，所以参数也会有所不同。</p>
-<h2 id="线性渐变"><a class="markdownIt-Anchor" href="#线性渐变"></a> 线性渐变</h2>
-<p>线性渐变由<code>linearGradient</code>标签所定义，线性渐变主要受<strong>直线的方向和渐变点的位置</strong>的影响，也就是沿着直线的方向按照渐变点的颜色设置进行变化。</p>
-<h3 id="渐变点"><a class="markdownIt-Anchor" href="#渐变点"></a> 渐变点</h3>
-<p>渐变点就是在<code>linearGradient</code>标签内所定义的<code>&lt;stop&gt;</code>元素，该元素有以下的属性：</p>
-<ul>
-<li>
-<p><strong>offset</strong>：偏离位置，范围为0-1（0%-100%）；实际上就是在直线方向（这个方向其实可看作向量方向）上的位置。</p>
-</li>
-<li>
-<p><strong>stop-color</strong>：该渐变点的颜色</p>
-</li>
-<li>
-<p><strong>stop-opacity</strong>：该渐变点的不透明度</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/svg-gradient/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/svg-pattern/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="xuefeng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/photo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="snowdream">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/svg-pattern/" itemprop="url">
-                  svg之图案填充
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-                
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-17T22:43:11+08:00">2018-05-17</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/笔记/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>在<code>SVG</code>中的图案（<code>pattern</code>），可以理解为<font color="red"><strong>通过重复填充某一图形</strong></font>得到的图像。因此被重复填充的那个图形可视为图案的填充单元（<code>tile</code>，直译就是<strong>瓷砖</strong>），最终得到的图案就取决于<font color="#36f"><strong>如何在整个图案区域中重复这一填充单元</strong></font>以及<font color="#36f"><strong>在分配到的单元格中如何填充这个图形</strong></font>。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/svg-pattern/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/css3-transform-3d/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="xuefeng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/photo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="snowdream">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/css3-transform-3d/" itemprop="url">
-                  css3 3D transform
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-                
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-11T20:31:06+08:00">2018-05-11</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/技术/" itemprop="url" rel="index"><span itemprop="name">技术</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p><code>transform</code>是<code>css3</code>新增的功能，可以用来改变元素的形状和位置，分为<code>2D</code>和<code>3D</code>两种，实际上<code>2D</code>变换可以看做是<code>3D</code>变换的一种特殊形式。</p>
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p>如果在<code>TS</code>中声明了一些对象类型，使用这些对象类型来注解变量时，这些变量值的初始化往往需要自己手动按对象结构填写一遍，尽管有了<code>TS</code>类型声明和<code>IDE</code>的智能提示的加持下，这个填写过程还是很透明快速的；但是仔细一想，明明在声明这些对象类型的时候已经填过一层结构，为啥在数据初始化的时候<strong>又不得不去再填一遍</strong>，难道就不能自动根据声明的结构和一些简单的规则直接生成我们想要的初始化数据吗？</p>
+<p>这是可以做到的；答案就来自于<code>TS</code>本身提供的编译器相关的<code>API</code>，只要从编译的角度去看待上面的问题，那么解决方案还是“比较轻松”的；</p>
+<a id="more"></a>
+<h2 id="实现流程"><a class="markdownIt-Anchor" href="#实现流程"></a> 实现流程</h2>
+<p><img src="http://pic.xiexuefeng.cc/markdown/20210221225126.png?imageslim" alt="img"></p>
 <h2 id="原理"><a class="markdownIt-Anchor" href="#原理"></a> 原理</h2>
-<p>可以联想到计算机图形中的摄像机与物体的空间关系，以及透视投影原理，就能理解<code>3D transform</code>的基本原理了。</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/180511/9Bbb78kjL3.png?imageslim" alt="mark"></p>
-<center>透视投影原理</center>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/css3-transform-3d/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
+<p>从原理上来说，就是借助<code>JSDoc</code>语法，根据<code>AST</code>结构找到特定用于生成初始数据的注释，返回一份新的<code>AST</code>结构，最后根据新的<code>AST</code>生成输出的代码；</p>
+<h3 id="ts编译流程"><a class="markdownIt-Anchor" href="#ts编译流程"></a> TS编译流程</h3>
+<p><img src="http://pic.xiexuefeng.cc/markdown/20210221225148.png?imageslim" alt="img"></p>
+<p><code>TS</code>编译器核心相关的功能大致上有这么几个：</p>
+<ul>
+<li><strong>预处理器</strong>：加载源码文件及其依赖文件（通过<code>import</code>语句导入或者<code>&lt;refrence path=xxx /&gt;</code>标签语法导入的声明文件）和<code>tsconfig.json</code>配置文件中额外加载的声明文件，并将这些文件加入到编译上下文中；</li>
+<li><strong>解析器</strong>：对源码文件做出词法分析，并得到相应的<code>AST</code>（抽象语法树）结构；</li>
+<li><strong>结合器</strong>：遍历<code>AST</code>，找到其中的具名声明结点，并将同一实体的不同声明进行归纳（这个实体通常是<code>Identifier</code>，即标识符，也就是具名的）形成这个实体的<code>Symbol</code>，同时<code>Symbol</code>内也会记录对应声明的<strong>有效作用域</strong>；</li>
+<li><strong>类型检查器</strong>：根据得到<code>Symbol</code>信息得出相应的<code>Type</code>信息，以节点的<code>Type</code>信息作为预期语义，以节点的<code>AST</code>信息作为实际语义，对节点做出语义诊断，然后得出相应的诊断信息（如<code>error</code>/<code>warning</code>等）；</li>
+<li><strong>发射器</strong>：发射器根据编译选项以及<code>AST</code>信息（<code>SourceFile</code>结点）输出相应的目标代码（包含<code>js(x)/js.map/d.ts</code>）；</li>
+</ul>
+<h4 id="相关概念"><a class="markdownIt-Anchor" href="#相关概念"></a> 相关概念</h4>
+<ul>
+<li>
+<p><code>Symbol</code>：<code>Symbol</code>是专门用于连接<strong>同一实体</strong>在<code>AST</code>中所有的<font color="#f00">具名声明结点</font>（相应地自然就有匿名声明结点，<strong>声明既包括一般语法的声明，也包括类型系统中的类型声明</strong>），因此是语义系统中的基本结构<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>；</p>
+</li>
+<li>
+<p><code>Type</code>：<code>Type</code>则是语义系统中另一种基本结构，包括具名和匿名的类型；<code>Type</code>是从<code>Symbol</code>推断得到的<strong>最佳公共类型</strong>（<a href="https://www.typescriptlang.org/docs/handbook/type-inference.html#best-common-type" target="_blank" rel="noopener"><code>best-common-type</code></a>），这里的类型可以是<font color="#39f">手动注解</font>的，当没有手动注解时就会从值的内容进行推导；</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/20210221225214.png?imageslim" alt="img"></p>
+</li>
+<li>
+<p><strong>诊断信息</strong>（<code>semantic diagnostic</code>）：即语义诊断信息，语义和语法是两种不同的系统，<strong>语义存在于类型系统中</strong>，是专门用于描述类型关系的，而诊断信息就是类型检查的产物；</p>
+</li>
+</ul>
+<h3 id="ts-ast数据结构"><a class="markdownIt-Anchor" href="#ts-ast数据结构"></a> TS AST数据结构</h3>
+<p>每一个待编译源码文件经过解析器的词法分析后，都会得到一个<code>AST</code>，该树的<strong>顶点结点</strong>为<code>SourceFile</code>，<strong>一般结点</strong>为<code>Node</code>，而<strong>叶结点</strong>则是一些特殊的<code>Node</code>结点，如下图所示：</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/20210221225232.png?imageslim" alt="img"></p>
+<ul>
+<li><code>Node</code>：<code>AST</code>中最基本的结点，通常不是叶结点；一般包含<code>pos</code>（在源码文件中的起始位置）、<code>end</code>（在源码文件中的结束位置）和<code>parent</code>（父结点）等属性，具体结构可以查看<code>TS</code>源码中的<code>Node interface</code>定义；</li>
+<li><code>SourceFile</code>：<code>AST</code>中的顶点，本身也是一种<code>Node</code>，还包含了一些源码文件相关的信息以及获取源码的方法；</li>
+</ul>
+<h3 id="ts编译常用api"><a class="markdownIt-Anchor" href="#ts编译常用api"></a> TS编译常用API</h3>
+<blockquote>
+<p>注：以下均为ts namespace下的API；XXX意为某个Node interface的名称；</p>
+</blockquote>
+<ul>
+<li><code>createSourceFile</code>：根据源码文本生成一个相应的<code>AST</code>（即<code>SourceFile</code>）；</li>
+<li><code>createPrinter</code>：生成<code>TS</code>代码打印器实例，可以根据<code>AST</code>结点（包括<code>SourceFile</code>）信息生成相应的<code>TS</code>代码；</li>
+<li><code>transform</code>：根据提供的<code>AST transformer</code>工厂函数，对<code>AST</code>结点进行转换；</li>
+<li><code>isXXX</code>：快速判断某个<code>AST</code>结点是否为某种特定的结点；</li>
+<li><code>factory.createXXX</code>：创建一个新的<code>AST</code>结点；</li>
+<li><code>factory.updateXXX</code>：修改一个存在的<code>AST</code>结点；之前可以通过直接修改结点属性来修改结点信息，现在已经不推荐这么做了（新版<code>API</code>会逐渐把结点属性全部设置为只读）；</li>
+<li><code>visitNode</code>：访问<code>AST</code>结点，可以通过<font color="#f00">访问器函数返回值</font>来替代或删除当前结点；</li>
+<li><code>visitEachChild</code>：用法同<code>visitNode</code>类似，不过会<strong>向下遍历树的子节点</strong>；</li>
+<li><code>forEachChild</code>：用于遍历<code>AST</code>结点的所有子结点，跟访问器不同，这里的返回值并不会影响遍历的结点；</li>
+</ul>
+<p>上述所有的<code>API</code>详情建议查看源码，或者直接在<code>IDE</code>中查看代码提示（很详细，有的甚至给出了代码示例）；<code>factory</code>是<code>TS4.0</code>新推出的工厂函数<code>API</code>，用于替代之前散乱的结点修改<code>API</code>，具体理由可以查看这个<a href="https://github.com/microsoft/TypeScript/pull/35282" target="_blank" rel="noopener">pull</a>，从实践上来看新版的工厂函数<code>API</code>用起来确实更加统一了，使用成本就低了，毕竟和结点的<code>interface</code>一一对应了，老版<code>API</code>还会存在工厂函数名称与<code>interface</code>名称不一致的情况，写起来就有点坑；</p>
+<h2 id="实现细节仅供参考"><a class="markdownIt-Anchor" href="#实现细节仅供参考"></a> 实现细节（仅供参考）</h2>
+<p>本文中提到的需求并不需要通过创造新语法来实现，只是通过修改<code>AST</code>结构即可实现，因此还算是“比较轻松”；</p>
+<h3 id="jsdoc基本语法"><a class="markdownIt-Anchor" href="#jsdoc基本语法"></a> JSDoc基本语法</h3>
+<p><code>JSDoc</code>是一种扩展<code>js</code>注释用法的插件（主要是生成文档和提示），不过现在在各种<code>IDE</code>的广泛支持下，<code>JSDoc</code>算是一种事实上的注释标准了，且可以承担一部分同<code>TS</code>类似的类型注解功能；<code>JSDoc</code>可以被编译器识别成正确语法，且<code>TS</code>编译器解析时也会对<code>JSDoc</code>语法解析并生成<code>AST</code>结点；因此<code>JSDoc</code>语法可以作为语法扩展的一个突破点，其大致语法如下：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* comment</span></span><br><span class="line"><span class="comment">* @tagName tag-comment</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">interface</span> XXX &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其本质上是利用了多行注释的部分，然后基于文本解析进行具体的细分：</p>
+<ul>
+<li><code>comment</code>：注释文本部分；</li>
+<li><code>tagName</code>：注释标签；</li>
+<li><code>tag-comment</code>：注释标签说明文本；</li>
+</ul>
+<p>事实上，<code>JSDoc</code>根据功能特性已经内置了一些标签，且标签后面的文本部分也做了更具体的语法切分；不过作为基于<code>JSDoc</code>语法的扩展，一般都是使用自定义的标签名称；</p>
+<h3 id="jsdoc结点"><a class="markdownIt-Anchor" href="#jsdoc结点"></a> JSDoc结点</h3>
+<p><code>TS</code>中的<code>JSDoc</code>结点并非是单独存在的，而是依附在<code>JSDoc</code>注释后面的语法结点，可以通过该结点的<code>jsDoc</code>属性来访问，不过需要注意的是目前<code>jsDoc</code>属性属于<code>API</code>的内部属性，因此结点接口声明文件上并未暴露；如：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * xxx</span></span><br><span class="line"><span class="comment"> * @param a 参数1</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">t1</span> (<span class="params">a: Test</span>): <span class="title">void</span> </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> b = <span class="string">'xx'</span></span><br><span class="line">    <span class="built_in">console</span>.log(a)</span><br><span class="line">    <span class="keyword">if</span> (a.name) &#123;</span><br><span class="line">        <span class="comment">// 123</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="http://pic.xiexuefeng.cc/markdown/20210221225252.png?imageslim" alt="img"></p>
+<p>因此通过这些特性就可以定制一些自定义的<code>JSDoc</code>标签和语法格式，然后通过<code>AST</code>结点进行匹配，进而定制相应的<code>AST</code>结点；</p>
+<h3 id="dsl设计"><a class="markdownIt-Anchor" href="#dsl设计"></a> DSL设计</h3>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @model</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">interface</span> XXX &#123;</span><br><span class="line">  <span class="comment">/** @default value */</span></span><br><span class="line">  prop1: <span class="built_in">string</span>;</span><br><span class="line">  prop2: <span class="built_in">number</span>;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>@model</code>：<code>model</code>标签用于标记该声明类型需要进行初始化，使用特定标记可以加快遍历速度；</li>
+<li><code>@default</code>：<code>default</code>标签用于显式标记属性的默认值，没有指定的则使用默认规则；</li>
+<li><code>value</code>：用于指定默认值，可以是字面量，也可以是匿名函数，事实上其本质也可以是一段代码，取决于具体需求，可以解析成一个值就行ir；</li>
+</ul>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 输出的目标初始化函数</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">initXXX</span> (<span class="params"></span>): <span class="title">XXX</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    prop1: xxx,</span><br><span class="line">    prop2: xxx</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="ast修改流程"><a class="markdownIt-Anchor" href="#ast修改流程"></a> AST修改流程</h3>
+<p><img src="http://pic.xiexuefeng.cc/markdown/20210221225319.png?imageslim" alt="img"></p>
+<h2 id="后话"><a class="markdownIt-Anchor" href="#后话"></a> 后话</h2>
+<p>修改语言特性一直都让人望而却步，好像编译器和<code>AST</code>是有点遥不可及的东西；不过事实上接触了<code>TS</code>的编译器<code>API</code>后，发现其AST结构相当的透明，<code>API</code>自由度也是很大的，且相当的规范统一；再加上各种用于辅助查看<code>AST</code>结构的网站，其实修改<code>AST</code>也不是那么的遥远和困难；所以，如果不满足语言特性的功能，可以大胆地尝试自己去扩展或者修改。</p>
+<h2 id="相关文档"><a class="markdownIt-Anchor" href="#相关文档"></a> 相关文档</h2>
+<ul>
+<li><a href="https://stackoverflow.com/questions/44665650/generate-object-from-typescript-interface" target="_blank" rel="noopener">javascript - Generate object from Typescript interface - Stack Overflow</a>：一种可能性</li>
+<li><a href="https://github.com/google/intermock" target="_blank" rel="noopener">google/intermock: Mocking library to create mock objects with fake data for TypeScript interfaces</a>：利用ts类型生成mock数据的插件</li>
+<li><a href="https://stackoverflow.com/questions/37027776/how-to-stub-a-typescript-interface-type-definition" target="_blank" rel="noopener">javascript - How to stub a Typescript-Interface / Type-definition? - Stack Overflow</a></li>
+<li><a href="https://github.com/TypeStrong/ts-loader#getcustomtransformers" target="_blank" rel="noopener">TypeStrong/ts-loader: TypeScript loader for webpack</a>：<code>ts-loader</code>开放了transformer的相关配置</li>
+<li><a href="https://github.com/Igorbek/typescript-plugin-styled-components" target="_blank" rel="noopener">Igorbek/typescript-plugin-styled-components: TypeScript transformer for improving the debugging experience of styled-components</a>：一个使用了TS transformer API的插件</li>
+<li><a href="https://github.com/microsoft/TypeScript/wiki/Architectural-Overview" target="_blank" rel="noopener">Architectural Overview · microsoft/TypeScript Wiki</a>：<code>TS</code>架构说明，主要是编译相关的架构</li>
+<li><a href="https://www.jameslmilner.com/post/ts-ast-and-ts-morph-intro/" target="_blank" rel="noopener">Getting Started With Handling TypeScript ASTs</a>：<code>AST</code>修改入门案例</li>
+<li><a href="https://github.com/microsoft/TypeScript/pull/35282" target="_blank" rel="noopener">Refactor node factory API, use node factory in parser by rbuckton · Pull Request #35282 · microsoft/TypeScript</a>：重构<code>TS AST</code>结点工厂函数的理由</li>
+<li><a href="https://ts-ast-viewer.com/" target="_blank" rel="noopener">ts-ast-viewer</a>：强大的<code>TS AST</code>结构查看工具，甚至给出了结点的工厂函数以及构造参数，有了它写<code>AST</code>结构就方便多了</li>
+<li><a href="https://jsdoc.app/" target="_blank" rel="noopener">Use JSDoc: Index</a></li>
+<li><a href="https://javascript.xgqfrms.xyz/pdfs/TypeScript%20Language%20Specification.pdf" target="_blank" rel="noopener">TypeScript Language Specification</a></li>
+<li><a href="https://segmentfault.com/a/1190000023392288" target="_blank" rel="noopener">探索类型系统的底层 - 自己实现一个 TypeScript - SegmentFault 思否</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/45898674" target="_blank" rel="noopener">Typescript 编译过程 - 知乎</a></li>
+</ul>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a href="https://github.com/microsoft/TypeScript/wiki/Architectural-Overview#data-structures" target="_blank" rel="noopener">https://github.com/microsoft/TypeScript/wiki/Architectural-Overview#data-structures</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
       
     </div>
 
@@ -938,174 +549,55 @@
     
 
     
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>xuefeng</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://note.xiexuefeng.cc/post/ts-ast-transform-from-interface-to-data/" title="TS AST转换实例：从类型声明生成初始化数据">https://note.xiexuefeng.cc/post/ts-ast-transform-from-interface-to-data/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
 
     <footer class="post-footer">
       
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/js-drag-move/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="xuefeng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/photo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="snowdream">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/js-drag-move/" itemprop="url">
-                  js拖拽移动效果
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-                
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-26T16:36:29+08:00">2018-04-26</time>
-            
-
-            
-            
-
-            
-          </span>
-
+        <div class="post-tags">
           
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/技术/" itemprop="url" rel="index"><span itemprop="name">技术</span></a></span>
-
-                
-                
-              
-            </span>
+            <a href="/tags/TS/" rel="tag"># TS</a>
           
-
+            <a href="/tags/AST/" rel="tag"># AST</a>
           
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
         </div>
-      </header>
-    
+      
 
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
+      
       
       
 
       
-        
-          <h2 id="需求"><a class="markdownIt-Anchor" href="#需求"></a> 需求</h2>
-<p>有时候需要对某一元素进行拖拽，并要求在拖拽过程中跟随鼠标进行移动；比如下面的效果：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/180426/eGj2h1GcjE.gif" alt="example"></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/js-drag-move/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/post/vue-cli-remote-preset/" rel="next" title="自定义vue-cli远程preset模板">
+                <i class="fa fa-chevron-left"></i> 自定义vue-cli远程preset模板
+              </a>
+            
           </div>
-          <!--/noindex-->
-        
-      
-    </div>
 
-    
+          <span class="post-nav-divider"></span>
 
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
       
 
       
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -1115,18 +607,19 @@
   </article>
 
 
-    
-  </section>
 
-  
-  <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/15/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/15/">15</a><span class="page-number current">16</span><a class="page-number" href="/page/17/">17</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" href="/page/17/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
-  </nav>
-
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
           
+
+  
+
+
 
         </div>
         
@@ -1147,8 +640,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -1335,6 +837,22 @@
       </section>
 
       
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现流程"><span class="nav-number">2.</span> <span class="nav-text"> 实现流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原理"><span class="nav-number">3.</span> <span class="nav-text"> 原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ts编译流程"><span class="nav-number">3.1.</span> <span class="nav-text"> TS编译流程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#相关概念"><span class="nav-number">3.1.1.</span> <span class="nav-text"> 相关概念</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ts-ast数据结构"><span class="nav-number">3.2.</span> <span class="nav-text"> TS AST数据结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ts编译常用api"><span class="nav-number">3.3.</span> <span class="nav-text"> TS编译常用API</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现细节仅供参考"><span class="nav-number">4.</span> <span class="nav-text"> 实现细节（仅供参考）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#jsdoc基本语法"><span class="nav-number">4.1.</span> <span class="nav-text"> JSDoc基本语法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#jsdoc结点"><span class="nav-number">4.2.</span> <span class="nav-text"> JSDoc结点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dsl设计"><span class="nav-number">4.3.</span> <span class="nav-text"> DSL设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ast修改流程"><span class="nav-number">4.4.</span> <span class="nav-text"> AST修改流程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#后话"><span class="nav-number">5.</span> <span class="nav-text"> 后话</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关文档"><span class="nav-number">6.</span> <span class="nav-text"> 相关文档</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
 
       
 
@@ -1468,6 +986,10 @@
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.1.0"></script>
+
+
 
   
 
@@ -1839,18 +1361,6 @@
   
 
   
-  
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
   
 
   

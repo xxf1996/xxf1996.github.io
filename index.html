@@ -329,6 +329,163 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/ts-ast-transform-from-interface-to-data/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xuefeng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/photo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/ts-ast-transform-from-interface-to-data/" itemprop="url">
+                  TS AST转换实例：从类型声明生成初始化数据
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+                
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-21T22:50:32+08:00">2021-02-21</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/探索/" itemprop="url" rel="index"><span itemprop="name">探索</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p>如果在<code>TS</code>中声明了一些对象类型，使用这些对象类型来注解变量时，这些变量值的初始化往往需要自己手动按对象结构填写一遍，尽管有了<code>TS</code>类型声明和<code>IDE</code>的智能提示的加持下，这个填写过程还是很透明快速的；但是仔细一想，明明在声明这些对象类型的时候已经填过一层结构，为啥在数据初始化的时候<strong>又不得不去再填一遍</strong>，难道就不能自动根据声明的结构和一些简单的规则直接生成我们想要的初始化数据吗？</p>
+<p>这是可以做到的；答案就来自于<code>TS</code>本身提供的编译器相关的<code>API</code>，只要从编译的角度去看待上面的问题，那么解决方案还是“比较轻松”的；</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/post/ts-ast-transform-from-interface-to-data/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/vue-cli-remote-preset/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -946,163 +1103,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/ts-union-to-tuple/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="xuefeng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/photo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="snowdream">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/ts-union-to-tuple/" itemprop="url">
-                  TS类型转换：union（联合）转tuple（元组）
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-                
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-12-26T10:31:30+08:00">2020-12-26</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/探索/" itemprop="url" rel="index"><span itemprop="name">探索</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="需求"><a class="markdownIt-Anchor" href="#需求"></a> 需求</h2>
-<p>需求就是标题所示，需要有一个泛型类型能够把联合类型转化成一个<strong>相应顺序的元组类型</strong>：</p>
-<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> SourceUnion = <span class="string">'key1'</span> | <span class="string">'key2'</span> | <span class="string">'key3'</span></span><br><span class="line"><span class="keyword">type</span> TargetTuple = UnionToTuple&lt;SourceUnion&gt; <span class="comment">// ['key1', 'key2', 'key3']</span></span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/ts-union-to-tuple/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1154,7 +1154,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">91</span>
+                    <span class="site-state-item-count">92</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -1284,7 +1284,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">46</span>
+                      
+                    
+                    <span class="site-state-item-count">47</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
