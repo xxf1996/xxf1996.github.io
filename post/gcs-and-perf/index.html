@@ -99,32 +99,38 @@
 
 
 
-  <meta name="description" content="前言 每次看到后端发布的swagger文档，然后根据相关接口的响应体模型去编写对应的TS类型时，我就不禁在想，为何不能自动根据swagger文档模型来生成相应的TS声明呢？这不，网上一查资料果然已经有人造起了轮子，直接开干。">
-<meta name="keywords" content="TS">
+  <meta name="description" content="前言 最近老是在项目中发现一些由getComputedStyle方法引起的性能问题，无非就是一不小心引起了大量的样式计算（Recalculate Style）和重排（Layout），从而引起了线程阻塞，造成页面卡顿；">
+<meta name="keywords" content="DOM,CSS">
 <meta property="og:type" content="article">
-<meta property="og:title" content="将swagger文档模型转换为相应的TS声明">
-<meta property="og:url" content="https://note.xiexuefeng.cc/post/swagger-to-ts/index.html">
+<meta property="og:title" content="getComputedStyle 方法与性能问题">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/gcs-and-perf/index.html">
 <meta property="og:site_name" content="snowdream">
-<meta property="og:description" content="前言 每次看到后端发布的swagger文档，然后根据相关接口的响应体模型去编写对应的TS类型时，我就不禁在想，为何不能自动根据swagger文档模型来生成相应的TS声明呢？这不，网上一查资料果然已经有人造起了轮子，直接开干。">
+<meta property="og:description" content="前言 最近老是在项目中发现一些由getComputedStyle方法引起的性能问题，无非就是一不小心引起了大量的样式计算（Recalculate Style）和重排（Layout），从而引起了线程阻塞，造成页面卡顿；">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200607171501.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200607171515.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200607171527.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200607171538.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200607171550.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200607171600.png?imageslim">
-<meta property="og:updated_time" content="2020-06-07T09:17:14.055Z">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20210606233605.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20210606233619.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20210606233633.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20210606233641.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20210606233657.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20210606233713.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20210606233729.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20210606233747.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20210606233812.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20210606233826.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20210606233835.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20210606233843.png?imageslim">
+<meta property="og:updated_time" content="2021-06-06T15:39:47.658Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="将swagger文档模型转换为相应的TS声明">
-<meta name="twitter:description" content="前言 每次看到后端发布的swagger文档，然后根据相关接口的响应体模型去编写对应的TS类型时，我就不禁在想，为何不能自动根据swagger文档模型来生成相应的TS声明呢？这不，网上一查资料果然已经有人造起了轮子，直接开干。">
-<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/20200607171501.png?imageslim">
+<meta name="twitter:title" content="getComputedStyle 方法与性能问题">
+<meta name="twitter:description" content="前言 最近老是在项目中发现一些由getComputedStyle方法引起的性能问题，无非就是一不小心引起了大量的样式计算（Recalculate Style）和重排（Layout），从而引起了线程阻塞，造成页面卡顿；">
+<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/20210606233605.png?imageslim">
 
 
 
 
 
 
-  <link rel="canonical" href="https://note.xiexuefeng.cc/post/swagger-to-ts/"/>
+  <link rel="canonical" href="https://note.xiexuefeng.cc/post/gcs-and-perf/"/>
 
 
 
@@ -134,7 +140,7 @@
   };
 </script>
 
-  <title>将swagger文档模型转换为相应的TS声明 | snowdream</title>
+  <title>getComputedStyle 方法与性能问题 | snowdream</title>
   
 
 
@@ -337,7 +343,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/swagger-to-ts/">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/gcs-and-perf/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xuefeng">
@@ -354,7 +360,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">将swagger文档模型转换为相应的TS声明
+          <h1 class="post-title" itemprop="name headline">getComputedStyle 方法与性能问题
               
             
           </h1>
@@ -373,7 +379,7 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-07T17:16:06+08:00">2020-06-07</time>
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-06-06T23:35:36+08:00">2021-06-06</time>
             
 
             
@@ -394,7 +400,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/工具/" itemprop="url" rel="index"><span itemprop="name">工具</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/探索/" itemprop="url" rel="index"><span itemprop="name">探索</span></a></span>
 
                 
                 
@@ -429,39 +435,103 @@
 
       
         <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
-<p>每次看到后端发布的<code>swagger</code>文档，然后根据相关接口的响应体模型去编写对应的<code>TS</code>类型时，我就不禁在想，为何不能自动根据<code>swagger</code>文档模型来生成相应的<code>TS</code>声明呢？这不，网上一查资料果然已经有人造起了轮子，直接开干。</p>
+<p>最近老是在项目中发现一些由<code>getComputedStyle</code>方法引起的性能问题，无非就是一不小心引起了大量的样式计算（<code>Recalculate Style</code>）和重排（<code>Layout</code>），从而引起了线程阻塞，造成页面卡顿；</p>
 <a id="more"></a>
-<h2 id="方法一swagger-to-ts"><a class="markdownIt-Anchor" href="#方法一swagger-to-ts"></a> 方法一：swagger-to-ts</h2>
-<p>可以使用插件<a href="https://github.com/manifoldco/swagger-to-ts" target="_blank" rel="noopener">swagger-to-ts</a>直接利用命令转换；该插件支持从<code>swagger</code>生成的<code>yaml</code>或<code>json</code>配置进行转换，而且支持直接拉取网络地址的配置；</p>
-<p>安装完<code>npm</code>包后可以直接运行命令进行转换：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npx @manifoldco/swagger-to-ts swagger-url -o ts-file-path.ts</span><br></pre></td></tr></table></figure>
+<h2 id="getcomputedstyle-方法的原理"><a class="markdownIt-Anchor" href="#getcomputedstyle-方法的原理"></a> getComputedStyle 方法的原理</h2>
+<p><code>getComputedStyle</code>方法（以下简称为<code>gCS</code>）的语法就不多说了，可以移步：<a href="https://developer.mozilla.org/zh-CN/docs/Web/API/Window/getComputedStyle" target="_blank" rel="noopener">Window.getComputedStyle() - Web API 接口参考 | MDN</a>；</p>
+<p>其实疑惑最大的地方就在于为何<code>gCS</code>方法获取的计算样式<strong>一定会触发新的样式计算甚至是布局计算</strong>呢？熟悉浏览器渲染管线的人应该都清楚，样式计算环节处于构建<code>DOM tree</code>和构建<code>layout tree</code>之间，按理说绘制当前帧时每个<code>DOM</code>结点的计算样式（<code>Computed Style</code>）应该是已知的，为何不能从已经计算好的计算样式里面取值呢？</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/20210606233605.png?imageslim" alt="img"></p>
+<p>以上疑惑的答案就在规范里：</p>
+<blockquote>
+<p>Return a <strong>live</strong> CSS declaration block with the following properties<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup></p>
+</blockquote>
+<p>关键就在于这个<code>live</code>，即实时；由于其<font color="#39f"><strong>设计目的</strong></font>就是要返回一个实时的<code>CSS</code>声明块（实际上是一个只读的<code>CSSStyleDeclaration</code>对象），而执行<code>gCS</code>的当前<font color="#f00"><strong>并不能保证之前的计算样式一定和当前最新的计算样式是一致的</strong></font>，所以在获取相应属性的最新计算值时<strong>不得不</strong>重新计算样式（<code>Recalculate Style</code>），而某些<code>CSS</code>属性受到布局的影响也就不得不重新计算布局；</p>
+<h3 id="recalculate-style-的细节"><a class="markdownIt-Anchor" href="#recalculate-style-的细节"></a> Recalculate Style 的细节</h3>
+<ol>
+<li>
+<p>单纯地调用<code>gCS</code>方法并不会引起任何的<code>Recalculate Style</code>和重排；</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">template</span> <span class="attr">id</span>=<span class="string">"test"</span> <span class="attr">rule</span>=<span class="string">"v-"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"app"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">ul</span> <span class="attr">v-for</span>=<span class="string">"ul in list"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">li</span> <span class="attr">v-for</span>=<span class="string">"item in list"</span>&gt;</span>&#123;&#123; item &#125;&#125;<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br></pre></td></tr></table></figure>
+ <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> num = <span class="number">100</span></span><br><span class="line"><span class="keyword">const</span> list = <span class="keyword">new</span> <span class="built_in">Array</span>(num).fill(<span class="number">0</span>).map(<span class="function">(<span class="params">val, idx</span>) =&gt;</span> idx + <span class="number">1</span>)</span><br><span class="line"><span class="keyword">const</span> res = test.render(&#123;</span><br><span class="line">  list</span><br><span class="line">&#125;)</span><br><span class="line"><span class="built_in">document</span>.body.appendChild(res.content) <span class="comment">// 渲染100个相对复杂的DOM</span></span><br><span class="line"><span class="keyword">const</span> app = <span class="built_in">document</span>.getElementById(<span class="string">'app'</span>)</span><br><span class="line"><span class="keyword">const</span> doms = app.querySelectorAll(<span class="string">'ul'</span>)</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">relayoutTest</span> (<span class="params">el</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> style = getComputedStyle(el) <span class="comment">// 单纯地触发gCS</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.time(<span class="string">'getComputedStyle'</span>)</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; num; i++) &#123;</span><br><span class="line">  relayoutTest(doms[i])</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.timeEnd(<span class="string">'getComputedStyle'</span>) <span class="comment">// 计算同步执行时间</span></span><br></pre></td></tr></table></figure>
+<p><img src="http://pic.xiexuefeng.cc/markdown/20210606233619.png?imageslim" alt="img"></p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/20210606233633.png?imageslim" alt="img"></p>
+<p>通过上述测试可以看到，单纯地调用<code>gCS</code>方法并没有产生样式计算和重排，仅仅是一个普通的函数调用开销；</p>
+</li>
+<li>
+<p>只有通过<code>gCS</code>方法返回的<code>CSSStyleDeclaration</code>对象<font color="#f00"><strong>访问某个具体的属性值</strong></font>时才会同步地引起进一步<code>Recalculate Style</code>或重排；</p>
+ <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">relayoutTest</span> (<span class="params">el</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> style = getComputedStyle(el)</span><br><span class="line">  <span class="keyword">return</span> style.height <span class="comment">// 仅仅是访问height属性</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="http://pic.xiexuefeng.cc/markdown/20210606233641.png?imageslim" alt="img"></p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/20210606233657.png?imageslim" alt="img"></p>
+<p>可以看到，同样的测试条件，仅仅是进一步访问了<code>CSSStyleDeclaration</code>对象的<code>height</code>属性，就会立即触发重排并引发了一定时间的线程阻塞；</p>
+</li>
+<li>
+<p>至于说访问属性会引起重排还是普通的重新计算样式，这里推荐一篇博文的总结<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>：</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/20210606233713.png?imageslim" alt="img"></p>
+</li>
+</ol>
+<h2 id="一个案例"><a class="markdownIt-Anchor" href="#一个案例"></a> 一个案例</h2>
+<p>最近发现<code>element-plus</code>里面的<code>dialog</code>组件在某些场景下（子结点数量多时）存在着严重的卡顿，仔细一看<a href="https://github.com/element-plus/element-plus/blob/9b74a3dd03541e8aca369f5dd57be4305b26a326/packages/utils/aria.ts#L24" target="_blank" rel="noopener">源码</a>才发现是一处很典型的引发重排和样式计算的使用：</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/20210606233729.png?imageslim" alt="img"></p>
+<p>好家伙，一行代码出现了两个问题点，<code>gCS</code>方法的问题就不用多说了，然而访问这个<code>offsetParent</code>属性也会引起重排；要命的是，这行代码对于<code>dialog</code>组件内的<strong>几乎所有子结点</strong>会调用该方法，所以子结点一多就不可避免地卡顿，然而源码上也注释了这行代码<strong>存在潜在的风险</strong>，需要一些优化建议；</p>
+<p>所以这就引申出一个问题：对于<code>gCS</code>方法有没有更高效的使用和优化方法？</p>
+<h2 id="优化思考"><a class="markdownIt-Anchor" href="#优化思考"></a> 优化思考</h2>
+<h3 id="计算样式dom化"><a class="markdownIt-Anchor" href="#计算样式dom化"></a> 计算样式DOM化</h3>
+<p>所谓地计算样式<code>DOM</code>化，就是将每次<code>DOM</code>结点的计算样式结果存放到<code>DOM</code>接口中，而不再需要通过类似<code>gCS</code>方法来强制计算或重排，相当于是将最新的计算样式缓存到<code>DOM</code>上，只有<strong>真正的</strong>重排、重绘或组合才会引起计算样式地改变；</p>
+<p>可以思考一下我们使用<code>gCS</code>方法的一些场景，<strong>很多时候</strong>我们之所以用<code>gCS</code>方法来获取样式属性值，是因为<code>DOM</code>的<code>style</code>属性只会返回<font color="#f00"><strong>当前节点显式声明的样式属性</strong></font>（即通过样式文件，样式声明或内联样式所匹配到的样式），所以不得不用<code>gCS</code>方法来获取那些默认样式的值；很明显，这种情况下并不符合规范中所预想的<code>gCS</code>方法使用背景（即<font color="#39f">由于某些操作导致样式发生变化，且想要立即同步地获取到最新的计算样式</font>），我们明明只是想要获取一些<strong>压根就没有变化的计算样式</strong>，为何还要强制地去重排或样式计算；</p>
+<p>目前还不清楚各大浏览器引擎内部有没有缓存最新的计算样式，不过确实没有看到<code>W3C</code>有相关的规范从已有的计算样式中获取值的方法；考虑到缓存所有<code>DOM</code>的计算样式确实需要一定的内存开销，毕竟现在计算样式的属性数量已经高达<code>300+</code>了，所以不知道这种内存开销是否在可接受范围内；</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/20210606233747.png?imageslim" alt="img"></p>
+<h3 id="fastdom"><a class="markdownIt-Anchor" href="#fastdom"></a> fastdom</h3>
+<p>这是一个专门用来批量读/写<code>DOM</code>属性的库，用于解决读/写<code>DOM</code>属性所带来布局抖动或其它类似的开销；</p>
+<p>其原理很简单，代码也很少，推荐直接阅读<a href="https://github.com/wilsonpage/fastdom/blob/master/fastdom.js" target="_blank" rel="noopener">源码</a>；<code>fastdom</code>通过将读和写任务分别存到不同的任务队列中，并通过<code>rAF</code>（<code>requestAnimationFrame</code>）函数在下一帧执行相应的任务，且<strong>先批量执行读任务再批量执行写任务</strong>（这个顺序很重要）；</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/20210606233812.png?imageslim" alt="img"></p>
+<p>很明显，这种操作会把<code>DOM</code>读写操作改成异步任务（其实也就是下一帧），而不会阻塞当前帧的操作；不过如果批量的读写次数过多时，在下一帧执行时仍然会造成线程阻塞……</p>
+<h3 id="减少同时操作的-dom-数量"><a class="markdownIt-Anchor" href="#减少同时操作的-dom-数量"></a> 减少同时操作的 DOM 数量</h3>
+<p>在目前的条件下，如果同时使用<code>gCS</code>方法影响<code>DOM</code>的数量过多（<code>100+</code>，其实还跟<code>DOM</code>所影响的范围有关），会不可避免地阻塞到线程；哪怕是通过<code>fastdom</code>那种通过将操作异步化，其阻塞无非只是被延后，在这种情况下解决不了本质的问题；</p>
+<h3 id="结合-style-和默认属性值"><a class="markdownIt-Anchor" href="#结合-style-和默认属性值"></a> 结合 style 和默认属性值</h3>
+<p>上面也提到过：</p>
+<blockquote>
+<p><strong>很多时候</strong>我们之所以用<code>gCS</code>方法来获取样式属性值，是因为<code>DOM</code>的<code>style</code>属性只会返回<font color="#f00"><strong>当前节点显式声明的样式属性</strong></font>（即通过样式文件，样式声明或内联样式所匹配到的样式），所以不得不用<code>gCS</code>方法来获取那些<strong>默认样式</strong>的值；</p>
+</blockquote>
+<p>这不就是提供了一种思路吗？既然那些默认样式<code>style</code>属性上并不会有，但是默认样式的属性值<strong>规范中是有规定的</strong>（即已知的），不过考虑到由于某些样式可以继承，所以对于那些<font color="#39f">不可继承</font>的<code>CSS</code>属性，如果<code>style</code>属性得到的<font color="#f00">相应属性值为空</font>，那不就是代表其计算属性就是<strong>默认值</strong>！</p>
+<p>以上面的<code>element-plus</code>提到的问题为例，其通过<code>gCS</code>方法来访问<code>position</code>属性，由规范<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup>可知，这个属性正好是不可继承的属性！</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/20210606233826.png?imageslim" alt="img"></p>
+<p>所以之前的代码完全可以优化为：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> isVisible = <span class="function">(<span class="params">element: HTMLElement</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (process.env.NODE_ENV === <span class="string">'test'</span>) <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">  <span class="keyword">const</span> position = element.style.position || <span class="string">'static'</span> <span class="comment">// 为空就是默认值</span></span><br><span class="line">  <span class="keyword">return</span> position === <span class="string">'fixed'</span> ? <span class="literal">false</span> : element.offsetParent !== <span class="literal">null</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以通过测试对比一下两种方式获取<code>position</code>属性值的时间消耗：</p>
 <ul>
-<li><code>swagger-url</code>：<code>swagger</code>文档配置网络地址或本地配置路径</li>
-<li><code>ts-file-path.ts</code>：转换后的<code>TS</code>文件路径；</li>
+<li>
+<p><code>gCS</code>：</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">relayoutTest</span> (<span class="params">el</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> style = getComputedStyle(el)</span><br><span class="line">  <span class="keyword">return</span> style.position</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="http://pic.xiexuefeng.cc/markdown/20210606233835.png?imageslim" alt="img"></p>
+</li>
+<li>
+<p><code>style</code> + 默认值：</p>
+  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">relayoutTest</span> (<span class="params">el</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> el.style.position || <span class="string">'static'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="http://pic.xiexuefeng.cc/markdown/20210606233843.png?imageslim" alt="img"></p>
+</li>
 </ul>
-<p>而且该插件还会直接使用<code>prettier</code>对生成的<code>TS</code>文件进行美化，且支持指定<code>prettier</code>配置文件；听起来很棒，但实际上有坑，因为利用<code>prettier</code>转换的过程中可能会报错，且貌似无法控制<code>prettier</code>转换的开关……因此如果不符合<code>prettier</code>格式要求，那就生成不了<code>TS</code>文件了；</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200607171501.png?imageslim" alt="img"></p>
-<h2 id="方法二swagger官方转换器"><a class="markdownIt-Anchor" href="#方法二swagger官方转换器"></a> 方法二：swagger官方转换器</h2>
-<p><code>swagger</code>官方有个<a href="http://editor.swagger.io/#/" target="_blank" rel="noopener">在线编辑器</a>，这个在线编辑器功能十分强大，不仅能够在线编辑配置并实时预览<code>swagger</code>文档，还支持直接导入已有的配置（支持从网络地址导入）：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200607171515.png?imageslim" alt="img"></p>
-<p>导入后就可以进行<code>swagger</code>模型的转换操作，其中就有一种转换方式为<code>typescript-node</code>，导出后是比较通用的<code>TS</code>结构；</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200607171527.png?imageslim" alt="img"></p>
-<p>导出的<code>TS</code>效果如下：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200607171538.png?imageslim" alt="img"></p>
-<p>效果还是不错的，复制粘贴改造一下就很完美了，省下很多时间逐一敲代码了。</p>
-<h2 id="如何找到swagger配置地址"><a class="markdownIt-Anchor" href="#如何找到swagger配置地址"></a> 如何找到swagger配置地址？</h2>
-<p>一般而言，后端通过<code>swagger</code>自动生成文档网站然后部署，直接<strong>打开该网站</strong>，然后查看请求：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200607171550.png?imageslim" alt="img"></p>
-<p>一般会有一个请求地址为<code>xxx/swagger-doc</code>的请求，该地址就是获取<code>swagger</code>配置<code>json</code>文件的<code>API</code>地址；根据这个地址就可以直接去官方编辑器进行导入操作了；</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200607171600.png?imageslim" alt="img"></p>
-<h2 id="后话"><a class="markdownIt-Anchor" href="#后话"></a> 后话</h2>
-<p>使用转换工具得到的<code>TS</code>声明跟实际项目中实践的方式可能会有出入，不可避免地需要进行手动调整；如果需要做到一次转换无需修改即可使用，那估计得和后端制定双方遵循的模型规范，还有高度规范化的<code>TS</code>实践方式；</p>
+<p>显然，如果遇到其他的<strong>不可继承属性</strong>，也可以尝试用这种方式来优化性能；</p>
 <h2 id="相关文档"><a class="markdownIt-Anchor" href="#相关文档"></a> 相关文档</h2>
 <ul>
-<li><a href="https://stackoverflow.com/questions/48693335/how-to-generate-basic-typescript-interfaces-from-swagger-schema" target="_blank" rel="noopener">How to generate basic TypeScript interfaces from Swagger schema? - Stack Overflow</a></li>
-<li><a href="https://github.com/manifoldco/swagger-to-ts" target="_blank" rel="noopener">GitHub - manifoldco/swagger-to-ts: Generate TypeScript types from Swagger OpenAPI specs</a>：<code>npm</code>包，支持命令行转换</li>
-<li><a href="http://editor.swagger.io/#/" target="_blank" rel="noopener">Swagger Editor</a>：官方插件，支持转换为各种格式</li>
+<li><a href="https://www.zhihu.com/question/459893829/answer/1891646952" target="_blank" rel="noopener">为什么getComputedStyle挂在了window上而不是Element.prototype? - 贺师俊的回答 - 知乎</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/94380350" target="_blank" rel="noopener">【CSS进阶】原生JS getComputedStyle等方法解析 - 程序猿的生活的文章 - 知乎</a></li>
+<li><a href="https://gist.github.com/paulirish/5d52fb081b3570c81e3a" target="_blank" rel="noopener">What forces layout/reflow. The comprehensive list.</a>：引起重排的行为，包括了getComputedStyle方法引起重排的几种情况。</li>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/API/Window/getComputedStyle" target="_blank" rel="noopener">Window.getComputedStyle() - Web API 接口参考 | MDN</a></li>
+<li><a href="https://blog.lisong.hn.cn/%E5%89%8D%E7%AB%AF%E4%BC%98%E5%8C%96/2018/06/05/%E5%89%8D%E7%AB%AF%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B-force-reflow/" target="_blank" rel="noopener">https://blog.lisong.hn.cn/前端优化/2018/06/05/前端性能优化之-force-reflow/</a>：里面有关于getComputedStyle耗时的测试</li>
+<li><a href="https://www.zhangxinxu.com/wordpress/2012/05/getcomputedstyle-js-getpropertyvalue-currentstyle/" target="_blank" rel="noopener">获取元素CSS值之getComputedStyle方法熟悉 « 张鑫旭-鑫空间-鑫生活</a></li>
+<li><a href="https://developers.google.com/web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing" target="_blank" rel="noopener">Avoid Large, Complex Layouts and Layout Thrashing | Web Fundamentals</a>：一篇关于布局抖动优化的文章</li>
+<li><a href="http://www.hycoding.com/docs/browser/chapter3.html#%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB" target="_blank" rel="noopener">使用 fastdom 解决布局抖动 | Nx-website-component</a></li>
 </ul>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a href="https://drafts.csswg.org/cssom/#dom-window-getcomputedstyle" target="_blank" rel="noopener">https://drafts.csswg.org/cssom/#dom-window-getcomputedstyle</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a href="https://gist.github.com/paulirish/5d52fb081b3570c81e3a" target="_blank" rel="noopener">What forces layout/reflow. The comprehensive list.</a> <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p><a href="https://www.w3.org/TR/CSS2/visuren.html#propdef-position" target="_blank" rel="noopener">https://www.w3.org/TR/CSS2/visuren.html#propdef-position</a> <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
 
       
     </div>
@@ -483,7 +553,7 @@
     <strong>本文作者： </strong>xuefeng</li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://note.xiexuefeng.cc/post/swagger-to-ts/" title="将swagger文档模型转换为相应的TS声明">https://note.xiexuefeng.cc/post/swagger-to-ts/</a>
+    <a href="https://note.xiexuefeng.cc/post/gcs-and-perf/" title="getComputedStyle 方法与性能问题">https://note.xiexuefeng.cc/post/gcs-and-perf/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
@@ -496,7 +566,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/TS/" rel="tag"># TS</a>
+            <a href="/tags/DOM/" rel="tag"># DOM</a>
+          
+            <a href="/tags/CSS/" rel="tag"># CSS</a>
           
         </div>
       
@@ -509,8 +581,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/post/a-squish-animation-test/" rel="next" title="关于挤压动画的一种尝试">
-                <i class="fa fa-chevron-left"></i> 关于挤压动画的一种尝试
+              <a href="/post/owncloud-env-on-mac/" rel="next" title="在 Mac 上搭建 owncloud 环境">
+                <i class="fa fa-chevron-left"></i> 在 Mac 上搭建 owncloud 环境
               </a>
             
           </div>
@@ -518,10 +590,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/post/weixin-miniprogram-project/" rel="prev" title="小程序原生语法工程化">
-                小程序原生语法工程化 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -778,7 +846,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方法一swagger-to-ts"><span class="nav-number">2.</span> <span class="nav-text"> 方法一：swagger-to-ts</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方法二swagger官方转换器"><span class="nav-number">3.</span> <span class="nav-text"> 方法二：swagger官方转换器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何找到swagger配置地址"><span class="nav-number">4.</span> <span class="nav-text"> 如何找到swagger配置地址？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#后话"><span class="nav-number">5.</span> <span class="nav-text"> 后话</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关文档"><span class="nav-number">6.</span> <span class="nav-text"> 相关文档</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#getcomputedstyle-方法的原理"><span class="nav-number">2.</span> <span class="nav-text"> getComputedStyle 方法的原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#recalculate-style-的细节"><span class="nav-number">2.1.</span> <span class="nav-text"> Recalculate Style 的细节</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一个案例"><span class="nav-number">3.</span> <span class="nav-text"> 一个案例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#优化思考"><span class="nav-number">4.</span> <span class="nav-text"> 优化思考</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#计算样式dom化"><span class="nav-number">4.1.</span> <span class="nav-text"> 计算样式DOM化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fastdom"><span class="nav-number">4.2.</span> <span class="nav-text"> fastdom</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#减少同时操作的-dom-数量"><span class="nav-number">4.3.</span> <span class="nav-text"> 减少同时操作的 DOM 数量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#结合-style-和默认属性值"><span class="nav-number">4.4.</span> <span class="nav-text"> 结合 style 和默认属性值</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关文档"><span class="nav-number">5.</span> <span class="nav-text"> 相关文档</span></a></li></ol></div>
             
 
           </div>
