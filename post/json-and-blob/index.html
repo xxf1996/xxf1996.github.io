@@ -6,10 +6,10 @@
 
 
 <html class="theme-next gemini use-motion" lang="zh-CN">
-<head>
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
 
 
@@ -23,8 +23,8 @@
 
 
 
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
 
 
 
@@ -47,9 +47,9 @@
 
 
 
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
 
-<link href="/css/main.css?v=6.1.0" rel="stylesheet" type="text/css" />
+<link href="/css/main.css?v=6.1.0" rel="stylesheet" type="text/css">
 
 
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.1.0">
@@ -117,7 +117,7 @@
 
 
 
-  <link rel="canonical" href="https://note.xiexuefeng.cc/post/json-and-blob/"/>
+  <link rel="canonical" href="https://note.xiexuefeng.cc/post/json-and-blob/">
 
 
 
@@ -216,7 +216,7 @@
           
           <li class="menu-item menu-item-home">
     <a href="/" rel="section">
-      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
   </li>
         
         
@@ -224,7 +224,7 @@
           
           <li class="menu-item menu-item-about">
     <a href="/about/" rel="section">
-      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
   </li>
         
         
@@ -232,7 +232,7 @@
           
           <li class="menu-item menu-item-tags">
     <a href="/tags/" rel="section">
-      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
   </li>
         
         
@@ -240,7 +240,7 @@
           
           <li class="menu-item menu-item-categories">
     <a href="/categories/" rel="section">
-      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
   </li>
         
         
@@ -248,7 +248,7 @@
           
           <li class="menu-item menu-item-archives">
     <a href="/archives/" rel="section">
-      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
   </li>
 
       
@@ -258,7 +258,7 @@
             <a href="javascript:;" class="popup-trigger">
           
             
-              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
         </li>
       
     </ul>
@@ -278,9 +278,7 @@
       <i class="fa fa-times-circle"></i>
     </span>
     <div class="local-search-input-wrapper">
-      <input autocomplete="off"
-             placeholder="搜索..." spellcheck="false"
-             type="text" id="local-search-input">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
     </div>
   </div>
   <div id="local-search-result"></div>
@@ -334,7 +332,7 @@
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xuefeng">
-      <meta itemprop="description" content="">
+      <meta itemprop="description" content>
       <meta itemprop="image" content="/images/photo.jpg">
     </span>
 
@@ -376,7 +374,7 @@
           </span>
 
           
-            <span class="post-category" >
+            <span class="post-category">
             
               <span class="post-meta-divider">|</span>
             
@@ -435,7 +433,7 @@
 <li><code>FileReader</code>的<code>onload</code>方法会在解析成功时执行；此时该实例的<code>result</code>属性就是解析好的<code>json</code>字符串，进一步用<code>JSON.parse()</code>方法就能解析出<code>json</code>对象。</li>
 </ol>
 <p>可以将上述步骤封装成一个函数：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 将file对象（.json文件）转为json对象</span></span><br><span class="line"><span class="comment"> * @param &#123;File&#125; file file对象</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fileToJson</span> (<span class="params">file</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> reader = <span class="keyword">new</span> FileReader()</span><br><span class="line">    reader.onload = <span class="function"><span class="params">res</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">const</span> &#123; result &#125; = res.target <span class="comment">// 得到字符串</span></span><br><span class="line">      <span class="keyword">const</span> data = <span class="built_in">JSON</span>.parse(result) <span class="comment">// 解析成json对象</span></span><br><span class="line">      resolve(data)</span><br><span class="line">    &#125; <span class="comment">// 成功回调</span></span><br><span class="line">    reader.onerror = <span class="function"><span class="params">err</span> =&gt;</span> &#123;</span><br><span class="line">      reject(err)</span><br><span class="line">    &#125; <span class="comment">// 失败回调</span></span><br><span class="line">    reader.readAsText(<span class="keyword">new</span> Blob([file]), <span class="string">'utf-8'</span>) <span class="comment">// 按照utf-8编码解析</span></span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 将file对象（.json文件）转为json对象</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;File&#125;</span> </span>file file对象</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fileToJson</span> (<span class="params">file</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> reader = <span class="keyword">new</span> FileReader()</span><br><span class="line">    reader.onload = <span class="function"><span class="params">res</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">const</span> &#123; result &#125; = res.target <span class="comment">// 得到字符串</span></span><br><span class="line">      <span class="keyword">const</span> data = <span class="built_in">JSON</span>.parse(result) <span class="comment">// 解析成json对象</span></span><br><span class="line">      resolve(data)</span><br><span class="line">    &#125; <span class="comment">// 成功回调</span></span><br><span class="line">    reader.onerror = <span class="function"><span class="params">err</span> =&gt;</span> &#123;</span><br><span class="line">      reject(err)</span><br><span class="line">    &#125; <span class="comment">// 失败回调</span></span><br><span class="line">    reader.readAsText(<span class="keyword">new</span> Blob([file]), <span class="string">'utf-8'</span>) <span class="comment">// 按照utf-8编码解析</span></span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="json数据对象转为blob对象"><a class="markdownIt-Anchor" href="#json数据对象转为blob对象"></a> json数据（对象）转为Blob对象</h3>
 <p>由于<code>Blob</code><strong>构造函数</strong>本身就支持将字符串转为文件，因此转换比较简单：</p>
 <ol>
@@ -451,7 +449,7 @@
 <li><code>download</code>属性：当<code>&lt;a&gt;</code>标签设置了该属性时，点击标签时浏览器不会跳转链接，而是将对应链接作为文件进行下载保存，而文件的名字就是<code>download</code>的属性值。</li>
 </ul>
 <p>可以将上述流程封装成一个将<code>json</code>对象转化成文件并自动下载的函数：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 利用a标签的download属性和blob转url，将json字符串转为json文件进行下载</span></span><br><span class="line"><span class="comment"> * @param &#123;*&#125; data json对象</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">downloadJson</span> (<span class="params">data</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> download = <span class="built_in">document</span>.createElement(<span class="string">'a'</span>) <span class="comment">// 匿名a标签</span></span><br><span class="line">  <span class="keyword">const</span> blob = <span class="keyword">new</span> Blob([<span class="built_in">JSON</span>.stringify(data)], &#123;</span><br><span class="line">    type: <span class="string">'application/json'</span></span><br><span class="line">  &#125;)</span><br><span class="line">  <span class="keyword">const</span> url = URL.createObjectURL(blob) <span class="comment">// blob转url</span></span><br><span class="line">  download.href = url</span><br><span class="line">  download.download = <span class="string">'filename.json'</span> <span class="comment">// 文件名</span></span><br><span class="line">  download.click() <span class="comment">// 触发下载</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 利用a标签的download属性和blob转url，将json字符串转为json文件进行下载</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;*&#125;</span> </span>data json对象</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">downloadJson</span> (<span class="params">data</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> download = <span class="built_in">document</span>.createElement(<span class="string">'a'</span>) <span class="comment">// 匿名a标签</span></span><br><span class="line">  <span class="keyword">const</span> blob = <span class="keyword">new</span> Blob([<span class="built_in">JSON</span>.stringify(data)], &#123;</span><br><span class="line">    type: <span class="string">'application/json'</span></span><br><span class="line">  &#125;)</span><br><span class="line">  <span class="keyword">const</span> url = URL.createObjectURL(blob) <span class="comment">// blob转url</span></span><br><span class="line">  download.href = url</span><br><span class="line">  download.download = <span class="string">'filename.json'</span> <span class="comment">// 文件名</span></span><br><span class="line">  download.click() <span class="comment">// 触发下载</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="相关文档"><a class="markdownIt-Anchor" href="#相关文档"></a> 相关文档</h2>
 <ul>
 <li><a href="https://developer.mozilla.org/zh-CN/docs/Web/API/URL/createObjectURL" target="_blank" rel="noopener">URL.createObjectURL() - Web API 接口参考 | MDN</a></li>
@@ -582,9 +580,7 @@
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
-              <img class="site-author-image" itemprop="image"
-                src="/images/photo.jpg"
-                alt="xuefeng" />
+              <img class="site-author-image" itemprop="image" src="/images/photo.jpg" alt="xuefeng">
             
               <p class="site-author-name" itemprop="name">xuefeng</p>
               <p class="site-description motion-element" itemprop="description">时不我待</p>
@@ -597,7 +593,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">94</span>
+                    <span class="site-state-item-count">95</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -731,7 +727,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">48</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">50</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -810,7 +810,7 @@
 
 
 
-  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.7.1</div>
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.9.0</div>
 
 
 
