@@ -1,139 +1,53 @@
 <!DOCTYPE html>
-
-
-
-  
-
-
-<html class="theme-next gemini use-motion" lang="zh-CN">
-<head><meta name="generator" content="Hexo 3.9.0">
+<html lang="zh-CN">
+<head>
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
-<meta name="theme-color" content="#222">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
 
 
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-
-
-
-
-
-
-
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
-
-<link href="/css/main.css?v=6.1.0" rel="stylesheet" type="text/css">
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.1.0">
-
-
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.1.0">
-
-
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.1.0">
-
-
-  <link rel="mask-icon" href="/images/logo.svg?v=6.1.0" color="#222">
-
-
-
-
-
-
-
-
-
-<script type="text/javascript" id="hexo.configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    root: '/',
-    scheme: 'Gemini',
-    version: '6.1.0',
-    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
-    fancybox: false,
-    fastclick: false,
-    lazyload: false,
-    tabs: true,
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
-    algolia: {
-      applicationID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    }
-  };
-</script>
-
-
-  
-
-
-
-
-  <meta name="description" content="前言 还记得刚开始出来找工作那段时间，有一次去一家公司面试，结果出了个小项目要当场实现，然后是一个移动端登录界面，要求整体位置水平垂直居中，结果当时基础薄弱，根本想不起来怎么实现水平垂直居中，现在想起来都有点自愧不如。 后面虽然回去详细了查看了一些使元素水平垂直居中的方法，也有所收获，但是也没来得及整理一下具体方法。">
-<meta name="keywords" content="css3,css,flex">
+    <meta name="description" content="前言 还记得刚开始出来找工作那段时间，有一次去一家公司面试，结果出了个小项目要当场实现，然后是一个移动端登录界面，要求整体位置水平垂直居中，结果当时基础薄弱，根本想不起来怎么实现水平垂直居中，现在想起来都有点自愧不如。 后面虽然回去详细了查看了一些使元素水平垂直居中的方法，也有所收获，但是也没来得及整理一下具体方法。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="css元素水平垂直居中的方法">
 <meta property="og:url" content="https://note.xiexuefeng.cc/post/css-center-center/index.html">
 <meta property="og:site_name" content="snowdream">
 <meta property="og:description" content="前言 还记得刚开始出来找工作那段时间，有一次去一家公司面试，结果出了个小项目要当场实现，然后是一个移动端登录界面，要求整体位置水平垂直居中，结果当时基础薄弱，根本想不起来怎么实现水平垂直居中，现在想起来都有点自愧不如。 后面虽然回去详细了查看了一些使元素水平垂直居中的方法，也有所收获，但是也没来得及整理一下具体方法。">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180914/Ek1fcGICDL.png?imageslim">
-<meta property="og:updated_time" content="2020-05-30T08:18:14.332Z">
+<meta property="article:published_time" content="2018-09-16T03:06:07.000Z">
+<meta property="article:modified_time" content="2020-05-30T08:18:14.332Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="css3">
+<meta property="article:tag" content="css">
+<meta property="article:tag" content="flex">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="css元素水平垂直居中的方法">
-<meta name="twitter:description" content="前言 还记得刚开始出来找工作那段时间，有一次去一家公司面试，结果出了个小项目要当场实现，然后是一个移动端登录界面，要求整体位置水平垂直居中，结果当时基础薄弱，根本想不起来怎么实现水平垂直居中，现在想起来都有点自愧不如。 后面虽然回去详细了查看了一些使元素水平垂直居中的方法，也有所收获，但是也没来得及整理一下具体方法。">
 <meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/180914/Ek1fcGICDL.png?imageslim">
 
 
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/css-center-center/">
 
 
 
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/css-center-center/","path":"post/css-center-center/","title":"css元素水平垂直居中的方法"}</script>
 
-  <link rel="canonical" href="https://note.xiexuefeng.cc/post/css-center-center/">
-
-
-
-<script type="text/javascript" id="page.configurations">
-  CONFIG.page = {
-    sidebar: "",
-  };
-</script>
-
-  <title>css元素水平垂直居中的方法 | snowdream</title>
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>css元素水平垂直居中的方法 | snowdream</title>
   
-
-
-
 
 
 
@@ -141,305 +55,241 @@
 
 
   <noscript>
-  <style type="text/css">
-    .use-motion .motion-element,
-    .use-motion .brand,
-    .use-motion .menu-item,
-    .sidebar-inner,
-    .use-motion .post-block,
-    .use-motion .pagination,
-    .use-motion .comments,
-    .use-motion .post-header,
-    .use-motion .post-body,
-    .use-motion .collection-title { opacity: initial; }
-
-    .use-motion .logo,
-    .use-motion .site-title,
-    .use-motion .site-subtitle {
-      opacity: initial;
-      top: initial;
-    }
-
-    .use-motion {
-      .logo-line-before i { left: initial; }
-      .logo-line-after i { right: initial; }
-    }
-  </style>
-</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </head>
 
-<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
 
-  
-  
-    
-  
-
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
-    <div class="headband"></div>
-
-    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-wrapper">
-  <div class="site-meta ">
-    
-
-    <div class="custom-logo-site-title">
-      <a href="/" class="brand" rel="start">
-        <span class="logo-line-before"><i></i></span>
-        <span class="site-title">snowdream</span>
-        <span class="logo-line-after"><i></i></span>
-      </a>
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
     </div>
-      
-        <p class="site-subtitle">record and share</p>
-      
   </div>
 
-  <div class="site-nav-toggle">
-    <button aria-label="切换导航栏">
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-    </button>
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
   </div>
 </div>
-
 
 
 
 <nav class="site-nav">
-  
-    <ul id="menu" class="menu">
-      
-        
-        
-        
-          
-          <li class="menu-item menu-item-home">
-    <a href="/" rel="section">
-      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
-  </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-about">
-    <a href="/about/" rel="section">
-      <i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
-  </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-tags">
-    <a href="/tags/" rel="section">
-      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
-  </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-categories">
-    <a href="/categories/" rel="section">
-      <i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
-  </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-archives">
-    <a href="/archives/" rel="section">
-      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
-  </li>
-
-      
-      
-        <li class="menu-item menu-item-search">
-          
-            <a href="javascript:;" class="popup-trigger">
-          
-            
-              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
-        </li>
-      
-    </ul>
-  
-
-  
-
-  
-    <div class="site-search">
-      
-  <div class="popup search-popup local-search-popup">
-  <div class="local-search-header clearfix">
-    <span class="search-icon">
-      <i class="fa fa-search"></i>
-    </span>
-    <span class="popup-btn-close">
-      <i class="fa fa-times-circle"></i>
-    </span>
-    <div class="local-search-input-wrapper">
-      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
-    </div>
-  </div>
-  <div id="local-search-result"></div>
-</div>
-
-
-
-    </div>
-  
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
 </nav>
 
 
 
-  
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
 
-
+    </div>
+  </div>
 
 </div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text"> 实现方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%BA%E5%AE%9A%E5%AE%BD%E9%AB%98%E7%9A%84%E5%85%83%E7%B4%A0"><span class="nav-number">2.1.</span> <span class="nav-text"> 固定宽高的元素</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%B8%80%E8%B4%9Fmargin-position-50-50"><span class="nav-number">2.1.1.</span> <span class="nav-text"> 方法一：负margin + position + (50%, 50%)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%BA%8Cmarginauto-position-0000"><span class="nav-number">2.1.2.</span> <span class="nav-text"> 方法二：margin:auto + position + (0,0,0,0)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%B8%89position-calc"><span class="nav-number">2.1.3.</span> <span class="nav-text"> 方法三：position + calc</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E5%AE%9A%E5%AE%BD%E9%AB%98%E7%9A%84%E5%85%83%E7%B4%A0"><span class="nav-number">2.2.</span> <span class="nav-text"> 不定宽高的元素</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%B8%80flex%E5%A4%A7%E6%B3%95"><span class="nav-number">2.2.1.</span> <span class="nav-text"> 方法一：flex大法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%BA%8Cposition-50-50-transform"><span class="nav-number">2.2.2.</span> <span class="nav-text"> 方法二：position + (50%, 50%) + transform</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8E%E8%AF%9D"><span class="nav-number">3.</span> <span class="nav-text"> 后话</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="nav-number">4.</span> <span class="nav-text"> 参考文章</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">102</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">63</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
     </header>
 
     
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
 
 
-    <main id="main" class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          
-            
+    <div class="main-inner post posts-expand">
 
-          
-          <div id="content" class="content">
-            
-
-  <div id="posts" class="posts-expand">
-    
 
   
 
-  
+
+<div class="post-block">
   
   
 
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/css-center-center/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="xuefeng">
-      <meta itemprop="description" content>
       <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
     </span>
 
-    
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="css元素水平垂直居中的方法 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
       <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          css元素水平垂直居中的方法
+        </h1>
 
-        
-        
-          <h1 class="post-title" itemprop="name headline">css元素水平垂直居中的方法
-              
-            
-          </h1>
-        
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
 
-        <div class="post-meta">
-          <span class="post-time">
-            
-                
-            
+      <time title="创建时间：2018-09-16 11:06:07" itemprop="dateCreated datePublished" datetime="2018-09-16T11:06:07+08:00">2018-09-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
+        </span>
+    </span>
 
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-16T11:06:07+08:00">2018-09-16</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/笔记/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
+  
+</div>
 
         </div>
       </header>
-    
 
     
     
     
     <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
         <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
 <p>还记得刚开始出来找工作那段时间，有一次去一家公司面试，结果出了个小项目要当场实现，然后是一个移动端登录界面，要求整体位置水平垂直居中，结果当时基础薄弱，根本想不起来怎么实现水平垂直居中，现在想起来都有点自愧不如。</p>
 <p>后面虽然回去详细了查看了一些使元素水平垂直居中的方法，也有所收获，但是也没来得及整理一下具体方法。</p>
-<a id="more"></a>
+<span id="more"></span>
 <h2 id="实现方法"><a class="markdownIt-Anchor" href="#实现方法"></a> 实现方法</h2>
-<p>一般来说，根据元素的宽高是否是<font color="red"><strong>固定</strong></font>的还是<font color="red"><strong>不定</strong></font>的（即随内容不同而改变），适用的方法也有所不同。</p>
+<p>一般来说，根据元素的宽高是否是<font color=red><strong>固定</strong></font>的还是<font color=red><strong>不定</strong></font>的（即随内容不同而改变），适用的方法也有所不同。</p>
 <h3 id="固定宽高的元素"><a class="markdownIt-Anchor" href="#固定宽高的元素"></a> 固定宽高的元素</h3>
 <h4 id="方法一负margin-position-50-50"><a class="markdownIt-Anchor" href="#方法一负margin-position-50-50"></a> 方法一：负margin + position + (50%, 50%)</h4>
-<p>由于元素本身的宽高是固定的，也就是无论其内容怎么改变，<code>width</code>和<code>height</code>是不变的，因此可以直接『<strong>计算</strong>』出该元素在其父元素内水平垂直居中的位置：<font color="#39f"><strong>正中心位置</strong></font>（即<code>left</code>和<code>right</code>都为<code>50%</code>的位置）向<font color="red"><strong>左上角方向偏移自身宽高的一半</strong></font>。如图所示：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/180914/Ek1fcGICDL.png?imageslim" alt="mark"><center>图1</center></p>
+<p>由于元素本身的宽高是固定的，也就是无论其内容怎么改变，<code>width</code>和<code>height</code>是不变的，因此可以直接『<strong>计算</strong>』出该元素在其父元素内水平垂直居中的位置：<font color=#39f><strong>正中心位置</strong></font>（即<code>left</code>和<code>right</code>都为<code>50%</code>的位置）向<font color=red><strong>左上角方向偏移自身宽高的一半</strong></font>。如图所示：</p>
+<p><img src="http://pic.xiexuefeng.cc/markdown/180914/Ek1fcGICDL.png?imageslim" alt="mark" /><center>图1</center></p>
 <p>关键就在于使用负<code>margin</code>进行偏移，使元素处于水平居中的位置：</p>
 <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.father</span>&#123;</span><br><span class="line">    <span class="attribute">position</span>: relative;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.children</span>&#123;</span><br><span class="line">    <span class="attribute">position</span>: absolute;</span><br><span class="line">    <span class="attribute">left</span>: <span class="number">50%</span>;</span><br><span class="line">    <span class="attribute">top</span>: <span class="number">50%</span>;</span><br><span class="line">    <span class="attribute">margin-left</span>: -<span class="number">0.5</span>*w; <span class="comment">/* w和h就是该元素本身的宽高 */</span></span><br><span class="line">    <span class="attribute">margin-top</span>: -<span class="number">0.5</span>*h;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h4 id="方法二marginauto-position-0000"><a class="markdownIt-Anchor" href="#方法二marginauto-position-0000"></a> 方法二：margin:auto + position + (0,0,0,0)</h4>
 <p>这种方法实际上利用了<code>margin:auto</code>这个属性的特点：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">margin:auto的填充规则如下。</span><br><span class="line"></span><br><span class="line">（1）如果一侧定值，一侧auto，则auto为剩余空间大小。</span><br><span class="line"></span><br><span class="line">（2）如果两侧均是auto，则平分剩余空间。</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">margin:auto的填充规则如下。</span><br><span class="line"></span><br><span class="line">（1）如果一侧定值，一侧auto，则auto为剩余空间大小。</span><br><span class="line"></span><br><span class="line">（2）如果两侧均是auto，则平分剩余空间。</span><br></pre></td></tr></table></figure>
 <blockquote>
 <p>以上来自张鑫旭大佬的《css世界》—— 4.3.4　深入理解CSS中的margin:auto</p>
 </blockquote>
-<p>可以这么<strong>理解</strong>：当设置元素的<code>left,right,top,bottom</code>都为<code>0</code>时，代表该元素实际上可以分配的空间大小为父元素（最近的非<code>static</code>祖先元素）的全部大小（即自动填充父元素所有空间），但是该元素又设置了<code>width</code>和<code>height</code>属性，所以就有所谓的『<strong>剩余空间</strong>』，利用<code>margin:auto</code>就可以<font color="red"><strong>自动平分</strong></font>『<strong>剩余空间</strong>』，使『<strong>剩余空间</strong>』成为<code>margin</code>。</p>
+<p>可以这么<strong>理解</strong>：当设置元素的<code>left,right,top,bottom</code>都为<code>0</code>时，代表该元素实际上可以分配的空间大小为父元素（最近的非<code>static</code>祖先元素）的全部大小（即自动填充父元素所有空间），但是该元素又设置了<code>width</code>和<code>height</code>属性，所以就有所谓的『<strong>剩余空间</strong>』，利用<code>margin:auto</code>就可以<font color=red><strong>自动平分</strong></font>『<strong>剩余空间</strong>』，使『<strong>剩余空间</strong>』成为<code>margin</code>。</p>
 <p>基本<code>css</code>形式如下：</p>
 <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.father</span>&#123;</span><br><span class="line">    <span class="attribute">position</span>: relative;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.children</span>&#123;</span><br><span class="line">    <span class="attribute">position</span>: absolute;</span><br><span class="line">    <span class="attribute">left</span>: <span class="number">0</span>;</span><br><span class="line">    <span class="attribute">right</span>: <span class="number">0</span>;</span><br><span class="line">    <span class="attribute">top</span>: <span class="number">0</span>;</span><br><span class="line">    <span class="attribute">bottom</span>: <span class="number">0</span>;</span><br><span class="line">    <span class="attribute">width</span>: w; <span class="comment">/* w和h为固定宽高 */</span></span><br><span class="line">    <span class="attribute">height</span>: h;</span><br><span class="line">    <span class="attribute">margin</span>: auto;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h4 id="方法三position-calc"><a class="markdownIt-Anchor" href="#方法三position-calc"></a> 方法三：position + calc</h4>
@@ -449,7 +299,7 @@
 <h3 id="不定宽高的元素"><a class="markdownIt-Anchor" href="#不定宽高的元素"></a> 不定宽高的元素</h3>
 <p>所谓的不定宽高就是指元素的<code>width</code>和<code>height</code>都没有预先设置，而是<strong>随内容</strong>不同发生改变（撑开）。既然适用于不定宽高元素的水平垂直居中，那肯定也适用于固定宽高元素。</p>
 <h4 id="方法一flex大法"><a class="markdownIt-Anchor" href="#方法一flex大法"></a> 方法一：flex大法</h4>
-<p>说句实话，要是<code>css3</code><strong>完全普及并没有兼容性问题</strong>的时候，所有的布局几乎都可以使用<code>flex</code>伸缩盒模型来完成，根本不用像之前那么麻烦。利用<code>flex</code>进行水平垂直居中，主要是使用<code>justify-content</code>和<code>align-items</code>这两个属性，前者是用来控制<font color="red"><strong>主轴元素</strong></font>的排列布局方式，而后者就是用来控制<font color="red"><strong>侧轴元素</strong></font>的排列布局方式。而<code>flex</code>盒模型中默认的主轴就是水平方向，所以可以用<code>justify-content:center;</code>使元素水平居中，用<code>align-items</code>使元素垂直居中：</p>
+<p>说句实话，要是<code>css3</code><strong>完全普及并没有兼容性问题</strong>的时候，所有的布局几乎都可以使用<code>flex</code>伸缩盒模型来完成，根本不用像之前那么麻烦。利用<code>flex</code>进行水平垂直居中，主要是使用<code>justify-content</code>和<code>align-items</code>这两个属性，前者是用来控制<font color=red><strong>主轴元素</strong></font>的排列布局方式，而后者就是用来控制<font color=red><strong>侧轴元素</strong></font>的排列布局方式。而<code>flex</code>盒模型中默认的主轴就是水平方向，所以可以用<code>justify-content:center;</code>使元素水平居中，用<code>align-items</code>使元素垂直居中：</p>
 <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.father</span>&#123;</span><br><span class="line">    <span class="attribute">display</span>: flex;</span><br><span class="line">    <span class="attribute">justify-content</span>: center;</span><br><span class="line">    <span class="attribute">align-items</span>: center;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h4 id="方法二position-50-50-transform"><a class="markdownIt-Anchor" href="#方法二position-50-50-transform"></a> 方法二：position + (50%, 50%) + transform</h4>
 <p>利用<code>css3</code>的<code>tansform</code>属性也可以使元素水平垂直居中，其原理和<code>图1</code>一样，先定位到<code>(50%, 50%)</code>，然后使用<code>transform</code>属性中的<code>translate()</code>方法进行偏移即可：</p>
@@ -458,497 +308,94 @@
 <p>不过使用上面方法的时候，我发现如果该元素没有设置宽度（子元素是文本，<strong>宽度由内容撑开</strong>），那么该元素的最大宽度只能到父元素的<code>50%</code>（即文本宽度超过<code>50%</code>时会自动换行）。</p>
 <h2 id="后话"><a class="markdownIt-Anchor" href="#后话"></a> 后话</h2>
 <p>查了一些文章和资料后，其实还有一些方法可以实现水平垂直居中；如<code>table</code>布局以及<code>line-height</code>+<code>vertical-align</code>+<code>text-align</code>，但是我在尝试<code>line-height</code>方案时，有时会不成功，也不知道原因是啥。</p>
-<p>所有的实现效果可以查看：<a href="http://xiexuefeng.cc/demo/css_test/centet_center.html" target="_blank" rel="noopener">http://xiexuefeng.cc/demo/css_test/centet_center.html</a></p>
+<p>所有的实现效果可以查看：<a target="_blank" rel="noopener" href="http://xiexuefeng.cc/demo/css_test/centet_center.html">http://xiexuefeng.cc/demo/css_test/centet_center.html</a></p>
 <h2 id="参考文章"><a class="markdownIt-Anchor" href="#参考文章"></a> 参考文章</h2>
 <ol>
-<li><a href="https://juejin.im/post/5b9a4477f265da0ad82bf921" target="_blank" rel="noopener">CSS实现水平垂直居中的10种方式（史上最全）</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.im/post/5b9a4477f265da0ad82bf921">CSS实现水平垂直居中的10种方式（史上最全）</a></li>
 <li>《css世界》—— 4.3.4 深入理解CSS中的margin:auto</li>
 </ol>
 
-      
     </div>
 
     
-
     
-    
-    
-
-    
-
-    
-
-    
-      <div>
-        <ul class="post-copyright">
-  <li class="post-copyright-author">
-    <strong>本文作者： </strong>xuefeng</li>
-  <li class="post-copyright-link">
-    <strong>本文链接：</strong>
-    <a href="https://note.xiexuefeng.cc/post/css-center-center/" title="css元素水平垂直居中的方法">https://note.xiexuefeng.cc/post/css-center-center/</a>
-  </li>
-  <li class="post-copyright-license">
-    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
-</ul>
-
-      </div>
     
 
     <footer class="post-footer">
-      
-        <div class="post-tags">
           
-            <a href="/tags/css3/" rel="tag"># css3</a>
-          
-            <a href="/tags/css/" rel="tag"># css</a>
-          
-            <a href="/tags/flex/" rel="tag"># flex</a>
-          
-        </div>
-      
 
-      
-      
-      
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/css-center-center/" title="css元素水平垂直居中的方法">https://note.xiexuefeng.cc/post/css-center-center/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
 
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/post/node-mongodb-server/" rel="next" title="在node上搭建一个mongodb服务器">
-                <i class="fa fa-chevron-left"></i> 在node上搭建一个mongodb服务器
-              </a>
-            
+          <div class="post-tags">
+              <a href="/tags/css3/" rel="tag"># css3</a>
+              <a href="/tags/css/" rel="tag"># css</a>
+              <a href="/tags/flex/" rel="tag"># flex</a>
           </div>
 
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/post/js-value-use/" rel="prev" title="js数据类型及复制引用">
-                js数据类型及复制引用 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
-
-      
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-
-    <div class="post-spread">
-      
-    </div>
-  </div>
-
-
-          </div>
-          
-
-  
-
-
-
-        </div>
         
-          
-  
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
-    </div>
-  </div>
 
-  <aside id="sidebar" class="sidebar">
-    
-    <div class="sidebar-inner">
-
-      
-
-      
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
-
-      <section class="site-overview-wrap sidebar-panel">
-        <div class="site-overview">
-          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-            
-              <img class="site-author-image" itemprop="image" src="/images/photo.jpg" alt="xuefeng">
-            
-              <p class="site-author-name" itemprop="name">xuefeng</p>
-              <p class="site-description motion-element" itemprop="description">时不我待</p>
-          </div>
-
-          
-            <nav class="site-state motion-element">
-              
-                <div class="site-state-item site-state-posts">
-                
-                  <a href="/archives/">
-                
-                    <span class="site-state-item-count">96</span>
-                    <span class="site-state-item-name">日志</span>
-                  </a>
-                </div>
-              
-
-              
-                
-                
-                <div class="site-state-item site-state-categories">
-                  <a href="/categories/index.html">
-                    
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">6</span>
-                    <span class="site-state-item-name">分类</span>
-                  </a>
-                </div>
-              
-
-              
-                
-                
-                <div class="site-state-item site-state-tags">
-                  <a href="/tags/index.html">
-                    
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">53</span>
-                    <span class="site-state-item-name">标签</span>
-                  </a>
-                </div>
-              
-            </nav>
-          
-
-          
-
-          
-            <div class="links-of-author motion-element">
-              
-                <span class="links-of-author-item">
-                  <a href="https://github.com/xxf1996" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
-                  
-                </span>
-              
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/node-mongodb-server/" rel="prev" title="在node上搭建一个mongodb服务器">
+                  <i class="fa fa-chevron-left"></i> 在node上搭建一个mongodb服务器
+                </a>
             </div>
-          
-
-          
-          
-
-          
-          
-
-          
-            
-          
-          
-
-        </div>
-      </section>
-
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现方法"><span class="nav-number">2.</span> <span class="nav-text"> 实现方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#固定宽高的元素"><span class="nav-number">2.1.</span> <span class="nav-text"> 固定宽高的元素</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#方法一负margin-position-50-50"><span class="nav-number">2.1.1.</span> <span class="nav-text"> 方法一：负margin + position + (50%, 50%)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#方法二marginauto-position-0000"><span class="nav-number">2.1.2.</span> <span class="nav-text"> 方法二：margin:auto + position + (0,0,0,0)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#方法三position-calc"><span class="nav-number">2.1.3.</span> <span class="nav-text"> 方法三：position + calc</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#不定宽高的元素"><span class="nav-number">2.2.</span> <span class="nav-text"> 不定宽高的元素</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#方法一flex大法"><span class="nav-number">2.2.1.</span> <span class="nav-text"> 方法一：flex大法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#方法二position-50-50-transform"><span class="nav-number">2.2.2.</span> <span class="nav-text"> 方法二：position + (50%, 50%) + transform</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#后话"><span class="nav-number">3.</span> <span class="nav-text"> 后话</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文章"><span class="nav-number">4.</span> <span class="nav-text"> 参考文章</span></a></li></ol></div>
-            
-
+            <div class="post-nav-item">
+                <a href="/post/js-value-use/" rel="next" title="js数据类型及复制引用">
+                  js数据类型及复制引用 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
           </div>
-        </section>
-      <!--/noindex-->
-      
-
-      
-
-    </div>
-  </aside>
-
-
-        
-      </div>
-    </main>
-
-    <footer id="footer" class="footer">
-      <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
-  <span class="with-love" id="animate">
-    <i class="fa fa-user"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">xuefeng</span>
-
-  
-
-  
+    </footer>
+  </article>
 </div>
 
 
 
 
-  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.9.0</div>
 
 
+</div>
+  </main>
 
-  <span class="post-meta-divider">|</span>
-
-
-
-  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Gemini</a> v6.1.0</div>
-
+  <footer class="footer">
+    <div class="footer-inner">
 
 
-
-        
-
-
-
-
-
-
-
-
-        
-      </div>
-    </footer>
-
-    
-      <div class="back-to-top">
-        <i class="fa fa-arrow-up"></i>
-        
-      </div>
-    
-
-    
-
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
 
-  
-
-<script type="text/javascript">
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
-  }
-</script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    </div>
+  </footer>
 
   
-  
-    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
-  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
 
   
-  
-    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-  
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/utils.js?v=6.1.0"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=6.1.0"></script>
-
-
-
-  
-  
-
-
-  <script type="text/javascript" src="/js/src/affix.js?v=6.1.0"></script>
-
-  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.1.0"></script>
-
-
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.1.0"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=6.1.0"></script>
-
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.1.0"></script>
-
-
-
-  
-
-
-
-	
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
 
 
 
@@ -959,374 +406,11 @@
 
 
 
-
   
 
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 
 
-
-
-
-
-
-
-
-  
-
-  <script type="text/javascript">
-    // Popup Window;
-    var isfetched = false;
-    var isXml = true;
-    // Search DB path;
-    var search_path = "search.xml";
-    if (search_path.length === 0) {
-      search_path = "search.xml";
-    } else if (/json$/i.test(search_path)) {
-      isXml = false;
-    }
-    var path = "/" + search_path;
-    // monitor main search box;
-
-    var onPopupClose = function (e) {
-      $('.popup').hide();
-      $('#local-search-input').val('');
-      $('.search-result-list').remove();
-      $('#no-result').remove();
-      $(".local-search-pop-overlay").remove();
-      $('body').css('overflow', '');
-    }
-
-    function proceedsearch() {
-      $("body")
-        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
-        .css('overflow', 'hidden');
-      $('.search-popup-overlay').click(onPopupClose);
-      $('.popup').toggle();
-      var $localSearchInput = $('#local-search-input');
-      $localSearchInput.attr("autocapitalize", "none");
-      $localSearchInput.attr("autocorrect", "off");
-      $localSearchInput.focus();
-    }
-
-    // search function;
-    var searchFunc = function(path, search_id, content_id) {
-      'use strict';
-
-      // start loading animation
-      $("body")
-        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
-          '<div id="search-loading-icon">' +
-          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
-          '</div>' +
-          '</div>')
-        .css('overflow', 'hidden');
-      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
-
-      
-
-      $.ajax({
-        url: path,
-        dataType: isXml ? "xml" : "json",
-        async: true,
-        success: function(res) {
-          // get the contents from search data
-          isfetched = true;
-          $('.popup').detach().appendTo('.header-inner');
-          var datas = isXml ? $("entry", res).map(function() {
-            return {
-              title: $("title", this).text(),
-              content: $("content",this).text(),
-              url: $("url" , this).text()
-            };
-          }).get() : res;
-          var input = document.getElementById(search_id);
-          var resultContent = document.getElementById(content_id);
-          var inputEventFunction = function() {
-            var searchText = input.value.trim().toLowerCase();
-            var keywords = searchText.split(/[\s\-]+/);
-            if (keywords.length > 1) {
-              keywords.push(searchText);
-            }
-            var resultItems = [];
-            if (searchText.length > 0) {
-              // perform local searching
-              datas.forEach(function(data) {
-                var isMatch = false;
-                var hitCount = 0;
-                var searchTextCount = 0;
-                var title = data.title.trim();
-                var titleInLowerCase = title.toLowerCase();
-                var content = data.content.trim().replace(/<[^>]+>/g,"");
-                
-                var contentInLowerCase = content.toLowerCase();
-                var articleUrl = decodeURIComponent(data.url);
-                var indexOfTitle = [];
-                var indexOfContent = [];
-                // only match articles with not empty titles
-                if(title != '') {
-                  keywords.forEach(function(keyword) {
-                    function getIndexByWord(word, text, caseSensitive) {
-                      var wordLen = word.length;
-                      if (wordLen === 0) {
-                        return [];
-                      }
-                      var startPosition = 0, position = [], index = [];
-                      if (!caseSensitive) {
-                        text = text.toLowerCase();
-                        word = word.toLowerCase();
-                      }
-                      while ((position = text.indexOf(word, startPosition)) > -1) {
-                        index.push({position: position, word: word});
-                        startPosition = position + wordLen;
-                      }
-                      return index;
-                    }
-
-                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
-                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
-                  });
-                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
-                    isMatch = true;
-                    hitCount = indexOfTitle.length + indexOfContent.length;
-                  }
-                }
-
-                // show search results
-
-                if (isMatch) {
-                  // sort index by position of keyword
-
-                  [indexOfTitle, indexOfContent].forEach(function (index) {
-                    index.sort(function (itemLeft, itemRight) {
-                      if (itemRight.position !== itemLeft.position) {
-                        return itemRight.position - itemLeft.position;
-                      } else {
-                        return itemLeft.word.length - itemRight.word.length;
-                      }
-                    });
-                  });
-
-                  // merge hits into slices
-
-                  function mergeIntoSlice(text, start, end, index) {
-                    var item = index[index.length - 1];
-                    var position = item.position;
-                    var word = item.word;
-                    var hits = [];
-                    var searchTextCountInSlice = 0;
-                    while (position + word.length <= end && index.length != 0) {
-                      if (word === searchText) {
-                        searchTextCountInSlice++;
-                      }
-                      hits.push({position: position, length: word.length});
-                      var wordEnd = position + word.length;
-
-                      // move to next position of hit
-
-                      index.pop();
-                      while (index.length != 0) {
-                        item = index[index.length - 1];
-                        position = item.position;
-                        word = item.word;
-                        if (wordEnd > position) {
-                          index.pop();
-                        } else {
-                          break;
-                        }
-                      }
-                    }
-                    searchTextCount += searchTextCountInSlice;
-                    return {
-                      hits: hits,
-                      start: start,
-                      end: end,
-                      searchTextCount: searchTextCountInSlice
-                    };
-                  }
-
-                  var slicesOfTitle = [];
-                  if (indexOfTitle.length != 0) {
-                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
-                  }
-
-                  var slicesOfContent = [];
-                  while (indexOfContent.length != 0) {
-                    var item = indexOfContent[indexOfContent.length - 1];
-                    var position = item.position;
-                    var word = item.word;
-                    // cut out 100 characters
-                    var start = position - 20;
-                    var end = position + 80;
-                    if(start < 0){
-                      start = 0;
-                    }
-                    if (end < position + word.length) {
-                      end = position + word.length;
-                    }
-                    if(end > content.length){
-                      end = content.length;
-                    }
-                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
-                  }
-
-                  // sort slices in content by search text's count and hits' count
-
-                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
-                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
-                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
-                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
-                      return sliceRight.hits.length - sliceLeft.hits.length;
-                    } else {
-                      return sliceLeft.start - sliceRight.start;
-                    }
-                  });
-
-                  // select top N slices in content
-
-                  var upperBound = parseInt('-1');
-                  if (upperBound >= 0) {
-                    slicesOfContent = slicesOfContent.slice(0, upperBound);
-                  }
-
-                  // highlight title and content
-
-                  function highlightKeyword(text, slice) {
-                    var result = '';
-                    var prevEnd = slice.start;
-                    slice.hits.forEach(function (hit) {
-                      result += text.substring(prevEnd, hit.position);
-                      var end = hit.position + hit.length;
-                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
-                      prevEnd = end;
-                    });
-                    result += text.substring(prevEnd, slice.end);
-                    return result;
-                  }
-
-                  var resultItem = '';
-
-                  if (slicesOfTitle.length != 0) {
-                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
-                  } else {
-                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
-                  }
-
-                  slicesOfContent.forEach(function (slice) {
-                    resultItem += "<a href='" + articleUrl + "'>" +
-                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
-                      "...</p>" + "</a>";
-                  });
-
-                  resultItem += "</li>";
-                  resultItems.push({
-                    item: resultItem,
-                    searchTextCount: searchTextCount,
-                    hitCount: hitCount,
-                    id: resultItems.length
-                  });
-                }
-              })
-            };
-            if (keywords.length === 1 && keywords[0] === "") {
-              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
-            } else if (resultItems.length === 0) {
-              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
-            } else {
-              resultItems.sort(function (resultLeft, resultRight) {
-                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
-                  return resultRight.searchTextCount - resultLeft.searchTextCount;
-                } else if (resultLeft.hitCount !== resultRight.hitCount) {
-                  return resultRight.hitCount - resultLeft.hitCount;
-                } else {
-                  return resultRight.id - resultLeft.id;
-                }
-              });
-              var searchResultList = '<ul class=\"search-result-list\">';
-              resultItems.forEach(function (result) {
-                searchResultList += result.item;
-              })
-              searchResultList += "</ul>";
-              resultContent.innerHTML = searchResultList;
-            }
-          }
-
-          if ('auto' === 'manual') {
-            input.addEventListener('input', inputEventFunction);
-          } else {
-            $('.search-icon').click(inputEventFunction);
-            input.addEventListener('keypress', function (event) {
-              if (event.keyCode === 13) {
-                inputEventFunction();
-              }
-            });
-          }
-
-          // remove loading animation
-          $(".local-search-pop-overlay").remove();
-          $('body').css('overflow', '');
-
-          proceedsearch();
-        }
-      });
-    }
-
-    // handle and trigger popup window;
-    $('.popup-trigger').click(function(e) {
-      e.stopPropagation();
-      if (isfetched === false) {
-        searchFunc(path, 'local-search-input', 'local-search-result');
-      } else {
-        proceedsearch();
-      };
-    });
-
-    $('.popup-btn-close').click(onPopupClose);
-    $('.popup').click(function(e){
-      e.stopPropagation();
-    });
-    $(document).on('keyup', function (event) {
-      var shouldDismissSearchPopup = event.which === 27 &&
-        $('.search-popup').is(':visible');
-      if (shouldDismissSearchPopup) {
-        onPopupClose();
-      }
-    });
-  </script>
-
-
-
-
-
-  
-
-  
-
-  
-
-  
-  
-
-  
-  
-
-  
-    
-      <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" type="text/css"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-
-   
-  
-
-
-  
-  
-
-  
-
-  
-
-  
-
-  
 
 </body>
 </html>
