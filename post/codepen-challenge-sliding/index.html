@@ -28,16 +28,16 @@
 <meta property="og:site_name" content="snowdream">
 <meta property="og:description" content="前言 codepen每周挑战是codepen网站推出的活动，每周一次；每个挑战都有一个主题，基本上是围绕一个特定的场景或者CSS特性&#x2F;库这类的，针对性比较强。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200628170657.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200628170716.gif?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200628170755.gif?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200628170657.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200628170716.gif?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200628170755.gif?imageslim">
 <meta property="article:published_time" content="2020-06-28T09:04:45.000Z">
 <meta property="article:modified_time" content="2020-07-04T04:03:55.878Z">
 <meta property="article:author" content="xuefeng">
 <meta property="article:tag" content="动效">
 <meta property="article:tag" content="codepen">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/20200628170657.png?imageslim">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20200628170657.png?imageslim">
 
 
 <link rel="canonical" href="https://note.xiexuefeng.cc/post/codepen-challenge-sliding/">
@@ -166,7 +166,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">107</span>
+          <span class="site-state-item-count">108</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -177,7 +177,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">75</span>
+        <span class="site-state-item-count">76</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -276,19 +276,19 @@
 <p><code>codepen</code>每周挑战是<code>codepen</code>网站推出的活动，每周一次；每个挑战都有一个主题，基本上是围绕一个特定的场景或者<code>CSS</code>特性/库这类的，针对性比较强。</p>
 <span id="more"></span>
 <h2 id="挑战描述"><a class="markdownIt-Anchor" href="#挑战描述"></a> 挑战描述</h2>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200628170657.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200628170657.png?imageslim" alt="img" /></p>
 <p>实际上是创建一个关于滑动的动画即可，并不局限于幻灯片切换的那种动画（一开始确实理解错了……）。</p>
 <h2 id="想法"><a class="markdownIt-Anchor" href="#想法"></a> 想法</h2>
 <p><code>Demo</code>地址：<a target="_blank" rel="noopener" href="https://codepen.io/xxf1996/pen/KKVNzxz">https://codepen.io/xxf1996/pen/KKVNzxz</a></p>
 <p>由于一开始理解成幻灯片切换效果动画了，所以创建一个幻灯片进（<code>slide-in</code>）和出（<code>slide-out</code>）的动画；</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200628170716.gif?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200628170716.gif?imageslim" alt="img" /></p>
 <p><code>slide-in</code>运用的视觉效果是冲击 + 压缩 + 反弹；</p>
 <p><code>slide-out</code>则是沿着一条曲线路径不断旋转，前进和渐隐；主要是运用了新增没几年的<code>offset-path</code>及相关属性；</p>
 <h2 id="有趣的案例"><a class="markdownIt-Anchor" href="#有趣的案例"></a> 有趣的案例</h2>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://codepen.io/raczo/full/bGEwRBg">https://codepen.io/raczo/full/bGEwRBg</a></li>
 </ul>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200628170755.gif?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200628170755.gif?imageslim" alt="img" /></p>
 <p>很有意思，一只看起来百无聊赖的北极熊在冰面上滑动，再加上显眼的<code>MONDAY</code>，寓意很明显。</p>
 <p>北极熊本身是使用<code>SVG</code>进行绘制的，显眼的<code>MONDAY</code><font color=#39f>有四层</font>，中间两层是普通的文字，顶层和底层都是使用了<code>-webkit-background-clip: text</code> + <code>-webkit-text-fill-color：transparent</code> + 渐变生成的背景这一组合达成的效果；</p>
 <p>文字效果相关的尝试：<a target="_blank" rel="noopener" href="https://codepen.io/xxf1996/pen/OJMzKYo">https://codepen.io/xxf1996/pen/OJMzKYo</a></p>

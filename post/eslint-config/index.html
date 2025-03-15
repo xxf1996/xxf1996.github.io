@@ -28,13 +28,13 @@
 <meta property="og:site_name" content="snowdream">
 <meta property="og:description" content="前言 要将代码规范落实不仅是靠个人自觉的遵守，还得需要一个工具可以进行强制性地检测校验，这样就能真正地将规范落实到实处。而ESLint就是用来检测JS(X)&#x2F;TS(X)代码的不二选择。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200531213836.jpg?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200531213836.jpg?imageslim">
 <meta property="article:published_time" content="2020-05-31T13:30:08.000Z">
 <meta property="article:modified_time" content="2020-05-31T13:38:58.979Z">
 <meta property="article:author" content="xuefeng">
 <meta property="article:tag" content="ESLint">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/20200531213836.jpg?imageslim">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20200531213836.jpg?imageslim">
 
 
 <link rel="canonical" href="https://note.xiexuefeng.cc/post/eslint-config/">
@@ -163,7 +163,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">107</span>
+          <span class="site-state-item-count">108</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -174,7 +174,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">75</span>
+        <span class="site-state-item-count">76</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -330,7 +330,7 @@
 <h3 id="rules"><a class="markdownIt-Anchor" href="#rules"></a> rules</h3>
 <p>除了继承已有的配置，还能手动修改通过<code>rules</code>属性来手动修改<code>ESLint</code>相关配置；每个检测规则都有其独特的键名，当要修改某条规则时，则使用键名然后设置相应的值即可；<code>ESLint</code>自带的规则表可以查看<a target="_blank" rel="noopener" href="http://eslint.cn/docs/rules/">官方文档</a>，使用其它<code>ESLint</code>插件则需要查看对应插件给出的规则；</p>
 <p>每个规则都遵循一些简单的设置：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200531213836.jpg?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200531213836.jpg?imageslim" alt="img" /></p>
 <p>有些规则可能支持更详细的配置，比如数组，对象等等；</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">rules</span>: &#123;</span><br><span class="line">    <span class="string">&#x27;no-console&#x27;</span>: <span class="string">&#x27;off&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;no-debugger&#x27;</span>: process.<span class="property">env</span>.<span class="property">NODE_ENV</span> === <span class="string">&#x27;production&#x27;</span> ? <span class="string">&#x27;error&#x27;</span> : <span class="string">&#x27;off&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;generator-star-spacing&#x27;</span>: <span class="string">&#x27;off&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;no-mixed-operators&#x27;</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="string">&#x27;vue/max-attributes-per-line&#x27;</span>: [</span><br><span class="line">      <span class="number">2</span>,</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="string">&#x27;singleline&#x27;</span>: <span class="number">5</span>,</span><br><span class="line">        <span class="string">&#x27;multiline&#x27;</span>: &#123;</span><br><span class="line">          <span class="string">&#x27;max&#x27;</span>: <span class="number">1</span>,</span><br><span class="line">          <span class="string">&#x27;allowFirstLine&#x27;</span>: <span class="literal">false</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="overrides"><a class="markdownIt-Anchor" href="#overrides"></a> overrides</h3>

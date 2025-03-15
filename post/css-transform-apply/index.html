@@ -28,17 +28,17 @@
 <meta property="og:site_name" content="snowdream">
 <meta property="og:description" content="前言 transform属性是CSS基于图形学中矩阵变换和投影变换实现的产物，因此理论上基于矩阵变换和投影变换的视角效果都可以使用transform实现；诸如canvas&#x2F;webGL中常见的立体&#x2F;3D效果，物理运动效果等等，都可以等价转化为transform中的变换函数，只不过CSS的控制粒度目前只能局限于关键帧，无法对动效进行每一帧的控制（那种通过js来修改css的方式也算不上是控制每一帧，倒">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200816165718.gif?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200816165740.gif?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200816165801.gif?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200816165817.gif?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200816165718.gif?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200816165740.gif?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200816165801.gif?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200816165817.gif?imageslim">
 <meta property="article:published_time" content="2020-08-16T08:58:23.000Z">
 <meta property="article:modified_time" content="2020-08-16T08:59:03.731Z">
 <meta property="article:author" content="xuefeng">
 <meta property="article:tag" content="计算机图形">
 <meta property="article:tag" content="css">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/20200816165718.gif?imageslim">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20200816165718.gif?imageslim">
 
 
 <link rel="canonical" href="https://note.xiexuefeng.cc/post/css-transform-apply/">
@@ -167,7 +167,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">107</span>
+          <span class="site-state-item-count">108</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -178,7 +178,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">75</span>
+        <span class="site-state-item-count">76</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -283,13 +283,13 @@
 <li><strong>单个元素</strong>：单个元素可以直接使用<code>perspective()</code>这个<code>transform-function</code>，这样当前元素就会具有透视投影效果，而不需要依赖其容器元素；</li>
 <li><strong>容器元素</strong>：容器元素则可以直接通过<font color=#f00><code>perspective</code>属性</font>进行设置，这样就相当于创建了一个独立的相机空间，也就是其子元素默认具有相同的投影设置（前提是容器元素的<code>transform-style``为preserve-3d</code>）；这种方式再配合<code>z</code>坐标（即<code>translateZ</code>或者能够改变<code>z</code>坐标的变换），就能很方便地对整个容器内元素进行立体效果模拟；</li>
 </ul>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200816165718.gif?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200816165718.gif?imageslim" alt="img" /></p>
 <p><code>Demo</code>地址：<a target="_blank" rel="noopener" href="https://codepen.io/xxf1996/pen/XWdJvNv">3D transform button hover effect</a></p>
 <h2 id="模拟物理运动"><a class="markdownIt-Anchor" href="#模拟物理运动"></a> 模拟物理运动</h2>
 <h3 id="弹性形变"><a class="markdownIt-Anchor" href="#弹性形变"></a> 弹性形变</h3>
 <p>在真实世界中，物体的运动或者冲击通常会产生形变，如果在类似的运动动画中加上模拟形变的效果，就会显得更加的真实；同样地，<code>transform</code>也可以模拟这些运动形变，<font color=#39f>模拟的诀窍就是观察这些运动形变的关键帧特点，以及形变和速度变化/大小之间的关系</font>；</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200816165740.gif?imageslim" alt="img" /></p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200816165801.gif?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200816165740.gif?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200816165801.gif?imageslim" alt="img" /></p>
 <p>上述这些形变都是<strong>弹性形变</strong>，属于比较简单和直观的，<font color=#39f>通常是在一个或两个方向上不停地震荡</font>，然后趋于稳定，因此模拟起来比较简单；下面是<code>Demo</code>地址：</p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://codepen.io/xxf1996/full/WNwvGRy">CodePen - css transform animation: physical movement</a></li>
@@ -297,7 +297,7 @@
 </ul>
 <h3 id="刚体碰撞"><a class="markdownIt-Anchor" href="#刚体碰撞"></a> 刚体碰撞</h3>
 <p>如果是要模拟诸如<font color=#f00>刚体碰撞</font>这样的效果，那就会有点棘手，因为其中除了会有物体变换，还会有变换中心（<code>transform-origin</code>）的改变，这样就<font color=#39f>需要观察关键帧在对应时间点应该使用哪个位置作为变换中心</font>了；</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200816165817.gif?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200816165817.gif?imageslim" alt="img" /></p>
 <p><code>Demo</code>地址：<a target="_blank" rel="noopener" href="https://codepen.io/xxf1996/full/poyJOwQ">CodePen - css transform animation: rigid body motion</a></p>
 <blockquote>
 <p>注：刚体碰撞是刚体运动的一种，所谓的<font color=#39f>刚体运动简单地来说就是只有旋转和平移变换</font>，即不发生形变；</p>

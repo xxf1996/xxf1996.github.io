@@ -28,25 +28,25 @@
 <meta property="og:site_name" content="snowdream">
 <meta property="og:description" content="前言  OneDrive 是微软公司提供的一项云存储服务。用户可以通过 Microsoft 账户注册 OneDrive 后获得一定量的免费存储空间，例如起初通常有 5GB 的免费存储空间。OneDrive 支持多种操作系统，包括 Windows、macOS、iOS、Android 等。用户可以在不同设备上同步文件，并能够通过设置共享链接与他人共享文件。  对我来说Onedrive是一个很不错的云">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20240523153605.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20240523154248.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20240523155020.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20240523155451.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20240523155840.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20240523160223.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20240523160526.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20240523161705.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20240523161740.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20240523164301.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20240513172927.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20240523171031.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20240513193658.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240523153605.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240523154248.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240523155020.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240523155451.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240523155840.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240523160223.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240523160526.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240523161705.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240523161740.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240523164301.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240513172927.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240523171031.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240513193658.png?imageslim">
 <meta property="article:published_time" content="2024-05-23T09:49:31.000Z">
 <meta property="article:modified_time" content="2024-05-23T10:01:13.725Z">
 <meta property="article:author" content="xuefeng">
 <meta property="article:tag" content="Onedrive">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/20240523153605.png?imageslim">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20240523153605.png?imageslim">
 
 
 <link rel="canonical" href="https://note.xiexuefeng.cc/post/using-onedrive-api/">
@@ -175,7 +175,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">107</span>
+          <span class="site-state-item-count">108</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -186,7 +186,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">75</span>
+        <span class="site-state-item-count">76</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -291,29 +291,29 @@
 <span id="more"></span>
 <h1 id="前置准备"><a class="markdownIt-Anchor" href="#前置准备"></a> 前置准备</h1>
 <p>目前使用<code>Onedrive</code>的<code>API</code>都需要先到<a target="_blank" rel="noopener" href="https://aka.ms/AppRegistrations/?referrer=https%3A%2F%2Fdev.onedrive.com">Microsoft Azure</a>去注册一个应用<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20240523153605.png?imageslim" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240523153605.png?imageslim" alt="image.png" /></p>
 <p>注册应用要填的内容很少，除了应用名称，就是选择应用面向的微软账户类型了（一般选个人账户就行）；还有一个重定向URI是可选的，这个就是用来返回用户授权码的回调地址，也就是当微软用户对当前应用完成授权后会返回的一个地址（其中授权码会以<code>code=xxx</code>的形式放在路径中）。</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20240523154248.png?imageslim" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240523154248.png?imageslim" alt="image.png" /></p>
 <p>如果是像我这样纯个人使用，重定向URI填个<code>localhost</code>的地址就行，也能拿到授权码。</p>
 <h2 id="添加api权限"><a class="markdownIt-Anchor" href="#添加api权限"></a> 添加API权限</h2>
 <p>注册完应用后，需要添加该应用的具体要使用权限点，以便向用户进行授权申请。</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20240523155020.png?imageslim" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240523155020.png?imageslim" alt="image.png" /></p>
 <p><code>Onedrive</code>相关的<code>API</code>权限都放在<code>Microsoft Graph</code>分组中，直接在该分组中进行搜索查找即可。</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20240523155451.png?imageslim" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240523155451.png?imageslim" alt="image.png" /></p>
 <p>对于<code>Onedrive</code>来说，常用的权限无非就是文件的读写了，因此找到<code>Files</code>一栏，根据需要自己找到合适范围的读写权限点即可：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20240523155840.png?imageslim" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240523155840.png?imageslim" alt="image.png" /></p>
 <p>不过不难发现，这里的读写权限覆盖范围实际上是由小及大的，其中对于<code>Files.ReadWrite.AppFolder</code>这个权限点来说，它能对<code>Onedrive</code>的应用文件夹下拥有读写权限，这也是很多<code>Onedrive</code>第三方应用所选的权限点。</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20240523160223.png?imageslim" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240523160223.png?imageslim" alt="image.png" /></p>
 <p>除了读写权限，<code>Onedrive</code>应用还有一个权限也是经常要用到的，就是<code>offline_access</code>这个权限，该权限可以保证在授权完成后哪怕<strong>用户本身没有在线</strong>也可以使用进行授权的<code>API</code>对数据进行访问和操作。</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20240523160526.png?imageslim" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240523160526.png?imageslim" alt="image.png" /></p>
 <h2 id="创建客户端密码"><a class="markdownIt-Anchor" href="#创建客户端密码"></a> 创建客户端密码</h2>
 <p>在基于请求获取<code>access token</code>（访问令牌）和<code>refresh token</code>（刷新令牌）时，除了<code>auth code/refresh token</code>，还要加上客户端密码才能得到想要的<code>token</code>信息。当然，除了客户端密码这种形式，还可以用证书（秘钥）的形式进行<code>token</code>的获取<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>，理论上使用证书这种形式应该会更安全一点。</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20240523161705.png?imageslim" alt="image.png" /></p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20240523161740.png?imageslim" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240523161705.png?imageslim" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240523161740.png?imageslim" alt="image.png" /></p>
 <p>可以根据需要选择客户端密码的有效期，添加完后就会生成一个客户端密码，复制进行传参即可<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup>。</p>
 <h1 id="授权流程"><a class="markdownIt-Anchor" href="#授权流程"></a> 授权流程</h1>
 <p>当应用注册以及相关的应用配置都完成了后，就可以开始基于<code>API</code>进行<code>Onedrive</code>的相关操作了。不过由于所有的<code>API</code>操作都需要用到<code>access token</code>，所以需要先完成授权，而授权流程如下：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20240523164301.png?imageslim" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240523164301.png?imageslim" alt="image.png" /></p>
 <p>如图所示，先完成授权得到授权码，然后兑换授权码就可以得到最初的<code>access token</code>以及<code>refresh token</code>；由于<code>access token</code>只有一个小时的有效期，当<code>access token</code>失效后就可以兑换之前的<code>refresh token</code>得到新的<code>access token</code>和新的<code>refresh token</code>。因此完成授权后，理论上可以长期得到有效的<code>access token</code>，保证后续<code>API</code>的正常请求。</p>
 <h3 id="关于-tenant"><a class="markdownIt-Anchor" href="#关于-tenant"></a> 关于 tenant</h3>
 <p>上述获取授权码和令牌的接口中，有一个<code>tenant</code>的参数，实际上就跟应用申请的账户类型有关：</p>
@@ -322,7 +322,7 @@
 <li><code>organizations</code>：对应的账户类型为组织账户</li>
 <li><code>consumers</code>：对应的账户为个人账户</li>
 </ul>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20240513172927.png?imageslim" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240513172927.png?imageslim" alt="image.png" /></p>
 <p>举个例子，如果应用选择的账户类型为<strong>个人账户</strong>时，对应的授权接口地址如下：</p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize">https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize</a></li>
@@ -335,7 +335,7 @@
 <li><a target="_blank" rel="noopener" href="https://graph.microsoft.com/v1.0/me">https://graph.microsoft.com/v1.0/me</a></li>
 </ul>
 <p>然后根据<code>API</code>列表给出的相对路径进行拼接即可得到完整的请求地址：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20240523171031.png?imageslim" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240523171031.png?imageslim" alt="image.png" /></p>
 <h2 id="文件访问的方式"><a class="markdownIt-Anchor" href="#文件访问的方式"></a> 文件访问的方式</h2>
 <p>如果要访问具体的文件或文件夹，有两种方式：</p>
 <ul>
@@ -352,7 +352,7 @@
 <h1 id="常见接口错误"><a class="markdownIt-Anchor" href="#常见接口错误"></a> 常见接口错误</h1>
 <h2 id="idx14100-jwt-is-not-well-formed"><a class="markdownIt-Anchor" href="#idx14100-jwt-is-not-well-formed"></a> IDX14100: JWT is not well formed</h2>
 <p>这个错误实际上是使用过期的<code>access token</code>进行接口请求时发出的错误信息<sup class="footnote-ref"><a href="#fn5" id="fnref5">[5]</a></sup>，然而这个错误信息很不准确，乍一看还以为<code>JWT</code>的问题。</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20240513193658.png?imageslim" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240513193658.png?imageslim" alt="image.png" /></p>
 <p>为了避免使用到过期的<code>access token</code>，我的做法是每次进行<code>API</code>请求前都使用<code>refresh token</code>得到一个新的<code>access token</code>，当然实际应用不推荐这么做，毕竟我这调用<code>API</code>的频率比较低🙈。</p>
 <h1 id="参考文档"><a class="markdownIt-Anchor" href="#参考文档"></a> 参考文档</h1>
 <ul>

@@ -28,9 +28,9 @@
 <meta property="og:site_name" content="snowdream">
 <meta property="og:description" content="常见形状  矩形  如图，若要画出上述矩形；正常思路就是扣去y&gt;ay &gt; ay&gt;a，y&lt;by &lt; by&lt;b，x&lt;cx &lt; cx&lt;c及x&gt;dx &gt; dx&gt;d的所有像素点，剩下的像素点就是我们想要的矩形区域； 具体到GLSL中，可以使用step()函数来进行扣去像素点的操作；如：">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200505164705.jpg?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200505164723.jpg?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200505164742.jpg?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200505164705.jpg?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200505164723.jpg?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200505164742.jpg?imageslim">
 <meta property="article:published_time" content="2020-05-05T08:46:15.000Z">
 <meta property="article:modified_time" content="2020-05-30T08:18:14.341Z">
 <meta property="article:author" content="xuefeng">
@@ -38,7 +38,7 @@
 <meta property="article:tag" content="计算机图形">
 <meta property="article:tag" content="webGL">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/20200505164705.jpg?imageslim">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20200505164705.jpg?imageslim">
 
 
 <link rel="canonical" href="https://note.xiexuefeng.cc/post/shape-and-pattern/">
@@ -167,7 +167,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">107</span>
+          <span class="site-state-item-count">108</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -178,7 +178,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">75</span>
+        <span class="site-state-item-count">76</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -275,7 +275,7 @@
     <div class="post-body" itemprop="articleBody">
         <h2 id="常见形状"><a class="markdownIt-Anchor" href="#常见形状"></a> 常见形状</h2>
 <h3 id="矩形"><a class="markdownIt-Anchor" href="#矩形"></a> 矩形</h3>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200505164705.jpg?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200505164705.jpg?imageslim" alt="img" /></p>
 <p>如图，若要画出上述矩形；正常思路就是<strong>扣去</strong><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>&gt;</mo><mi>a</mi></mrow><annotation encoding="application/x-tex">y &gt; a</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7335400000000001em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">a</span></span></span></span>，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>&lt;</mo><mi>b</mi></mrow><annotation encoding="application/x-tex">y &lt; b</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7335400000000001em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal">b</span></span></span></span>，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>&lt;</mo><mi>c</mi></mrow><annotation encoding="application/x-tex">x &lt; c</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">c</span></span></span></span>及<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>&gt;</mo><mi>d</mi></mrow><annotation encoding="application/x-tex">x &gt; d</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal">d</span></span></span></span>的所有像素点，剩下的像素点就是我们想要的矩形区域；</p>
 <p>具体到<code>GLSL</code>中，可以使用<code>step()</code>函数来进行<strong>扣去像素点</strong>的操作；如：</p>
 <span id="more"></span>
@@ -291,7 +291,7 @@
 <h3 id="正多边形"><a class="markdownIt-Anchor" href="#正多边形"></a> 正多边形</h3>
 <p>画出任意边数的正多边形可以根据一个<strong>距离场函数</strong>来进行；这个距离场函数实际上就是利用极坐标来进行计算的；</p>
 <p>根据正多边形的<strong>内切圆或外接圆</strong>，将角度均分为相应的份数，在<ins>每份角度周期</ins>内<strong>圆心到边上的距离</strong>呈<font color=red><strong>相同的规律变化</strong></font>。</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200505164723.jpg?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200505164723.jpg?imageslim" alt="img" /></p>
 <p>如上图所示，以『正三角形』为例；在正三角形内得到一个内切圆，从圆心到顶点的边可以将内切圆均分为<code>3</code>份（即<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>120</mn><mi mathvariant="normal">°</mi></mrow><annotation encoding="application/x-tex">120\degree</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord">2</span><span class="mord">0</span><span class="mord">°</span></span></span></span>）。以<code>0</code>号边为起点，<code>1</code>号边为终点，对应内切圆的<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">[</mo><mn>0</mn><mo separator="true">,</mo><mtext> </mtext><mn>120</mn><mi mathvariant="normal">°</mi><mo stretchy="false">]</mo></mrow><annotation encoding="application/x-tex">[0,\ 120\degree]</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord">0</span><span class="mpunct">,</span><span class="mspace"> </span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">1</span><span class="mord">2</span><span class="mord">0</span><span class="mord">°</span><span class="mclose">]</span></span></span></span>，将该区间转化为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">[</mo><mo>−</mo><mn>60</mn><mi mathvariant="normal">°</mi><mo separator="true">,</mo><mtext> </mtext><mn>60</mn><mi mathvariant="normal">°</mi><mo stretchy="false">]</mo></mrow><annotation encoding="application/x-tex">[-60\degree,\ 60\degree]</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord">−</span><span class="mord">6</span><span class="mord">0</span><span class="mord">°</span><span class="mpunct">,</span><span class="mspace"> </span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">6</span><span class="mord">0</span><span class="mord">°</span><span class="mclose">]</span></span></span></span>，很自然地得到该段三角形边的极坐标方程为：</p>
 <p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>r</mi><mo>=</mo><mi>ρ</mi><mo>⋅</mo><mi>c</mi><mi>o</mi><mi>s</mi><mi>α</mi><mspace linebreak="newline"></mspace><mo>⇒</mo><mi>ρ</mi><mo>=</mo><mfrac><mi>r</mi><mrow><mi>c</mi><mi>o</mi><mi>s</mi><mi>α</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">r = \rho \cdot cos\alpha \\
 \Rightarrow \rho = \frac{r}{cos\alpha}
@@ -321,7 +321,7 @@
 <p>广义指对某种器物的造型结构、色彩、纹饰进行工艺处理而事先设计的施工方案，制成图样，通称图案。有的器物（如某些木器家具等）除了造型结构，别无装饰纹样，亦属图案范畴（或称立体图案）。狭义则指器物上的装饰纹样和色彩而言。<br><br />
 —— <a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E5%9B%BE%E6%A1%88/52183">https://baike.baidu.com/item/图案/52183</a></p>
 </blockquote>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200505164742.jpg?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200505164742.jpg?imageslim" alt="img" /></p>
 <center>几何图案</center>
 <h3 id="网格"><a class="markdownIt-Anchor" href="#网格"></a> 网格</h3>
 <p>通过将屏幕从水平和垂直方向分成一个<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>∗</mo><mi>m</mi></mrow><annotation encoding="application/x-tex">n*m</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.46528em;vertical-align:0em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">m</span></span></span></span>的网格，其中每个网格单元可以进行图形的独立绘制，得到一个<strong>重复排列</strong>的图案；</p>

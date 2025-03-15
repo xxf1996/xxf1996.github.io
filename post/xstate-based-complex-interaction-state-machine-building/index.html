@@ -28,21 +28,21 @@
 <meta property="og:site_name" content="snowdream">
 <meta property="og:description" content="为什么要使用状态机？ 如果一个交互只简单地涉及到布尔状态或者是多选一，这类只通过一个状态变量即可确认当前状态的场景确实没必要使用状态机，毕竟无非只是使用if&#x2F;switch就能简单切换状态。如果一个交互逻辑复杂到需要使用多个状态变量来共同确认具体的状态节点，那么在涉及到状态切换时，对于判断当前具体状态节点的相关工作量就会呈现指数级的增长；">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20240319154440.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20240319155913.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20240320104436.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20240320120236.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20240320120319.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20240320123209.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20240320130559.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20240320131056.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240319154440.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240319155913.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240320104436.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240320120236.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240320120319.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240320123209.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240320130559.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240320131056.png?imageslim">
 <meta property="article:published_time" content="2024-04-13T04:01:26.000Z">
 <meta property="article:modified_time" content="2024-04-28T09:48:29.810Z">
 <meta property="article:author" content="xuefeng">
 <meta property="article:tag" content="交互">
 <meta property="article:tag" content="状态机">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/20240319154440.png?imageslim">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20240319154440.png?imageslim">
 
 
 <link rel="canonical" href="https://note.xiexuefeng.cc/post/xstate-based-complex-interaction-state-machine-building/">
@@ -171,7 +171,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">107</span>
+          <span class="site-state-item-count">108</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -182,7 +182,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">75</span>
+        <span class="site-state-item-count">76</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -280,9 +280,9 @@
         <h1 id="为什么要使用状态机"><a class="markdownIt-Anchor" href="#为什么要使用状态机"></a> 为什么要使用状态机？</h1>
 <p>如果一个交互只简单地涉及到布尔状态或者是多选一，这类只通过一个状态变量即可确认当前状态的场景确实没必要使用状态机，毕竟无非只是使用if/switch就能简单切换状态。如果一个交互逻辑复杂到需要使用多个状态变量来共同确认具体的状态节点，那么在涉及到状态切换时，对于<strong>判断当前具体状态节点</strong>的相关工作量就会呈现指数级的增长；</p>
 <span id="more"></span>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20240319154440.png?imageslim" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240319154440.png?imageslim" alt="image.png" /></p>
 <p>如上图所示，在处理复杂状态下的状态转换时，如果使用松散即扁平的结构对状态进行管理时，会在状态节点的判断上要花费大量的工作，且由于关系复杂无法一眼看出节点之间的联系，在实际工作中很容易把自己绕晕，形成bug；那么基于状态机对复杂状态之间的关系建模会是什么样子？</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20240319155913.png?imageslim" alt="image.png" /><br />
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240319155913.png?imageslim" alt="image.png" /><br />
 如上图所示，在建立状态机之后，我们只需要关注<strong>具体状态节点之间的转换处理逻辑</strong>即可；如果把这种结构看成是图结构，那么其中的每一条有向边都是一个状态转换函数，这样对于实际逻辑处理流程也看的很清晰。</p>
 <p>关于状态机概念的介绍也可以看看 <code>XState</code>文档里的文章——<a target="_blank" rel="noopener" href="https://stately.ai/docs/state-machines-and-statecharts">What are state machines and statecharts? | Stately</a>；</p>
 <h1 id="基于xstate构建状态机"><a class="markdownIt-Anchor" href="#基于xstate构建状态机"></a> 基于XState构建状态机</h1>
@@ -312,16 +312,16 @@
 <p>掌握了这些就可以构建出状态机的基础形式了，如<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>：</p>
 <figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; createMachine, createActor &#125; <span class="keyword">from</span> <span class="string">&#x27;xstate&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> textMachine = <span class="title function_">createMachine</span>(&#123;</span><br><span class="line">  <span class="attr">context</span>: &#123;</span><br><span class="line">    <span class="attr">committedValue</span>: <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">    <span class="attr">value</span>: <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">initial</span>: <span class="string">&#x27;reading&#x27;</span>,</span><br><span class="line">  <span class="attr">states</span>: &#123;</span><br><span class="line">    <span class="attr">reading</span>: &#123;</span><br><span class="line">      <span class="attr">on</span>: &#123;</span><br><span class="line">        <span class="string">&#x27;text.edit&#x27;</span>: &#123; <span class="attr">target</span>: <span class="string">&#x27;editing&#x27;</span> &#125;,</span><br><span class="line">      &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">editing</span>: &#123;</span><br><span class="line">      <span class="attr">on</span>: &#123;</span><br><span class="line">        <span class="string">&#x27;text.change&#x27;</span>: &#123;</span><br><span class="line">          <span class="attr">actions</span>: <span class="title function_">assign</span>(&#123;</span><br><span class="line">            <span class="attr">value</span>: <span class="function">(<span class="params">&#123; event &#125;</span>) =&gt;</span> event.<span class="property">value</span>,</span><br><span class="line">          &#125;),</span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="string">&#x27;text.commit&#x27;</span>: &#123;</span><br><span class="line">          <span class="attr">actions</span>: <span class="title function_">assign</span>(&#123;</span><br><span class="line">            <span class="attr">committedValue</span>: <span class="function">(<span class="params">&#123; context &#125;</span>) =&gt;</span> context.<span class="property">value</span>,</span><br><span class="line">          &#125;),</span><br><span class="line">          <span class="attr">target</span>: <span class="string">&#x27;reading&#x27;</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="string">&#x27;text.cancel&#x27;</span>: &#123;</span><br><span class="line">          <span class="attr">actions</span>: <span class="title function_">assign</span>(&#123;</span><br><span class="line">            <span class="attr">value</span>: <span class="function">(<span class="params">&#123; context &#125;</span>) =&gt;</span> context.<span class="property">committedValue</span>,</span><br><span class="line">          &#125;),</span><br><span class="line">          <span class="attr">target</span>: <span class="string">&#x27;reading&#x27;</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">      &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 <p>以上状态机可视化结果为：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20240320104436.png?imageslim" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240320104436.png?imageslim" alt="image.png" /></p>
 <h2 id="改变状态"><a class="markdownIt-Anchor" href="#改变状态"></a> 改变状态</h2>
 <p><code>XState</code>是基于<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E6%BC%94%E5%91%98%E6%A8%A1%E5%9E%8B">Actor model</a>进行设计的，因此状态的改变都是基于 <code>actor</code>，使用 <code>createActor</code>函数进行创建：</p>
 <figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> textActor = <span class="title function_">createActor</span>(textMachine);</span><br></pre></td></tr></table></figure>
 <p>创建 <code>actor</code>后，需要调用 <code>start</code>方法启动状态机，进入<strong>初始状态</strong>：</p>
 <figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">textActor.<span class="title function_">start</span>(); <span class="comment">// 进入初始状态，即reading</span></span><br></pre></td></tr></table></figure>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20240320120236.png?imageslim" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240320120236.png?imageslim" alt="image.png" /></p>
 <p>而要切换到具体的状态节点，则需要使用 <code>send</code>方法触发状态机中指定了 <code>target</code>的那些事件：</p>
 <figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">textActor.<span class="title function_">send</span>(&#123; <span class="attr">type</span>: <span class="string">&#x27;text.edit&#x27;</span> &#125;); <span class="comment">// 触发text.edit事件，进入editing</span></span><br></pre></td></tr></table></figure>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20240320120319.png?imageslim" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240320120319.png?imageslim" alt="image.png" /></p>
 <p>不过如果 <code>send</code>方法传入的事件并不是<strong>当前状态节点</strong>中声明的事件（即 <code>on</code>字段中配置的事件），那么该事件则并不会触发。</p>
 <h2 id="状态节点的变化监听"><a class="markdownIt-Anchor" href="#状态节点的变化监听"></a> 状态节点的变化监听</h2>
 <h3 id="全局监听"><a class="markdownIt-Anchor" href="#全局监听"></a> 全局监听</h3>
@@ -339,7 +339,7 @@
 <p>好在XState正好提供了官方的可视化工具：</p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://stately.ai/viz">XState Visualizer</a>：直接把创建状态机的相关代码粘贴进去就能查看<br />
-<img src="http://pic.xiexuefeng.cc/markdown/20240320123209.png?imageslim" alt="image.png" /></li>
+<img src="https://pic.xiexuefeng.cc/markdown/20240320123209.png?imageslim" alt="image.png" /></li>
 <li><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=statelyai.stately-vscode">XState VSCode - Visual Studio Marketplace</a>：<code>XState</code>官方正好提供了 <code>VSCode</code>插件，不仅可以直接查看状态机的流程图，还可以直接在可视化状态下编辑状态机，强烈推荐安装</li>
 </ul>
 <h2 id="关于状态机的上下文"><a class="markdownIt-Anchor" href="#关于状态机的上下文"></a> 关于状态机的上下文</h2>
@@ -350,9 +350,9 @@
 <h2 id="一些注意事项"><a class="markdownIt-Anchor" href="#一些注意事项"></a> 一些注意事项</h2>
 <h3 id="ts类型推断"><a class="markdownIt-Anchor" href="#ts类型推断"></a> TS类型推断</h3>
 <p>目前遇到的比较大的槽点就在于 <code>XState</code>对于 <code>TS</code>的类型推断其实做得并不好，很多类型相关的参数并不能直接从配置对象中去推断，而是要自己去手动标注类型<sup class="footnote-ref"><a href="#fn5" id="fnref5">[5]</a></sup>……</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20240320130559.png?imageslim" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240320130559.png?imageslim" alt="image.png" /></p>
 <p>所以在实际使用 <code>actor</code>的 <code>send</code>发送事件时，<code>type</code>就是个粗暴的 <code>string</code>类型：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20240320131056.png?imageslim" alt="image.png" /><br />
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240320131056.png?imageslim" alt="image.png" /><br />
 不过这种情况也可以通过定义事件类型的枚举来解决一下。</p>
 <h3 id="actor不能重启"><a class="markdownIt-Anchor" href="#actor不能重启"></a> Actor不能重启</h3>
 <p>一旦状态机进入<a target="_blank" rel="noopener" href="https://stately.ai/docs/final-states">结束状态</a>或者被手动停止（调用 <code>stop</code>方法）时，就无法通过 <code>start</code>方法重新启动进入状态机了，就只能新建一个 <code>Actor</code>了，不知道这算是 <code>bug</code>还是 <code>feature</code>🤔？</p>
@@ -407,8 +407,8 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/post/ts-morph-and-complier-context/" rel="prev" title="基于ts-morph构建统一编译上下文">
-                  <i class="fa fa-chevron-left"></i> 基于ts-morph构建统一编译上下文
+                <a href="/post/https-links-test/" rel="prev" title="HTTPS链接转换测试">
+                  <i class="fa fa-chevron-left"></i> HTTPS链接转换测试
                 </a>
             </div>
             <div class="post-nav-item">

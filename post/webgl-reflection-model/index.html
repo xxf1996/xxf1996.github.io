@@ -28,14 +28,14 @@
 <meta property="og:site_name" content="snowdream">
 <meta property="og:description" content="前言  当光照射到物体表面时,物体对光会发生反射、透射、吸收、衍射、折射、和干涉，其中被物体吸收的部分转化为热，反射、透射的光进入人的视觉系统，使我们能看见物体。为模拟这一现象，我们建立一些数学模型来替代复杂的物理模型，这些模型就称为明暗效应模型或者光照明模型。[1]  简言之，光照模型就是用来模拟真实世界中物体受到光线照射时的表现的计算模型；">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200505182218.jpg?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200505182218.jpg?imageslim">
 <meta property="article:published_time" content="2020-05-05T10:21:51.000Z">
 <meta property="article:modified_time" content="2020-05-30T08:18:14.343Z">
 <meta property="article:author" content="xuefeng">
 <meta property="article:tag" content="计算机图形">
 <meta property="article:tag" content="webGL">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/20200505182218.jpg?imageslim">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20200505182218.jpg?imageslim">
 
 
 <link rel="canonical" href="https://note.xiexuefeng.cc/post/webgl-reflection-model/">
@@ -164,7 +164,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">107</span>
+          <span class="site-state-item-count">108</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -175,7 +175,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">75</span>
+        <span class="site-state-item-count">76</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -283,7 +283,7 @@
 <li>漫反射光（<code>Diffuse Light</code>）：用于模拟光线照射到<strong>粗糙表面</strong>形成的反射光；</li>
 <li>镜面反射光（<code>Specular Light</code>）：用于模拟光线照射到<strong>光滑表面</strong>形成的亮点（即高光）；</li>
 </ul>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200505182218.jpg?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200505182218.jpg?imageslim" alt="img" /></p>
 <h3 id="环境光的计算"><a class="markdownIt-Anchor" href="#环境光的计算"></a> 环境光的计算</h3>
 <p>由于环境光模拟的是一类固定的光线，因此常使用<code>环境光因子</code>来计算；</p>
 <p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>L</mi><mtext>环境</mtext></msub><mo>=</mo><msub><mi>L</mi><mtext>光源</mtext></msub><mo>∗</mo><msub><mi>K</mi><mtext>环境</mtext></msub></mrow><annotation encoding="application/x-tex">L_{环境} = L_{光源} * K_{环境}

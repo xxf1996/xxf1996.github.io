@@ -28,14 +28,14 @@
 <meta property="og:site_name" content="snowdream">
 <meta property="og:description" content="前言 没想到在Mac上搭建PHP开发环境会有这么多坑，手动编译真是坑到吐血；果然还是包管理器才是王道，不过经过此次折腾，确实是时候学习一些docker的用法了；">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20210411225331.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20210411225356.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20210411225331.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20210411225356.png?imageslim">
 <meta property="article:published_time" content="2021-04-11T14:51:43.000Z">
 <meta property="article:modified_time" content="2021-04-11T14:54:13.723Z">
 <meta property="article:author" content="xuefeng">
 <meta property="article:tag" content="php">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/20210411225331.png?imageslim">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20210411225331.png?imageslim">
 
 
 <link rel="canonical" href="https://note.xiexuefeng.cc/post/owncloud-env-on-mac/">
@@ -164,7 +164,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">107</span>
+          <span class="site-state-item-count">108</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -175,7 +175,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">75</span>
+        <span class="site-state-item-count">76</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -308,7 +308,7 @@
 <p>上面两个镜像建议都替换，上述页面都有详细的替换和还原说明；</p>
 <h3 id="nginx配置文件"><a class="markdownIt-Anchor" href="#nginx配置文件"></a> nginx配置文件</h3>
 <p><code>nginx</code>安装成功后，通过<code>nginx -h</code>命令可以看到默认配置文件的路径：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20210411225331.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20210411225331.png?imageslim" alt="img" /></p>
 <p>打开默认配置文件可以看到，默认<code>servers</code>文件夹（默认配置文件的同级目录）下的所有配置文件都会被自动解析，因此一般都在该文件下放入自定义的服务器配置文件；</p>
 <h2 id="遇到的坑"><a class="markdownIt-Anchor" href="#遇到的坑"></a> 遇到的坑</h2>
 <p>由于之前在<code>windows</code>系统上搭建过<code>PHP</code>开发环境，因此不自觉的以为在<code>Mac</code>上也是那么轻松，所以一开始就选了那种流行的<code>PHP</code><strong>集成环境安装包</strong>的模式，结果就碰到了很多的坑……</p>
@@ -335,11 +335,11 @@
 </li>
 <li>
 <p>然后进行编译：</p>
- <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo make</span><br></pre></td></tr></table></figure>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> make</span><br></pre></td></tr></table></figure>
 </li>
 <li>
 <p>最后将编译好的文件安装到<code>PHP</code>扩展模块目录中：</p>
- <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo make install</span><br></pre></td></tr></table></figure>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> make install</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
 <p>理想情况下，经过上面的一番操作，应该是生成对应扩展模块编译产物（<code>.so</code>文件）且安装到目录中的；然而，事实上<strong>运行的每个命令</strong>都可能会出现<font color=#39f>各种各样的错误</font>……</p>
@@ -356,7 +356,7 @@
 <p>安装了但是没有暴露到环境变量中；可以尝试使用<code>homebrew</code>的<code>link</code>命令来解决：</p>
   <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew <span class="built_in">link</span> icu4c</span><br></pre></td></tr></table></figure>
 <p>不过有可能会出现警告，但是也提示了如何手动暴露到环境变量中去：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20210411225356.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20210411225356.png?imageslim" alt="img" /></p>
 </li>
 </ul>
 <h4 id="extstandardphp_smart_strh-file-not-found"><a class="markdownIt-Anchor" href="#extstandardphp_smart_strh-file-not-found"></a> ext/standard/php_smart_str.h’ file not found</h4>

@@ -28,7 +28,7 @@
 <meta property="og:site_name" content="snowdream">
 <meta property="og:description" content="前言 最近一直在制作一个音乐web app的练习项目，播放器的功能当然是音乐类app的基础；除此之外，个人对于音乐可视化也比较感兴趣，一旦遇上音乐就想着可视化；然而这些功能都离不开HTML5推出的audio元素以及强大的WebAudio API。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20190103173643.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20190103173643.png?imageslim">
 <meta property="article:published_time" content="2019-01-03T10:34:08.000Z">
 <meta property="article:modified_time" content="2020-05-30T08:18:14.339Z">
 <meta property="article:author" content="xuefeng">
@@ -36,7 +36,7 @@
 <meta property="article:tag" content="WebAudio">
 <meta property="article:tag" content="visualization">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/20190103173643.png?imageslim">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20190103173643.png?imageslim">
 
 
 <link rel="canonical" href="https://note.xiexuefeng.cc/post/music-player-and-webaudio/">
@@ -165,7 +165,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">107</span>
+          <span class="site-state-item-count">108</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -176,7 +176,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">75</span>
+        <span class="site-state-item-count">76</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -338,7 +338,7 @@
 </ol>
 <h2 id="音频可视化"><a class="markdownIt-Anchor" href="#音频可视化"></a> 音频可视化</h2>
 <p>音频可视化一般是获取音频频率进行相应转换，形成与音乐同步的视觉信息；而要获取频率信息就需要借助<code>WebAudio API</code>的方法了。</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20190103173643.png?imageslim" alt="mark" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20190103173643.png?imageslim" alt="mark" /></p>
 <p>上面是来自<code>MDN</code>的一张图，很好地表达了<code>Audio context</code>与<code>Audio node</code>之间的关系，其中<code>Inputs</code>就是音频文件或信息，而<code>Destination</code>则是播放设备；因此，一个<code>Audio context</code>的作用就是引入音源，连接中间节点（<code>AudioNode</code>，可以多个进行串联，有不同类型的<code>AudioNode</code>），最后输出到播放设备；</p>
 <h3 id="获取频率信息"><a class="markdownIt-Anchor" href="#获取频率信息"></a> 获取频率信息</h3>
 <ol>

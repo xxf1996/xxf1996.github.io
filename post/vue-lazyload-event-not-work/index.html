@@ -28,16 +28,16 @@
 <meta property="og:site_name" content="snowdream">
 <meta property="og:description" content="前言 使用vue-lazyload的lazy-component组件对某个组件进行包裹，然后对组件整体设置懒加载效果时，存在一个坑：该组件内部的自定义组件（即非原生html标签）所有的自定义事件都会失效，且可能视图渲染不完全（多层组件嵌套时）；">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200704125530.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200704125548.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200704125602.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200704125617.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200704125530.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200704125548.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200704125602.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200704125617.png?imageslim">
 <meta property="article:published_time" content="2020-07-04T04:49:54.000Z">
 <meta property="article:modified_time" content="2020-07-04T05:02:06.482Z">
 <meta property="article:author" content="xuefeng">
 <meta property="article:tag" content="vue-lazyload">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/20200704125530.png?imageslim">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20200704125530.png?imageslim">
 
 
 <link rel="canonical" href="https://note.xiexuefeng.cc/post/vue-lazyload-event-not-work/">
@@ -166,7 +166,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">107</span>
+          <span class="site-state-item-count">108</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -177,7 +177,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">75</span>
+        <span class="site-state-item-count">76</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -277,18 +277,18 @@
 <span id="more"></span>
 <h2 id="可能的原因"><a class="markdownIt-Anchor" href="#可能的原因"></a> 可能的原因</h2>
 <p>初步猜测是<code>lazy-component</code>渲染函数的问题，因为渲染函数可以控制内部子元素的事件和属性等配置的挂载；然后一看该组件<a target="_blank" rel="noopener" href="https://github.com/hilongjw/vue-lazyload/blob/8647831c1422ee0bb32d5839c7250a7a3dba7563/src/lazy-component.js#L12">源码</a>，其内部渲染函数为：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200704125530.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200704125530.png?imageslim" alt="img" /></p>
 <p>不知道是不是跟渲染函数的第二个参数为<code>null</code>有关，渲染函数的第二个参数是用来设置<code>attribute</code>相关的参数（即包括指令，自定义事件<code>v-on</code>及<code>props</code>等相关的属性）；</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200704125548.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200704125548.png?imageslim" alt="img" /></p>
 <h2 id="解决办法"><a class="markdownIt-Anchor" href="#解决办法"></a> 解决办法</h2>
 <p>首先本能地使用<code>Vue</code>实例自带的<code>$foreUpdate()</code>对组件内部进行强制重新渲染，但是重新渲染后还是存在上述问题；毕竟<code>$foreUpdate()</code>方法本质上就是再次调用组件的渲染函数进行渲染，如果渲染函数本身就存在问题，重新渲染多少次都没用。</p>
 <p>直接修改源码也是一种办法，不过发现直接改源码并没有用，因为<code>vue-lazyload</code>包主文件是一个编译后压缩的<code>js</code>文件（大多数包都是编译后的），也就是说如果要通过改源码这一途径来解决就需要对这个包进行编译……这个还是有点麻烦的，毕竟看了一下里面的依赖挺多的；</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200704125602.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200704125602.png?imageslim" alt="img" /></p>
 <p>不过好在发现这个<code>lazy-component</code>有个<a target="_blank" rel="noopener" href="https://github.com/hilongjw/vue-lazyload/blob/8647831c1422ee0bb32d5839c7250a7a3dba7563/src/lazy-component.js#L45">自定义事件<code>show</code></a>，看源码应该是在懒加载组件从不可见区域进入可见区域时触发的，有了这个时间点就好办了；只需要利用这个时间点，用<code>lazy-component</code>进行占位，然后列表项进入可见区域后马上隐藏<code>lazy-component</code>且显示真正的列表项组件，因为此时<code>lazy-component</code>组件和要进行懒加载的列表项组件是平级的（即兄弟关系），所以就避免了<code>lazy-component</code>组件渲染的坑，还可以直接利用其懒加载功能；</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200704125617.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200704125617.png?imageslim" alt="img" /></p>
 <p>可以写成一个新的懒加载组件：</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- lazy-item组件 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">template</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;item&quot;</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 通过lazy-component组件的show事件来切换真正的内容 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">lazy-component</span> <span class="attr">v-if</span>=<span class="string">&quot;showLazy&quot;</span> <span class="attr">class</span>=<span class="string">&quot;item-lazy&quot;</span> @<span class="attr">show</span>=<span class="string">&quot;load&quot;</span> /&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 直接透传prop和自定义事件 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">list-item</span> <span class="attr">v-else</span> <span class="attr">v-on</span>=<span class="string">&quot;$listeners&quot;</span> <span class="attr">v-bind</span>=<span class="string">&quot;$attrs&quot;</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">class</span> <span class="title class_">LayzItem</span> <span class="keyword">extends</span> <span class="title class_ inherited__">Vue</span> &#123;</span><br><span class="line">  name = <span class="string">&#x27;LayzItem&#x27;</span></span><br><span class="line"></span><br><span class="line">  private showLazy = <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">  private load () &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;懒加载load&#x27;</span>)</span><br><span class="line">    <span class="variable language_">this</span>.$nextTick(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">      <span class="variable language_">this</span>.<span class="property">showLazy</span> = <span class="literal">false</span></span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">class</span> <span class="title class_">LayzItem</span> <span class="keyword">extends</span> <span class="title class_ inherited__">Vue</span> &#123;</span><br><span class="line">  name = <span class="string">&#x27;LayzItem&#x27;</span></span><br><span class="line"></span><br><span class="line">  private showLazy = <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">  private <span class="title function_">load</span> () &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;懒加载load&#x27;</span>)</span><br><span class="line">    <span class="variable language_">this</span>.$nextTick(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">      <span class="variable language_">this</span>.<span class="property">showLazy</span> = <span class="literal">false</span></span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="一个小技巧透传"><a class="markdownIt-Anchor" href="#一个小技巧透传"></a> 一个小技巧：透传</h2>
 <p>所谓的透传就是将<strong>父组件的属性直接传给子组件</strong>，而不是通过在父组件定义相关的<code>props</code>和事件，然后再传入到子组件上；如：</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">list-item</span> <span class="attr">v-else</span> <span class="attr">v-on</span>=<span class="string">&quot;$listeners&quot;</span> <span class="attr">v-bind</span>=<span class="string">&quot;$attrs&quot;</span>/&gt;</span></span><br></pre></td></tr></table></figure>

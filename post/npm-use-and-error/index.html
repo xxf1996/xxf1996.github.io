@@ -28,14 +28,14 @@
 <meta property="og:site_name" content="snowdream">
 <meta property="og:description" content="前言 记录npm使用的一些注意事项，以及收集一些npm错误的解决办法。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200315155726.jpg?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200315155801.jpg?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200315155726.jpg?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200315155801.jpg?imageslim">
 <meta property="article:published_time" content="2020-03-15T07:58:14.000Z">
 <meta property="article:modified_time" content="2020-05-30T08:18:14.339Z">
 <meta property="article:author" content="xuefeng">
 <meta property="article:tag" content="npm">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/20200315155726.jpg?imageslim">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20200315155726.jpg?imageslim">
 
 
 <link rel="canonical" href="https://note.xiexuefeng.cc/post/npm-use-and-error/">
@@ -164,7 +164,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">107</span>
+          <span class="site-state-item-count">108</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -175,7 +175,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">75</span>
+        <span class="site-state-item-count">76</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -278,13 +278,13 @@
 <ol>
 <li>安装<code>n</code>模块：</li>
 </ol>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo npm i -g n</span><br></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> npm i -g n</span><br></pre></td></tr></table></figure>
 <ol start="2">
 <li>安装最新稳定版node：</li>
 </ol>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo n stable</span><br></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> n stable</span><br></pre></td></tr></table></figure>
 <h3 id="更新npm"><a class="markdownIt-Anchor" href="#更新npm"></a> 更新npm</h3>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo npm i -g npm</span><br></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> npm i -g npm</span><br></pre></td></tr></table></figure>
 <p>注意：更新完node和npm后，可能当前环境并没有刷新，需要手动更新命令行工具或重新进入；</p>
 <p>手动更新：</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> ~.zshrc</span><br></pre></td></tr></table></figure>
@@ -313,7 +313,7 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">npm ERR!   errno: -4048,</span><br><span class="line">npm ERR!   code: &#x27;EPERM&#x27;,</span><br><span class="line">npm ERR!   syscall: &#x27;unlink&#x27;</span><br></pre></td></tr></table></figure>
 <p><strong>导致问题的原因</strong>：项目中文件夹或某个文件被其他程序占用（很可能就是vscode的锅），导致文件没有权限被读写；</p>
 <p><strong>解决办法</strong>：使用杀毒软件对文件夹进行占用解锁；如腾讯管家：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200315155726.jpg?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200315155726.jpg?imageslim" alt="img" /></p>
 <p><strong>相关参考链接</strong>：</p>
 <ol>
 <li><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/30860795/fail-to-install-npm-package-npm-err-errno-4048">node.js - Fail to install npm package “npm ERR! errno -4048” - Stack Overflow</a></li>
@@ -322,7 +322,7 @@
 <h3 id="eperm-operation-not-permitted"><a class="markdownIt-Anchor" href="#eperm-operation-not-permitted"></a> EPERM: operation not permitted</h3>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">npm ERR! code EPERM</span><br><span class="line">npm ERR! errno -4048</span><br><span class="line">npm ERR! syscall lstat</span><br><span class="line">npm ERR! Error: EPERM: operation not permitted</span><br></pre></td></tr></table></figure>
 <p>该类错误通常是项目文件夹的权限不够（<code>win10</code>中可能出现），在文件夹右击，然后选择『管理员取得所有权』即可。（很纳闷，明明是管理员账户为啥还有这情况出现？）</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200315155801.jpg?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200315155801.jpg?imageslim" alt="img" /></p>
 <p>如果是解锁文件和赋予管理员权限还是提示<code>-4048</code>的错误时，可以考虑在<code>npm</code>命令后面加上<code>--no-bin-links</code>参数；如：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i xxx --no-bin-links</span><br></pre></td></tr></table></figure>
 <p><strong>参考文档</strong>：<a target="_blank" rel="noopener" href="https://github.com/phoenixframework/phoenix/issues/2464#issuecomment-328853460">Error: EPERM: operation not permitted, unlink · Issue #2464 · phoenixframework/phoenix</a></p>

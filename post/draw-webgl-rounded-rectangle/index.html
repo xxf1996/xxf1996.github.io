@@ -28,17 +28,17 @@
 <meta property="og:site_name" content="snowdream">
 <meta property="og:description" content="前言 在写HTML这类自带样式设置的渲染语言时，可能写出一个圆角矩形仅仅就是一个样式设置就搞定了；但是有没有想过，直接在webGL中用原生的着色器算法写出一个类似CSS圆角样式的效果怎么做？">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201114170052.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201114170116.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201114170128.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201114170138.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201114170052.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201114170116.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201114170128.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201114170138.png?imageslim">
 <meta property="article:published_time" content="2020-11-14T09:00:16.000Z">
 <meta property="article:modified_time" content="2020-11-14T09:13:26.636Z">
 <meta property="article:author" content="xuefeng">
 <meta property="article:tag" content="计算机图形">
 <meta property="article:tag" content="webGL">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/20201114170052.png?imageslim">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20201114170052.png?imageslim">
 
 
 <link rel="canonical" href="https://note.xiexuefeng.cc/post/draw-webgl-rounded-rectangle/">
@@ -167,7 +167,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">107</span>
+          <span class="site-state-item-count">108</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -178,7 +178,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">75</span>
+        <span class="site-state-item-count">76</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -288,7 +288,7 @@
 </ol>
 <h3 id="矩形区域"><a class="markdownIt-Anchor" href="#矩形区域"></a> 矩形区域</h3>
 <p>无论外层抽象数据的矩形区域如何确认，用何种距离单位；输入到顶点着色器内时，都需要将顶点坐标转为<code>NDC</code>坐标（标准化设备坐标），这之间的转换无非就是一个<font color=#f00>二维坐标系之间的映射</font>；</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20201114170052.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201114170052.png?imageslim" alt="img" /></p>
 <p>得到了矩形区域的顶点坐标，输入到片元着色器内就可以得到插值后的片元坐标（可以看做是像素坐标），然后进一步根据片元坐标来判断相应片元是否处于圆角区域之外了；</p>
 <h3 id="抠掉圆角区域外的像素"><a class="markdownIt-Anchor" href="#抠掉圆角区域外的像素"></a> 抠掉圆角区域外的像素</h3>
 <p>有了插值化的顶点NDC坐标和圆角半径参数就可以对圆角外的区域进行计算了，考虑到实际上是以像素作为单位，因此可以构建一个以<font color=#39f>矩形左上角为原点</font>，单位为像素的<strong>本地化坐标系</strong>，这样便于进行计算；</p>
@@ -297,9 +297,9 @@
 <li>判断片元是否位于四个角的区域内；</li>
 <li>若片元位于四个角的区域内，判断是否位于中心圆的区域之外，位于区域外即可舍去（抠掉）；</li>
 </ol>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20201114170116.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201114170116.png?imageslim" alt="img" /></p>
 <p>上述做法听起来很不错，但是这种像素级别的图形光栅化都会有一个问题，那就是<font color=#f00>曲线边缘会出现锯齿</font>：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20201114170128.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201114170128.png?imageslim" alt="img" /></p>
 <h3 id="抗锯齿处理"><a class="markdownIt-Anchor" href="#抗锯齿处理"></a> 抗锯齿处理</h3>
 <p>通用的抗锯齿做法就是在边缘附近做一个光滑过渡，而非粗暴的直接在边缘处进行直接切割；</p>
 <ol>
@@ -307,7 +307,7 @@
 <li>插值函数可以直接用<code>GLSL</code>自带的<a target="_blank" rel="noopener" href="https://thebookofshaders.com/glossary/?search=smoothstep"><code>smoothstep</code>方法</a>即可；</li>
 </ol>
 <p>上述方法得到的效果如下：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20201114170138.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201114170138.png?imageslim" alt="img" /></p>
 <p>可以看到圆角边缘处光滑多了；</p>
 <h2 id="着色器代码"><a class="markdownIt-Anchor" href="#着色器代码"></a> 着色器代码</h2>
 <p>下面是针对上述算法实现的一个片元着色器，仅供参考；</p>

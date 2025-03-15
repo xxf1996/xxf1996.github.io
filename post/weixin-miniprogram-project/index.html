@@ -161,7 +161,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">107</span>
+          <span class="site-state-item-count">108</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -172,7 +172,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">75</span>
+        <span class="site-state-item-count">76</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -309,7 +309,7 @@
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">wxs</span> <span class="attr">module</span>=<span class="string">&quot;demo&quot;</span>&gt;</span></span><br><span class="line">    function hello (text) &#123;</span><br><span class="line">        return &#x27;hello, &#x27; + text</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    module.exports = &#123;</span><br><span class="line">        hello: hello</span><br><span class="line">    &#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">wxs</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">text</span>&gt;</span>&#123;&#123;demo.hello(name)&#125;&#125;<span class="tag">&lt;/<span class="name">text</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <h4 id="独立的wxs文件"><a class="markdownIt-Anchor" href="#独立的wxs文件"></a> 独立的wxs文件</h4>
 <p>声明类似，只不过是把<code>wxs</code>代码写在单独的<code>.wxs</code>文件中而已：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// demo.wxs</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">hello</span> (text) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;hello, &#x27;</span> + text</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;</span><br><span class="line">    <span class="attr">hello</span>: hello</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// demo.wxs</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">hello</span> (<span class="params">text</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;hello, &#x27;</span> + text</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;</span><br><span class="line">    <span class="attr">hello</span>: hello</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>然后通过<code>&lt;wxs&gt;</code>标签进行引入：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">wxs</span> <span class="attr">src</span>=<span class="string">&quot;path/to/demo.wxs&quot;</span> <span class="attr">module</span>=<span class="string">&quot;demo&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">wxs</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">text</span>&gt;</span>&#123;&#123;demo.hello(name)&#125;&#125;<span class="tag">&lt;/<span class="name">text</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <p>通过<code>&lt;wxs&gt;</code>的<code>src</code>属性来指定<code>.wxs</code>文件的位置；</p>

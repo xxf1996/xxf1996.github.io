@@ -28,24 +28,24 @@
 <meta property="og:site_name" content="snowdream">
 <meta property="og:description" content="前言 作为一个FE，每天都会和浏览器打交道，写的代码最终也会在各种各样的浏览器中进行呈现；那么浏览器到底是什么？它是如何理解我们的代码并渲染得到我们所看到的画面的？  “私、気になります”  浏览器，简单地来说就是一个应用程序，只不过这个应用程序比较特殊，是专门用于从万维网中获取资源的；而网页就是其中一种最常见的资源。  A web browser is a software applicati">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200912111636.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200912111700.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200912111723.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200912111748.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200912111803.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200912111826.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200912111851.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200912112127.gif?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200912112430.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200912112444.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200912112510.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200912111636.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200912111700.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200912111723.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200912111748.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200912111803.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200912111826.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200912111851.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200912112127.gif?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200912112430.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200912112444.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200912112510.png?imageslim">
 <meta property="article:published_time" content="2020-09-12T03:14:04.000Z">
 <meta property="article:modified_time" content="2020-09-12T03:33:18.506Z">
 <meta property="article:author" content="xuefeng">
 <meta property="article:tag" content="DOM">
 <meta property="article:tag" content="浏览器">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/20200912111636.png?imageslim">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20200912111636.png?imageslim">
 
 
 <link rel="canonical" href="https://note.xiexuefeng.cc/post/the-web-browser/">
@@ -174,7 +174,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">107</span>
+          <span class="site-state-item-count">108</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -185,7 +185,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">75</span>
+        <span class="site-state-item-count">76</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -293,7 +293,7 @@
 <span id="more"></span>
 <h2 id="浏览器的运行原理"><a class="markdownIt-Anchor" href="#浏览器的运行原理"></a> 浏览器的运行原理</h2>
 <p>既然浏览器就是一种应用程序，那么其势必运行在操作系统上（当然，也有人提出直接将浏览器作为一种操作系统，比如：<code>Chrome OS</code>）；因此浏览器中执行的任务最终都要依靠操作系统提供的<code>API</code>，从而与相应的硬件进行交互；</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200912111636.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200912111636.png?imageslim" alt="img" /></p>
 <h2 id="浏览器的架构"><a class="markdownIt-Anchor" href="#浏览器的架构"></a> 浏览器的架构</h2>
 <h3 id="架构方式"><a class="markdownIt-Anchor" href="#架构方式"></a> 架构方式</h3>
 <p>根据对进程的使用方式不同，浏览器的架构可以分为单进程和多进程，比如<code>Chrome</code>浏览器就是采用多进程架构；</p>
@@ -305,12 +305,12 @@
 <li><code>GPU</code>进程（<code>GPU Process</code>）：用于处理<code>GPU</code>相关任务；</li>
 <li>插件进程（<code>Plugin Process</code>）：控制网页内的插件；</li>
 </ul>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200912111700.png?imageslim" alt="img" /></p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200912111723.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200912111700.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200912111723.png?imageslim" alt="img" /></p>
 <p>上面的图<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>是<code>google</code>官方博客给出的<code>Chrome</code>浏览器架构设计以及各进程作用的说明图；可以看到其中渲染进程可以存在多个，这是由于<code>Chrome</code>给<font color=#f00>每个标签页都单独开设了一个渲染进程</font>，但是由于内存有上限，因此开启的渲染进程数量会存在一个上限，这个上限取决于运行系统的硬件条件；</p>
 <p>使用多进程来进行渲染的好处就是当<font color=#39f>其中一个渲染进程崩溃后不会影响到其他进程</font>，但是相应的坏处就是很占内存……（这下终于明白<code>Chrome</code>占内存的原因了）</p>
 <p>除此之外，<code>Chrome</code>用了一种技术来动态改变架构以适应不同的硬件情况；当硬件比较好的时候，<code>Chrome</code>会尽可能地将很多线程独立出来作为进程，那么硬件比较差的时候则相反，会将一些进程合并到其他进程之中：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200912111748.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200912111748.png?imageslim" alt="img" /></p>
 <p>关于浏览器的架构大致就了解这么一些，关于更多的架构细节可以查看<code>Google</code>的系列博客文章：</p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://developers.google.com/web/updates/2018/09/inside-browser-part1">https://developers.google.com/web/updates/2018/09/inside-browser-part1</a></li>
@@ -322,7 +322,7 @@
 <p>众所周知，运行在浏览器中的前端代码只有三类：<code>html</code>，<code>css</code>和<code>js</code>；<code>html</code>用于定义网页结构，<code>css</code>用于设置样式和布局，而<code>js</code>则作为脚本用来动态改变<code>html</code>和<code>css</code>以及交互行为；虽然这三者分工不同，但最终输入浏览器后得到的输出大多是网页画面（还有可能是<code>I/O</code>，多媒体，网络等底层交互），即<font color=#f00>渲染</font>，因此理解这三种代码是如何影响浏览器渲染结果是十分必要的。</p>
 <h3 id="浏览器网页渲染机制"><a class="markdownIt-Anchor" href="#浏览器网页渲染机制"></a> 浏览器网页渲染机制</h3>
 <p>关于经典的<strong>从输入网址到网页渲染</strong>这一流程就不再赘述（上面提到的系列博客文章有比各网站流行的更详细的讲解，详细到线程级交互……），这里着重关注<font color=#39f>浏览器如何解析前端代码并输出像素到显存中</font>的；</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200912111803.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200912111803.png?imageslim" alt="img" /></p>
 <p>上面就是<code>html + css</code>代码输出像素到屏幕的一个大致流程，可以看到代码在浏览器中从文本变成屏幕中的像素是一个十分复杂的流程，里面每个流程单独拿出来讲估计都是充满了很多复杂的处理细节；从这个层面上来讲基于<code>HTML</code>和<code>CSS</code>的渲染是一套高度抽象但又很成熟的流程。</p>
 <h4 id="dom-tree"><a class="markdownIt-Anchor" href="#dom-tree"></a> DOM Tree</h4>
 <p>这个术语大概都不会陌生，或多或少都有听说过；<code>DOM</code>是一个对<code>HTML/XML</code>文档的结构化描述及交互规范，因此它<font color=#f00>本身并不是与特定化编程语言强绑定</font>的，但是现实中很多人都将<code>DOM</code>视为<code>JS</code>中的一部分，这是一个<font color=#f00>很大的认知误区</font>；不过这也是无法避免的，因为目前浏览器使用的脚本语言就是<code>JS</code>，因此浏览器内置的<code>DOM</code>也就是基于<code>JS</code>的实现；</p>
@@ -350,15 +350,15 @@
 <p>而<code>Layer tree</code>则是根据<code>Layout tree</code>进行图层划分后得到图层层级信息，即哪些元素结点处于同一图层，图层间的关系如何；这样做的好处就是，在布局树没有发生改变时，滚动页面可以<font color=#39f>直接利用部分之前已经光栅化的图层</font>，然后继续合成新的渲染帧即可，加快了渲染效率；</p>
 <p>目前浏览器内部是按照什么规则进行图层的划分还不是很清楚，但是可以确定的是当一个属性设置了<code>will-change</code>属性后，<font color=#f00>该属性会被视为单独的一层</font>，以便更加高效地应对此元素结点的变化；但是过多地设置<code>will-change</code>属性会导致图层过多，<code>composition</code>的耗时就会更多，反而效率降低；</p>
 <p>此外，<code>Chrome</code>浏览器的开发者工具还提供了查看图层的功能：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200912111826.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200912111826.png?imageslim" alt="img" /></p>
 <p>点开这个面板我才发现这个面板的功能实在是太强大了，除了列出当前页面的所有图层，还可以查看图层的信息：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200912111851.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200912111851.png?imageslim" alt="img" /></p>
 <p>图层信息有：<font color=#39f>图层大小，位置，分层原因，占用内存</font>等等；从上图我们可以得知，该图层大小为<code>1425x152</code>，坐标位置是<code>（0，0）</code>，分层的原因是由于该元素是<code>fixed</code>或者<code>sticky</code>定位或者可能会覆盖其他的图层；不仅如此，还可以直接查看<font color=#f00>各个图层的位置和层叠关系</font>，而且还支持结合绘制结果一起，还能<code>3D</code>查看！</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200912112127.gif?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200912112127.gif?imageslim" alt="img" /></p>
 <p>上图中黑色边框标注的就是一个图层，图层之间有叠层顺序，图层关系和渲染结果简直一目了然；这个工具大大加深了对<code>composition</code>的认识，果然浏览器内部实际上就是按照<code>3d</code>进行渲染的？</p>
 <h4 id="tile"><a class="markdownIt-Anchor" href="#tile"></a> Tile</h4>
 <p><code>Tile</code>，中文译为“<strong>瓷砖</strong>”；不过在光栅化过程中可以把它理解为一个<code>layer</code>（图层）的矩形小块，当一个图层尺寸过大时，可能会被切分成多个<code>tile</code>，然后光栅化的最小单位就是<code>tile</code><sup class="footnote-ref"><a href="#fn5" id="fnref5">[5]</a></sup>；</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200912112430.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200912112430.png?imageslim" alt="img" /></p>
 <h4 id="draw-quads"><a class="markdownIt-Anchor" href="#draw-quads"></a> Draw quads</h4>
 <p><code>Draw quads</code>是<code>tile</code>光栅化后得到的结果，意为“<strong>绘制四边形</strong>”；它包含了该<code>tile</code>像素信息位于<font color=#f00>内存中的地址</font>已经对应在当前渲染帧（即当前页面）中的<font color=#39f>坐标位置</font>；这个有点类似于着色器中常见的片元，只不过这个绘制四边形对于片元来说还是太大了。</p>
 <h4 id="compositor-frame"><a class="markdownIt-Anchor" href="#compositor-frame"></a> Compositor frame</h4>
@@ -368,7 +368,7 @@
 <blockquote>
 <p>严格意义上来说，事件注册机制不也是DOM的一部分吗？</p>
 </blockquote>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200912112444.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200912112444.png?imageslim" alt="img" /></p>
 <p>上图就是浏览器内部触发一个事件到执行的大致流程，其中确实有很多步骤和判断，有不少值得注意的细节；</p>
 <h4 id="非快速滚动区域"><a class="markdownIt-Anchor" href="#非快速滚动区域"></a> 非快速滚动区域</h4>
 <p>非快速滚动区域，即<code>non-fast scrollable region</code>；当<font color=#39f>一个元素被注册了事件</font>，其对应的渲染区域就会被识别成非快速滚动区域，然后只有非快速滚动区域才会去进一步识别事件处理，也就是说没有注册事件的区域即便发生了事件也会被<code>compositor</code>线程忽略，继续它的帧渲染工作；</p>
@@ -393,7 +393,7 @@
 <p>当<code>compositor</code>线程接收到主线程传来的事件触发坐标时，往往并不能直接确定这个事件具体触发的结点（即<code>event target</code>），因为<font color=#f00>这个坐标点可能存在多个元素结点</font>，因此存在层叠关系，所以此时需要结束<code>Paint Records</code>来确认最终触发事件的结点；</p>
 <h4 id="合并事件"><a class="markdownIt-Anchor" href="#合并事件"></a> 合并事件</h4>
 <p>当一个事件在一帧内连续触发多次，那么该事件则会被合并成一次事件交给下一帧；这个可能会出现在手势操作相关的连续事件中，比如<code>touchmove</code>；对于一些高精度要求的交互中，比如说手势绘制轨迹等，如果合并事件则会丢失一定的数据，因此后续规范中增加了对这类事件的完整事件的获取方法，如：<code>PointerEvent.getCoalescedEvents()</code>；</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200912112510.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200912112510.png?imageslim" alt="img" /></p>
 <p>上面这个方法就是可以获取指针事件中当前帧内所有的连续触发事件，因此可以提高交互的精度；</p>
 <h2 id="相关文档"><a class="markdownIt-Anchor" href="#相关文档"></a> 相关文档</h2>
 <ul>

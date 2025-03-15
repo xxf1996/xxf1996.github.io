@@ -28,10 +28,10 @@
 <meta property="og:site_name" content="snowdream">
 <meta property="og:description" content="前言 CSS，全称为Cascading Style Sheets，用于定制文档样式；CSS使得网页的呈现更加丰富，这也是初学前端的人最感到新奇的地方； 但是随着对CSS的深入使用才会发现：那些被我们津津乐道的“xx属性的奇淫技巧”这类东西都只不过是浮在CSS最表层的现象而已；这种对于CSS的使用方式在我看来无异于“盲人摸象”，即只能通过观察表面现象来总结使用方法，而不是从本质出发寻找解决方案，因">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201001120840.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201001120942.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201001121004.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201001121017.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201001120840.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201001120942.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201001121004.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201001121017.png?imageslim">
 <meta property="article:published_time" content="2020-10-01T04:06:28.000Z">
 <meta property="article:modified_time" content="2020-10-01T04:11:58.289Z">
 <meta property="article:author" content="xuefeng">
@@ -39,7 +39,7 @@
 <meta property="article:tag" content="css">
 <meta property="article:tag" content="webGL">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/20201001120840.png?imageslim">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20201001120840.png?imageslim">
 
 
 <link rel="canonical" href="https://note.xiexuefeng.cc/post/the-nature-of-css/">
@@ -168,7 +168,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">107</span>
+          <span class="site-state-item-count">108</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -179,7 +179,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">75</span>
+        <span class="site-state-item-count">76</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -291,13 +291,13 @@
 </ul>
 <h2 id="css与绘制"><a class="markdownIt-Anchor" href="#css与绘制"></a> CSS与绘制</h2>
 <p>既然<code>CSS</code>只是辅助渲染的，那么<code>CSS</code>所携带的样式信息又是如何转化成底层的绘制语句呢？</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20201001120840.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201001120840.png?imageslim" alt="img" /></p>
 <p>这里就需要涉及到更详细的浏览器渲染管线流程了，因为光从上图<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>这种大概的<code>pipeline</code>，我们根本无法理解<code>CSS</code>这种<strong>字符串信息</strong>是<font color=#f00>如何在浏览器内部进行解析然后转换成具体的底层绘制命令</font>的。不过好在<code>Google</code>内部发表了一个<font color=#39f><strong>极为详细的演讲稿</strong></font>来阐述网页中的像素是在经历了一个怎样的<code>pipeline</code>之后才显示的：<a target="_blank" rel="noopener" href="https://docs.google.com/presentation/d/1boPxbgNrTU0ddsc144rcXayGA_WF53k96imRH8Mp34Y/edit#slide=id.p">Life of a Pixel</a>（这篇演讲稿当然是极力推荐阅读的）；多亏了这个演讲稿，我终于不用去从<a target="_blank" rel="noopener" href="https://github.com/chromium/chromium"><code>Chromium</code>项目源码</a>中去一点点查找<code>CSS</code>渲染的蛛丝马迹了……</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20201001120942.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201001120942.png?imageslim" alt="img" /></p>
 <p>上图是我根据上述演讲<code>PPT</code>和自己的理解所总结的一个渲染<code>pipeline</code>，看似很完整，但是实际上并不是浏览器所有的渲染<code>pipeline</code>，这仅仅是一个初步的流程，后续的优化渲染流程还没涉及；由于后面的优化渲染<code>pipeline</code>和更新渲染<code>pipeline</code>比较复杂，以后再单独研究，<font color=#39f>这里总结的流程权当是一个简单的全量渲染<code>pipeline</code></font>；</p>
 <h2 id="模拟css渲染"><a class="markdownIt-Anchor" href="#模拟css渲染"></a> 模拟CSS渲染</h2>
 <p>如果真要模拟上述流程图中所有<code>pipeline</code>，即<code>HTMl + CSS → 像素</code>，那真是一个巨大的工程，实在是有心无力；我最感兴趣的部分实际上是光栅化的部分，即<code>Paint Operator → 像素</code>，因此基于<code>webGL</code>对这个光栅化做了一个<strong>最简化模型</strong>：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20201001121004.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201001121004.png?imageslim" alt="img" /></p>
 <p>可以看到这个渲染<code>pipeline</code>是十足的简单，<code>IMGUI</code> + 全量式绘制；因为我只想验证所谓的<code>Paint Operator</code>携带的绘制信息到底是如何传入到真正的底层——即着色器内的，我想知道着色器内部是如何消化和理解<code>Paint Operator</code>的；所以上面这个模型只是我个人根据<code>Life of a Pixel</code>一文所想到的一种底层交互模型；</p>
 <h3 id="模拟代码"><a class="markdownIt-Anchor" href="#模拟代码"></a> 模拟代码</h3>
 <figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">PaintOperator</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;@/types/css-gl&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; vec2, vec4 &#125; <span class="keyword">from</span> <span class="string">&#x27;gl-matrix&#x27;</span></span><br><span class="line"></span><br><span class="line">(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> &#123; <span class="variable constant_">CSSGL</span> &#125; = <span class="title class_">WebGLEngine</span> <span class="comment">// WebGLEngine是自己手写的一个webGL渲染库</span></span><br><span class="line">  <span class="keyword">const</span> <span class="attr">ops</span>: <span class="title class_">PaintOperator</span>[] = <span class="keyword">new</span> <span class="title class_">Array</span>(<span class="number">50</span>).<span class="title function_">fill</span>(<span class="number">0</span>).<span class="title function_">map</span>(<span class="function">(<span class="params">val, idx</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="attr">randomPos</span>: vec2 = [</span><br><span class="line">      <span class="title class_">Math</span>.<span class="title function_">random</span>() * <span class="variable language_">window</span>.<span class="property">innerWidth</span>,</span><br><span class="line">      <span class="title class_">Math</span>.<span class="title function_">random</span>() * <span class="variable language_">window</span>.<span class="property">innerHeight</span></span><br><span class="line">    ]</span><br><span class="line">    <span class="keyword">const</span> randomSize = vec2.<span class="title function_">create</span>()</span><br><span class="line">    <span class="keyword">const</span> <span class="attr">randomBg</span>: vec4 = [</span><br><span class="line">      <span class="title class_">Math</span>.<span class="title function_">random</span>(),</span><br><span class="line">      <span class="title class_">Math</span>.<span class="title function_">random</span>(),</span><br><span class="line">      <span class="title class_">Math</span>.<span class="title function_">random</span>(),</span><br><span class="line">      <span class="number">1.0</span></span><br><span class="line">    ]</span><br><span class="line">    vec2.<span class="title function_">random</span>(randomSize, <span class="number">200</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">      <span class="attr">id</span>: idx,</span><br><span class="line">      <span class="attr">shape</span>: &#123;</span><br><span class="line">        <span class="attr">pos</span>: randomPos,</span><br><span class="line">        <span class="attr">size</span>: randomSize</span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="attr">flags</span>: &#123;</span><br><span class="line">        <span class="attr">background</span>: randomBg</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;) <span class="comment">// 随机构建50个PaintOperator对象</span></span><br><span class="line">  <span class="keyword">const</span> gl = <span class="keyword">new</span> <span class="title function_">CSSGL</span>(<span class="string">&#x27;test&#x27;</span>, ops) <span class="comment">// 解析PaintOperator数据</span></span><br><span class="line">  gl.<span class="title function_">paint</span>() <span class="comment">// 执行绘制</span></span><br><span class="line">&#125;)()</span><br></pre></td></tr></table></figure>
@@ -311,7 +311,7 @@
 <ul>
 <li>
 <p><code>Skia</code>内部设计了一个着色器语言，名为<code>SkSL (Skia Shading Language)</code>；<code>SkSL</code>实际上就是基于某一固定版本的<code>GLSL</code>语法进行设计的，其作用应该是抹去不同<code>GPU</code>驱动<code>API</code>着色器语法的差异，以便对于不同的<code>GPU</code>驱动可以进一步输出为目标着色器语言，因此<code>SkSL</code>可以看做是着色器预编译语言<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>；</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20201001121017.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201001121017.png?imageslim" alt="img" /></p>
 </li>
 <li>
 <p><code>Skia</code>的<code>API</code>风格也很有意思，与<code>Canvas API</code>很相似，看一下<a target="_blank" rel="noopener" href="https://fiddle.skia.org/c/@shapes">官网的<code>Demo</code></a>就知道了：</p>

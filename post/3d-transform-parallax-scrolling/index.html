@@ -28,14 +28,14 @@
 <meta property="og:site_name" content="snowdream">
 <meta property="og:description" content="前言 最近在网页中运用『视差滚动』比较流行，能让网页有一种立体层次感。  视差滚动（Parallax Scrolling）是指让多层背景以不同的速度移动，形成立体的运动效果，带来非常出色的视觉体验。作为网页设计的热点趋势，越来越多的网站应用了这项技术。 ——百度百科  说白了，『视差滚动』就是让同一页面的不同元素在滚动的时候，滚动速度各不相同，从而让人觉得页面有层次。然而css3新增的3D tr">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180924/mfFkC1L81B.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180924/eC3eCcJh1D.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/180924/mfFkC1L81B.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/180924/eC3eCcJh1D.png?imageslim">
 <meta property="article:published_time" content="2018-09-24T03:39:09.000Z">
 <meta property="article:modified_time" content="2020-05-30T08:18:14.331Z">
 <meta property="article:author" content="xuefeng">
 <meta property="article:tag" content="css3">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/180924/mfFkC1L81B.png?imageslim">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/180924/mfFkC1L81B.png?imageslim">
 
 
 <link rel="canonical" href="https://note.xiexuefeng.cc/post/3d-transform-parallax-scrolling/">
@@ -164,7 +164,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">107</span>
+          <span class="site-state-item-count">108</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -175,7 +175,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">75</span>
+        <span class="site-state-item-count">76</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -293,9 +293,9 @@
 <ol start="4">
 <li>光有<code>z</code>坐标并不会自动按照<code>z</code>的大小进行层次覆盖，而是按照<code>html</code>的先后顺序进行覆盖，所以还需要按照层级手动添加<code>z-index</code>属性；</li>
 </ol>
-<p><img src="http://pic.xiexuefeng.cc/markdown/180924/mfFkC1L81B.png?imageslim" alt="mark" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/180924/mfFkC1L81B.png?imageslim" alt="mark" /></p>
 <center>实际上不同层面处于不同的z平面</center>
-<p><img src="http://pic.xiexuefeng.cc/markdown/180924/eC3eCcJh1D.png?imageslim" alt="mark" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/180924/eC3eCcJh1D.png?imageslim" alt="mark" /></p>
 <center>表面上看起来就是层叠</center>
 <h2 id="示例"><a class="markdownIt-Anchor" href="#示例"></a> 示例</h2>
 <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-id">#view</span>&#123;<span class="comment">/* 相机容器 */</span></span><br><span class="line">    <span class="attribute">position</span>: relative;</span><br><span class="line">    <span class="attribute">perspective</span>: <span class="number">300px</span>;</span><br><span class="line">    <span class="attribute">perspective-origin</span>: <span class="number">0</span> <span class="number">0</span>;</span><br><span class="line">    <span class="attribute">overflow-x</span>: hidden;</span><br><span class="line">    <span class="attribute">overflow-y</span>: scroll;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.layer</span>&#123;<span class="comment">/* 3d容器 */</span></span><br><span class="line">    <span class="attribute">position</span>: absolute;</span><br><span class="line">    <span class="attribute">left</span>: <span class="number">0</span>;</span><br><span class="line">    <span class="attribute">width</span>: <span class="number">100%</span>;</span><br><span class="line">    <span class="attribute">transform-style</span>: preserve-<span class="number">3</span>d;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.l1</span>&#123;<span class="comment">/* 第一层级 */</span></span><br><span class="line">    <span class="attribute">transform</span>: <span class="built_in">translateZ</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.l2</span>&#123;<span class="comment">/* 第二层级 */</span></span><br><span class="line">    <span class="attribute">transform</span>: <span class="built_in">translateZ</span>(-<span class="number">300px</span>) <span class="built_in">scale</span>(<span class="number">2</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>

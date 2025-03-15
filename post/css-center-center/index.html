@@ -28,7 +28,7 @@
 <meta property="og:site_name" content="snowdream">
 <meta property="og:description" content="前言 还记得刚开始出来找工作那段时间，有一次去一家公司面试，结果出了个小项目要当场实现，然后是一个移动端登录界面，要求整体位置水平垂直居中，结果当时基础薄弱，根本想不起来怎么实现水平垂直居中，现在想起来都有点自愧不如。 后面虽然回去详细了查看了一些使元素水平垂直居中的方法，也有所收获，但是也没来得及整理一下具体方法。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180914/Ek1fcGICDL.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/180914/Ek1fcGICDL.png?imageslim">
 <meta property="article:published_time" content="2018-09-16T03:06:07.000Z">
 <meta property="article:modified_time" content="2020-05-30T08:18:14.332Z">
 <meta property="article:author" content="xuefeng">
@@ -36,7 +36,7 @@
 <meta property="article:tag" content="css">
 <meta property="article:tag" content="flex">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/180914/Ek1fcGICDL.png?imageslim">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/180914/Ek1fcGICDL.png?imageslim">
 
 
 <link rel="canonical" href="https://note.xiexuefeng.cc/post/css-center-center/">
@@ -165,7 +165,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">107</span>
+          <span class="site-state-item-count">108</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -176,7 +176,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">75</span>
+        <span class="site-state-item-count">76</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -280,7 +280,7 @@
 <h3 id="固定宽高的元素"><a class="markdownIt-Anchor" href="#固定宽高的元素"></a> 固定宽高的元素</h3>
 <h4 id="方法一负margin-position-50-50"><a class="markdownIt-Anchor" href="#方法一负margin-position-50-50"></a> 方法一：负margin + position + (50%, 50%)</h4>
 <p>由于元素本身的宽高是固定的，也就是无论其内容怎么改变，<code>width</code>和<code>height</code>是不变的，因此可以直接『<strong>计算</strong>』出该元素在其父元素内水平垂直居中的位置：<font color=#39f><strong>正中心位置</strong></font>（即<code>left</code>和<code>right</code>都为<code>50%</code>的位置）向<font color=red><strong>左上角方向偏移自身宽高的一半</strong></font>。如图所示：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/180914/Ek1fcGICDL.png?imageslim" alt="mark" /><center>图1</center></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/180914/Ek1fcGICDL.png?imageslim" alt="mark" /><center>图1</center></p>
 <p>关键就在于使用负<code>margin</code>进行偏移，使元素处于水平居中的位置：</p>
 <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.father</span>&#123;</span><br><span class="line">    <span class="attribute">position</span>: relative;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.children</span>&#123;</span><br><span class="line">    <span class="attribute">position</span>: absolute;</span><br><span class="line">    <span class="attribute">left</span>: <span class="number">50%</span>;</span><br><span class="line">    <span class="attribute">top</span>: <span class="number">50%</span>;</span><br><span class="line">    <span class="attribute">margin-left</span>: -<span class="number">0.5</span>*w; <span class="comment">/* w和h就是该元素本身的宽高 */</span></span><br><span class="line">    <span class="attribute">margin-top</span>: -<span class="number">0.5</span>*h;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h4 id="方法二marginauto-position-0000"><a class="markdownIt-Anchor" href="#方法二marginauto-position-0000"></a> 方法二：margin:auto + position + (0,0,0,0)</h4>

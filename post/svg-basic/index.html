@@ -28,19 +28,19 @@
 <meta property="og:site_name" content="snowdream">
 <meta property="og:description" content="基本概念 SVG（Scalable Vector Graphics），即可缩放矢量图形，用于描述二维矢量图形；SVG是基于XML制定的，因此遵循XML语法。  坐标系统 SVG的坐标系统跟canvas以及window的一样，都是以左上角为原点，X轴向右变大，Y轴向下变大；">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180422/g4f0bekC36.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180422/k6h7D5D9h0.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180422/Dk7LH9JjF1.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/180422/g4f0bekC36.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/180422/k6h7D5D9h0.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/180422/Dk7LH9JjF1.png?imageslim">
 <meta property="og:image" content="http://latex.codecogs.com/gif.latex?%5Cbegin%7Bbmatrix%7D%20a%20%26%20b%20%26%20e%20%5C%5C%5B1ex%5D%20c%20%26%20d%20%26%20f%20%5C%5C%5B1ex%5D%200%20%26%200%20%26%201%20%5Cend%7Bbmatrix%7D">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180422/FAleg69CdB.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180422/kH0L2llEGD.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/180422/FAleg69CdB.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/180422/kH0L2llEGD.png?imageslim">
 <meta property="article:published_time" content="2018-04-22T08:45:26.000Z">
 <meta property="article:modified_time" content="2020-05-30T08:18:14.341Z">
 <meta property="article:author" content="xuefeng">
 <meta property="article:tag" content="svg">
 <meta property="article:tag" content="note">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/180422/g4f0bekC36.png?imageslim">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/180422/g4f0bekC36.png?imageslim">
 
 
 <link rel="canonical" href="https://note.xiexuefeng.cc/post/svg-basic/">
@@ -169,7 +169,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">107</span>
+          <span class="site-state-item-count">108</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -180,7 +180,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">75</span>
+        <span class="site-state-item-count">76</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -285,21 +285,21 @@
 <h3 id="viewbox"><a class="markdownIt-Anchor" href="#viewbox"></a> viewBox</h3>
 <p>viewBox可以理解为设置<code>SVG</code>画布的坐标刻度；<code>viewBox</code>属性有四个参数，分别是x轴刻度最小值，y轴刻度最小值，x轴总长度，y轴总长度。坐标刻度铺满整个画布，并等比例缩放，因此并不总是1：1的比例！</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">svg</span> <span class="attr">width</span>=<span class="string">&quot;500&quot;</span> <span class="attr">height</span>=<span class="string">&quot;500&quot;</span> <span class="attr">viewBox</span>=<span class="string">&quot;-100 -100 500 500&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">svg</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p><img src="http://pic.xiexuefeng.cc/markdown/180422/g4f0bekC36.png?imageslim" alt="example" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/180422/g4f0bekC36.png?imageslim" alt="example" /></p>
 <p>上例中的<code>SVG</code>画布的视口大小为500x500，而坐标的左上角为（-100，-100），坐标系的总大小为500x500；所以可以理解为画布的右下角坐标为（400，400），左上角坐标为（-100，-100）。</p>
 <h2 id="基本形状"><a class="markdownIt-Anchor" href="#基本形状"></a> 基本形状</h2>
 <p><code>SVG</code>基本形状有<code>line</code>（线段），<code>polyline</code>（折线段），<code>rect</code>（矩形），<code>polygon</code>（多边形），<code>circle</code>（圆形），<code>ellipse</code>（椭圆）；基本属性如下：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/180422/k6h7D5D9h0.png?imageslim" alt="svg basic graphics" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/180422/k6h7D5D9h0.png?imageslim" alt="svg basic graphics" /></p>
 <h2 id="坐标系统变换"><a class="markdownIt-Anchor" href="#坐标系统变换"></a> 坐标系统变换</h2>
 <p>在<code>SVG</code>中可以对某一图形添加<code>transform</code>属性来实现坐标变换，就类似于<code>CSS3</code>中的<code>transform</code>；基本使用方法如下：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/180422/Dk7LH9JjF1.png?imageslim" alt="svg transform" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/180422/Dk7LH9JjF1.png?imageslim" alt="svg transform" /></p>
 <p><strong><code>SVG</code>中使用的坐标变换原理</strong>：先对当前坐标系进行一系列变换（按变换序列的顺序进行），然后把图形按变换前的坐标位置放到变换后的坐标系中！</p>
 <p><strong>矩阵变换参数</strong>：</p>
 <p><img src="http://latex.codecogs.com/gif.latex?%5Cbegin%7Bbmatrix%7D%20a%20%26%20b%20%26%20e%20%5C%5C%5B1ex%5D%20c%20%26%20d%20%26%20f%20%5C%5C%5B1ex%5D%200%20%26%200%20%26%201%20%5Cend%7Bbmatrix%7D" alt="matrix" /></p>
 <h2 id="路径"><a class="markdownIt-Anchor" href="#路径"></a> 路径</h2>
 <p>所有的基本形状指令都是基于<code>path</code>标签来实现的，因此<code>path</code>可谓是<code>SVG</code>的画图指令之精髓。</p>
 <p><code>path</code>通过在<code>d</code>属性中使用一系列指令来描绘各种线段或曲线；其中大写的指令使用的是绝对坐标，而小写的坐标使用的是相对坐标（即相对当前点的位移）；具体指令用法如下：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/180422/FAleg69CdB.png?imageslim" alt="svg path" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/180422/FAleg69CdB.png?imageslim" alt="svg path" /></p>
 <p><font color=red><strong>注</strong></font>：路径命令必须要以<code>M</code>开头，若以<code>m</code>开头也是自动使用绝对坐标！<font color=red><strong>闭合路径</strong></font>使用<code>Z</code>，大小写效果是一样的。</p>
 <h3 id="椭圆弧"><a class="markdownIt-Anchor" href="#椭圆弧"></a> 椭圆弧</h3>
 <p>椭圆弧绘制由7个参数确定：</p>
@@ -311,7 +311,7 @@
 <li>终点的 x 坐标和 y 坐标（起点由最后一个绘制的点或者最后一个 <code>moveto</code> 命令确定）。</li>
 </ul>
 <p><strong>原理</strong>：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/180422/kH0L2llEGD.png?imageslim" alt="svg path ellipse" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/180422/kH0L2llEGD.png?imageslim" alt="svg path ellipse" /></p>
 <h3 id="贝赛尔曲线"><a class="markdownIt-Anchor" href="#贝赛尔曲线"></a> 贝赛尔曲线</h3>
 <ol>
 <li>

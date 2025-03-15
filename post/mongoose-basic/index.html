@@ -28,14 +28,14 @@
 <meta property="og:site_name" content="snowdream">
 <meta property="og:description" content="前言  mongoose与mongodb的关系 mongodb实际上是一个跨平台的nosql型数据库软件，而mongoose是一个基于mongodb的官方js驱动实现的js库，即专门用于在node.js环境下与mongodb数据库进行连接操作。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180902/gdlE8I6k7I.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/180902/gdlE8I6k7I.png?imageslim">
 <meta property="article:published_time" content="2018-11-04T04:18:28.000Z">
 <meta property="article:modified_time" content="2020-05-30T08:18:14.338Z">
 <meta property="article:author" content="xuefeng">
 <meta property="article:tag" content="mongodb">
 <meta property="article:tag" content="mongoose">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/180902/gdlE8I6k7I.png?imageslim">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/180902/gdlE8I6k7I.png?imageslim">
 
 
 <link rel="canonical" href="https://note.xiexuefeng.cc/post/mongoose-basic/">
@@ -164,7 +164,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">107</span>
+          <span class="site-state-item-count">108</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -175,7 +175,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">75</span>
+        <span class="site-state-item-count">76</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -278,7 +278,7 @@
 <p>事实上<code>mongodb</code><strong>官方</strong>已经实现了基于<code>node.js</code>的驱动库，<code>npm</code>包名就叫<code>mongodb</code>，专门用来与<code>mongodb</code><strong>数据库</strong>进行连接操作的，所以<font color=red><strong>为何</strong></font>还要使用<strong>第三方</strong>实现的<code>mongoose</code>库。这是实际上还是取决于每个人的习惯和理念，由于<code>mongodb</code>在设计上就对于<code>collection</code>（对应于<code>sql</code>数据库中的<strong>数据表</strong>）的结构限制很少，可以认为其存取数据很灵活，也可以认为其存取数据比较松散，这完全是个人口味问题。</p>
 <p>而<font color=#39f><strong>我个人</strong></font>比较习惯对于同一集合（<code>collection</code>）中数据的格式要保持一致性，即每条数据的结构和类型是一致的，不然总觉得不同结构和类型的数据存放于同一集合中就太混乱了（也许是还无法适应<code>mongodb</code>的设计模式）。</p>
 <p>而<code>mongoose</code>就加入了<code>Schema</code>这一设计，使得集合中的数据保持<strong>结构和类型</strong>的一致性成为可能，方便数据管理。</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/180902/gdlE8I6k7I.png?imageslim" alt="mark" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/180902/gdlE8I6k7I.png?imageslim" alt="mark" /></p>
 <h2 id="基本操作"><a class="markdownIt-Anchor" href="#基本操作"></a> 基本操作</h2>
 <h3 id="数据库连接"><a class="markdownIt-Anchor" href="#数据库连接"></a> 数据库连接</h3>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> mongoose = <span class="built_in">require</span>(<span class="string">&#x27;mongoose&#x27;</span>)</span><br><span class="line"><span class="comment">// mongodb连接地址：mongodb://ip:port/database</span></span><br><span class="line"><span class="keyword">const</span> url = <span class="string">&#x27;mongodb://0.0.0.0:27017/test&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> db = mongoose.<span class="title function_">createConnection</span>(url) <span class="comment">// 返回数据库的连接对象</span></span><br><span class="line">db.<span class="title function_">on</span>(<span class="string">&#x27;error&#x27;</span>, <span class="function">(<span class="params">err</span>)=&gt;</span>&#123; <span class="comment">// 监听数据库连接错误事件</span></span><br><span class="line">    <span class="keyword">throw</span> err</span><br><span class="line">&#125;)</span><br><span class="line">db.<span class="title function_">once</span>(<span class="string">&#x27;open&#x27;</span>, <span class="keyword">function</span>(<span class="params"></span>)&#123; <span class="comment">// 监听数据库连接成功事件（once就是监听一次）</span></span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;connect success&#x27;</span>)</span><br><span class="line">    db.<span class="title function_">close</span>() <span class="comment">// 关闭数据库连接</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>

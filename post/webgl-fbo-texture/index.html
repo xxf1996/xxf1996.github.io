@@ -28,8 +28,8 @@
 <meta property="og:site_name" content="snowdream">
 <meta property="og:description" content="前言 直接用webGL画出成千上万的粒子，并不像在canvas中造出相应数量的粒子“实例”，然后统一绘制那么简单；因为直接在webGL中绘制时，实际上是用着色器去绘制，而着色器的API有限，最重要的是数据传入着色器内的方式有限；但是另一方面由于着色器内可以进行并行运算，因此如果将原本在CPU中进行的计算转移到GPU内就会大幅提高运行效率，画面也就更流畅了。 而帧缓冲就可以解决大量数据传入的问题，">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200207172757.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20200207172825.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200207172757.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200207172825.png?imageslim">
 <meta property="article:published_time" content="2020-02-07T09:18:53.000Z">
 <meta property="article:modified_time" content="2020-05-30T08:18:14.343Z">
 <meta property="article:author" content="xuefeng">
@@ -37,7 +37,7 @@
 <meta property="article:tag" content="FBO">
 <meta property="article:tag" content="纹理">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/20200207172757.png?imageslim">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20200207172757.png?imageslim">
 
 
 <link rel="canonical" href="https://note.xiexuefeng.cc/post/webgl-fbo-texture/">
@@ -166,7 +166,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">107</span>
+          <span class="site-state-item-count">108</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -177,7 +177,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">75</span>
+        <span class="site-state-item-count">76</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -312,7 +312,7 @@
 <p>纹理数据<strong>初始化</strong>（<strong>很重要</strong>！）；</p>
  <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gl.<span class="title function_">texImage2D</span>(gl.<span class="property">TEXTURE_2D</span>, <span class="number">0</span>, gl.<span class="property">RGBA</span>, width, height, <span class="number">0</span>, gl.<span class="property">RGBA</span>, gl.<span class="property">UNSIGNED_BYTE</span>, <span class="literal">null</span>) <span class="comment">// 先初始化纹理数据</span></span><br></pre></td></tr></table></figure>
 <p>如果不进行纹理数据的初始化，相当于纹理的<strong>尺寸</strong>和<strong>格式</strong>完全不知道；那么帧缓冲中绘制的信息也就传入不了；而且绘制时会有以下<strong>警告</strong>：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200207172757.png?imageslim" alt="20200207172757" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200207172757.png?imageslim" alt="20200207172757" /></p>
 </li>
 <li>
 <p><strong>设置纹理参数</strong>；</p>
@@ -354,7 +354,7 @@
 <p><strong>注</strong>：为何存放至一维数组？因为一维数组可以写入<code>ABO</code>（<code>Array Buffer Object</code>，<strong>数组缓冲对象</strong>）中传入着色器内；</p>
 <p>按照上述流程，可以得到三个一维数组；其中设备坐标数组和粒子数据数组用于在帧缓冲中<strong>逐像素点绘制纹理</strong>，得到纹理后传入需要的着色器程序；纹理坐标数组则用于在着色器内精准地<strong>获取对应粒子存放在纹理中的数据</strong>；</p>
 <p><font color=red><strong>特别需要注意的是</strong></font>：虽然帧缓冲中绘制的图像就是纹理图像，但是<strong>纹理空间</strong>和<strong>设备空间</strong>的坐标系范围不一样！也就是说，同一个像素点在帧缓冲和在纹理中的坐标是不一样的！</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20200207172825.png?imageslim" alt="20200207172825" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200207172825.png?imageslim" alt="20200207172825" /></p>
 <hr />
 <p>虽然坐标系有点不同，但是按理直接进行<strong>坐标系变换</strong>不就一样可以将设备坐标转化为<strong>同一像素点</strong>对应的纹理坐标吗？我一开始确实也是这么做的，但是实际变换后发现着色器展现的信息好像跟我写入纹理的不太一样；我发现着色器展现的数据好像是我<strong>写入纹理当中的一半</strong>，我左思右想没想到原因；唯一的原因可能就是纹理坐标<strong>不是精确的像素点位置</strong>，导致取样的时候进行了<strong>插值</strong>！而且“<strong>原本数据的一半</strong>”不难让人想到是<strong>原像素点</strong>和一个<strong>空像素点</strong>（即<code>vec4(0.0, 0.0, 0.0, 0.0)</code>）之间进行的插值，所以我将变换后得到的<strong>纹理坐标</strong>统一<strong>向右和向下</strong>偏移了<code>0.5</code>个像素位置，取样的数据竟然神奇的与我写入的一致了……</p>
 <p>不过目前还不清楚是我写入帧缓冲的像素点位置有问题还是帧缓冲转纹理数据<strong>普遍</strong>具有这样的问题。</p>

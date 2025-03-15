@@ -162,7 +162,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">107</span>
+          <span class="site-state-item-count">108</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -173,7 +173,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">75</span>
+        <span class="site-state-item-count">76</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -280,7 +280,7 @@
 <li>
 <p>设置背景样式和相关的动画样式；举个例子：</p>
 <p>假设每帧图片大小为<code>40x60</code>，总共<code>10</code>帧，打包成<strong>一排</strong>，那么得到的雪碧图大小就为<code>400x60</code>；</p>
- <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">@keyframes</span> frame &#123;</span><br><span class="line">    <span class="selector-tag">from</span> &#123;</span><br><span class="line">        <span class="attribute">background-position</span>-x: <span class="number">0px</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="selector-tag">to</span> &#123;</span><br><span class="line">        <span class="attribute">background-position</span>-x: -<span class="number">360px</span>; <span class="comment">/* 对应最后一帧图片的偏移量 */</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.demo</span> &#123;</span><br><span class="line">    <span class="attribute">background-image</span>: <span class="built_in">url</span>(<span class="string">&#x27;xxx.png&#x27;</span>);</span><br><span class="line">    <span class="attribute">background-size</span>: <span class="number">400px</span> <span class="number">60px</span>;</span><br><span class="line">    <span class="attribute">animation</span>: frame <span class="number">1.2s</span> <span class="built_in">steps</span>(<span class="number">9</span>) infinite;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+ <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">@keyframes</span> frame &#123;</span><br><span class="line">    <span class="selector-tag">from</span> &#123;</span><br><span class="line">        <span class="attribute">background-position-x</span>: <span class="number">0px</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="selector-tag">to</span> &#123;</span><br><span class="line">        <span class="attribute">background-position-x</span>: -<span class="number">360px</span>; <span class="comment">/* 对应最后一帧图片的偏移量 */</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.demo</span> &#123;</span><br><span class="line">    <span class="attribute">background-image</span>: <span class="built_in">url</span>(<span class="string">&#x27;xxx.png&#x27;</span>);</span><br><span class="line">    <span class="attribute">background-size</span>: <span class="number">400px</span> <span class="number">60px</span>;</span><br><span class="line">    <span class="attribute">animation</span>: frame <span class="number">1.2s</span> <span class="built_in">steps</span>(<span class="number">9</span>) infinite;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><strong>注</strong>：<code>steps()</code>函数的第二个参数默认为<code>end</code>。为何是<code>steps(9)</code>而不是<code>steps(10)</code>？因为第一帧的背景位置对应的是第一张图，而最后一帧的背景位置对应的是最后一张图（即第<code>10</code>张图），这两者位置之间实际只差了<code>9</code>张图的宽度而已！所以只需要进行<code>9</code>次位移即可，步数不对则会使每帧得到图片位置发生偏差！</p>
 </li>
 </ol>

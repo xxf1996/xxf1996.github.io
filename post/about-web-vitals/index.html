@@ -28,17 +28,17 @@
 <meta property="og:site_name" content="snowdream">
 <meta property="og:description" content="前言 Web Vitals是谷歌针对网页加载速度和体验所提出的一套指标，这套指标用于测试网页的加载速度及用户体验等等；谷歌基于这套指标不仅设计了多套测试工具，还针对各种指标提出了相应的优化方法，具有很高的实用价值；  Web Vitals is an initiative by Google to provide unified guidance for quality signals that">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201018122415.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201018122433.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201018122458.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201018122514.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201018122536.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201018122415.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201018122433.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201018122458.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201018122514.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201018122536.png?imageslim">
 <meta property="article:published_time" content="2020-10-18T04:21:26.000Z">
 <meta property="article:modified_time" content="2020-10-18T04:28:19.143Z">
 <meta property="article:author" content="xuefeng">
 <meta property="article:tag" content="优化">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/20201018122415.png?imageslim">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20201018122415.png?imageslim">
 
 
 <link rel="canonical" href="https://note.xiexuefeng.cc/post/about-web-vitals/">
@@ -167,7 +167,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">107</span>
+          <span class="site-state-item-count">108</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -178,7 +178,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">75</span>
+        <span class="site-state-item-count">76</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -346,7 +346,7 @@
 <li>尺寸<font color=#f00>不包括</font><code>padding</code>，<code>border</code>和<code>margin</code>，可以理解为<code>content-box</code>的大小</li>
 </ul>
 <p>由于图片资源需要异步加载完成后才会进行渲染以及<code>js</code>代码修改<code>DOM</code>结构和属性等因素的存在，因此<font color=#39f>这个最大渲染元素可能会发生改变</font>，所以最大渲染元素的检测需要首屏渲染完成后才能最终确认；</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20201018122415.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201018122415.png?imageslim" alt="img" /></p>
 <h3 id="fid"><a class="markdownIt-Anchor" href="#fid"></a> FID</h3>
 <h4 id="概念-2"><a class="markdownIt-Anchor" href="#概念-2"></a> 概念</h4>
 <p><code>FID</code>（<code>First Input Delay</code>），即<strong>第一次输入事件延迟</strong>，指的是<font color=#f00>用户第一次交互事件触发到主线程接收事件然后反应之间的时间</font>；</p>
@@ -376,7 +376,7 @@
 <ul>
 <li><code>impact fraction</code>：影响因子，这个参数主要是衡量<strong>相邻两个绘制帧</strong>之间不稳定元素（即位置发生改变的元素）所带来的影响；计算方法为所有不稳定元素在<strong>可视区域内</strong>的面积总和（<font color=#f00>扣除重叠的部分</font>）占视窗面积的比值；</li>
 </ul>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20201018122433.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201018122433.png?imageslim" alt="img" /></p>
 <ul>
 <li><code>distance fraction</code>：距离因子，这个参数主要是衡量不稳定元素移动的距离；计算方法为取所有不稳定元素中偏移量（竖直及水平方向）最大的值除以视窗尺寸维度最大的值；根据上例，其距离因子就是<code>0.25</code>；</li>
 </ul>
@@ -395,7 +395,7 @@
 <li><code>FCP</code>（<code>First Contentful Paint</code>）：从开始加载网页内容到第一个文本块或者图像渲染完成之间的耗时，该指标主要侧重于网页加载体验；</li>
 <li><code>TTI</code>（<code>Time to Interactive</code>）：从开始加载网页内容到开始<font color=#f00>有足够快的用户交互反应速度</font>时之间的耗时，该指标主要侧重于网页加载体验；一般这个“有足够快的用户交互反应速度”指的就是<code>FCP</code>后长任务（<code>long task</code>，大于<code>50ms</code>的主线程任务）都执行完毕后，实际上就是主线程开始空闲，那自然就对用户交互就有很快的反应速度；可以看下官方文档的<code>TTI</code>计算步骤图<sup class="footnote-ref"><a href="#fn6" id="fnref6">[6]</a></sup>：</li>
 </ul>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20201018122458.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201018122458.png?imageslim" alt="img" /></p>
 <ul>
 <li><code>TBT</code>（<code>Total Blocking Time</code>）：<code>FCP</code>到<code>TTI</code>之间阻塞主线程的总耗时，所谓的阻塞就是长任务，而单个长任务的阻塞时间就是<code>任务耗时 - 50ms</code>；该指标主要侧重于网页加载体验，用于<font color=#39f>量化主线程阻塞的严重程度</font>；</li>
 </ul>
@@ -449,11 +449,11 @@
 <ul>
 <li>京东移动端网页（<a target="_blank" rel="noopener" href="https://m.jd.com/%EF%BC%89%EF%BC%9A">https://m.jd.com/）：</a></li>
 </ul>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20201018122514.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201018122514.png?imageslim" alt="img" /></p>
 <ul>
 <li>淘宝桌面版网页（<a target="_blank" rel="noopener" href="https://world.taobao.com/%EF%BC%89%EF%BC%9A">https://world.taobao.com/）：</a></li>
 </ul>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20201018122536.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201018122536.png?imageslim" alt="img" /></p>
 <h2 id="相关文档"><a class="markdownIt-Anchor" href="#相关文档"></a> 相关文档</h2>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://web.dev/fcp/">First Contentful Paint (FCP)</a>：FCP指标解读</li>

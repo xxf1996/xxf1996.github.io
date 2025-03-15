@@ -28,27 +28,27 @@
 <meta property="og:site_name" content="snowdream">
 <meta property="og:description" content="前言 以下这几个模块是vue3发布订阅系统和响应式数据的核心组成；事实上vue2也有相应的组成部分，只不过依附在vue实例上，但是vue3把相应的模块独立出来，不再依附于vue实例；">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201226123422.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201226123433.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201226123443.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201226123452.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201226123502.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201226123514.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201226123522.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201226123532.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201226123543.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201226123550.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201226123600.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201226123608.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201226123616.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201226123626.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20201226123635.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201226123422.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201226123433.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201226123443.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201226123452.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201226123502.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201226123514.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201226123522.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201226123532.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201226123543.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201226123550.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201226123600.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201226123608.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201226123616.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201226123626.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201226123635.png?imageslim">
 <meta property="article:published_time" content="2020-12-26T04:28:32.000Z">
 <meta property="article:modified_time" content="2020-12-26T04:37:19.662Z">
 <meta property="article:author" content="xuefeng">
 <meta property="article:tag" content="Vue">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/20201226123422.png?imageslim">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20201226123422.png?imageslim">
 
 
 <link rel="canonical" href="https://note.xiexuefeng.cc/post/vue3-reactive/">
@@ -177,7 +177,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">107</span>
+          <span class="site-state-item-count">108</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -188,7 +188,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">75</span>
+        <span class="site-state-item-count">76</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -288,14 +288,14 @@
 <span id="more"></span>
 <h2 id="ref-模块"><a class="markdownIt-Anchor" href="#ref-模块"></a> ref 模块</h2>
 <p><code>ref</code>模块总体作用是对数据进行<strong>响应式处理</strong>，即进行数据劫持，监听<code>set</code>和<code>get</code>操作；<code>set</code>操作内对比数据改变以便通知订阅者进行更新（使用<code>trigger</code>模块），<code>get</code>操作内则追踪依赖者（使用<code>track</code>模块），也就是所谓的依赖收集，这些依赖者也就是订阅者；画成流程图大致如下：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20201226123422.png?imageslim" alt="img" /></p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20201226123433.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201226123422.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201226123433.png?imageslim" alt="img" /></p>
 <p>上图是对<a target="_blank" rel="noopener" href="https://github.com/vuejs/vue-next/blob/c219cbfb01207a3645e4b66b2887a5b678098261/packages/reactivity/src/ref.ts#L44">ref模块核心代码</a>的大致功能划分，可以看出源码的逻辑很清晰；经过<code>ref</code>函数包裹后得到的数据结构如下：</p>
 <figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">interface</span> <span class="title class_">Ref</span>&lt;T = <span class="built_in">any</span>&gt; &#123;</span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * Type differentiator only.</span></span><br><span class="line"><span class="comment">   * We need this to be in public d.ts but don&#x27;t want it to show up in IDE</span></span><br><span class="line"><span class="comment">   * autocomplete, so we use a private Symbol instead.</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  [<span class="title class_">RefSymbol</span>]: <span class="literal">true</span></span><br><span class="line">  <span class="attr">value</span>: T</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>即得到的数据是一个含有<code>value</code>属性的对象，而属性值就是原始数据；为何要包裹成一个对象？原因就是<code>JS</code>中的<font color=#f00>原始类型值无法进行数据劫持</font>以便构成响应式数据，因此只好包裹成对象。</p>
 <h2 id="effect-模块"><a class="markdownIt-Anchor" href="#effect-模块"></a> effect 模块</h2>
 <p><code>effect</code>模块是专门<font color=#39f>用来收集函数内的副作用</font>，当然，这不是说函数所有的副作用都能用<code>effect</code>进行收集；<code>effect</code>能够收集的副作用仅限于响应式数据（即<code>Ref</code>对象或对数据进行类似<code>Ref</code>对象的劫持处理），一般是函数内<font color=#f00><code>get</code></font>了响应式数据；</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20201226123443.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201226123443.png?imageslim" alt="img" /></p>
 <p>从上面这个流程图可以看出，<code>effect</code>模块主要包含三个函数：</p>
 <ul>
 <li><code>effect</code>：这个函数的作用实际上就是限定当前副作用发生的范围，可以简单地理解为标记当前副作用为活动状态，<font color=#39f>便于进行依赖收集</font>；</li>
@@ -303,17 +303,17 @@
 <li><code>trigger</code>：同理，这个函数就是用于<font color=#39f>通知订阅者进行更新</font>；</li>
 </ul>
 <p>所以，<code>effect</code>模块简单地来说就是<font color=#f00>充当发布者和订阅者之间的桥梁</font>；可以看下<code>effect</code>的<a target="_blank" rel="noopener" href="https://github.com/vuejs/vue-next/blob/50adc014f59a7f385c836014abb059ec72c52239/packages/reactivity/src/effect.ts#L79">构建函数</a>，逻辑十分清晰：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20201226123452.png?imageslim" alt="img" /></p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20201226123502.png?imageslim" alt="img" /></p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20201226123514.png?imageslim" alt="img" /></p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20201226123522.png?imageslim" alt="img" /></p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20201226123532.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201226123452.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201226123502.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201226123514.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201226123522.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201226123532.png?imageslim" alt="img" /></p>
 <h2 id="comupted-模块"><a class="markdownIt-Anchor" href="#comupted-模块"></a> comupted 模块</h2>
 <p>只要理解了<code>effect</code>模块的作用，那就能很快理解<code>computed</code>模块的原理了；所谓的计算属性的核心就是一个<code>getter</code>函数，这个函数<font color=#f00>是天然的副作用</font>，即这个<code>getter</code>函数<font color=#f00>必然会依赖其他响应式数据</font>；既然是副作用函数，那就直接借助<code>effect</code>模块就能收集依赖和触发更新了，这一点同<code>Ref</code>对象很像，而从<a target="_blank" rel="noopener" href="https://github.com/vuejs/vue-next/blob/619efd9ac5a0d38651b7282722e7b347a013411a/packages/reactivity/src/computed.ts#L58">源码</a>就可以看出，<code>computed</code>函数返回的数据就是一个<font color=#39f>特殊的<code>Ref</code>对象</font>；</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20201226123543.png?imageslim" alt="img" /></p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20201226123550.png?imageslim" alt="img" /></p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20201226123600.png?imageslim" alt="img" /></p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20201226123608.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201226123543.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201226123550.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201226123600.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201226123608.png?imageslim" alt="img" /></p>
 <h2 id="reactive模块"><a class="markdownIt-Anchor" href="#reactive模块"></a> reactive模块</h2>
 <p>这个模块从功能上看起来跟<code>ref</code>有点类似，都是<strong>构建响应式数据</strong>，但是两者之间还是有区别的，这个区别<a target="_blank" rel="noopener" href="https://composition-api.vuejs.org/zh/#ref-vs-reactive">官方文档</a>上也有说明；简单地来说：</p>
 <ul>
@@ -321,9 +321,9 @@
 <li><code>reactive</code>函数则适合对<font color=#39f>对象类型的变量</font>进行响应式数据处理；</li>
 </ul>
 <p>基于<code>reactive</code>构造得到的响应式数据的特点可知：这种响应式数据<font color=#f00>只能通过对象属性形式生效</font>，一旦将其中的属性<font color=#f00>通过解构或者是赋值剥离原对象，则会丧失其响应性</font>；不过官方也提供了<code>toRefs</code>函数来解决这个问题，<code>toRefs</code>函数可以将<code>reactive</code>数据对象的每个属性值包装成<code>Ref</code>对象，因此被剥离原对象也可以保持响应性；</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20201226123616.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201226123616.png?imageslim" alt="img" /></p>
 <p>上图只是简单地描述了典型的对象被代理成响应式数据的过程，着重关注于<code>set</code>和<code>get</code>的代理，其他的代理属性和类型可以查看源码；</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20201226123626.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201226123626.png?imageslim" alt="img" /></p>
 <p>上图就是<code>reactive</code>构建函数了，从其中逻辑可以看出构造<code>reactive</code>数据的关键就在于设置代理配置了，根据不同的参数及不同的对象类型就可以设置相应的代理配置，从而得到不同的代理效果；</p>
 <p>代理配置源码中有<font color=#f00>一个亮点</font>：在代理深层对象时，并不是一开始就是直接进行递归调用，遍历每层对象属性；而是<font color=#39f>采用惰性初始模式</font>，延迟递归发生的时机，即把深层次对象的递归放入<code>get</code>代理函数中，因此只有第一次真正<code>get</code>访问到这个深层对象时才会执行初始化函数；</p>
 <blockquote>
@@ -335,7 +335,7 @@
 <p>上面这种用法其实在<code>computed</code>模块中也有类似的应用。</p>
 <h2 id="watch-模块"><a class="markdownIt-Anchor" href="#watch-模块"></a> watch 模块</h2>
 <p><code>watch</code>模块的本质就是<font color=#39f><strong>监听响应式数据</strong></font>，当数据更新时执行回调函数；看到响应式数据和更新回调就立马能想到<code>effect</code>模块了，没错，<code>watch</code>模块内部就是<font color=#f00>构造了一个副作用</font>，从而将副作用加入到响应式数据中的依赖列表中；</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20201226123635.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201226123635.png?imageslim" alt="img" /></p>
 <p>上面这个流程图就是对<code>watch</code>模块内部核心逻辑的简单概括；</p>
 <p><code>watch</code>模块中还有一个<a target="_blank" rel="noopener" href="https://github.com/vuejs/vue-next/blob/4172fdb90cd75d5741f843a227cfe9b5f5b22b35/packages/runtime-core/src/apiWatch.ts#L75"><code>watchEffect</code>函数</a>，看起来好像是用于监听副作用对象的，但是我看源码这个监听好像并没啥用处？有点疑惑……</p>
 <h2 id="相关文档"><a class="markdownIt-Anchor" href="#相关文档"></a> 相关文档</h2>

@@ -28,8 +28,8 @@
 <meta property="og:site_name" content="snowdream">
 <meta property="og:description" content="前言 vue-cli提供了一个名为preset的功能，即预设，顾名思义就是将vue-cli的一些设置保存在preset文件中，以便快速复用； 而远程preset则拥有更多的扩展性，可以用来定制扩展的脚手架功能，如定制项目模板；">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20210209130557.png?imageslim">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/20210209130635.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20210209130557.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20210209130635.png?imageslim">
 <meta property="article:published_time" content="2021-02-09T05:06:45.000Z">
 <meta property="article:modified_time" content="2021-02-09T05:07:43.856Z">
 <meta property="article:author" content="xuefeng">
@@ -37,7 +37,7 @@
 <meta property="article:tag" content="vue-cli">
 <meta property="article:tag" content="脚手架">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/20210209130557.png?imageslim">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20210209130557.png?imageslim">
 
 
 <link rel="canonical" href="https://note.xiexuefeng.cc/post/vue-cli-remote-preset/">
@@ -166,7 +166,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">107</span>
+          <span class="site-state-item-count">108</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -177,7 +177,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">75</span>
+        <span class="site-state-item-count">76</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -284,7 +284,7 @@
 <li><code>generator/index.js</code>：生成器，该文件导出一个函数，该函数接收三个参数，提供一些内置的<code>API</code>和交互参数，用于处理项目文件及结构；</li>
 </ul>
 <h2 id="远程preset处理流程"><a class="markdownIt-Anchor" href="#远程preset处理流程"></a> 远程preset处理流程</h2>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20210209130557.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20210209130557.png?imageslim" alt="img" /></p>
 <h2 id="生成器"><a class="markdownIt-Anchor" href="#生成器"></a> 生成器</h2>
 <p>生成器可以说是整个远程<code>preset</code>中扩展性最强的部分，也是自由度最大的部分，除了可以接收<code>preset</code>配置和交互式命令的结果，还能利用提供的<code>Generator API</code>实例快速地改变项目结构和自由组合；</p>
 <h3 id="生成器函数的结构"><a class="markdownIt-Anchor" href="#生成器函数的结构"></a> 生成器函数的结构</h3>
@@ -303,7 +303,7 @@
 </li>
 <li>
 <p><code>render()</code>：用于渲染模板文件，实际上背后就是基于<code>ejs</code>渲染引擎；该方法有三个参数，一般情况下只会用到第一个参数，用于添加模板文件或者移除一些默认文件；</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/20210209130635.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20210209130635.png?imageslim" alt="img" /></p>
 <ul>
 <li>
 <p>由于渲染引擎是<code>ejs</code>，因此如果模板文件中包含了一些<code>ejs</code>语句，就需要对一些语句进行特殊处理，否则渲染时会报错；主要的是将<code>&lt;%</code>变成<code>&lt;%%</code>即可，这样在渲染后模板文件中的<code>&lt;%%</code>就会自动变成<code>&lt;%</code>，在项目中使用就是正常的；</p>

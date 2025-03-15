@@ -28,14 +28,14 @@
 <meta property="og:site_name" content="snowdream">
 <meta property="og:description" content="前言 最近想在一个使用vue-cli的小项目中，使用scss来编写样式；如果不需要引入公共的scss文件的话，那只需要在&lt;style&gt;中设置lang&#x3D;&quot;scss&quot;即可。但是一般使用scss的时候，都会设置公共文件进行引用，方便代码复用。所以，如果需要像普通引入公共scss文件的话，需要进行一些配置。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/180902/4B041EBjK0.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/180902/4B041EBjK0.png?imageslim">
 <meta property="article:published_time" content="2018-09-02T03:07:40.000Z">
 <meta property="article:modified_time" content="2020-05-30T08:18:14.342Z">
 <meta property="article:author" content="xuefeng">
 <meta property="article:tag" content="sass">
 <meta property="article:tag" content="Vue">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/180902/4B041EBjK0.png?imageslim">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/180902/4B041EBjK0.png?imageslim">
 
 
 <link rel="canonical" href="https://note.xiexuefeng.cc/post/vue-cli-scss/">
@@ -164,7 +164,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">107</span>
+          <span class="site-state-item-count">108</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -175,7 +175,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">75</span>
+        <span class="site-state-item-count">76</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -278,7 +278,7 @@
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">npm i node-sass --save-dev</span><br><span class="line">npm i sass-loader --save-dev</span><br><span class="line">npm i sass-resources-loader --save-dev</span><br></pre></td></tr></table></figure>
 <h3 id="修改loader配置"><a class="markdownIt-Anchor" href="#修改loader配置"></a> 修改Loader配置</h3>
 <p><code>vue-cli</code>项目的<code>loader</code>配置文件是<code>build/utils.js</code>：</p>
-<p><img src="http://pic.xiexuefeng.cc/markdown/180902/4B041EBjK0.png?imageslim" alt="mark" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/180902/4B041EBjK0.png?imageslim" alt="mark" /></p>
 <p>然后新增一个函数，如下：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">generateSassResourceLoader</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> loaders = [</span><br><span class="line">      cssLoader,</span><br><span class="line">      <span class="string">&#x27;sass-loader&#x27;</span>,</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="attr">loader</span>: <span class="string">&#x27;sass-resources-loader&#x27;</span>,</span><br><span class="line">        <span class="attr">options</span>: &#123;</span><br><span class="line">          <span class="comment">// 引入多个文件时用数组的形式传入，单个文件时可以直接使用如下形式</span></span><br><span class="line">          <span class="attr">resources</span>: path.<span class="title function_">resolve</span>(__dirname, <span class="string">&#x27;../src/style/common.scss&#x27;</span>)  </span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">    <span class="comment">// Extract CSS when that option is specified</span></span><br><span class="line">    <span class="comment">// (which is the case during production build)</span></span><br><span class="line">    <span class="keyword">if</span> (options.<span class="property">extract</span>) &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="title class_">ExtractTextPlugin</span>.<span class="title function_">extract</span>(&#123;</span><br><span class="line">        <span class="attr">use</span>: loaders,</span><br><span class="line">        <span class="attr">fallback</span>: <span class="string">&#x27;vue-style-loader&#x27;</span></span><br><span class="line">      &#125;)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> [<span class="string">&#x27;vue-style-loader&#x27;</span>].<span class="title function_">concat</span>(loaders)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>最后把<code>exports.cssLoaders</code>的<code>return</code>项中的<code>scss</code>属性值改成上面新增的函数：</p>
