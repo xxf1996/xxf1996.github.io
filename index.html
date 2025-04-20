@@ -157,7 +157,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">108</span>
+          <span class="site-state-item-count">109</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -168,7 +168,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">78</span>
+        <span class="site-state-item-count">81</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -202,6 +202,96 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/modded-pbr-rendering-multi-light-optimization/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/post/modded-pbr-rendering-multi-light-optimization/" class="post-title-link" itemprop="url">魔改PBR渲染管线支持大量灯光场景</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-04-20 16:03:57" itemprop="dateCreated datePublished" datetime="2025-04-20T16:03:57+08:00">2025-04-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A2%E7%B4%A2/" itemprop="url" rel="index"><span itemprop="name">探索</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h1>
+<p>其实本来只打算写一下我是如何通过自定义材质来实现特定场景下突破 UBO 数量限制的，但是写着写着发现很有必要捋清楚 Babylonjs 内部着色器预编译的机制，不然连我自己都不清楚我为啥要这么做🙈。</p>
+<p>虽然我之前确实对 Babylonjs 的源码做过一些分析记录，但总体比较零散，完全无法在脑海中形成一个系统性的、清晰的流程。所以这次我就把 Babylonjs 的仓库 clone 到本地，使用 Cursor 将其作为<strong>本地知识库</strong>进行详细的源码分析，得到了多份分析报告文档，基于这些文档我才对 Babylonjs 内部一些机制有了更详细和全面的了解。</p>
+<p>而这些报告文档我都放到了 <a target="_blank" rel="noopener" href="https://github.com/xxf1996/babylonjs-research/tree/main/docs">Github</a> 上，感兴趣的可以去看一看，我觉得从里面确实可以学到不少关于 Babylonjs 源码的思路。</p>
+<h1 id="需求背景"><a class="markdownIt-Anchor" href="#需求背景"></a> 需求背景</h1>
+<p>我前不久独自开发了一个 <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/paxySM-ZtVwm3VL2WXfSLA">在线3D展览</a> 的项目，该项目的主要需求就是渲染展厅模型及展厅中的大量展品，也包含<strong>大量</strong>用来给展品打光的聚光灯。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/post/modded-pbr-rendering-multi-light-optimization/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -555,97 +645,6 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/using-onedrive-api/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/photo.jpg">
-      <meta itemprop="name" content="xuefeng">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="snowdream">
-      <meta itemprop="description" content="时不我待">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | snowdream">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/post/using-onedrive-api/" class="post-title-link" itemprop="url">Onedrive API的使用</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2024-05-23 17:49:31" itemprop="dateCreated datePublished" datetime="2024-05-23T17:49:31+08:00">2024-05-23</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E4%B8%9A%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">业务</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h1>
-<blockquote>
-<p>OneDrive 是微软公司提供的一项云存储服务。用户可以通过 Microsoft 账户注册 OneDrive 后获得一定量的免费存储空间，例如起初通常有 5GB 的免费存储空间。OneDrive 支持多种操作系统，包括 Windows、macOS、iOS、Android 等。用户可以在不同设备上同步文件，并能够通过设置共享链接与他人共享文件。</p>
-</blockquote>
-<p>对我来说<code>Onedrive</code>是一个很不错的云同步工具，我日常用它来进行笔记数据的多端同步，然后搭配<code>Obsidian</code>这类<code>Local First</code>的笔记<code>APP</code>进行使用，就可以安心地在多端进行笔记同步（顺便完成数据的备份）。总得来说，5GB的免费空间对于笔记这类文档资源来说可以用好多年了，且<code>Onedrive</code>的文件同步真的很快速且安全，很少出现同步错误的情况。</p>
-<p><code>Onedrive</code>同样提供了<code>API</code>的方式让开发者去访问授权用户的存储空间，进行存储空间内文件的增删改查相关操作，以便开发集成<code>Onedrive</code>的应用。不过我这里主要是利用<code>Onedrive</code>的<code>API</code>去接入自动化服务，以便可以让自动化服务能够修改特定文件达到<strong>个人信息流</strong>入口聚合的功能。</p>
-<p>虽说这里我使用<code>Onedrive API</code>的目的只是为了访问自身的存储空间，但实际上访问其它授权用户的存储空间也是一样的流程，没有区别。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/post/using-onedrive-api/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
     <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
@@ -685,6 +684,12 @@
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
 
     </div>
   </footer>
