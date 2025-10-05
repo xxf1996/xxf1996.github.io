@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 最近想要把搭建的api服务器和部署项目的路径用二级域名进行关联，以方便进行访问，免得一大串的地址和端口暴露出来。但是发现有时候域名解析还真不是那种随意就能正确的得到自己想要的结果……">
+<meta property="og:type" content="article">
+<meta property="og:title" content="域名解析二三事">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/domain-parse/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 最近想要把搭建的api服务器和部署项目的路径用二级域名进行关联，以方便进行访问，免得一大串的地址和端口暴露出来。但是发现有时候域名解析还真不是那种随意就能正确的得到自己想要的结果……">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-11-11T04:51:06.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.871Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="网站">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/domain-parse/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/domain-parse/","path":"post/domain-parse/","title":"域名解析二三事"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>域名解析二三事 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text"> 一些域名解析类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#a%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.1.</span> <span class="nav-text"> A类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cname%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.2.</span> <span class="nav-text"> CNAME类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#url%E8%BD%AC%E5%8F%91"><span class="nav-number">2.3.</span> <span class="nav-text"> URL转发</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/domain-parse/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="域名解析二三事 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          域名解析二三事
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-11-11 12:51:06" itemprop="dateCreated datePublished" datetime="2018-11-11T12:51:06+08:00">2018-11-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A2%E7%B4%A2/" itemprop="url" rel="index"><span itemprop="name">探索</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p>最近想要把搭建的<code>api</code>服务器和部署项目的路径用二级域名进行关联，以方便进行访问，免得一大串的地址和端口暴露出来。但是发现有时候域名解析还真不是那种随意就能正确的得到自己想要的结果……</p>
+<span id="more"></span>
+<h2 id="一些域名解析类型"><a class="markdownIt-Anchor" href="#一些域名解析类型"></a> 一些域名解析类型</h2>
+<p>域名的解析也分很多种，以下列出的是我用的比较多的几种类型。</p>
+<h3 id="a类型"><a class="markdownIt-Anchor" href="#a类型"></a> A类型</h3>
+<p><code>A</code>类型可以将主机记录（二级域名）指向一个<code>ipv4</code>类型的<code>ip</code>地址；但是需要注意的是，该类型<font color=red><strong>不能在<code>ip</code>地址后加上端口</strong></font>；比如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">主机记录：xx.test.com</span><br><span class="line">记录值：aa.bb.cc.dd</span><br></pre></td></tr></table></figure>
+<p>上述记录的意思就是访问<code>xx.test.com</code>的时候实际上是访问<code>ip</code>地址为<code>aa.bb.cc.dd</code>的主机；但是如果在<code>ip</code>地址后加上端口号：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">记录值：aa.bb.cc.dd:port</span><br></pre></td></tr></table></figure>
+<p>以上的记录值是<font color=red><strong>非法</strong></font>的；其实我就是想将<strong>某个二级域名直接解析到主机的某个端口</strong>，然后尝试无果……</p>
+<h3 id="cname类型"><a class="markdownIt-Anchor" href="#cname类型"></a> CNAME类型</h3>
+<p><code>CNAME</code>类型的记录可以将当前记录指向另一个域名；需要注意的是<font color=red><strong>仅仅是域名，不能在域名的后面添加路径或参数</strong></font>！！！</p>
+<p>合法记录值：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">xx.test.com</span><br><span class="line">test.com</span><br><span class="line">www.test.com</span><br></pre></td></tr></table></figure>
+<p><font color=red><strong>非法</strong></font>记录值：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">test.com/path/</span><br><span class="line">test.com/123.html</span><br><span class="line">test.com?a=b</span><br></pre></td></tr></table></figure>
+<h3 id="url转发"><a class="markdownIt-Anchor" href="#url转发"></a> URL转发</h3>
+<p><code>URL</code>转发就是将当前记录跳转到另一个<code>url</code>地址，因此只要是<code>url</code>地址可以访问的，都可以用来转发；不过<code>URL</code>转发还分为显性<code>URL</code>转发和隐性<code>URL</code>转发，它们的区别在于：</p>
+<p><ins>显性<code>URL</code>转发</ins>使用<code>301</code><font color=#39f><strong>永久重定向</strong></font>，即地址栏上的<code>url</code>地址会换成转发后的<code>url</code>地址，而非当前记录使用的<code>url</code>地址；而<ins>隐性<code>URL</code>转发</ins>使用的是<code>302</code><font color=#39f><strong>临时重定向</strong></font>，访问时浏览器地址栏依然是当前记录使用的<code>url</code>地址，但是<strong>实际访问</strong>的是转发的<code>url</code>地址。</p>
+<p><font color=red><strong>注</strong></font>：但是实际使用时我发现，如果访问当前记录（域名地址）的路径或参数形式时，并不是把域名部分替换成转发的<code>url</code>然后加上后面的路径或参数，而照样只是访问之前的转发<code>url</code>地址；如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">类型：URL转发</span><br><span class="line">主机记录：xx.test.com</span><br><span class="line">记录值：another.com/abc</span><br></pre></td></tr></table></figure>
+<p>当我访问<code>xx.test.com/someting</code>时，实际上跳转的还是<code>another.com/abc</code>而非想象中的<code>another.com/abc/something</code>；访问<code>xx.test.com?aa=bb</code>时，实际上跳转的也还是<code>another.com/abc</code>而非想象中的<code>another.com/abc?aa=bb</code>；所以我就很疑惑，这到底是本身就是这样的设计，还是我的设置有问题？如果本身设计就是这样，那未免有点太鸡肋了……</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/domain-parse/" title="域名解析二三事">https://note.xiexuefeng.cc/post/domain-parse/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E7%BD%91%E7%AB%99/" rel="tag"># 网站</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/mongodb-migrate/" rel="prev" title="如何迁移linux主机上mongodb数据库">
+                  <i class="fa fa-chevron-left"></i> 如何迁移linux主机上mongodb数据库
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/css-sizing-box/" rel="next" title="css的尺寸盒子及相关属性">
+                  css的尺寸盒子及相关属性 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/domain-parse/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/domain-parse/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

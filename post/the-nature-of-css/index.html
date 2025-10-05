@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 CSS，全称为Cascading Style Sheets，用于定制文档样式；CSS使得网页的呈现更加丰富，这也是初学前端的人最感到新奇的地方； 但是随着对CSS的深入使用才会发现：那些被我们津津乐道的“xx属性的奇淫技巧”这类东西都只不过是浮在CSS最表层的现象而已；这种对于CSS的使用方式在我看来无异于“盲人摸象”，即只能通过观察表面现象来总结使用方法，而不是从本质出发寻找解决方案，因">
+<meta property="og:type" content="article">
+<meta property="og:title" content="探索CSS的本质">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/the-nature-of-css/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 CSS，全称为Cascading Style Sheets，用于定制文档样式；CSS使得网页的呈现更加丰富，这也是初学前端的人最感到新奇的地方； 但是随着对CSS的深入使用才会发现：那些被我们津津乐道的“xx属性的奇淫技巧”这类东西都只不过是浮在CSS最表层的现象而已；这种对于CSS的使用方式在我看来无异于“盲人摸象”，即只能通过观察表面现象来总结使用方法，而不是从本质出发寻找解决方案，因">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201001120840.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201001120942.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201001121004.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201001121017.png?imageslim">
+<meta property="article:published_time" content="2020-10-01T04:06:28.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.882Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="计算机图形">
+<meta property="article:tag" content="css">
+<meta property="article:tag" content="webGL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20201001120840.png?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/the-nature-of-css/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/the-nature-of-css/","path":"post/the-nature-of-css/","title":"探索CSS的本质"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>探索CSS的本质 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8Ecss%E7%9A%84%E5%AE%9A%E4%BD%8D"><span class="nav-number">2.</span> <span class="nav-text"> 关于CSS的定位</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#css%E4%B8%8E%E7%BB%98%E5%88%B6"><span class="nav-number">3.</span> <span class="nav-text"> CSS与绘制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E6%8B%9Fcss%E6%B8%B2%E6%9F%93"><span class="nav-number">4.</span> <span class="nav-text"> 模拟CSS渲染</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E6%8B%9F%E4%BB%A3%E7%A0%81"><span class="nav-number">4.1.</span> <span class="nav-text"> 模拟代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E4%BA%8Eskia"><span class="nav-number">4.2.</span> <span class="nav-text"> 关于Skia</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8E%E8%AF%9D"><span class="nav-number">5.</span> <span class="nav-text"> 后话</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E6%A1%A3"><span class="nav-number">6.</span> <span class="nav-text"> 相关文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/the-nature-of-css/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="探索CSS的本质 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          探索CSS的本质
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-10-01 12:06:28" itemprop="dateCreated datePublished" datetime="2020-10-01T12:06:28+08:00">2020-10-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A2%E7%B4%A2/" itemprop="url" rel="index"><span itemprop="name">探索</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p><code>CSS</code>，全称为<code>Cascading Style Sheets</code>，用于定制文档样式；<code>CSS</code>使得网页的呈现更加丰富，这也是初学前端的人最感到新奇的地方；</p>
+<p>但是随着对<code>CSS</code>的深入使用才会发现：那些被我们津津乐道的“<code>xx</code>属性的奇淫技巧”这类东西都只不过是浮在<code>CSS</code>最表层的现象而已；这种对于<code>CSS</code>的使用方式在我看来无异于“<strong>盲人摸象</strong>”，即<font color=#f00>只能通过观察表面现象来总结使用方法，而不是从本质出发寻找解决方案</font>，因此就可能会陷入永远只能借助表面现象来解决问题的困境。</p>
+<span id="more"></span>
+<h2 id="关于css的定位"><a class="markdownIt-Anchor" href="#关于css的定位"></a> 关于CSS的定位</h2>
+<p>在<a href="https://note.xiexuefeng.cc/post/the-web-browser/">初步了解过浏览器关于网页渲染的机制和原理</a>后，心里有个疑问变得更加突出了，那就是——“<code>CSS</code>在网页渲染中的定位是什么”；我结合了<code>webGL</code>这种单纯的图形渲染<code>API</code>中的图形渲染流程和<code>CSS</code>代码在浏览器中解析后在网页渲染中的作用，得出了一个自己的结论：</p>
+<blockquote>
+<p>CSS是一个用于结构化描述渲染信息的辅助性DSL。</p>
+</blockquote>
+<p>得出这么一个结论主要是基于以下理由：</p>
+<ul>
+<li><strong>结构化描述</strong>：<code>CSS</code>代码可以解析成<code>CSSOM</code>，然后依附于<code>DOM</code>上，这个得益于<code>CSS</code>语法本身就是<font color=#39f>键值对式的对象描述</font>这一特性；</li>
+<li><strong>辅助性</strong>：单独的<code>CSS</code>代码并不能绘制出任何有效的图形，它必须结合<code>HTML</code>解析得到的布局、位置等结点信息才能进行绘制；即<code>CSS</code>代码在渲染过程中<font color=#f00>并不充当着骨架的作用</font>，更多地是<font color=#39f>基于骨架赋予更多样的绘制</font>；</li>
+<li><strong>DSL</strong>：这个就无需多说了，<code>CSS</code>语言本身就不是一门通用性编程语言，它仅仅是针对网页文档的渲染而已，其作用范围与<code>GLSL/HLSL</code>这类着色器编程语言相比简直就是专一得不能再专一了。</li>
+</ul>
+<h2 id="css与绘制"><a class="markdownIt-Anchor" href="#css与绘制"></a> CSS与绘制</h2>
+<p>既然<code>CSS</code>只是辅助渲染的，那么<code>CSS</code>所携带的样式信息又是如何转化成底层的绘制语句呢？</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201001120840.png?imageslim" alt="img" /></p>
+<p>这里就需要涉及到更详细的浏览器渲染管线流程了，因为光从上图<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>这种大概的<code>pipeline</code>，我们根本无法理解<code>CSS</code>这种<strong>字符串信息</strong>是<font color=#f00>如何在浏览器内部进行解析然后转换成具体的底层绘制命令</font>的。不过好在<code>Google</code>内部发表了一个<font color=#39f><strong>极为详细的演讲稿</strong></font>来阐述网页中的像素是在经历了一个怎样的<code>pipeline</code>之后才显示的：<a target="_blank" rel="noopener" href="https://docs.google.com/presentation/d/1boPxbgNrTU0ddsc144rcXayGA_WF53k96imRH8Mp34Y/edit#slide=id.p">Life of a Pixel</a>（这篇演讲稿当然是极力推荐阅读的）；多亏了这个演讲稿，我终于不用去从<a target="_blank" rel="noopener" href="https://github.com/chromium/chromium"><code>Chromium</code>项目源码</a>中去一点点查找<code>CSS</code>渲染的蛛丝马迹了……</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201001120942.png?imageslim" alt="img" /></p>
+<p>上图是我根据上述演讲<code>PPT</code>和自己的理解所总结的一个渲染<code>pipeline</code>，看似很完整，但是实际上并不是浏览器所有的渲染<code>pipeline</code>，这仅仅是一个初步的流程，后续的优化渲染流程还没涉及；由于后面的优化渲染<code>pipeline</code>和更新渲染<code>pipeline</code>比较复杂，以后再单独研究，<font color=#39f>这里总结的流程权当是一个简单的全量渲染<code>pipeline</code></font>；</p>
+<h2 id="模拟css渲染"><a class="markdownIt-Anchor" href="#模拟css渲染"></a> 模拟CSS渲染</h2>
+<p>如果真要模拟上述流程图中所有<code>pipeline</code>，即<code>HTMl + CSS → 像素</code>，那真是一个巨大的工程，实在是有心无力；我最感兴趣的部分实际上是光栅化的部分，即<code>Paint Operator → 像素</code>，因此基于<code>webGL</code>对这个光栅化做了一个<strong>最简化模型</strong>：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201001121004.png?imageslim" alt="img" /></p>
+<p>可以看到这个渲染<code>pipeline</code>是十足的简单，<code>IMGUI</code> + 全量式绘制；因为我只想验证所谓的<code>Paint Operator</code>携带的绘制信息到底是如何传入到真正的底层——即着色器内的，我想知道着色器内部是如何消化和理解<code>Paint Operator</code>的；所以上面这个模型只是我个人根据<code>Life of a Pixel</code>一文所想到的一种底层交互模型；</p>
+<h3 id="模拟代码"><a class="markdownIt-Anchor" href="#模拟代码"></a> 模拟代码</h3>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">PaintOperator</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;@/types/css-gl&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; vec2, vec4 &#125; <span class="keyword">from</span> <span class="string">&#x27;gl-matrix&#x27;</span></span><br><span class="line"></span><br><span class="line">(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> &#123; <span class="variable constant_">CSSGL</span> &#125; = <span class="title class_">WebGLEngine</span> <span class="comment">// WebGLEngine是自己手写的一个webGL渲染库</span></span><br><span class="line">  <span class="keyword">const</span> <span class="attr">ops</span>: <span class="title class_">PaintOperator</span>[] = <span class="keyword">new</span> <span class="title class_">Array</span>(<span class="number">50</span>).<span class="title function_">fill</span>(<span class="number">0</span>).<span class="title function_">map</span>(<span class="function">(<span class="params">val, idx</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="attr">randomPos</span>: vec2 = [</span><br><span class="line">      <span class="title class_">Math</span>.<span class="title function_">random</span>() * <span class="variable language_">window</span>.<span class="property">innerWidth</span>,</span><br><span class="line">      <span class="title class_">Math</span>.<span class="title function_">random</span>() * <span class="variable language_">window</span>.<span class="property">innerHeight</span></span><br><span class="line">    ]</span><br><span class="line">    <span class="keyword">const</span> randomSize = vec2.<span class="title function_">create</span>()</span><br><span class="line">    <span class="keyword">const</span> <span class="attr">randomBg</span>: vec4 = [</span><br><span class="line">      <span class="title class_">Math</span>.<span class="title function_">random</span>(),</span><br><span class="line">      <span class="title class_">Math</span>.<span class="title function_">random</span>(),</span><br><span class="line">      <span class="title class_">Math</span>.<span class="title function_">random</span>(),</span><br><span class="line">      <span class="number">1.0</span></span><br><span class="line">    ]</span><br><span class="line">    vec2.<span class="title function_">random</span>(randomSize, <span class="number">200</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">      <span class="attr">id</span>: idx,</span><br><span class="line">      <span class="attr">shape</span>: &#123;</span><br><span class="line">        <span class="attr">pos</span>: randomPos,</span><br><span class="line">        <span class="attr">size</span>: randomSize</span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="attr">flags</span>: &#123;</span><br><span class="line">        <span class="attr">background</span>: randomBg</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;) <span class="comment">// 随机构建50个PaintOperator对象</span></span><br><span class="line">  <span class="keyword">const</span> gl = <span class="keyword">new</span> <span class="title function_">CSSGL</span>(<span class="string">&#x27;test&#x27;</span>, ops) <span class="comment">// 解析PaintOperator数据</span></span><br><span class="line">  gl.<span class="title function_">paint</span>() <span class="comment">// 执行绘制</span></span><br><span class="line">&#125;)()</span><br></pre></td></tr></table></figure>
+<p>解析代码就是上面这些，由于底层代码做了抽象，所以大部分代码都是生成<code>PaintOperator</code>对象的；可以看下预设的着色器代码：</p>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">precision</span> <span class="keyword">highp</span> <span class="type">float</span>; <span class="comment">// 高精度</span></span><br><span class="line"><span class="keyword">uniform</span> <span class="type">vec2</span> u_Screen; <span class="comment">// 屏幕尺寸</span></span><br><span class="line"><span class="keyword">attribute</span> <span class="type">vec2</span> a_Pos; <span class="comment">// 顶点坐标</span></span><br><span class="line"></span><br><span class="line"><span class="type">vec2</span> widthRange = <span class="type">vec2</span>(<span class="number">0.0</span>, u_Screen.x);</span><br><span class="line"><span class="type">vec2</span> heightRange = <span class="type">vec2</span>(<span class="number">0.0</span>, u_Screen.y);</span><br><span class="line"><span class="type">vec2</span> outputRange = <span class="type">vec2</span>(<span class="number">-1.0</span>, <span class="number">1.0</span>); <span class="comment">// NDC坐标范围为[-1, 1]</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 将一个值从原来的范围等比映射到另一个范围</span></span><br><span class="line"><span class="type">float</span> rangeMap (<span class="type">float</span> source, <span class="type">vec2</span> sourceRange, <span class="type">vec2</span> targetRange) &#123;</span><br><span class="line">  <span class="type">float</span> bais = source / (sourceRange.y - sourceRange.x); <span class="comment">// 在范围长度中的占比</span></span><br><span class="line">  <span class="type">float</span> target = bais * (targetRange.y - targetRange.x) + targetRange.x;</span><br><span class="line">  <span class="keyword">return</span> target;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> main() &#123;</span><br><span class="line">  <span class="built_in">gl_Position</span> = <span class="type">vec4</span>(</span><br><span class="line">    rangeMap(a_Pos.x, widthRange, outputRange),</span><br><span class="line">    rangeMap(a_Pos.y, heightRange, outputRange) * <span class="number">-1.0</span>, <span class="comment">// 转换成NDC时y轴需要翻转</span></span><br><span class="line">    <span class="number">0.0</span>,</span><br><span class="line">    <span class="number">1.0</span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">precision</span> <span class="keyword">highp</span> <span class="type">float</span>; <span class="comment">// 高精度</span></span><br><span class="line"><span class="keyword">uniform</span> <span class="type">vec2</span> u_Screen; <span class="comment">// 屏幕尺寸</span></span><br><span class="line"><span class="keyword">uniform</span> <span class="type">vec4</span> u_Background; <span class="comment">// 背景色</span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> main() &#123;</span><br><span class="line">  <span class="built_in">gl_FragColor</span> = u_Background;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由于模型本身很简单，因此对应的着色器也很简单；通过着色器代码不难看出，我所理解的底层着色器接收<code>Paint Operator</code>信息就是通过内置的属性来一一对应，是最原始的方式；</p>
+<h3 id="关于skia"><a class="markdownIt-Anchor" href="#关于skia"></a> 关于Skia</h3>
+<p>上面这个模拟思路其实很简单，所以我也很想去验证这种思路跟具体的<code>Chrome/Chromium</code>底层绘制有啥不同（单纯的感兴趣）；由于<code>Chromium</code>内部几乎所有的图形绘制都交给了<code>Skia</code>图形库，所以只能去<code>Skia</code>源码去查找蛛丝马迹了；</p>
+<p>不过看了一圈<a target="_blank" rel="noopener" href="https://github.com/google/skia">Skia项目源码</a>之后，我发现<code>Skia</code>项目实在是太高度抽象了，层层嵌套，从着色器代码里面压根找不出蛛丝马迹，因为着色器代码里面的信息看起来都是很抽象/通用的数据，无法直接联系到图元绘制；看来需要较长的时间才能找出我想要的答案，虽然有点遗憾，但是也从<code>Skia</code>本身发现了一些不错的地方：</p>
+<ul>
+<li>
+<p><code>Skia</code>内部设计了一个着色器语言，名为<code>SkSL (Skia Shading Language)</code>；<code>SkSL</code>实际上就是基于某一固定版本的<code>GLSL</code>语法进行设计的，其作用应该是抹去不同<code>GPU</code>驱动<code>API</code>着色器语法的差异，以便对于不同的<code>GPU</code>驱动可以进一步输出为目标着色器语言，因此<code>SkSL</code>可以看做是着色器预编译语言<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201001121017.png?imageslim" alt="img" /></p>
+</li>
+<li>
+<p><code>Skia</code>的<code>API</code>风格也很有意思，与<code>Canvas API</code>很相似，看一下<a target="_blank" rel="noopener" href="https://fiddle.skia.org/c/@shapes">官网的<code>Demo</code></a>就知道了：</p>
+  <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">draw</span><span class="params">(SkCanvas* canvas)</span> </span>&#123;</span><br><span class="line">    canvas-&gt;<span class="built_in">drawColor</span>(SK_ColorWHITE);</span><br><span class="line"></span><br><span class="line">    SkPaint paint;</span><br><span class="line">    paint.<span class="built_in">setStyle</span>(SkPaint::kFill_Style);</span><br><span class="line">    paint.<span class="built_in">setAntiAlias</span>(<span class="literal">true</span>);</span><br><span class="line">    paint.<span class="built_in">setStrokeWidth</span>(<span class="number">4</span>);</span><br><span class="line">    paint.<span class="built_in">setColor</span>(<span class="number">0xff4285F4</span>);</span><br><span class="line"></span><br><span class="line">    SkRect rect = SkRect::<span class="built_in">MakeXYWH</span>(<span class="number">10</span>, <span class="number">10</span>, <span class="number">100</span>, <span class="number">160</span>);</span><br><span class="line">    canvas-&gt;<span class="built_in">drawRect</span>(rect, paint);</span><br><span class="line"></span><br><span class="line">    SkRRect oval;</span><br><span class="line">    oval.<span class="built_in">setOval</span>(rect);</span><br><span class="line">    oval.<span class="built_in">offset</span>(<span class="number">40</span>, <span class="number">80</span>);</span><br><span class="line">    paint.<span class="built_in">setColor</span>(<span class="number">0xffDB4437</span>);</span><br><span class="line">    canvas-&gt;<span class="built_in">drawRRect</span>(oval, paint);</span><br><span class="line"></span><br><span class="line">    paint.<span class="built_in">setColor</span>(<span class="number">0xff0F9D58</span>);</span><br><span class="line">    canvas-&gt;<span class="built_in">drawCircle</span>(<span class="number">180</span>, <span class="number">50</span>, <span class="number">25</span>, paint);</span><br><span class="line"></span><br><span class="line">    rect.<span class="built_in">offset</span>(<span class="number">80</span>, <span class="number">50</span>);</span><br><span class="line">    paint.<span class="built_in">setColor</span>(<span class="number">0xffF4B400</span>);</span><br><span class="line">    paint.<span class="built_in">setStyle</span>(SkPaint::kStroke_Style);</span><br><span class="line">    canvas-&gt;<span class="built_in">drawRoundRect</span>(rect, <span class="number">10</span>, <span class="number">10</span>, paint);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>熟悉的命令式以及图元绘制命名；</p>
+</li>
+<li>
+<p><code>Skia</code>中有三大基类：<code>SkCanvas</code>、<code>SkBitmap</code>和<code>SkPaint</code><sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup>；</p>
+<ul>
+<li><code>SkCanvas</code>：管理绘制相关的API；</li>
+<li><code>SkBitmap</code>：管理bit数据；</li>
+<li><code>SkPaint</code>：管理图元绘制风格相关的状态；</li>
+</ul>
+</li>
+</ul>
+<h2 id="后话"><a class="markdownIt-Anchor" href="#后话"></a> 后话</h2>
+<p>事实上，还有很多感兴趣和有疑问的地方没有来得及探究，每一个点都需要时间来找资料和验证；比如一个<code>DOM</code>结点最终到底<font color=#39f>可以分为多少层矩形</font>来进行绘制？<font color=#39f>圆角矩形及渐变色</font>如何在着色器中进行高效的绘制等等，这些都是很有意思的，以后也得找时间研究一下。</p>
+<h2 id="相关文档"><a class="markdownIt-Anchor" href="#相关文档"></a> 相关文档</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://docs.google.com/document/d/1aitSOucL0VHZa9Z2vbRJSyAIsAz24kX8LFByQ5xQnUg/edit">How Blink works - Google 文档</a>：一个关于<code>Blink</code>渲染引擎的超强概述</li>
+<li><a target="_blank" rel="noopener" href="https://blog.ihomura.cn/2019/07/29/Web-IDL-%E7%AE%80%E4%BB%8B/">Web IDL 简介 | 澪同学的博客</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.chromium.org/blink">https://www.chromium.org/blink</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.mottomo.moe/categories/Tech/zh/2015-09-17-Goodbye-CSS-Shaders/">再见，CSS Shader (CSS Custom Filter) | 花嫁達の部屋</a>：无意中发现的一个被废弃的规范</li>
+<li><a target="_blank" rel="noopener" href="https://www.w3.org/Style/CSS/">W3C CSS规范主页</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.chromium.org/developers/design-documents/graphics-and-skia">https://www.chromium.org/developers/design-documents/graphics-and-skia</a> ：Chromium项目关于Skia使用的概述</li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/37640688">Skia Vulkan Performance - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnopengl-cn.readthedocs.io/zh/latest/01%20Getting%20started/05%20Shaders/">着色器 - LearnOpenGL-CN</a></li>
+</ul>
+<hr class="footnotes-sep" />
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://docs.google.com/document/d/1aitSOucL0VHZa9Z2vbRJSyAIsAz24kX8LFByQ5xQnUg/edit#heading=h.5bi68m3d1uqo">https://docs.google.com/document/d/1aitSOucL0VHZa9Z2vbRJSyAIsAz24kX8LFByQ5xQnUg/edit#heading=h.5bi68m3d1uqo</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://github.com/google/skia/blob/master/src/sksl/README">https://github.com/google/skia/blob/master/src/sksl/README</a> <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://www.chromium.org/developers/design-documents/graphics-and-skia">https://www.chromium.org/developers/design-documents/graphics-and-skia</a> <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/the-nature-of-css/" title="探索CSS的本质">https://note.xiexuefeng.cc/post/the-nature-of-css/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2/" rel="tag"># 计算机图形</a>
+              <a href="/tags/css/" rel="tag"># css</a>
+              <a href="/tags/webGL/" rel="tag"># webGL</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/the-web-browser/" rel="prev" title="了解浏览器的本质">
+                  <i class="fa fa-chevron-left"></i> 了解浏览器的本质
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/ts-array-to-object/" rel="next" title="数组层级到对象层级的TS类型推导">
+                  数组层级到对象层级的TS类型推导 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/the-nature-of-css/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/the-nature-of-css/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 近几年，浏览器的特性频出，特别是一些开放浏览器底层控制的API规范，比如：WebAssembly，CSS Houdini，WebGL2.0等；这些底层API使得我们有机会定制更多的内容，而且拥有更好的性能，因此也就获得了更多的创造性。 关于CSS Houdini也是近两年才听的比较多，只知道大概是一个自定义CSS属性的利器，也没比较详细的去了解，算是比较前沿的CSS规范了；看过一些案例后，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浅尝 CSS Houdini">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/first-test-css-houdini/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 近几年，浏览器的特性频出，特别是一些开放浏览器底层控制的API规范，比如：WebAssembly，CSS Houdini，WebGL2.0等；这些底层API使得我们有机会定制更多的内容，而且拥有更好的性能，因此也就获得了更多的创造性。 关于CSS Houdini也是近两年才听的比较多，只知道大概是一个自定义CSS属性的利器，也没比较详细的去了解，算是比较前沿的CSS规范了；看过一些案例后，">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200712180009.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200712180035.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200712180051.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200712180104.gif?imageslim">
+<meta property="article:published_time" content="2020-07-12T10:01:31.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.871Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="动效">
+<meta property="article:tag" content="css">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20200712180009.png?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/first-test-css-houdini/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/first-test-css-houdini/","path":"post/first-test-css-houdini/","title":"浅尝 CSS Houdini"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>浅尝 CSS Houdini | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#css-houdini-%E7%8E%B0%E7%8A%B6"><span class="nav-number">2.</span> <span class="nav-text"> CSS Houdini 现状</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#css-houdini-%E8%A7%84%E8%8C%83"><span class="nav-number">3.</span> <span class="nav-text"> CSS Houdini 规范</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">3.1.</span> <span class="nav-text"> 背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%9C%E7%94%A8"><span class="nav-number">3.2.</span> <span class="nav-text"> 作用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#css-properties-values-api-%E7%AE%80%E4%BB%8B"><span class="nav-number">4.</span> <span class="nav-text"> CSS Properties &amp; Values API 简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#cssregisterproperty"><span class="nav-number">4.1.</span> <span class="nav-text"> CSS.registerProperty()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#property"><span class="nav-number">4.2.</span> <span class="nav-text"> @property</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#css-painting-api-%E7%AE%80%E4%BB%8B"><span class="nav-number">5.</span> <span class="nav-text"> CSS Painting API 简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%A8%E5%86%8C"><span class="nav-number">5.1.</span> <span class="nav-text"> 注册</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E-stylepropertymapreadonly-%E5%AF%B9%E8%B1%A1"><span class="nav-number">5.1.1.</span> <span class="nav-text"> 关于 StylePropertyMapReadOnly 对象</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A0%E8%BD%BD"><span class="nav-number">5.2.</span> <span class="nav-text"> 加载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8"><span class="nav-number">5.3.</span> <span class="nav-text"> 使用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BC%A0%E5%8F%82"><span class="nav-number">5.3.1.</span> <span class="nav-text"> 传参</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E6%A1%88%E4%BE%8B"><span class="nav-number">6.</span> <span class="nav-text"> 一个案例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E6%A1%A3"><span class="nav-number">7.</span> <span class="nav-text"> 相关文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/first-test-css-houdini/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="浅尝 CSS Houdini | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          浅尝 CSS Houdini
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-07-12 18:01:31" itemprop="dateCreated datePublished" datetime="2020-07-12T18:01:31+08:00">2020-07-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A2%E7%B4%A2/" itemprop="url" rel="index"><span itemprop="name">探索</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p>近几年，浏览器的特性频出，特别是一些开放浏览器底层控制的<code>API</code>规范，比如：<code>WebAssembly</code>，<code>CSS Houdini</code>，<code>WebGL2.0</code>等；这些底层<code>API</code>使得我们有机会定制更多的内容，而且拥有更好的性能，因此也就获得了更多的创造性。</p>
+<p>关于<code>CSS Houdini</code>也是近两年才听的比较多，只知道大概是一个自定义<code>CSS</code>属性的利器，也没比较详细的去了解，算是比较前沿的<code>CSS</code>规范了；看过一些案例后，觉得<code>CSS Houdini</code>确实能够做出一些十分强大的展示和动效，是时候深入了解一下了。</p>
+<span id="more"></span>
+<h2 id="css-houdini-现状"><a class="markdownIt-Anchor" href="#css-houdini-现状"></a> CSS Houdini 现状</h2>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200712180009.png?imageslim" alt="img" /></p>
+<p>上图<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>是截至目前为止（2020-7-11）各浏览器厂商对于<code>CSS Houdini</code>规范各个模块的支持情况，可以看到目前只有<code>blink</code>内核（<code>chrome</code>系）浏览器对于<code>CSS Houdini</code>有较好的支持，而<code>webkit</code>内核则是处于开发中，<code>firefox</code>那就只是有意图去实现，连开发阶段都没有进入；</p>
+<p>而且可以看到，即便是<code>CSS Houdini</code>规范，<code>blink</code>内核对不同模块的支持程度也不一样；目前<code>Paint API</code>，<code>Properties &amp; Values API</code>，<code>Typed OM</code>完全支持；其他模块不是没有开发进度就是很少的部分特性支持，基本上用处不大；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200712180035.png?imageslim" alt="img" /></p>
+<p>再看下<a target="_blank" rel="noopener" href="https://caniuse.com/#search=houdini">caniuse网站</a>的统计，<strong>移动端</strong>那就更加惨烈了，只有安卓原生浏览器和安卓<code>Chrome</code>浏览器有支持，而且要求版本还比较高（2020-4月后才支持）；</p>
+<p>所以<code>CSS Houdini</code>目前支持程度有限，仅在<code>blink</code>内核浏览器有用武之处，真实应用场景会大打折扣；</p>
+<h2 id="css-houdini-规范"><a class="markdownIt-Anchor" href="#css-houdini-规范"></a> CSS Houdini 规范</h2>
+<h3 id="背景"><a class="markdownIt-Anchor" href="#背景"></a> 背景</h3>
+<p>那么为何要提出<code>CSS Houdini</code>规范？</p>
+<p>首先，因为目前<code>CSS</code>很多属性在各个内核上可能有表现差异，导致兼容性问题，且原生<code>polyfill</code>几乎没有可能；</p>
+<p>其次，<code>CSS</code>很多新特性从提案，<code>W3C</code>纳入规范再到厂商最终实现可能要面临几年以上的时间，这个流程极大地耗费开发者的耐心及应用推广；因此每次出现新特性提案时大多数人都会调侃说到等几年后再试试；</p>
+<p><code>CSS Houdini</code>规范正是为了解决上述问题而提出的，通过暴露<code>CSS</code>引擎渲染相关的流程，使得渲染不再是黑盒，而是变得可控，这样样式和渲染的决定权就交到了开发者的手里，也就能解决上述的问题（当然，前提是所有浏览器都支持<code>CSS Houdini</code>规范……）。</p>
+<h3 id="作用"><a class="markdownIt-Anchor" href="#作用"></a> 作用</h3>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200712180051.png?imageslim" alt="img" /></p>
+<p>上图<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>解释了<code>CSS Houdini</code>规范中每个模块具体作用于<code>CSS</code>渲染的哪个流程，从图中可以看出<code>CSS Houdini</code>规范的野心很大，试图掌控整个<code>CSS</code>渲染流程（这对于开发者来说肯定是个好消息）；</p>
+<ul>
+<li><code>CSS Parsing API</code>：用于解析<code>CSS</code>词法结构，也就是对于渲染中解析器工作的部分；</li>
+<li><code>CSS Typed OM</code>：从<code>CSS Houdini</code>规范草案可以看出，<code>CSS Typed OM</code>是<code>CSSOM</code>的高性能版本，是直接将<code>CSS</code>值转化为类<code>JS</code>对象，从而减少中间层的转换；</li>
+</ul>
+<blockquote>
+<p>Converting CSSOM value strings into meaningfully typed JavaScript representations and back can incur a significant performance overhead. This specification exposes CSS values as typed JavaScript objects to facilitate their performant manipulation.<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup></p>
+</blockquote>
+<ul>
+<li><code>CSS Properties &amp; Values API</code>：对<code>CSS</code>自定义属性进行指定值类型等相关配置，指定值类型后自定义属性就能够被应用于动画；</li>
+<li><code>CSS Layout API</code>：用于控制渲染中的布局（<code>Layout</code>）流程，从而可以自己增加<code>display</code>类型；</li>
+<li><code>CSS Painting API</code>：用于控制渲染中的绘制（<code>Paint</code>）流程，对于元素样式达到<font color=#39f>像素级</font>的控制，且绘制<code>API</code>是<code>canvas</code>的子集，方便上手；</li>
+<li><code>Worklets</code>：类似于<code>Web Worker</code>，是独立于主线程的脚本文件，只能使用指定的<code>API</code>，专门用于存放注册布局和绘制相关的代码；</li>
+<li><code>Composited Scrolling &amp; Animation</code>：复合滚动和动画<code>API</code>，目的是在<code>worklets</code>中支持滚动（位置）及动画变化，使得相应的属性变化<font color=#f00>不会引起主线程中的重排和重绘</font>，从而拥有高性能的滚动及动画表现；目前<code>blink</code>内核已经实现了一部分<code>Animation Worklet</code><sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup>；</li>
+</ul>
+<h2 id="css-properties-values-api-简介"><a class="markdownIt-Anchor" href="#css-properties-values-api-简介"></a> CSS Properties &amp; Values API 简介</h2>
+<p>这部分的<code>API</code>很简洁，主要是定义了<code>CSS</code>自定义属性的一些性质；<code>API</code>包含<code>CSS.registerProperty()</code>方法和<code>@property</code>规则，而这两个本质上作用是一样的，前者是在<code>JS</code>中使用，后者是在<code>CSS</code>中使用；</p>
+<h3 id="cssregisterproperty"><a class="markdownIt-Anchor" href="#cssregisterproperty"></a> CSS.registerProperty()</h3>
+<blockquote>
+<p>CSS.registerProperty(PropertyDefinition)<sup class="footnote-ref"><a href="#fn5" id="fnref5">[5]</a></sup></p>
+</blockquote>
+<p>该方法接收一个配置对象，该对象有以下几个属性：</p>
+<ul>
+<li><code>name</code>：<font color=#f00>必填</font>，自定义属性名（注意要包含前面的<code>--</code>）；</li>
+<li><code>syntax</code>：可选，指定自定义属性的<font color=#39f>语法值类型</font>；可用的值类型可以参考<a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Learn/CSS/Building_blocks/Values_and_units">CSS的值与单位 - 学习 Web 开发 | MDN</a>，默认值为<code>&quot;*&quot;</code>；</li>
+<li><code>inherits</code>：自定义属性值是否可以被继承，默认为<code>false</code>（不能被继承）；</li>
+<li><code>initialValue</code>：可选，自定义属性的初始值；</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 先判断API是否能用</span></span><br><span class="line"><span class="keyword">if</span> (<span class="string">&#x27;registerProperty&#x27;</span> <span class="keyword">in</span> <span class="variable constant_">CSS</span> &amp;&amp; <span class="string">&#x27;CSSUnitValue&#x27;</span> <span class="keyword">in</span> <span class="variable language_">window</span>) &#123;</span><br><span class="line">  <span class="variable constant_">CSS</span>.<span class="title function_">registerProperty</span>(&#123;</span><br><span class="line">    <span class="attr">name</span>: <span class="string">&#x27;--circle-color&#x27;</span>,</span><br><span class="line">    <span class="attr">syntax</span>: <span class="string">&#x27;&lt;color&gt;&#x27;</span>,</span><br><span class="line">    <span class="attr">initialValue</span>: <span class="string">&#x27;#39f&#x27;</span>,</span><br><span class="line">    <span class="attr">inherits</span>: <span class="literal">false</span></span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面就是一个注册自定义属性的例子，定义了具体值类型的自定义属性就能够被用于动画了（即可以自动生成关键帧了）；<code>CSSUnitValue</code>是<code>CSS Typed OM</code>规范中的一个<code>API</code>，<code>CSS.registerProperty()</code>对其有依赖；</p>
+<h3 id="property"><a class="markdownIt-Anchor" href="#property"></a> @property</h3>
+<p><code>@property</code>规则语法和<code>CSS.registerProperty()</code>类似：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">@property</span> --circle-color &#123;</span><br><span class="line">  syntax: <span class="string">&#x27;&lt;color&gt;&#x27;</span>;</span><br><span class="line">  inherits: false;</span><br><span class="line">  initial-value: <span class="number">#39f</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="css-painting-api-简介"><a class="markdownIt-Anchor" href="#css-painting-api-简介"></a> CSS Painting API 简介</h2>
+<p><code>CSS Painting API</code>主要是由<code>PaintWorklet</code>组成，<code>PaintWorklet</code>定义了一套该类型<code>worklet</code>内所能访问的全局对象（<code>PaintWorkletGlobalScope</code>），绘制上下文（<code>PaintRenderingContext2D</code>，是<code>CanvasRenderingContext2D API</code>的子集）及注册和加载方法；</p>
+<h3 id="注册"><a class="markdownIt-Anchor" href="#注册"></a> 注册</h3>
+<p>在<code>worklet</code>文件（也是<code>JS</code>文件）内使用<code>registerPaint()</code>进行注册，该方法接收两个参数：</p>
+<blockquote>
+<p>registerPaint(name, class)<sup class="footnote-ref"><a href="#fn6" id="fnref6">[6]</a></sup></p>
+</blockquote>
+<ul>
+<li><code>name</code>：该<code>paintWorklet</code>的名称，用于在<code>CSS</code>中进行引用；</li>
+<li><code>class</code>：实现该<code>paintWorklet</code>的类；</li>
+</ul>
+<p>其中类可以实现以下（抽象）成员或方法：</p>
+<ul>
+<li>
+<p><code>static get inputProperties()</code>：返回一个数组，包含绘制函数<font color=#39f>所需要的属性</font>（包括自定义属性）；</p>
+</li>
+<li>
+<p><code>static get inputArguments()</code>：返回一个数组，指定传入绘制函数的<font color=#39f>参数语法类型</font>（类似于<code>registerProperty</code>方法中的<code>syntax</code>参数）；</p>
+</li>
+<li>
+<p><code>static get contextOptions()</code>：返回一个配置对象，用于设置绘制上下文（<code>PaintRenderingContext2D</code>）；</p>
+</li>
+<li>
+<p><code>paint(ctx, size, props, args)</code>：<font color=#f00>必须实现</font>；绘制函数接收四个函数：</p>
+<ul>
+<li><code>ctx</code>：绘制上下文，即当前<code>paintWorklet</code>对应的<code>PaintRenderingContext2D</code>实例；</li>
+<li><code>size</code>：<code>PaintSize</code>对象，包含<code>width</code>和<code>height</code>两个属性，即<code>paintWorklet</code>作用的<font color=#39f>元素的尺寸信息</font>；</li>
+<li><code>props</code>：<code>StylePropertyMapReadOnly</code>对象，只能访问由<code>inputProperties</code>属性返回的属性；</li>
+<li><code>args</code>：参数数组，可以接收由<code>CSS paint()</code>函数传入的参数；</li>
+</ul>
+</li>
+</ul>
+<h4 id="关于-stylepropertymapreadonly-对象"><a class="markdownIt-Anchor" href="#关于-stylepropertymapreadonly-对象"></a> 关于 StylePropertyMapReadOnly 对象</h4>
+<p>该对象类似于<code>Map</code>对象，但是不能<code>set</code>，因此是只读的；通过<code>get()</code>方法可以获取到对应属性，不过得到并不是属性值，而是一个<code>CSSStyleValue</code>对象（属于<code>CSS Typed OM</code>），不同<code>syntax</code>类型的属性会有不同类型的<code>CSSStyleValue</code>对象；</p>
+<p>不过一般来说数值类型的属性值可以通过<code>value</code>属性来获取值，颜色类型则通过<code>toString()</code>方法来获取值，如：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> boxColor = props.<span class="title function_">get</span>(<span class="string">&#x27;--box-color&#x27;</span>).<span class="title function_">toString</span>()</span><br><span class="line"><span class="keyword">const</span> boxWidth = props.<span class="title function_">get</span>(<span class="string">&#x27;--box-width&#x27;</span>).<span class="property">value</span></span><br></pre></td></tr></table></figure>
+<h3 id="加载"><a class="markdownIt-Anchor" href="#加载"></a> 加载</h3>
+<p>事实上，worklet的加载方式很类似，都是通过<code>addModule(url)</code>方法来进行：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 先判断paintWorklet是否可用</span></span><br><span class="line"><span class="keyword">if</span> (<span class="string">&#x27;paintWorklet&#x27;</span> <span class="keyword">in</span> <span class="variable constant_">CSS</span>) &#123;</span><br><span class="line">  <span class="variable constant_">CSS</span>.<span class="property">paintWorklet</span>.<span class="title function_">addModule</span>(<span class="string">&#x27;worklet-path.js&#x27;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>注</strong>：<font color=#f00><code>worklet</code>文件地址仅支持<code>https</code>和<code>localhost</code>方式</font>！</p>
+<h3 id="使用"><a class="markdownIt-Anchor" href="#使用"></a> 使用</h3>
+<p><code>paintWorklet</code>加载后就能够在<code>CSS</code>中进行使用了，可以使用<code>paint(name)</code>函数来启用<code>worklet</code>，<code>name</code>就是<font color=#39f>注册时传入的名称</font>；</p>
+<ul>
+<li><code>name</code><font color=#f00>不需要加上引号</font>！</li>
+<li><code>paint()</code>函数返回值类型为<code>&lt;image&gt;</code>，因此<font color=#f00>只能在属性值类型为<code>&lt;image&gt;</code>的属性中</font>进行使用！如：<code>background-imgae</code>，<code>list-style-image</code>等；更多关于<code>&lt;image&gt;</code>类型的信息可以参考<a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/image"><image> - CSS（层叠样式表） | MDN</a>；</li>
+</ul>
+<h4 id="传参"><a class="markdownIt-Anchor" href="#传参"></a> 传参</h4>
+<p><code>paint()</code>函数也能传参，然后被<code>paintWorklet</code>中的<code>paint()</code>方法所接收：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">paint(paint-name, arg1, arg2, ...)</span><br></pre></td></tr></table></figure>
+<h2 id="一个案例"><a class="markdownIt-Anchor" href="#一个案例"></a> 一个案例</h2>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200712180104.gif?imageslim" alt="img" /></p>
+<p>看到上面这个动画，在不使用<code>CSS Houdini</code>之前，很难想象纯<code>CSS</code>能够得到这样的效果；</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://codepen.io/xxf1996/full/GRoBRNG">在线demo</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/xxf1996/houdini-test/">demo源码</a></li>
+</ul>
+<h2 id="相关文档"><a class="markdownIt-Anchor" href="#相关文档"></a> 相关文档</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://juejin.im/post/5adc091b51882567105f5586">用CSS Houdini画一片星空 - 掘金</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/20939640">Houdini：CSS 领域最令人振奋的革新 - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/Houdini">CSS Houdini | MDN</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/API/CSS_Properties_and_Values_API/guide">Using the CSS properties and values API - Web APIs | MDN</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.w3ctech.com/topic/1816">Houdini工作小组关于CSS的揭秘 - w3ctech</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/35410151">和 Houdini, CSS Paint API 打个招呼吧 - 知乎</a>：<code>CSS Paint API</code>入门体验</li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/API/StylePropertyMapReadOnly">StylePropertyMapReadOnly - Web APIs | MDN</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model#CSS_Typed_Object_Model">CSS Object Model (CSSOM) - Web APIs | MDN</a>：<code>CSS Typed OM</code>一览</li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/API/CSS_Painting_API">CSS Painting API - Web APIs | MDN</a>：<code>CSS Painting API</code> demo</li>
+</ul>
+<hr class="footnotes-sep" />
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://ishoudinireadyyet.com/">Is Houdini Ready Yet?</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/20939640">Houdini：CSS 领域最令人振奋的革新 - 知乎</a> <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://drafts.css-houdini.org/css-typed-om">https://drafts.css-houdini.org/css-typed-om</a> <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://developers.google.com/web/updates/2018/10/animation-worklet">https://developers.google.com/web/updates/2018/10/animation-worklet</a> <a href="#fnref4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/API/CSS/RegisterProperty">CSS.registerProperty() - Web APIs | MDN</a> <a href="#fnref5" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn6" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/API/PaintWorklet/registerPaint">PaintWorklet.registerPaint - Web APIs | MDN</a> <a href="#fnref6" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/first-test-css-houdini/" title="浅尝 CSS Houdini">https://note.xiexuefeng.cc/post/first-test-css-houdini/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E5%8A%A8%E6%95%88/" rel="tag"># 动效</a>
+              <a href="/tags/css/" rel="tag"># css</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/vue-lazyload-event-not-work/" rel="prev" title="vue-lazyload的一个坑：事件失效">
+                  <i class="fa fa-chevron-left"></i> vue-lazyload的一个坑：事件失效
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/css-border-radius/" rel="next" title="border-radius的本质">
+                  border-radius的本质 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/first-test-css-houdini/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/first-test-css-houdini/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

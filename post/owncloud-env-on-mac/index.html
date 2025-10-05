@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 没想到在Mac上搭建PHP开发环境会有这么多坑，手动编译真是坑到吐血；果然还是包管理器才是王道，不过经过此次折腾，确实是时候学习一些docker的用法了；">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在 Mac 上搭建 owncloud 环境">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/owncloud-env-on-mac/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 没想到在Mac上搭建PHP开发环境会有这么多坑，手动编译真是坑到吐血；果然还是包管理器才是王道，不过经过此次折腾，确实是时候学习一些docker的用法了；">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20210411225331.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20210411225356.png?imageslim">
+<meta property="article:published_time" content="2021-04-11T14:51:43.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.878Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="php">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20210411225331.png?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/owncloud-env-on-mac/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/owncloud-env-on-mac/","path":"post/owncloud-env-on-mac/","title":"在 Mac 上搭建 owncloud 环境"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>在 Mac 上搭建 owncloud 环境 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tldr"><span class="nav-number">2.</span> <span class="nav-text"> TL;DR</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#homebrew%E5%8A%A0%E9%80%9F%E9%95%9C%E5%83%8F"><span class="nav-number">2.1.</span> <span class="nav-text"> Homebrew加速镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#nginx%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">2.2.</span> <span class="nav-text"> nginx配置文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%81%87%E5%88%B0%E7%9A%84%E5%9D%91"><span class="nav-number">3.</span> <span class="nav-text"> 遇到的坑</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9B%86%E6%88%90%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85%E5%8C%85%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">3.1.</span> <span class="nav-text"> 集成环境安装包的问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%8B%E5%8A%A8%E7%BC%96%E8%AF%91%E5%8F%AF%E8%83%BD%E4%BC%9A%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">3.2.</span> <span class="nav-text"> 手动编译可能会遇到的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#icu4c%E5%8C%85%E6%89%BE%E4%B8%8D%E5%88%B0"><span class="nav-number">3.2.1.</span> <span class="nav-text"> icu4c包找不到</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#extstandardphp_smart_strh-file-not-found"><span class="nav-number">3.2.2.</span> <span class="nav-text"> ext&#x2F;standard&#x2F;php_smart_str.h’ file not found</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mysql%E5%8A%A0%E5%AF%86%E6%96%B9%E5%BC%8F%E4%B8%8D%E6%94%AF%E6%8C%81"><span class="nav-number">3.3.</span> <span class="nav-text"> mysql加密方式不支持</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E6%A1%A3"><span class="nav-number">4.</span> <span class="nav-text"> 相关文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/owncloud-env-on-mac/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="在 Mac 上搭建 owncloud 环境 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          在 Mac 上搭建 owncloud 环境
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-04-11 22:51:43" itemprop="dateCreated datePublished" datetime="2021-04-11T22:51:43+08:00">2021-04-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%B8%A9%E5%9D%91/" itemprop="url" rel="index"><span itemprop="name">踩坑</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p>没想到在<code>Mac</code>上搭建<code>PHP</code>开发环境会有这么多坑，手动编译真是坑到吐血；果然还是包管理器才是王道，不过经过此次折腾，确实是时候学习一些<code>docker</code>的用法了；</p>
+<span id="more"></span>
+<h2 id="tldr"><a class="markdownIt-Anchor" href="#tldr"></a> TL;DR</h2>
+<ol>
+<li>
+<p>利用<code>homebrew</code>分别安装<code>php</code>，<code>mysql</code>和<code>nginx</code>；</p>
+ <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">brew install php</span><br><span class="line">brew install mysql</span><br><span class="line">brew install nginx</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>启动服务：</p>
+ <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">brew services start php</span><br><span class="line">brew services start mysql</span><br><span class="line">brew services start nginx</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>下载对应版本的<code>owncloud</code>的安装包，解压后放到本地服务器路径下；</p>
+</li>
+<li>
+<p>设置<code>nginx</code>的服务器配置文件<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>；</p>
+ <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br></pre></td><td class="code"><pre><span class="line">upstream php-handler &#123;</span><br><span class="line">    server 127.0.0.1:9000; # 本地php服务器默认地址</span><br><span class="line">    #server unix:/var/run/php5-fpm.sock;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">    listen 80; # 要监听的本地端口</span><br><span class="line">    server_name ***; # 服务器访问域名</span><br><span class="line"></span><br><span class="line">    # Add headers to serve security related headers</span><br><span class="line">    # Before enabling Strict-Transport-Security headers please read into this topic first.</span><br><span class="line">    #add_header Strict-Transport-Security &quot;max-age=15552000; includeSubDomains&quot;;</span><br><span class="line">    add_header X-Content-Type-Options nosniff;</span><br><span class="line">    add_header X-Frame-Options &quot;SAMEORIGIN&quot;;</span><br><span class="line">    add_header X-XSS-Protection &quot;1; mode=block&quot;;</span><br><span class="line">    add_header X-Robots-Tag none;</span><br><span class="line">    add_header X-Download-Options noopen;</span><br><span class="line">    add_header X-Permitted-Cross-Domain-Policies none;</span><br><span class="line"></span><br><span class="line">    # Path to the root of your installation</span><br><span class="line">    root /data/domains/cloud; # owncloud解压后部署的本地路径</span><br><span class="line">    location = /robots.txt &#123;</span><br><span class="line">        allow all;</span><br><span class="line">        log_not_found off;</span><br><span class="line">        access_log off;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    # The following 2 rules are only needed for the user_webfinger app.</span><br><span class="line">    # Uncomment it if you&#x27;re planning to use this app.</span><br><span class="line">    #rewrite ^/.well-known/host-meta /public.php?service=host-meta last;</span><br><span class="line">    #rewrite ^/.well-known/host-meta.json /public.php?service=host-meta-json last;</span><br><span class="line"></span><br><span class="line">    location = /.well-known/carddav &#123;</span><br><span class="line">        return 301 $scheme://$host/remote.php/dav;</span><br><span class="line">    &#125;</span><br><span class="line">    location = /.well-known/caldav &#123;</span><br><span class="line">        return 301 $scheme://$host/remote.php/dav;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    location ^~ /.well-known/acme-challenge &#123; &#125;</span><br><span class="line"></span><br><span class="line">    # set max upload size</span><br><span class="line">    client_max_body_size 512M;</span><br><span class="line">    fastcgi_buffers 64 4K;</span><br><span class="line"></span><br><span class="line">    # Disable gzip to avoid the removal of the ETag header</span><br><span class="line">    gzip off;</span><br><span class="line"></span><br><span class="line">    # Uncomment if your server is build with the ngx_pagespeed module</span><br><span class="line">    # This module is currently not supported.</span><br><span class="line">    #pagespeed off;</span><br><span class="line"></span><br><span class="line">    error_page 403 /core/templates/403.php;</span><br><span class="line">    error_page 404 /core/templates/404.php;</span><br><span class="line"></span><br><span class="line">    location / &#123;</span><br><span class="line">        rewrite ^ /index.php$uri;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    location ~ ^/(?:build|tests|config|lib|3rdparty|templates|data)/ &#123;</span><br><span class="line">        return 404;</span><br><span class="line">    &#125;</span><br><span class="line">    location ~ ^/(?:\.|autotest|occ|issue|indie|db_|console) &#123;</span><br><span class="line">        return 404;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    location ~ ^/(?:index|remote|public|cron|core/ajax/update|status|ocs/v[12]|updater/.+|ocs-provider/.+|core/templates/40[34])\.php(?:$|/) &#123;</span><br><span class="line">        fastcgi_split_path_info ^(.+\.php)(/.*)$;</span><br><span class="line">        include fastcgi_params;</span><br><span class="line">        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;</span><br><span class="line">        fastcgi_param PATH_INFO $fastcgi_path_info;</span><br><span class="line">        #fastcgi_param HTTPS on;</span><br><span class="line">        fastcgi_param modHeadersAvailable true; #Avoid sending the security headers twice</span><br><span class="line">        fastcgi_param front_controller_active true;</span><br><span class="line">        fastcgi_pass php-handler;</span><br><span class="line">        fastcgi_intercept_errors on;</span><br><span class="line">        fastcgi_request_buffering off; #Available since NGINX 1.7.11</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    location ~ ^/(?:updater|ocs-provider)(?:$|/) &#123;</span><br><span class="line">        try_files $uri $uri/ =404;</span><br><span class="line">        index index.php;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    # Adding the cache control header for js and css files</span><br><span class="line">    # Make sure it is BELOW the PHP block</span><br><span class="line">    location ~* \.(?:css|js)$ &#123;</span><br><span class="line">        try_files $uri /index.php$uri$is_args$args;</span><br><span class="line">        add_header Cache-Control &quot;max-age=15778463&quot;;</span><br><span class="line">        # Add headers to serve security related headers (It is intended to have those duplicated to the ones above)</span><br><span class="line">        # Before enabling Strict-Transport-Security headers please read into this topic first.</span><br><span class="line">        #add_header Strict-Transport-Security &quot;max-age=15552000; includeSubDomains&quot;;</span><br><span class="line">        add_header X-Content-Type-Options nosniff;</span><br><span class="line">        add_header X-Frame-Options &quot;SAMEORIGIN&quot;;</span><br><span class="line">        add_header X-XSS-Protection &quot;1; mode=block&quot;;</span><br><span class="line">        add_header X-Robots-Tag none;</span><br><span class="line">        add_header X-Download-Options noopen;</span><br><span class="line">        add_header X-Permitted-Cross-Domain-Policies none;</span><br><span class="line">        # Optional: Don&#x27;t log access to assets</span><br><span class="line">        access_log off;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    location ~* \.(?:svg|gif|png|html|ttf|woff|ico|jpg|jpeg)$ &#123;</span><br><span class="line">        try_files $uri /index.php$uri$is_args$args;</span><br><span class="line">        # Optional: Don&#x27;t log access to other assets</span><br><span class="line">        access_log off;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>重启<code>nginx</code>服务；</p>
+ <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew services restart nginx</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>访问配置的本地服务地址（域名+端口），然后按照页面指示初始化<code>owncloud</code>应用设置（管理员账号和数据库配置）即可；需要注意的是<font color=#f00><code>MySQL</code>数据库地址需要带上端口号</font>，默认端口为<code>3306</code>；</p>
+</li>
+</ol>
+<p><strong>注</strong>：<code>owncloud</code>不同的版本对于<code>PHP</code>版本会有不同的要求，以<code>10.11.1</code>版本为例，该版本不兼容<code>7.3</code>及以上版本的<code>PHP</code>；</p>
+<h3 id="homebrew加速镜像"><a class="markdownIt-Anchor" href="#homebrew加速镜像"></a> Homebrew加速镜像</h3>
+<p>由于<code>homebrew</code>安装包的服务器默认都在国外，因此下载包时速度较慢，对于体积大的包来说经常会出现超时而导致安装失败的问题；解决这种问题的套路那自然就是使用国内镜像，这里推荐使用<strong>中科大</strong>的镜像：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://mirrors.ustc.edu.cn/help/brew.git.html">Homebrew 源使用帮助 — USTC Mirror Help 文档</a></li>
+<li><a target="_blank" rel="noopener" href="https://mirrors.ustc.edu.cn/help/homebrew-bottles.html">Homebrew Bottles 源使用帮助 — USTC Mirror Help 文档</a></li>
+</ul>
+<p>上面两个镜像建议都替换，上述页面都有详细的替换和还原说明；</p>
+<h3 id="nginx配置文件"><a class="markdownIt-Anchor" href="#nginx配置文件"></a> nginx配置文件</h3>
+<p><code>nginx</code>安装成功后，通过<code>nginx -h</code>命令可以看到默认配置文件的路径：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20210411225331.png?imageslim" alt="img" /></p>
+<p>打开默认配置文件可以看到，默认<code>servers</code>文件夹（默认配置文件的同级目录）下的所有配置文件都会被自动解析，因此一般都在该文件下放入自定义的服务器配置文件；</p>
+<h2 id="遇到的坑"><a class="markdownIt-Anchor" href="#遇到的坑"></a> 遇到的坑</h2>
+<p>由于之前在<code>windows</code>系统上搭建过<code>PHP</code>开发环境，因此不自觉的以为在<code>Mac</code>上也是那么轻松，所以一开始就选了那种流行的<code>PHP</code><strong>集成环境安装包</strong>的模式，结果就碰到了很多的坑……</p>
+<h3 id="集成环境安装包的问题"><a class="markdownIt-Anchor" href="#集成环境安装包的问题"></a> 集成环境安装包的问题</h3>
+<p>在<code>Mac</code>上用集成环境安装包搭建<code>PHP</code>环境的最大问题是：一旦<code>PHP</code>需要额外的扩展模块时，需要<strong>自行安装</strong>或<strong>手动编译</strong>；而在<code>Windows</code>系统上往往只需要在<code>php.ini</code>配置文件上将相应模块的注释取消即可，因为默认扩展模块的<code>dll</code>文件都编译好了；</p>
+<p>以<code>owncloud10.11.1</code>为例，该应用依赖<code>intl</code>（国际化）扩展模块，而集成环境默认都没有携带这个扩展模块的编译文件（<code>.so</code>），因此需要自行解决；</p>
+<h3 id="手动编译可能会遇到的问题"><a class="markdownIt-Anchor" href="#手动编译可能会遇到的问题"></a> 手动编译可能会遇到的问题</h3>
+<p>一般来说，<code>PHP</code>扩展模块在<code>Mac</code>上的手动编译流程大如下<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>：</p>
+<ol>
+<li>
+<p>到<a target="_blank" rel="noopener" href="https://pecl.php.net/">PECL网站</a>（专门托管<code>PHP</code>扩展模块源码的仓库）找到对应的扩展模块；</p>
+</li>
+<li>
+<p>然后下载扩展模块相应版本的源码压缩包，进行解压；</p>
+</li>
+<li>
+<p>命令行进入源码文件夹下（有<code>config.m4</code>文件的那级目录），运行：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">phpize</span><br></pre></td></tr></table></figure>
+<p>运行成功后，目录下会生成一个<code>configure</code>文件；</p>
+</li>
+<li>
+<p>接着运行:</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># path-to-php为当前使用的PHP安装路径</span></span><br><span class="line">./configure --with-php-config=path-to-php/bin/php-config</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>然后进行编译：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> make</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>最后将编译好的文件安装到<code>PHP</code>扩展模块目录中：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> make install</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>理想情况下，经过上面的一番操作，应该是生成对应扩展模块编译产物（<code>.so</code>文件）且安装到目录中的；然而，事实上<strong>运行的每个命令</strong>都可能会出现<font color=#39f>各种各样的错误</font>……</p>
+<h4 id="icu4c包找不到"><a class="markdownIt-Anchor" href="#icu4c包找不到"></a> icu4c包找不到</h4>
+<p>在运行<code>./configure</code>命令时，极有可能会出现下面的错误：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">configure: error: Unable to detect ICU prefix or no failed. Please verify ICU install prefix and make sure icu-config works.</span><br></pre></td></tr></table></figure>
+<p>原因可能是：</p>
+<ul>
+<li>
+<p>没有安装<code>icu4c</code>包；此时可以通过<code>homebrew</code>来安装解决：</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install icu4c</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>安装了但是没有暴露到环境变量中；可以尝试使用<code>homebrew</code>的<code>link</code>命令来解决：</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew <span class="built_in">link</span> icu4c</span><br></pre></td></tr></table></figure>
+<p>不过有可能会出现警告，但是也提示了如何手动暴露到环境变量中去：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20210411225356.png?imageslim" alt="img" /></p>
+</li>
+</ul>
+<h4 id="extstandardphp_smart_strh-file-not-found"><a class="markdownIt-Anchor" href="#extstandardphp_smart_strh-file-not-found"></a> ext/standard/php_smart_str.h’ file not found</h4>
+<p>可能好不容易成功运行了<code>./configure</code>命令后，在执行编译命令时又会出现如下错误：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Fatal error: &#x27;ext/standard/php_smart_str.h&#x27; file not found</span><br></pre></td></tr></table></figure>
+<p>很明显，<code>php_smart_str.h</code>这个头文件要么是缺失了，要么就是没有正确地暴露在环境变量中；</p>
+<h3 id="mysql加密方式不支持"><a class="markdownIt-Anchor" href="#mysql加密方式不支持"></a> mysql加密方式不支持</h3>
+<p>在使用<code>mysql8.0+</code>版本时，其默认账号加密方式变为<code>caching_sha2_password</code>，而很多<code>PHP</code>版本不支持这种加密方式，因此就会出现如下错误：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqli_real_connect(): The server requested authentication method unknown to the client [sha256_password]  </span><br></pre></td></tr></table></figure>
+<p>一般可以采用改写数据库中账号加密方式来解决<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup>：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> <span class="keyword">USER</span> <span class="string">&#x27;root&#x27;</span>@<span class="string">&#x27;localhost&#x27;</span> IDENTIFIED <span class="keyword">WITH</span> mysql_native_password <span class="keyword">BY</span> <span class="string">&#x27;你的密码&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>不过上述方式我试了后仍然无效，所以此时可以采用另一种方法，那就是使用<a target="_blank" rel="noopener" href="https://dev.mysql.com/downloads/mysql/"><code>mysql</code>官方的<code>Mac</code>安装包</a>来安装<code>mysql</code>，安装过程中可以选择采用<code>mysql5.7</code>的加密方式来兼容现有的<code>PHP</code>；</p>
+<h2 id="相关文档"><a class="markdownIt-Anchor" href="#相关文档"></a> 相关文档</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/articles/35981">在 macOS Catalina 10.15 搭建 PHP 开发环境 | Laravel China 社区</a>：基于<code>homebrew</code>安装相应的包（<code>php+mysql+linux</code>），强烈推荐</li>
+<li><a target="_blank" rel="noopener" href="https://dev.mysql.com/downloads/mysql/">MySQL :: Download MySQL Community Server</a>： <code>mysql</code>的安装包，如果<code>mysql8.0+</code>（通过<code>homebrew</code>安装）的加密方式报错无法解决时，可以使用官方安装包，因为安装时可以选择低版本（<code>mysql5.7</code>）的加密方式；</li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/27960044">Mac 系统下安装配置MySQL的方法 - 知乎</a>：通过安装包安装<code>MySQL</code>需要自己暴露环境变量</li>
+<li><a target="_blank" rel="noopener" href="https://php-osx.liip.ch/">PHP for OS X / macOS as binary package (deprecated)</a>：基于<code>Mac</code>编译了大多数扩展模块的<code>PHP</code>源码，不过目前不再维护了</li>
+<li><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/55024726/fatal-error-ext-standard-php-smart-str-h-file-not-found">php - Fatal error: ‘ext/standard/php_smart_str.h’ file not found - Stack Overflow</a>：自行编译<code>intl</code>扩展包可能会出现<code>Fatal error: 'ext/standard/php_smart_str.h' file not found</code>的报错；</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/phpbrew/phpbrew/issues/21">Installation failed with icu-config error on Mac OS X 10.8 · Issue #21 · phpbrew/phpbrew</a>：编译<code>intl</code>模块（具体是运行<code>./configure</code>命令时）可能会出现<code>configure: error: Unable to detect ICU prefix or no failed. Please verify ICU install prefix and make sure icu-config works.</code>的报错，原因是环境变量中找不到<code>icu4c</code>包</li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/sdutphp/article/details/79885466">phpMyAdmin - 配置文件权限错误，不应任何用户都能修改！_JadePlus的技术博客-CSDN博客</a>：运行<code>phpmyadmin</code>时可能会出现<code>配置文件权限错误，不应任何用户都能修改！ </code>的报错，原因就是<code>phpmyadmin</code>目录权限过高</li>
+<li><a target="_blank" rel="noopener" href="https://www.codeleading.com/article/15684554523/">MAC 10.15.6系统修改允许安装任何来源后，依然无效问题 - 代码先锋网</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.xsrvs.com/index.html">MxSrvs - MacOS平台的PHP集成开发环境</a></li>
+<li><a target="_blank" rel="noopener" href="http://hk.uwenku.com/question/p-ulrbkqaa-zm.html">安裝/激活運行MAMP的PHP「intl」擴展 - 優文庫</a>：一种解决<code>PHP</code>扩展模块缺失的方法</li>
+<li><a target="_blank" rel="noopener" href="https://www.geek-share.com/detail/2730890687.html">mac xampp php安装intl扩展 - 极客分享</a>：一种解决<code>PHP</code>扩展模块缺失的方法</li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/jhsword/article/details/108672675">2020年最好用的6个php环境搭建工具推荐</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/113042273">mac 下安装使用pear/pecl - 范松伟的文章 - 知乎</a>：也可以借助<code>pear/pecl</code>来管理<code>PHP</code>扩展模块</li>
+</ul>
+<hr class="footnotes-sep" />
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1622167">Nginx+ownCloud+PHP+MySQL搭建私有云 - 云+社区 - 腾讯云</a>：<code>owncloud</code>默认带了<code>Apache</code>服务器的一些配置（<code>.htaccess</code>文件），使用<code>Nginx</code>作为服务器时，需要转化为相应的规则（<code>.cnf</code>文件），这篇文章就有现成的 <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/27210889">Mac环境下安装PHP扩展踩坑指南 - Renjie的文章 - 知乎</a>：<code>PHP</code>扩展模块编译的一般流程 <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/youcijibi/article/details/81153789">mysql 安装了最新版本8.x版本后的报错： the server requested authentication method unknown to the client_youcijibi的博客-CSDN博客</a>：<code>mysql8.0+</code>版本加密方式错误的解决办法之一 <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/owncloud-env-on-mac/" title="在 Mac 上搭建 owncloud 环境">https://note.xiexuefeng.cc/post/owncloud-env-on-mac/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/php/" rel="tag"># php</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/ts-ast-transform-from-interface-to-data/" rel="prev" title="TS AST转换实例：从类型声明生成初始化数据">
+                  <i class="fa fa-chevron-left"></i> TS AST转换实例：从类型声明生成初始化数据
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/gcs-and-perf/" rel="next" title="getComputedStyle 方法与性能问题">
+                  getComputedStyle 方法与性能问题 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/owncloud-env-on-mac/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/owncloud-env-on-mac/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

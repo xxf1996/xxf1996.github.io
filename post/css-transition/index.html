@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 从效果上来看，过渡效果有点像css动画的简化版，即默认两个关键帧（初始和结束），有点像指定了@keyframes里面的from和to，其它的过渡属性跟动画属性的效果大都一致。这种效果实际上就是两个关键帧之间的补间动画。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CSS过渡效果（transition）">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/css-transition/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 从效果上来看，过渡效果有点像css动画的简化版，即默认两个关键帧（初始和结束），有点像指定了@keyframes里面的from和to，其它的过渡属性跟动画属性的效果大都一致。这种效果实际上就是两个关键帧之间的补间动画。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200119165811.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200119170013.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200119170053.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200119170254.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200119170313.png?imageslim">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/B%C3%A9zier_3_big.gif/240px-B%C3%A9zier_3_big.gif">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200119170403.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200119170349.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200119170419.png?imageslim">
+<meta property="article:published_time" content="2020-01-19T05:56:37.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.869Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="css3">
+<meta property="article:tag" content="动效">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20200119165811.png?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/css-transition/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/css-transition/","path":"post/css-transition/","title":"CSS过渡效果（transition）"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>CSS过渡效果（transition） | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#transition%E5%B1%9E%E6%80%A7"><span class="nav-number">2.</span> <span class="nav-text"> transition属性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%AF%E4%BB%A5%E5%BC%80%E5%90%AF%E8%BF%87%E6%B8%A1%E6%95%88%E6%9E%9C%E7%9A%84css%E5%B1%9E%E6%80%A7"><span class="nav-number">2.1.</span> <span class="nav-text"> 可以开启过渡效果的css属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E7%BC%93%E5%8A%A8%E5%87%BD%E6%95%B0timing-function"><span class="nav-number">2.2.</span> <span class="nav-text"> 关于缓动函数（timing-function）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#transition%E7%9B%B8%E5%85%B3%E4%BA%8B%E4%BB%B6"><span class="nav-number">3.</span> <span class="nav-text"> transition相关事件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3"><span class="nav-number">4.</span> <span class="nav-text"> 参考文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/css-transition/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="CSS过渡效果（transition） | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CSS过渡效果（transition）
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-01-19 13:56:37" itemprop="dateCreated datePublished" datetime="2020-01-19T13:56:37+08:00">2020-01-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p>从效果上来看，过渡效果有点像<code>css</code>动画的<strong>简化版</strong>，即默认<strong>两个关键帧</strong>（初始和结束），有点像指定了<code>@keyframes</code>里面的<code>from</code>和<code>to</code>，其它的过渡属性跟动画属性的效果大都一致。这种效果实际上就是<strong>两个关键帧之间的补间动画</strong>。</p>
+<span id="more"></span>
+<h2 id="transition属性"><a class="markdownIt-Anchor" href="#transition属性"></a> transition属性</h2>
+<p><code>transition</code>属性实际上是多个过渡属性的缩写，每个过渡属性负责一个特性，组合起来就能实现想要的过渡效果；</p>
+<ul>
+<li><code>transition-property</code>：指定过渡的<code>css</code>属性；除了可以进行过渡效果的<code>css</code>属性名之外，还有两个关键字：<code>all</code>和<code>none</code>；<code>all</code>就是<strong>所有可以进行过渡效果</strong>的<code>css</code>属性都会开启过渡效果，<code>none</code>就是没有任何过渡效果。</li>
+<li><code>transition-duration</code>：指定过渡效果的<strong>周期</strong>；单位为<code>s</code>或<code>ms</code>，整数部分为<code>0</code>时可以不写，如：<code>0.5s</code>可以写成<code>.5s</code>。</li>
+<li><code>transition-timing-function</code>：过渡效果的缓动函数（<code>easing function</code>）；所谓的缓动函数就是使得<strong>当前值平滑地过渡到目标值</strong>的一类<strong>插值</strong>函数。</li>
+<li><code>transition-delay</code>：过渡效果的<strong>延迟时间</strong>；即触发过渡后等待的时间。</li>
+</ul>
+<p>过渡属性的简写有很多种组合，不过最常见的就是：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">transition</span>: property duration (timing-function) (delay);</span><br></pre></td></tr></table></figure>
+<p>除此之外，过渡属性可以<strong>一次定义多个过渡效果</strong>，用<code>,</code>隔开即可。</p>
+<h3 id="可以开启过渡效果的css属性"><a class="markdownIt-Anchor" href="#可以开启过渡效果的css属性"></a> 可以开启过渡效果的css属性</h3>
+<p>详细的所有可过渡/可动画的<code>css</code>属性可以参考<code>MDN</code>的整理：</p>
+<p><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_animated_properties">CSS animated properties - CSS（层叠样式表） | MDN</a></p>
+<h3 id="关于缓动函数timing-function"><a class="markdownIt-Anchor" href="#关于缓动函数timing-function"></a> 关于缓动函数（timing-function）</h3>
+<p>简单来说，缓动函数的横坐标<code>t</code>范围为<code>[0, 1]</code>，对应<strong>一个动画周期</strong>；而纵坐标<code>y</code>范围为<code>[初始值, 目标值]</code>，当前有时候为了表现一些“<strong>激烈</strong>”的动画效果，<code>y</code>的值可能会<strong>超出</strong>这个范围；事实上，<code>css</code>里面的<strong>内置缓动函数</strong>大多是<strong>三次贝塞尔曲线</strong>得到的。</p>
+<blockquote>
+<p>Timing functions determine how intermediate values of the transition are calculated. <strong>Most timing functions</strong> can be specified by providing the graph of the corresponding function, <strong>as defined by four points defining a cubic bezier</strong>. <br><br />
+—— <a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions">Using CSS transitions - CSS: Cascading Style Sheets | MDN</a></p>
+</blockquote>
+<p><code>css</code>中有一些内置的缓动函数：</p>
+<ul>
+<li><code>linear</code>：顾名思义，这个就是单纯的线性函数，一条直线；等同于<code>cubic-bezier(0.0, 0.0, 1.0, 1.0)</code>。</li>
+</ul>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200119165811.png?imageslim" alt="imgge" /></p>
+<ul>
+<li><code>ease-in</code>：<code>ease</code>意为<strong>缓慢</strong>，<code>in</code>可以理解为“<strong>开始</strong>”；所以<code>ease-in</code>实际上可以理解为“开始比较缓慢”的函数，缓慢也就是斜率（变化率）比较低。等同于<code>cubic-bezier(0.42, 0.0, 1.0, 1.0)</code>。</li>
+</ul>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200119170013.png?imageslim" alt="imgge" /></p>
+<ul>
+<li><code>ease-out</code>：同理，<code>out</code>可以理解为“<strong>结束</strong>”；<code>ease-out</code>函数也就是“结束比较缓慢”的效果；等同于<code>cubic-bezier(0.0, 0.0, 0.58, 1.0)</code>。</li>
+</ul>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200119170053.png?imageslim" alt="imgge" /></p>
+<ul>
+<li><code>ease-in-out</code>：同理，开始和结束两端都比较缓慢；等同于<code>cubic-bezier(0.42, 0.0, 0.58, 1.0)</code>。</li>
+</ul>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200119170254.png?imageslim" alt="20200119170254" /></p>
+<ul>
+<li><code>ease</code>：从<strong>谷歌浏览器的缓动函数工具</strong>来看，这个函数具有“开始一小段变化较快，其后渐入缓慢”的特点；等同于<code>cubic-bezier(0.25, 0.1, 0.25, 1.0)</code>。</li>
+</ul>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200119170313.png?imageslim" alt="20200119170313" /></p>
+<p><strong>注</strong>：以上缓动函数的图片均来自<a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/CSS/timing-function">MDN</a>；</p>
+<p>除了这些内置的缓动函数，<code>timing-function</code>还有一些强大的函数用来<strong>生成缓动函数</strong>；</p>
+<ul>
+<li><code>cubic-bezier(x1, y1, x2, y2)</code>：顾名思义，这是一个<strong>三次贝塞尔曲线函数</strong>；起点为<code>(0, 0)</code>，终点为<code>(1, 1)</code>；而<code>(x1, y1)</code>和<code>(x2, y2)</code>分别是两个控制点，<code>x</code>取值范围为<code>[0, 1]</code>，<code>y</code>的取值范围可以<strong>超出</strong><code>[0, 1]</code>，主要是用来模拟一些<strong>抖动效果</strong>；</li>
+</ul>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/B%C3%A9zier_3_big.gif/240px-B%C3%A9zier_3_big.gif" alt="image" /></p>
+<p>谷歌浏览器自带<strong>贝塞尔曲线绘制工具</strong>，只需要在<code>timing-function</code>那里点击小图标就会弹出，然后拖拽两个控制点就ok了。</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200119170403.png?imageslim" alt="20200119170403" /><br />
+<img src="https://pic.xiexuefeng.cc/markdown/20200119170349.png?imageslim" alt="20200119170349" /></p>
+<ul>
+<li><code>steps(n[, direction])</code>：生成<strong>阶梯式</strong>变化的缓动函数；<code>n</code>为步数，<code>direction</code>为阶梯跳跃的方式，有以下选项：
+<ul>
+<li><code>jump-start</code>：等同于<code>start</code>；在<code>t = 0</code>处发生一次跳跃。</li>
+<li><code>jump-end</code>：等同于<code>end</code>；在<code>t = 1</code>处发生一次跳跃。</li>
+<li><code>jump-both</code>：同理，在<code>t = 0</code>和<code>t = 1</code>处都发生跳跃。</li>
+<li><code>jump-none</code>：<strong>默认值</strong>；在<code>t = 0</code>和<code>t = 1</code>处都<strong>不</strong>发生跳跃，即<strong>均分</strong>间距。</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200119170419.png?imageslim" alt="20200119170419" /></p>
+<p>（上图源自MDN的示例）</p>
+<ul>
+<li><code>step-start(n)</code>：等同于<code>steps(n, jump-start)</code>。</li>
+<li><code>step-end(n)</code>：等同于<code>steps(n, jump-end)</code>。</li>
+</ul>
+<p>最后，<a target="_blank" rel="noopener" href="https://easings.net/">https://easings.net/</a> 这个网站收录了很多常用的缓动函数，值得参考。</p>
+<h2 id="transition相关事件"><a class="markdownIt-Anchor" href="#transition相关事件"></a> transition相关事件</h2>
+<p>事实上，<code>DOM</code>里面也配套了一些<strong>过渡专用的事件</strong>用来监听<code>DOM</code>元素的<strong>过渡状态</strong>：</p>
+<ul>
+<li><code>transitionrun</code>：过渡效果<strong>被激活</strong>时触发，当有过渡延迟（<code>transition-delay</code>）时，会<strong>先于延迟结束</strong>触发；</li>
+<li><code>transitionstart</code>：过渡效果开始时触发，当有延迟时，<strong>延迟结束后才会触发</strong>；即是指<strong>缓动函数开始时</strong>触发。</li>
+<li><code>transitionend</code>：过渡效果<strong>结束时</strong>触发；</li>
+</ul>
+<p><strong>注</strong>：以上事件需要注意浏览器的<strong>兼容性</strong>！关于<code>transitionstart</code>和<code>transitionrun</code>的触发时机可以查看<a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/transitionrun_event">MDN</a>上面的示例，一目了然。</p>
+<h2 id="参考文档"><a class="markdownIt-Anchor" href="#参考文档"></a> 参考文档</h2>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/transition">transition - CSS（层叠样式表） | MDN</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/CSS/timing-function"><timing-function> - CSS: Cascading Style Sheets | MDN</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions">Using CSS transitions - CSS: Cascading Style Sheets | MDN</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/transitionrun_event">HTMLElement: transitionrun event - Web APIs | MDN</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/css-transition/" title="CSS过渡效果（transition）">https://note.xiexuefeng.cc/post/css-transition/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/css3/" rel="tag"># css3</a>
+              <a href="/tags/%E5%8A%A8%E6%95%88/" rel="tag"># 动效</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/js-event-and-customed-js-event/" rel="prev" title="Event对象与自定义事件">
+                  <i class="fa fa-chevron-left"></i> Event对象与自定义事件
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/css-animation/" rel="next" title="CSS动画">
+                  CSS动画 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/css-transition/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/css-transition/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

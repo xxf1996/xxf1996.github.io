@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 此文原为对公司内部某个 Vue2应用存在的严重性能问题，进行优化后笔者进行的内部总结文档。个人觉得其中一些分析思路和方法还是值得回味的，且暴露的一些引发性能问题的做法也值得吸取经验，故而现在进行对其中一些数据进行脱敏后进行发布。  某编辑页性能问题表现   当 tab菜单切换时会出现肉眼可见的卡顿 浏览器页面内存随着切换次数的增长而增长（经测试，最高可占用 3~4G的内存），直至页面崩溃">
+<meta property="og:type" content="article">
+<meta property="og:title" content="某Vue应用页面性能优化实录">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/vue-app-performance-enhancement-record/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 此文原为对公司内部某个 Vue2应用存在的严重性能问题，进行优化后笔者进行的内部总结文档。个人觉得其中一些分析思路和方法还是值得回味的，且暴露的一些引发性能问题的做法也值得吸取经验，故而现在进行对其中一些数据进行脱敏后进行发布。  某编辑页性能问题表现   当 tab菜单切换时会出现肉眼可见的卡顿 浏览器页面内存随着切换次数的增长而增长（经测试，最高可占用 3~4G的内存），直至页面崩溃">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240517165722.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/15B6C60C024840B7A106859A45BBF738.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/2A4590C2553843649B7173780BD031C8.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/CFD80C89BAD047A8B56DE19345CD5537.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/69AEDF1084FD47F5A0A20FDC015ADA51.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/4A71822A38E54489A7600F57D369D2A9.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/B641ED8028E046178010FBDDB1F32218.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/6CF6359125414C37B4E6173339BA8BF2.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/230916B8DFC141909E3A3945EA66EF9E.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/44A5364B0E454575814455F25DE9FDF8.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/52422794AB7741E78B4FBD1B19C264DD.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/1B22C610DA974C0AA50BFAE4B085992F.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/0BEED4ECADD94AFB9188B6F2B9427BF3.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/15A19619A90748BEB88E71FAF86048BF.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/A67B4935361740D28B33FF1743701338.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/C97BAB0EE82848A9A6B6CF31D23FFCAB.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/A9C6C6BB8260445CB3376DFC6DD7DC50.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/E7D758FB23CC4EA1A82E46A5F1B79E5F.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/4D7B851120154F409165B1A932090F95.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/8AF20DAC884F43BF8479AEE22F18D81E.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/514920C07CC54AD29F5ED37268B121DC.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/33674DB555B5493CB3FC8C068F681438.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/46ADAC2B1279434696E11542F78BC65F.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/A500159559AF45EDA1E4240C2DFAEFCD.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/19DE559D5B994A2B859AA126B09215AA.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/90A1953E515A4FB3AD409FE6468B48F8.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/25779E47E1B941E8BA48DE44F2370FD4.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/DFB1CD4B5D3A46319178CA9146F294A7.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240517170100.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/0913AC58C80841E59C4E6A4CFC10C0DA.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/023216817E314765A34D1FB7148824FC.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/33299E5914F747E68A5DFEB045B85540.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/CF8E629768344241BADF6AA7FDE933B4.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/2F617B558DE6482CAAA6FBFEAB3E179A.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/554460C470DA4BB8B049794F8F590ACE.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/B82329F926AB49558E8B9F5340492B7B.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/8CC9A1441E1F4B7CBE7F44872F9FBED5.png?imageslim">
+<meta property="article:published_time" content="2024-05-17T09:19:12.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.885Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="内存泄漏">
+<meta property="article:tag" content="Vue">
+<meta property="article:tag" content="响应式数据">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20240517165722.png?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/vue-app-performance-enhancement-record/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/vue-app-performance-enhancement-record/","path":"post/vue-app-performance-enhancement-record/","title":"某Vue应用页面性能优化实录"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>某Vue应用页面性能优化实录 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9F%90%E7%BC%96%E8%BE%91%E9%A1%B5%E6%80%A7%E8%83%BD%E9%97%AE%E9%A2%98%E8%A1%A8%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text"> 某编辑页性能问题表现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E5%88%86%E6%9E%90"><span class="nav-number">3.</span> <span class="nav-text"> 内存泄漏分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E4%BD%8D%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E7%9A%84%E5%9C%B0%E6%96%B9"><span class="nav-number">3.1.</span> <span class="nav-text"> 定位内存泄漏的地方</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E4%BC%98%E5%8C%96%E5%90%8E"><span class="nav-number">3.2.</span> <span class="nav-text"> 内存泄漏优化后</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%A1%E9%A1%BF%E5%8E%9F%E5%9B%A0%E5%88%86%E6%9E%90"><span class="nav-number">4.</span> <span class="nav-text"> 卡顿原因分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%B1%E6%8B%B7%E8%B4%9D"><span class="nav-number">4.1.</span> <span class="nav-text"> 深拷贝</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#vue-%E8%A7%86%E5%9B%BE%E6%9B%B4%E6%96%B0"><span class="nav-number">4.2.</span> <span class="nav-text"> Vue 视图更新</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#vnode%E8%8A%82%E7%82%B9%E7%9A%84%E6%97%B6%E9%97%B4%E6%B6%88%E8%80%97"><span class="nav-number">4.2.1.</span> <span class="nav-text"> vnode节点的时间消耗</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#input%E7%BB%84%E4%BB%B6%E6%89%80%E5%BC%95%E5%8F%91%E7%9A%84%E9%AB%98%E5%BA%A6%E8%AE%A1%E7%AE%97"><span class="nav-number">4.2.2.</span> <span class="nav-text"> input组件所引发的高度计算</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#table%E7%BB%84%E4%BB%B6%E6%89%80%E5%BC%95%E5%8F%91%E7%9A%84%E6%BB%9A%E5%8A%A8%E9%AB%98%E5%BA%A6%E5%92%8C%E5%AE%BD%E5%BA%A6%E8%AE%A1%E7%AE%97"><span class="nav-number">4.2.3.</span> <span class="nav-text"> table组件所引发的滚动高度和宽度计算</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#vue%E5%93%8D%E5%BA%94%E5%BC%8F%E6%95%B0%E6%8D%AE%E6%95%B0%E6%8D%AE%E5%8A%AB%E6%8C%81%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">4.2.4.</span> <span class="nav-text"> vue响应式数据数据劫持初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E7%97%87%E4%B8%8B%E8%8D%AF"><span class="nav-number">4.2.5.</span> <span class="nav-text"> 对症下药</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E6%A1%A3"><span class="nav-number">5.</span> <span class="nav-text"> 相关文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/vue-app-performance-enhancement-record/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="某Vue应用页面性能优化实录 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          某Vue应用页面性能优化实录
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-05-17 17:19:12" itemprop="dateCreated datePublished" datetime="2024-05-17T17:19:12+08:00">2024-05-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%BC%98%E5%8C%96/" itemprop="url" rel="index"><span itemprop="name">优化</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h1>
+<p>此文原为对公司内部某个 <code>Vue2</code>应用存在的严重性能问题，进行优化后笔者进行的内部总结文档。个人觉得其中一些分析思路和方法还是值得回味的，且暴露的一些引发性能问题的做法也值得吸取经验，故而现在进行对其中一些数据进行脱敏后进行发布。</p>
+<h1 id="某编辑页性能问题表现"><a class="markdownIt-Anchor" href="#某编辑页性能问题表现"></a> 某编辑页性能问题表现</h1>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240517165722.png?imageslim" alt="image.png" /></p>
+<ul>
+<li>当 <code>tab</code>菜单切换时会出现<strong>肉眼可见的卡顿</strong></li>
+<li>浏览器页面内存随着切换次数的增长而增长（经测试，最高可占用 <code>3~4G</code>的内存），直至<strong>页面崩溃</strong></li>
+</ul>
+<span id="more"></span>
+<h1 id="内存泄漏分析"><a class="markdownIt-Anchor" href="#内存泄漏分析"></a> 内存泄漏分析</h1>
+<p>很明显，这种页面内存增长方式透露出这些 <code>tab</code>页面存在着内存泄漏的情况，即一些内存没有被及时回收；通过 <code>Chrome</code>浏览器自带的 <code>Performance monitor</code>工具即可清楚的看到泄漏情况：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/15B6C60C024840B7A106859A45BBF738.png?imageslim" alt="image" /></p>
+<p>而且通过上述工具监测得到的数据可以判断内存泄漏极有可能是由 <code>DOM</code>泄漏造成，即一些 <code>DOM</code>节点虽然从页面中移除了，但是还是存在被引用的情况；</p>
+<h2 id="定位内存泄漏的地方"><a class="markdownIt-Anchor" href="#定位内存泄漏的地方"></a> 定位内存泄漏的地方</h2>
+<p>借助 <code>Chrome</code>浏览器自带的 <code>Memory</code>工具可以很方便地分析内存变化，自然也可以分析内存泄漏产生的原因；该工具主要提供了3种内存分析的模式，这里主要用到 <code>Heap snapshot</code>这种模式，即内存快照，将页面当前的内存使用情况记录起来；</p>
+<p>分析页面内存泄漏的一般操作路径<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>是：</p>
+<ol>
+<li>
+<p>进入<strong>可能发生内存泄漏</strong>的页面；</p>
+</li>
+<li>
+<p>然后跳转到另一个页面；</p>
+</li>
+<li>
+<p>再回退至上一个页面；</p>
+</li>
+<li>
+<p>手动进行一次垃圾回收；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/2A4590C2553843649B7173780BD031C8.png?imageslim" alt="image" /></p>
+</li>
+<li>
+<p>然后记录页面的内存快照进行分析；</p>
+</li>
+</ol>
+<p>拿到内存快照后，可以在面板中搜索关键字“<code>detached</code>”就可以快速得到目前内存中保留的已分离的 <code>DOM</code>节点，即页面中渲染已经用不到但还保留在内存中的 <code>DOM</code>节点，这些节点就是 <code>DOM</code>泄漏；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/CFD80C89BAD047A8B56DE19345CD5537.png?imageslim" alt="image" /></p>
+<p>点开其中某组节点的第一个元素（我通常的做法是将节点按 <code>Retained Size</code>降序排列，然后再选择），然后下面就会显示所有引用该节点的内存节点：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/69AEDF1084FD47F5A0A20FDC015ADA51.png?imageslim" alt="image" /></p>
+<p>考虑到页面本身是基于 <code>Vue</code>构建的，所以查看 <code>VueComponent</code>构建函数节点会更加方便一点，因为 <code>VueComponent</code>实例不仅保留了 <code>DOM</code>节点信息，还有父级和子级节点信息，所以通过实例树可以方便的找到泄漏的最顶级 <code>VueComponent</code>；</p>
+<p>在网上看到一些关于 <code>Memory</code>工具使用教程，其中可以看到之前该工具可以直接悬停节点上查看该节点的信息，不过现在这个功能已经没了（搞不懂这么方便的功能为啥取消了）；好在还有一种不太优雅的方式可以达到同样的目的，在节点上右击选择“<code>store as global variable</code>”即可将节点信息存到一个临时变量上，然后就能在控制台查看了：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/4A71822A38E54489A7600F57D369D2A9.png?imageslim" alt="image" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/B641ED8028E046178010FBDDB1F32218.png?imageslim" alt="image" /></p>
+<p>通过打印的 <code>VueComponent</code>实例信息就可以筛选出泄漏的最大范围组件是哪一个了，具体做法就是不断地查看其父级组件实例（<code>$parent</code>属性）然后确认该实例的DOM节点（<code>$el</code>属性）是否还存在于当前页面中（直接鼠标 <code>hover</code>该属性，如果 <code>DOM</code>节点存在于页面中，则会显示一个浅蓝色的框，代表选中），找到的第一个还存在于当前页面中的 <code>DOM</code>节点，其子节点就是泄漏的最大层级的 <code>VueComponent</code>实例了；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/6CF6359125414C37B4E6173339BA8BF2.png?imageslim" alt="image" /></p>
+<p>经查，这个泄漏的最大层级的 <code>VueComponent</code>实例恰好是当前的路由组件，也就是说整个路由组件实例都被泄漏出去了，因此总体泄漏的 <code>DOM</code>数量非常可观，占用内存自然就很高了；</p>
+<p>光知道泄漏 <code>Vue</code>组件实例还不够，还需要定位到具体是哪个代码引用了 <code>Vue</code>组件实例（及其子组件实例），不过至少可以确定的是泄漏就发生在这个路由里面所用到的代码；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/230916B8DFC141909E3A3945EA66EF9E.png?imageslim" alt="image" /></p>
+<p>说实话，当我在 <code>Vue</code><a target="_blank" rel="noopener" href="https://cn.vuejs.org/v2/cookbook/avoiding-memory-leaks.html">官方文档</a>中看到这么一句的时候，我还在想为啥官方可以这么肯定其自身不会发生内存泄漏呢？后面证实我还是太 <code>naive</code>了，官方确实有自信的资本，往这个方向找最后确实证实是某个第三方库使用导致了内存泄漏：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/44A5364B0E454575814455F25DE9FDF8.png?imageslim" alt="image" /></p>
+<p>像这种使用 <code>DOM</code>节点来初始化实例的第三方库，如果在 <code>Vue</code>组件生命周期结束前不及时销毁其实例，确实很容易导致 <code>DOM</code>泄漏；</p>
+<h2 id="内存泄漏优化后"><a class="markdownIt-Anchor" href="#内存泄漏优化后"></a> 内存泄漏优化后</h2>
+<p>对造成 <code>DOM</code>泄漏的地方进行优化后，再次打开 <code>Performance monitor</code>工具进行监测可以得到：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/52422794AB7741E78B4FBD1B19C264DD.png?imageslim" alt="image" /></p>
+<p>可以很明显的看到不同切换页面时，<code>DOM</code>节点数和占用内存都很稳定，而不是之前的直线上升。</p>
+<h1 id="卡顿原因分析"><a class="markdownIt-Anchor" href="#卡顿原因分析"></a> 卡顿原因分析</h1>
+<p>原本以为页面切换卡顿也是由于内存泄漏造成的，但实际上解决了内存泄漏后卡顿现象还是存在；所以此时可以断定，<code>js</code>代码中必然存在着阻塞主线程的 <code>long task</code>，使用性能分析工具一查看，果不其然，切换页面的过程中掉帧现象明显，且存在着大量 <code>long task</code>，甚至出现了超过 <code>3s</code>的 <code>long task</code>；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/1B22C610DA974C0AA50BFAE4B085992F.png?imageslim" alt="image" /></p>
+<p>通过对这些 <code>lont task</code>的调用树（<code>call tree</code>）分析可知，引起这些 <code>long task</code>主要来源有两类：</p>
+<ul>
+<li>数据深拷贝；</li>
+<li><code>Vue</code>视图更新；</li>
+</ul>
+<h2 id="深拷贝"><a class="markdownIt-Anchor" href="#深拷贝"></a> 深拷贝</h2>
+<p><img src="https://pic.xiexuefeng.cc/markdown/0BEED4ECADD94AFB9188B6F2B9427BF3.png?imageslim" alt="image" /></p>
+<p>由某个 <code>long task</code>的 <code>call tree</code>可知，某个名为 <code>currentLogs</code>的 <code>getter</code>执行时长达 <code>3.5s</code>，引发了超长的主线程阻塞；联系到 <code>Vue</code>生态，<code>getter</code>一般存在于 <code>Vuex</code>或者 <code>computed</code>这类响应式计算数据中，然后再进一步查看代码，果然是 <code>Vuex</code>中的名为 <code>currentLogs</code>的 <code>getter</code>使用了深拷贝逻辑，对这个深拷贝逻辑进行计时可知：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/15A19619A90748BEB88E71FAF86048BF.png?imageslim" alt="image" /></p>
+<p>由于这个深拷贝算法采用了递归算法，因此在遇到结构层级较深的数据结构时会有很高的调用执行栈开销，因而耗时较多；在对没有内置对象的数据结构进行深拷贝时，显然 <code>JSON.parse(JSON.stringify(xxx))</code>是不错的选择<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>；在使用序列化和反序列化进行深拷贝后，该任务的耗时明显降低：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/A67B4935361740D28B33FF1743701338.png?imageslim" alt="image" /></p>
+<h2 id="vue-视图更新"><a class="markdownIt-Anchor" href="#vue-视图更新"></a> Vue 视图更新</h2>
+<p>在这些 <code>long task</code>中还有很多 <code>1~2s</code>的任务，经分析大致上都是页面请求 <code>API</code>后更新数据所导致的视图更新（从函数名即可看出是 <code>Vue</code>里面的异步更新队列中的任务）;</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/C97BAB0EE82848A9A6B6CF31D23FFCAB.png?imageslim" alt="image" /></p>
+<p>然后进一步查看可知，时间主要消耗在组件更新的 <code>patch</code>过程：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/A9C6C6BB8260445CB3376DFC6DD7DC50.png?imageslim" alt="image" /></p>
+<p>这说明页面的 <code>DOM</code>数量过多或者结构嵌套较深，否则 <code>patch</code>过程不会花费那么久；通过进一步分析 <code>patch</code>内部函数的消耗时间组成可以发现，其耗时时间主要来自几大类逻辑：</p>
+<ul>
+<li>
+<p><code>vnode</code>节点的创建、移除和对比；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/E7D758FB23CC4EA1A82E46A5F1B79E5F.png?imageslim" alt="image" /></p>
+</li>
+<li>
+<p><code>element-ui</code>的 <code>input</code>组件所引发的高度计算；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/4D7B851120154F409165B1A932090F95.png?imageslim" alt="image" /></p>
+</li>
+<li>
+<p><code>element-ui</code>的 <code>table</code>组件所引发的滚动高度和宽度计算；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/8AF20DAC884F43BF8479AEE22F18D81E.png?imageslim" alt="image" /></p>
+</li>
+<li>
+<p><code>vue</code>响应式数据数据劫持初始化；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/514920C07CC54AD29F5ED37268B121DC.png?imageslim" alt="image" /></p>
+</li>
+</ul>
+<h3 id="vnode节点的时间消耗"><a class="markdownIt-Anchor" href="#vnode节点的时间消耗"></a> <code>vnode</code>节点的时间消耗</h3>
+<p>说实话，当看到 <code>vnode</code>节点的操作会产生如此多的时间消耗时，确实有点难以理解，毕竟页面的数据量远没达到上百上千条那么多（事实上，每页就 <code>10</code>条，再考虑到数据的多维性，将其展开大致就相当于 <code>20</code>~<code>30</code>条的数量），怎么会产生那么多 <code>vnode</code>节点呢？</p>
+<p>由于 <code>Vue</code>是基于数据驱动的，一般是数据变动产生视图变动，再加上其内部的异步更新队列机制，可以借助 <code>$nextTick</code>方法来得到<strong>数据更新的一瞬到视图更新完成</strong>时大致过了多久：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/33674DB555B5493CB3FC8C068F681438.png?imageslim" alt="image" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/46ADAC2B1279434696E11542F78BC65F.png?imageslim" alt="image" /></p>
+<p>经测试，这个过程耗时大致在 <code>400ms ~ 500ms</code>之间；也就是说由该数据更新所导致的一系列视图更新花了这么多的时间，远远超出了相邻两个队列的正常时间差（<code>16ms</code>），这说明这里的视图更新确实产生了大量的计算；熟悉 <code>Vue</code>响应式原理应该都清楚，这本质上是由于数据源这个发布者所携带的订阅者（或者其订阅者的订阅者……，简言之就是依赖链路）数量过多，因而涉及的订阅通知执行时间就飙升了；所以顺着这个思路可以查看该数据源的订阅者，说不定就能发现一些端倪，打印该响应式数据则可以看到，其订阅者数量有 <code>80</code>个：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/A500159559AF45EDA1E4240C2DFAEFCD.png?imageslim" alt="image" /></p>
+<p>然后，打开其中第一个订阅者（<code>Watcher</code>对象），惊喜就出现了：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/19DE559D5B994A2B859AA126B09215AA.png?imageslim" alt="image" /></p>
+<p>没错，这个组件竟然依赖了高达 <code>1072</code>个 <code>Observer</code>对象（数据源），顺便也解答了另一个疑惑：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/90A1953E515A4FB3AD409FE6468B48F8.png?imageslim" alt="image" /></p>
+<p>为啥单个调用消耗最长（应该是累计？）时间的函数会是 <code>addDep</code>，因为这个函数就是（订阅者）专门用来添加其依赖的 <code>Dep</code>对象的；所以看到前面那个拥有 <code>1072</code>个 <code>Dep</code>对象的组件时就不足为奇了，也难怪不到百条的数据就可以造成如此多的视图更新消耗，因为这几乎等同于将页面所有的 <code>Vue</code>组件全部写在一个 <code>Vue</code>文件里面（可以思考为啥这样做会产生 <code>Vue</code>的性能问题）；</p>
+<p>潜在解决方案：</p>
+<ol>
+<li>分批加载数据，分批渲染，类似于时间切片，将一个 <code>long task</code>切分成多个更小的 <code>task</code>；（治标不治本）</li>
+<li>重新组织组件结构，避免让大量 <code>Vue</code>组件全部挂载到同一个父组件上；（重构）</li>
+</ol>
+<h3 id="input组件所引发的高度计算"><a class="markdownIt-Anchor" href="#input组件所引发的高度计算"></a> <code>input</code>组件所引发的高度计算</h3>
+<p>根据性能工具分析结果可以看到一个名为 <code>resizeTextarea</code>的方法消耗了较多的执行时间，其源码位置正好是 <code>element</code>的 <code>input</code>组件，进一步打开源码可以发现，该方法主要是给 <code>textarea</code>类型的输入框进行高度计算的，而其中的核心逻辑在一个名为 <code>calcTextareaHeight.js</code>的文件里：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/25779E47E1B941E8BA48DE44F2370FD4.png?imageslim" alt="image" /></p>
+<p>看到上述代码就不难理解为何这个高度计算的逻辑会如此耗时了，因为 <code>window.getComputedStyle()</code>方法会引发页面重排，重排本身就很耗时的，所以整个计算过程当然也就很耗时；其实如果只是页面中只有一两个 <code>textarea</code>类型的 <code>input</code>组件也许不会这么明显，但是要命的是每一行数据就会渲染 <code>2</code>个这样的组件，联系到上文可以得知页面中最多可以存在 <code>20~30</code>个这样的组件，所以叠加的性能问题也就自然很明显了；</p>
+<p><strong>潜在解决方案</strong>：</p>
+<ol>
+<li>替换 <code>el-input</code>的 <code>textare</code>组件：基于原生 <code>textare</code>编写组件，<strong>避免重排计算</strong>；</li>
+<li>基于 <code>contenteditable</code>属性编写组件；</li>
+<li>去 <code>element-ui</code>提 <code>PR</code>（不太可取，因为使用场景过于极端、偏少）；</li>
+</ol>
+<hr />
+<p>好了，问题来了，那么 <code>element-ui</code>为啥要不惜使用重排来计算 <code>textarea</code>的高度呢？为何不直接使用原生 <code>textarea</code>元素的高度表现呢？答案就在于其组件所支持的 <code>autosize</code>属性：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/DFB1CD4B5D3A46319178CA9146F294A7.png?imageslim" alt="image" /></p>
+<p>原生的 <code>textarea</code>元素只有一个 <code>rows</code>属性用于根据行数设置高度<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup>，然而并不支持 <code>minRows</code>和 <code>maxRows</code>这种看起来像是<strong>弹性高度</strong>的属性，所以要支持这种特性当然<strong>只能靠实时的计算</strong>给出 <code>min-height</code>、<code>max-height</code>和 <code>height</code>的对比关系，最终设置实际的高度；</p>
+<h3 id="table组件所引发的滚动高度和宽度计算"><a class="markdownIt-Anchor" href="#table组件所引发的滚动高度和宽度计算"></a> <code>table</code>组件所引发的滚动高度和宽度计算</h3>
+<p>定位到 <code>table</code>组件的源码可知，触发宽度计算的时机是表格数据发生变动时，而计算的逻辑大致是根据每个列配置的（最小）宽度或者自由分配来计算<strong>最终展示时表格每列的实际宽度及表格总体的最小宽度</strong>等；由于这里面涉及到修改 <code>DOM</code>节点的 <code>width</code>等宽度属性，所以就不可避免地触发重排了；</p>
+<p>为啥表格重排会引发这么多的时间呢？其实背后是由于表格某一列所渲染的内容实在是过于繁多，导致重排的开销直线上升：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240517170100.png?imageslim" alt="image.png" /></p>
+<p>既然本身就要超过一行显示省略号，<strong>何不对文本本身就进行截取</strong>以降低实际 <code>DOM</code>渲染消耗（主要是字符数量过多，场景很极端）；猜测像 <code>text-overflow/white-space</code>这种样式属性本身还是会对实际文本数量比较敏感，字符过多会造成计算样式的时间增长【<mark>待验证</mark>】；</p>
+<hr />
+<p><img src="https://pic.xiexuefeng.cc/markdown/0913AC58C80841E59C4E6A4CFC10C0DA.png?imageslim" alt="image" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/023216817E314765A34D1FB7148824FC.png?imageslim" alt="image" /></p>
+<p>对显示字符做一定数量的截取后（不影响原有功能）：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/33299E5914F747E68A5DFEB045B85540.png?imageslim" alt="image" /></p>
+<hr />
+<p>同样地，那么 <code>element-ui</code>为何要计算表格的列宽度呢？答案还是由于其组件要支持（表格列）<strong>弹性宽度</strong>表现，所以自然要计算最终每列实际的宽度表现：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/CF8E629768344241BADF6AA7FDE933B4.png?imageslim" alt="image" /></p>
+<h3 id="vue响应式数据数据劫持初始化"><a class="markdownIt-Anchor" href="#vue响应式数据数据劫持初始化"></a> <code>vue</code>响应式数据数据劫持初始化</h3>
+<p><code>vue</code>自带的响应式数据机制确实使用很方便，以至于我们无需特别地对数据进行处理，仅需将数据放置到特定的位置即可（这一点 <code>Vue3</code>的组合式 <code>API</code>已经不赞成这样了，而是提供一系列的函数模块来手动初始化响应式数据）；事实上任何方便的背后都有一定的代价，而默认的响应式数据支持则带来了一定程度的数据劫持及监听的消耗，由于 <code>vue</code>组件实例的 <code>data</code>数据及计算属性的值都是进行了<strong>深层次的数据劫持</strong>（即对对象属性及其子属性都进行劫持），因而在遇到结构层级较多且数量较多的数据时，这种劫持方式显然会带来很大的时间及内存开销；比如：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/2F617B558DE6482CAAA6FBFEAB3E179A.png?imageslim" alt="image" /></p>
+<p>可以看出，响应式数据中，每个对象本身会挂载一个 <code>Observer</code>实例，而对于每个属性则会挂载 <code>getter</code>实例和 <code>setter</code>实例，且不说这样的内存消耗，试想一下初始化如此多的对象实例是不是也挺费时间的；</p>
+<p>这背后实际上涉及到的问题就是：<strong>是不是所有的数据都得是响应式数据</strong>？答案当然是“不是”，比如：</p>
+<ul>
+<li>数据仅做展示相关的用途，即完全不必要担心数据被 <code>set</code>；这种情况无非最多只是需要对最高层级的数据进行更新的时候进行响应式的视图更新，即这个数据被<strong>整体更新</strong>的时候，可以理解为“<strong>浅层</strong>”的响应式数据；</li>
+<li>数据完全就是常量，不会改变也不希望在运行时进行改变，那就自然无需挂载到任何的 <code>Vue</code>组件实例上了；</li>
+</ul>
+<p>虽然 <code>vue2.x</code>本身没有提供只对数据进行浅层响应式处理的 <code>API</code>，但是其源码暴露了一个办法<sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup>：那就是利用 <code>Object.freeze()</code>方法将对象的属性给“冻结”，然后 <code>vue</code>就不会对这些属性进行数据劫持操作了；可以对页面中用到的一个应该是浅层响应式数据来做实验：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/554460C470DA4BB8B049794F8F590ACE.png?imageslim" alt="image" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/B82329F926AB49558E8B9F5340492B7B.png?imageslim" alt="image" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/8CC9A1441E1F4B7CBE7F44872F9FBED5.png?imageslim" alt="image" /></p>
+<p>可以看到，对于同样的数据做了冻结处理之后，所消耗的视图更新时间大幅降低；</p>
+<h3 id="对症下药"><a class="markdownIt-Anchor" href="#对症下药"></a> 对症下药</h3>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>（潜在）解决方法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vnode</code>节点的时间消耗</td>
+<td>1. 时间切片/任务切片；<code>&lt;br&gt;</code> 2. 重新组织组件结构；</td>
+</tr>
+<tr>
+<td><code>input</code>组件所引发的高度计算</td>
+<td>1. 替换 <code>textarea</code>组件，避免重排；<code>&lt;br&gt;</code> 2. 提 <code>PR</code>；</td>
+</tr>
+<tr>
+<td><code>table</code>组件所引发的滚动高度和宽度计算</td>
+<td>截取显示字符长度；</td>
+</tr>
+<tr>
+<td><code>vue</code>响应式数据数据劫持初始化</td>
+<td>数据冻结：<code>Object.freeze()</code>；</td>
+</tr>
+</tbody>
+</table>
+<h1 id="相关文档"><a class="markdownIt-Anchor" href="#相关文档"></a> 相关文档</h1>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/25166666">Effective前端6：避免页面卡顿 - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/38448752">一个Vue页面的内存泄露分析 - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904048961781774">js 内存泄漏场景、如何监控以及分析</a></li>
+<li><a target="_blank" rel="noopener" href="https://cn.vuejs.org/v2/cookbook/avoiding-memory-leaks.html">避免内存泄漏 — Vue.js</a>：官方指南</li>
+<li><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000020231307">深入了解 JavaScript 内存泄露 - SegmentFault 思否</a></li>
+<li><a target="_blank" rel="noopener" href="https://wiki.jikexueyuan.com/project/chrome-devtools/javascript-memory-profiling.html">JavaScript 内存分析 - Chrome 开发工具指南 - 极客学院Wiki</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/851b5bb0a4d4">Shallow Size和Retained Size详解 - 简书</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/Guide/HTML/Editable_content">Content Editable - Web 开发者指南 | MDN</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903847249330184">时间切片（Time Slicing）</a></li>
+<li><a target="_blank" rel="noopener" href="https://csstriggers.com/">CSS Triggers</a></li>
+<li><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000008377887">Vue原理解析之observer模块 - SegmentFault 思否</a></li>
+</ul>
+<hr class="footnotes-sep" />
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/38448752">一个Vue页面的内存泄露分析 - 知乎</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000013107871">JavaScript 深拷贝性能分析 - SegmentFault 思否</a> <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/textarea"><code>&lt;textarea&gt;</code> - HTML（超文本标记语言） | MDN</a> <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903922469961741">Vue性能提升之Object.freeze()</a> <a href="#fnref4" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/vue-app-performance-enhancement-record/" title="某Vue应用页面性能优化实录">https://note.xiexuefeng.cc/post/vue-app-performance-enhancement-record/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/" rel="tag"># 内存泄漏</a>
+              <a href="/tags/Vue/" rel="tag"># Vue</a>
+              <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E6%95%B0%E6%8D%AE/" rel="tag"># 响应式数据</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/alova-simple-usage-experience/" rel="prev" title="Alova的简单使用心得">
+                  <i class="fa fa-chevron-left"></i> Alova的简单使用心得
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/using-onedrive-api/" rel="next" title="Onedrive API的使用">
+                  Onedrive API的使用 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/vue-app-performance-enhancement-record/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/vue-app-performance-enhancement-record/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

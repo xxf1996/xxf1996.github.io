@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 在掘金上看到一篇文章，大意是如何让a &#x3D;&#x3D;&#x3D; 1 &amp;&amp; a &#x3D;&#x3D;&#x3D; 2 &amp;&amp; a &#x3D;&#x3D;&#x3D; 3等于true；一开始确实一脸懵逼，不过后来想到了访问修饰符能够解决这个问题，毕竟每访问一次值就加上1就好了；当然，我居然忘了全局变量本身就是window的一个属性这个点，有点疏忽大意。 12345678let val &#x3D; 1Object.defineProperty(">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于valueOf、toString和[Symbol.toPrimitive]方法">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/valueof-tostring-toprimitive/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 在掘金上看到一篇文章，大意是如何让a &#x3D;&#x3D;&#x3D; 1 &amp;&amp; a &#x3D;&#x3D;&#x3D; 2 &amp;&amp; a &#x3D;&#x3D;&#x3D; 3等于true；一开始确实一脸懵逼，不过后来想到了访问修饰符能够解决这个问题，毕竟每访问一次值就加上1就好了；当然，我居然忘了全局变量本身就是window的一个属性这个点，有点疏忽大意。 12345678let val &#x3D; 1Object.defineProperty(">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200321105734.jpg?imageslim">
+<meta property="article:published_time" content="2020-03-21T02:57:44.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.885Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="js">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20200321105734.jpg?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/valueof-tostring-toprimitive/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/valueof-tostring-toprimitive/","path":"post/valueof-tostring-toprimitive/","title":"关于valueOf、toString和[Symbol.toPrimitive]方法"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>关于valueOf、toString和[Symbol.toPrimitive]方法 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#objectprototypevalueof"><span class="nav-number">2.</span> <span class="nav-text"> Object.prototype.valueOf()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#objectprototypetostring"><span class="nav-number">3.</span> <span class="nav-text"> Object.prototype.toString()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#symboltoprimitive"><span class="nav-number">4.</span> <span class="nav-text"> Symbol.toPrimitive</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E8%BD%AC%E6%8D%A2%E6%88%90%E5%8E%9F%E5%A7%8B%E5%80%BC"><span class="nav-number">5.</span> <span class="nav-text"> 对象转换成原始值</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A2%84%E6%9C%9F%E8%A2%AB%E8%BD%AC%E6%8D%A2%E6%88%90%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%B1%BB%E5%9E%8B"><span class="nav-number">5.1.</span> <span class="nav-text"> 预期被转换成字符串类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A2%84%E6%9C%9F%E8%A2%AB%E8%BD%AC%E6%8D%A2%E6%88%90%E6%95%B0%E5%AD%97%E7%B1%BB%E5%9E%8B"><span class="nav-number">5.2.</span> <span class="nav-text"> 预期被转换成数字类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A2%84%E6%9C%9F%E8%A2%AB%E8%BD%AC%E6%8D%A2%E6%88%90%E9%BB%98%E8%AE%A4%E7%B1%BB%E5%9E%8B%E5%85%B6%E4%BB%96"><span class="nav-number">5.3.</span> <span class="nav-text"> 预期被转换成默认类型（其他）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E7%A7%8D%E6%96%B9%E6%B3%95%E8%A7%A6%E5%8F%91%E7%9A%84%E9%A1%BA%E5%BA%8F"><span class="nav-number">5.4.</span> <span class="nav-text"> 三种方法触发的顺序</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3"><span class="nav-number">6.</span> <span class="nav-text"> 参考文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/valueof-tostring-toprimitive/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="关于valueOf、toString和[Symbol.toPrimitive]方法 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          关于valueOf、toString和[Symbol.toPrimitive]方法
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-03-21 10:57:44" itemprop="dateCreated datePublished" datetime="2020-03-21T10:57:44+08:00">2020-03-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A2%E7%B4%A2/" itemprop="url" rel="index"><span itemprop="name">探索</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p>在掘金上看到<a target="_blank" rel="noopener" href="https://juejin.im/post/5e66dc416fb9a07cab3aaa0a">一篇文章</a>，大意是如何让<code>a === 1 &amp;&amp; a === 2 &amp;&amp; a === 3</code>等于<code>true</code>；一开始确实一脸懵逼，不过后来想到了<strong>访问修饰符</strong>能够解决这个问题，毕竟每访问一次值就加上<code>1</code>就好了；当然，我居然忘了<strong>全局变量</strong>本身就是<code>window</code>的一个属性这个点，有点疏忽大意。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> val = <span class="number">1</span></span><br><span class="line"><span class="title class_">Object</span>.<span class="title function_">defineProperty</span>(<span class="variable language_">window</span>, <span class="string">&#x27;a&#x27;</span>, &#123;</span><br><span class="line">  <span class="title function_">get</span> () &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span>.<span class="property">val</span>++ <span class="comment">// 这里的this就是全局对象window</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(a === <span class="number">1</span> &amp;&amp; a === <span class="number">2</span> &amp;&amp; a === <span class="number">3</span>) <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+<p>不过，我又想到貌似对象还有一些方法能够<strong>改变访问到的值</strong>；比如：</p>
+<ul>
+<li><code>Object.prototype.valueOf()</code></li>
+<li><code>Object.prototype.toString()</code></li>
+<li><code>[Symbol.toPrimitive](hint)</code></li>
+</ul>
+<p>然而，经过折腾发现这三种方法并不像访问修饰符那样的机制，在使用全等号<code>===</code>进行判断时并没有触发：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> a = &#123;</span><br><span class="line">  <span class="title function_">valueOf</span> () &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="title function_">toString</span> () &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;2&#x27;</span></span><br><span class="line">  &#125;,</span><br><span class="line">  [<span class="title class_">Symbol</span>.<span class="property">toPrimitive</span>] () &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">3</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(a === <span class="number">1</span>) <span class="comment">// false</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(a === <span class="string">&#x27;2&#x27;</span>) <span class="comment">// false</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(a === <span class="number">3</span>) <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
+<p>所以，心里自然就有疑问，这几个方法到底在什么时候才会触发？</p>
+<span id="more"></span>
+<h2 id="objectprototypevalueof"><a class="markdownIt-Anchor" href="#objectprototypevalueof"></a> Object.prototype.valueOf()</h2>
+<p>对象的<code>valueOf</code>旨在返回对象的<strong>原始值</strong>，会在需要将对象转换成原始值的地方<strong>自动执行</strong>。</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200321105734.jpg?imageslim" alt="img" /></p>
+<p>根据<code>MDN</code>上的资料<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>可知，内置的一些对象已经定义<code>valueOf</code>方法，而对象默认则返回本身作为<code>valueOf()</code>的返回值。</p>
+<h2 id="objectprototypetostring"><a class="markdownIt-Anchor" href="#objectprototypetostring"></a> Object.prototype.toString()</h2>
+<p>同理，<code>toString()</code>方法会返回表示该对象的字符串，会在对象预期要被转换成字符串的地方自动执行。对象默认的<code>toString()</code>方法会返回<code>[object type]</code>，这个<code>type</code>就是<strong>对象构造函数的名称</strong>。</p>
+<h2 id="symboltoprimitive"><a class="markdownIt-Anchor" href="#symboltoprimitive"></a> Symbol.toPrimitive</h2>
+<p><code>[Symbol.toPrimitive](hint)</code>方法作用同<code>valueOf()</code>一样，但是<font color=red><strong>优先级要高于</strong></font><code>valueOf()</code>；而且该方法还会接受一个参数<code>hint</code>，这个参数用来表示期望转换的原始值的<strong>具体类型</strong>，有以下几种：</p>
+<ul>
+<li><code>number</code>：数字类型</li>
+<li><code>string</code>：字符串类型</li>
+<li><code>default</code>：默认</li>
+</ul>
+<h2 id="对象转换成原始值"><a class="markdownIt-Anchor" href="#对象转换成原始值"></a> 对象转换成原始值</h2>
+<p>很明显，以上三种方法都是在对象被预期转换成某种原始值时触发，那么触发的<strong>时机</strong>是什么，需要<strong>何种类型</strong>的原始值就需要弄清楚了。</p>
+<h3 id="预期被转换成字符串类型"><a class="markdownIt-Anchor" href="#预期被转换成字符串类型"></a> 预期被转换成字符串类型</h3>
+<blockquote>
+<p>对应的<code>hint</code>类型为string</p>
+</blockquote>
+<ol>
+<li>
+<p>进行<strong>输出</strong>的地方，如<code>alert()</code>。</p>
+</li>
+<li>
+<p><code>String(obj)</code>：</p>
+ <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> a = &#123;</span><br><span class="line">  <span class="title function_">toString</span> () &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;2&#x27;</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title class_">String</span>(a)) <span class="comment">// 2</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p><strong>字符串连接</strong>（<code>+</code>）操作：</p>
+ <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> a = &#123;</span><br><span class="line">  <span class="title function_">toString</span> () &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;2&#x27;</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(a + <span class="string">&#x27;vv&#x27;</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p><strong>模板字符串</strong>：</p>
+ <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> a = &#123;</span><br><span class="line">  [<span class="title class_">Symbol</span>.<span class="property">toPrimitive</span>] (hint) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(hint) <span class="comment">// string</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">2</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`你是老<span class="subst">$&#123;a&#125;</span>？`</span>) <span class="comment">// 你是老2？</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h3 id="预期被转换成数字类型"><a class="markdownIt-Anchor" href="#预期被转换成数字类型"></a> 预期被转换成数字类型</h3>
+<blockquote>
+<p>对应的<code>hint</code>类型为number</p>
+</blockquote>
+<ol>
+<li>
+<p><strong>除法</strong>：</p>
+ <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> a = &#123;</span><br><span class="line">  <span class="title function_">valueOf</span> () &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">2</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="number">2</span> / a, a / <span class="number">2</span>) <span class="comment">// 1  1</span></span><br></pre></td></tr></table></figure>
+<p>可以使用<code>[Symbol.toPrimitive]()</code>方法来验证一下：</p>
+ <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> a = &#123;</span><br><span class="line">  [<span class="title class_">Symbol</span>.<span class="property">toPrimitive</span>] (hint) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(hint) <span class="comment">// number</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">2</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="number">2</span> / a) <span class="comment">// 1</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p><code>Number(obj)</code>：</p>
+ <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> a = &#123;</span><br><span class="line">  [<span class="title class_">Symbol</span>.<span class="property">toPrimitive</span>] (hint) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(hint) <span class="comment">// number</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">2</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title class_">Number</span>(a)) <span class="comment">// 2</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p><strong>正负号</strong>（注意不是加减运算）：</p>
+ <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> a = &#123;</span><br><span class="line">  [<span class="title class_">Symbol</span>.<span class="property">toPrimitive</span>] (hint) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(hint) <span class="comment">// number</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">2</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(+a) <span class="comment">// 2</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(-a) <span class="comment">// -2</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h3 id="预期被转换成默认类型其他"><a class="markdownIt-Anchor" href="#预期被转换成默认类型其他"></a> 预期被转换成默认类型（其他）</h3>
+<blockquote>
+<p>对应的<code>hint</code>类型为default</p>
+</blockquote>
+<ol>
+<li>
+<p><strong>数字加法</strong>（即与对象相加的一方为数字类型）：</p>
+ <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> a = &#123;</span><br><span class="line">  [<span class="title class_">Symbol</span>.<span class="property">toPrimitive</span>] (hint) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(hint) <span class="comment">// default</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">2</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="number">1</span> + a) <span class="comment">// 3</span></span><br></pre></td></tr></table></figure>
+<p>这一点有点意外，原以为像这种情况预期转换的类型应该是数字类型，但事实上却是<code>default</code>；</p>
+</li>
+<li>
+<p><strong>布尔运算</strong>：所有对象都被转换成<code>true</code>；</p>
+ <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> a = &#123;</span><br><span class="line">  [<span class="title class_">Symbol</span>.<span class="property">toPrimitive</span>] (hint) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(hint) <span class="comment">// 没有触发</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title class_">Boolean</span>(a), a &amp;&amp; <span class="number">123</span>) <span class="comment">// true 123</span></span><br></pre></td></tr></table></figure>
+<p>布尔运算包括<code>==</code>；</p>
+</li>
+</ol>
+<h3 id="三种方法触发的顺序"><a class="markdownIt-Anchor" href="#三种方法触发的顺序"></a> 三种方法触发的顺序</h3>
+<ol>
+<li>
+<p><strong>首先</strong>判断对象是否有<code>[Symbol.toPrimitive](hint)</code>方法，若有则执行该方法；</p>
+ <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> a = &#123;</span><br><span class="line">  [<span class="title class_">Symbol</span>.<span class="property">toPrimitive</span>] (hint) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(hint)</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;right your mother right&#x27;</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="title function_">toString</span> () &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;f**k&#x27;</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="title function_">valueOf</span> () &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;sb&#x27;</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title class_">String</span>(a)) <span class="comment">// right your mother right</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>如果预期被转换成<strong>字符串类型</strong>时，则优先执行<code>toString()</code>方法；</p>
+ <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> a = &#123;</span><br><span class="line">  <span class="title function_">toString</span> () &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;f**k&#x27;</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="title function_">valueOf</span> () &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;sb&#x27;</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title class_">String</span>(a)) <span class="comment">// f**k</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>如果预期被转换成<strong>默认类型或者数字类型</strong>时，则优先执行<code>valueOf()</code>方法：</p>
+ <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> a = &#123;</span><br><span class="line">  <span class="title function_">toString</span> () &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">123</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="title function_">valueOf</span> () &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">456</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title class_">Number</span>(a)) <span class="comment">// 456</span></span><br></pre></td></tr></table></figure>
+<p><font color=red><strong>注</strong></font>：若没有<code>valueOf()</code>方法，但是定义了<code>toString()</code>方法，则会执行<code>toString()</code>方法；</p>
+ <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> a = &#123;</span><br><span class="line">  <span class="title function_">toString</span> () &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">123</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title class_">Number</span>(a)) <span class="comment">// 123</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="参考文档"><a class="markdownIt-Anchor" href="#参考文档"></a> 参考文档</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://juejin.im/post/5e66dc416fb9a07cab3aaa0a">大厂面试题分享：如何让(a=<mark>1&amp;&amp;a</mark>=2&amp;&amp;a===3)的值为true? - 掘金</a></li>
+<li><a target="_blank" rel="noopener" href="https://javascript.info/object-toprimitive">Object to primitive conversion</a> <font color=red>★</font></li>
+<li><a target="_blank" rel="noopener" href="https://javascript.info/type-conversions">Type Conversions</a></li>
+</ul>
+<hr class="footnotes-sep" />
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/valueOf">Object.prototype.valueOf() - JavaScript | MDN</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/valueof-tostring-toprimitive/" title="关于valueOf、toString和[Symbol.toPrimitive]方法">https://note.xiexuefeng.cc/post/valueof-tostring-toprimitive/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/js/" rel="tag"># js</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/npm-use-and-error/" rel="prev" title="使用npm的注意事项及错误收集">
+                  <i class="fa fa-chevron-left"></i> 使用npm的注意事项及错误收集
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/css-vertical-align/" rel="next" title="关于vertical-align属性">
+                  关于vertical-align属性 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/valueof-tostring-toprimitive/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/valueof-tostring-toprimitive/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

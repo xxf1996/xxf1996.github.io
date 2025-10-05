@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 CSS渐变色实际上是一种特殊的&lt;iamge&gt;类型，因此可以被用在任何可以使用&lt;image&gt;类型数据的属性中！而在CSS中，渐变有分为以下几种：  线性渐变：对应linear-gradient()函数。 径向渐变：对应radial-gradient()函数。 圆锥渐变：对应conic-gradient()函数。 重复渐变：对应repeating-linear-grad">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CSS渐变色">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/css-gradient/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 CSS渐变色实际上是一种特殊的&lt;iamge&gt;类型，因此可以被用在任何可以使用&lt;image&gt;类型数据的属性中！而在CSS中，渐变有分为以下几种：  线性渐变：对应linear-gradient()函数。 径向渐变：对应radial-gradient()函数。 圆锥渐变：对应conic-gradient()函数。 重复渐变：对应repeating-linear-grad">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200130134953.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200130135025.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200130135043.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200130135110.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200130135128.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200130135155.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200130135216.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200130135229.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200130135252.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200130135312.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200130135329.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200130135345.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200130135418.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200130135440.png?imageslim">
+<meta property="article:published_time" content="2020-01-30T05:41:39.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.868Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="css3">
+<meta property="article:tag" content="动效">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20200130134953.png?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/css-gradient/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/css-gradient/","path":"post/css-gradient/","title":"CSS渐变色"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>CSS渐变色 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E6%B8%90%E5%8F%98"><span class="nav-number">2.</span> <span class="nav-text"> 线性渐变</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-number">2.1.</span> <span class="nav-text"> 原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B8%90%E5%8F%98%E6%96%B9%E5%90%91"><span class="nav-number">2.2.</span> <span class="nav-text"> 渐变方向</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B8%90%E5%8F%98%E7%82%B9"><span class="nav-number">2.3.</span> <span class="nav-text"> 渐变点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A1%AC%E5%88%86%E7%95%8C%E7%BA%BFhard-line"><span class="nav-number">2.4.</span> <span class="nav-text"> 硬分界线（hard line）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%84%E5%90%91%E6%B8%90%E5%8F%98"><span class="nav-number">3.</span> <span class="nav-text"> 径向渐变</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E7%90%86-2"><span class="nav-number">3.1.</span> <span class="nav-text"> 原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%AD%E5%BF%83%E7%82%B9"><span class="nav-number">3.2.</span> <span class="nav-text"> 中心点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E6%9D%9F%E5%BD%A2%E7%8A%B6ending-shape"><span class="nav-number">3.3.</span> <span class="nav-text"> 结束形状（ending shape）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%86%E9%94%A5%E6%B8%90%E5%8F%98"><span class="nav-number">4.</span> <span class="nav-text"> 圆锥渐变</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E7%90%86-3"><span class="nav-number">4.1.</span> <span class="nav-text"> 原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%AD%E5%BF%83%E7%82%B9-2"><span class="nav-number">4.2.</span> <span class="nav-text"> 中心点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B5%B7%E7%82%B9"><span class="nav-number">4.3.</span> <span class="nav-text"> 起点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B8%90%E5%8F%98%E7%82%B9-2"><span class="nav-number">4.4.</span> <span class="nav-text"> 渐变点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E5%A4%8D%E6%B8%90%E5%8F%98"><span class="nav-number">5.</span> <span class="nav-text"> 重复渐变</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E5%A4%8D%E7%BA%BF%E6%80%A7%E6%B8%90%E5%8F%98"><span class="nav-number">5.1.</span> <span class="nav-text"> 重复线性渐变</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E5%A4%8D%E5%BE%84%E5%90%91%E6%B8%90%E5%8F%98"><span class="nav-number">5.2.</span> <span class="nav-text"> 重复径向渐变</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E5%A4%8D%E5%9C%86%E9%94%A5%E6%B8%90%E5%8F%98"><span class="nav-number">5.3.</span> <span class="nav-text"> 重复圆锥渐变</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%89%A9%E5%B1%95"><span class="nav-number">6.</span> <span class="nav-text"> 相关扩展</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E6%B8%90%E5%8F%98%E8%83%8C%E6%99%AF%E7%9A%84%E5%8A%A8%E7%94%BB%E6%88%96%E6%B8%90%E5%8F%98%E6%95%88%E6%9E%9C"><span class="nav-number">6.1.</span> <span class="nav-text"> 关于渐变背景的动画或渐变效果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E6%A1%A3"><span class="nav-number">7.</span> <span class="nav-text"> 相关文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/css-gradient/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="CSS渐变色 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CSS渐变色
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-01-30 13:41:39" itemprop="dateCreated datePublished" datetime="2020-01-30T13:41:39+08:00">2020-01-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p><code>CSS</code>渐变色实际上是一种<strong>特殊</strong>的<code>&lt;iamge&gt;</code>类型，因此可以被用在<strong>任何</strong>可以使用<code>&lt;image&gt;</code>类型数据的属性中！而在<code>CSS</code>中，渐变有分为以下几种：</p>
+<ul>
+<li><strong>线性渐变</strong>：对应<code>linear-gradient()</code>函数。</li>
+<li><strong>径向渐变</strong>：对应<code>radial-gradient()</code>函数。</li>
+<li><strong>圆锥渐变</strong>：对应<code>conic-gradient()</code>函数。</li>
+<li><strong>重复渐变</strong>：对应<code>repeating-linear-gradient()</code>和<code>repeating-radial-gradient()</code>函数。</li>
+</ul>
+<p>渐变色的特点就是沿着某一方向，从一种颜色逐渐变化到另一种颜色（两种或两种以上颜色）；关键就在于渐变颜色个数、对应的位置，空间上是如何变化的。</p>
+<span id="more"></span>
+<h2 id="线性渐变"><a class="markdownIt-Anchor" href="#线性渐变"></a> 线性渐变</h2>
+<h3 id="原理"><a class="markdownIt-Anchor" href="#原理"></a> 原理</h3>
+<p>线性渐变有两个关键因素：</p>
+<ol>
+<li><strong>渐变方向</strong></li>
+<li><strong>渐变点</strong>：包括点的位置和颜色。</li>
+</ol>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200130134953.png?imageslim" alt="20200130134953" /></p>
+<p>上图是<strong>MDN</strong><sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>给出的线性渐变完整定义图，可以看出由起点和终点来决定渐变的方向，然后渐变点位于起点和终点之间。</p>
+<h3 id="渐变方向"><a class="markdownIt-Anchor" href="#渐变方向"></a> 渐变方向</h3>
+<p><code>linear-gradient()</code>有关渐变方向的设置并不像定义中的那样给定起点和终点位置，而是通过<strong>旋转角度</strong>来确定；默认旋转中心是区域中心点，从<strong>底部往上</strong>的方向为<font color=red><code>0deg</code></font>方向，<strong>顺时针</strong>增加角度，然后再确定起点和终点的位置。</p>
+<ul>
+<li><strong>起点</strong>：通过区域<strong>左上角</strong>与渐变线做一条垂线，垂线与渐变线的交点就是起点。</li>
+<li><strong>终点</strong>：同理，通过区域<strong>右下角</strong>与渐变线做一条垂线，垂线与渐变线的交点就是终点。</li>
+</ul>
+<p>(可以考虑做个动图，从<code>0~360</code>)</p>
+<p>函数的第一个参数可以设置渐变方向（也就是旋转角度），<strong>可以不填</strong>，默认为<strong>从上往下</strong>（也就是<code>180deg</code>）；有以下几种<strong>设置语法</strong>：</p>
+<ul>
+<li><strong>弧度值</strong>：数字 + <code>deg</code>；或者数字 + <code>turn</code>，<code>turn</code>代表一圈，也就是<code>1trun = 360deg</code>。</li>
+<li><strong>关键字</strong>：<code>to</code> + <code>top/right/bottom/left</code>（或者组合）；即指定终点方向。进一步可以推出：
+<ul>
+<li><code>to top</code> = <code>0deg</code></li>
+<li><code>to right</code> = <code>90deg</code></li>
+<li><code>to bottom</code> = <code>180deg</code></li>
+<li><code>to left</code> = <code>270deg</code></li>
+<li><code>to top right</code> = 左下到右上（注意并不一定是<code>45deg</code>）</li>
+</ul>
+</li>
+</ul>
+<h3 id="渐变点"><a class="markdownIt-Anchor" href="#渐变点"></a> 渐变点</h3>
+<p>渐变点的信息主要有：</p>
+<ul>
+<li>
+<p><strong>位置</strong>：渐变点位于渐变线（轴）上的位置；可以是<code>&lt;length&gt;</code>类型数据或者<code>%</code>，百分比相对于<strong>渐变线的长度</strong>而言。</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200130135025.png?imageslim" alt="20200130135025" /></p>
+  <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.demo</span> &#123;</span><br><span class="line">    <span class="attribute">width</span>: <span class="number">200px</span>;</span><br><span class="line">    <span class="attribute">height</span>: <span class="number">50px</span>;</span><br><span class="line">    <span class="attribute">background</span>: <span class="built_in">linear-gradient</span>(<span class="number">90deg</span>, black, red <span class="number">10%</span>, blue <span class="number">100px</span>, black);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p><strong>颜色</strong>：渐变点的颜色，用于进行渐变色的<strong>插值</strong>。</p>
+</li>
+<li>
+<p><strong>渐变中点位置</strong>：即两个渐变颜色的<strong>中间颜色</strong>处于两个渐变点之间的位置；单位为<code>%</code>，百分比相对于<strong>两个渐变点之间的长度</strong>。默认值为<code>50%</code>，即两个渐变点的中点上。</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200130135043.png?imageslim" alt="20200130135043" /></p>
+  <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.demo1</span> &#123;</span><br><span class="line">  <span class="attribute">background</span>: <span class="built_in">linear-gradient</span>(<span class="number">90deg</span>, red, blue);</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.demo1</span> &#123;</span><br><span class="line">  <span class="attribute">background</span>: <span class="built_in">linear-gradient</span>(<span class="number">90deg</span>, red, <span class="number">30%</span>, blue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如上图所示，渐变中点位置<code>50%</code>和<code>30%</code>的效果完全不一样，渐变中点的位置有种『<strong>重心</strong>』的感觉，因此改变渐变中点的位置可以使得两个渐变点之间的渐变<strong>偏向某一侧</strong>。</p>
+</li>
+</ul>
+<p>而在<code>linear-gradient()</code>函数中，渐变点信息的<strong>设置语法</strong>如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">color[ position]</span><br></pre></td></tr></table></figure>
+<p>位置<strong>可以不设置</strong>，此时渐变点的位置就等于前一个渐变点及后一个渐变点的<strong>中点位置</strong>；如：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.a</span> &#123;</span><br><span class="line">    <span class="attribute">background</span>: <span class="built_in">linear-gradient</span>(<span class="number">90deg</span>, white, red, green, blue, black);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 等同于 */</span></span><br><span class="line"></span><br><span class="line"><span class="selector-class">.a</span> &#123;</span><br><span class="line">    <span class="attribute">background</span>: <span class="built_in">linear-gradient</span>(<span class="number">90deg</span>, white <span class="number">0%</span>, red <span class="number">25%</span>, green <span class="number">50%</span>, blue <span class="number">75%</span>, black <span class="number">100%</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>设置位置时，位置与颜色值之间用<strong>空格</strong>分开；如果连续两个渐变点的颜色都是一样的时候，可以将两个位置信息进行<strong>合并</strong>，如：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.demo</span> &#123;</span><br><span class="line">    <span class="attribute">background</span>: <span class="built_in">linear-gradient</span>(<span class="number">90deg</span>, black, red <span class="number">40%</span>, red <span class="number">60%</span>, black);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 等同于 */</span></span><br><span class="line"></span><br><span class="line"><span class="selector-class">.demo</span> &#123;</span><br><span class="line">    <span class="attribute">background</span>: <span class="built_in">linear-gradient</span>(<span class="number">90deg</span>, black, red <span class="number">40%</span> <span class="number">60%</span>, black);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200130135110.png?imageslim" alt="20200130135110" /></p>
+<p>除此之外，如果<strong>第一个</strong>渐变点没有指定位置，则默认位置为<code>0%</code>；同理，如果<strong>最后一个</strong>渐变点没有指定位置，则默认位置为<code>100%</code>。不过，即便是第一个和最后一个渐变点设置了位置信息（不是<code>0%</code>和<code>100%</code>的时候），也会默认在第一个渐变点增加一个<strong>颜色值相同</strong>且位置为<code>0%</code>的渐变点，最后一个渐变点也同样，如：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.demo</span> &#123;</span><br><span class="line">    <span class="attribute">background</span>: <span class="built_in">linear-gradient</span>(<span class="number">90deg</span>, red <span class="number">20%</span>, blue <span class="number">80%</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 等同于 */</span></span><br><span class="line"></span><br><span class="line"><span class="selector-class">.demo</span> &#123;</span><br><span class="line">    <span class="attribute">background</span>: <span class="built_in">linear-gradient</span>(<span class="number">90deg</span>, red <span class="number">0%</span>, red <span class="number">20%</span>, blue <span class="number">80%</span>, blue <span class="number">100%</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200130135128.png?imageslim" alt="20200130135128" /></p>
+<blockquote>
+<p>By default, if there is no color with a 0% stop, the first color declared will be at that point. Similarly, the last color will continue to the 100% mark, or be at the 100% mark if no length has been declared on that last stop. <sup class="footnote-ref"><a href="#fn1" id="fnref1:1">[1:1]</a></sup></p>
+</blockquote>
+<p>由渐变的特点可知，至少需要两个渐变点信息，渐变点之间用<strong>英文逗号</strong>分隔！而渐变中点则需要设置在<strong>两个渐变点的信息之间</strong>，如：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">A_color A_position, xx%, B_color B_position</span><br></pre></td></tr></table></figure>
+<h3 id="硬分界线hard-line"><a class="markdownIt-Anchor" href="#硬分界线hard-line"></a> 硬分界线（hard line）</h3>
+<p>当一个渐变点的位置和下一个渐变点的位置相同时（两个渐变点颜色不同），就会出现一条很明显的颜色分界线，此时就没有渐变的特点了，如：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.demo</span> &#123;</span><br><span class="line">    <span class="attribute">background</span>: <span class="built_in">linear-gradient</span>(<span class="number">90deg</span>, red <span class="number">50%</span>, blue <span class="number">50%</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200130135155.png?imageslim" alt="20200130135155" /></p>
+<p>利用这种特性可以画出具有不同<strong>色块</strong>的渐变图案，如：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.demo</span> &#123;</span><br><span class="line">    <span class="attribute">background</span>: <span class="built_in">linear-gradient</span>(<span class="number">90deg</span>, red <span class="number">20%</span>, orange <span class="number">20%</span> <span class="number">40%</span>, yellow <span class="number">40%</span> <span class="number">60%</span>, green <span class="number">60%</span> <span class="number">80%</span>, blue <span class="number">80%</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200130135216.png?imageslim" alt="20200130135216" /></p>
+<h2 id="径向渐变"><a class="markdownIt-Anchor" href="#径向渐变"></a> 径向渐变</h2>
+<h3 id="原理-2"><a class="markdownIt-Anchor" href="#原理-2"></a> 原理</h3>
+<p>径向渐变的原理同线性渐变的原理类似，只不过径向渐变的渐变方向是由中心点往外扩散的径向方向上。</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200130135229.png?imageslim" alt="20200130135229" /></p>
+<p>径向渐变通过定义一个中心点，以及结束形状（<code>ending shape</code>，即各个径向方向的终点组成的<strong>闭合曲线</strong>），这个结束形状可以是椭圆或圆；然后由中心点往结束形状上任意一点就形成了一个径向，也就是一个渐变方向，这个方向也叫<strong>虚拟渐变射线</strong>（<code>virtual gradient</code>）；同样地，中心点的位置为<code>0%</code>，而结束形状上面的点的位置则为<code>100%</code>；</p>
+<p>明白了径向渐变的原理后，实际上渐变点的设置跟线性渐变的设置是一样的，区别就在于<strong>中心点</strong>及<strong>结束形状</strong>的设置。</p>
+<h3 id="中心点"><a class="markdownIt-Anchor" href="#中心点"></a> 中心点</h3>
+<p>中心点的范围在区域内，可以使用<code>%</code>（百分比相对的是<strong>区域的宽高</strong>），也可以直接使用<code>&lt;length&gt;</code>类型的数据，可以在<code>radial-gradient()</code>函数中的第一个参数进行设置，不设置时默认为<code>50% 50%</code>（即区域中心位置），设置语法如下：</p>
+<blockquote>
+<p>radial-gradient(<strong>at x y</strong>, …);</p>
+</blockquote>
+<p>如：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.demo</span> &#123;</span><br><span class="line">    <span class="attribute">background</span>: <span class="built_in">radial-gradient</span>(at <span class="number">20%</span> <span class="number">100px</span>, red, blue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200130135252.png?imageslim" alt="20200130135252" /></p>
+<h3 id="结束形状ending-shape"><a class="markdownIt-Anchor" href="#结束形状ending-shape"></a> 结束形状（ending shape）</h3>
+<p>中心点的作用是作为渐变方向的起点，而结束形状的作用则是作为渐变方向的终点；而结束形状要用两个属性才能最终确定：</p>
+<ul>
+<li>
+<p><strong>形状类型</strong>：形状类型目前只有圆（<code>circle</code>）和椭圆（<code>ellipse</code>），默认形状为<code>ellipse</code>。</p>
+  <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.demo1</span> &#123;</span><br><span class="line">    <span class="attribute">background</span>: <span class="built_in">radial-gradient</span>(circle at <span class="number">20%</span> <span class="number">80px</span>, red, blue);</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.demo2</span> &#123;</span><br><span class="line">    <span class="attribute">background</span>: <span class="built_in">radial-gradient</span>(ellipse at <span class="number">20%</span> <span class="number">80px</span>, red, blue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200130135312.png?imageslim" alt="20200130135312" /></p>
+<p>可以看到两种不同的形状的渐变效果也不一样。</p>
+</li>
+<li>
+<p><strong>半径</strong>：而半径的设置并不是直接指定两个半径来确定，而是由内置关键字来自动确定：</p>
+<ul>
+<li><code>closest-side</code>：最近一侧，顾名思义就是按照中心点距离区域横向和纵向<strong>最近的一侧</strong>来分别计算横向和纵向的半径。当形状类型为<code>circle</code>时，半径取横向半径和纵向半径中<strong>较小</strong>的那个。</li>
+</ul>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.demo</span> &#123;</span><br><span class="line">    <span class="attribute">background</span>: <span class="built_in">radial-gradient</span>(circle closest-side at <span class="number">20%</span> <span class="number">80px</span>, red, blue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200130135329.png?imageslim" alt="20200130135329" /></p>
+<ul>
+<li>
+<p><code>farthest-side</code>：最远一侧，同理就是按照中心点距离区域横向和纵向<strong>最远的一侧</strong>来分别计算横向和纵向的半径。</p>
+</li>
+<li>
+<p><code>closest-corner</code>：最近一角；形状必须经过区域中离中心点最近的那个角的位置。</p>
+</li>
+<li>
+<p><code>farthest-corner</code>：最远一角（默认值）；形状必须经过区域中离中心点最远的那个角的位置。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.demo1</span> &#123;</span><br><span class="line">    <span class="attribute">background</span>: <span class="built_in">radial-gradient</span>(ellipse closest-side at <span class="number">20%</span> <span class="number">80px</span>, red, blue);</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.demo2</span> &#123;</span><br><span class="line">    <span class="attribute">background</span>: <span class="built_in">radial-gradient</span>(ellipse farthest-side at <span class="number">20%</span> <span class="number">80px</span>, red, blue);</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.demo3</span> &#123;</span><br><span class="line">    <span class="attribute">background</span>: <span class="built_in">radial-gradient</span>(ellipse closest-corner at <span class="number">20%</span> <span class="number">80px</span>, red, blue);</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.demo4</span> &#123;</span><br><span class="line">    <span class="attribute">background</span>: <span class="built_in">radial-gradient</span>(ellipse farthest-corner at <span class="number">20%</span> <span class="number">80px</span>, red, blue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200130135345.png?imageslim" alt="20200130135345" /></p>
+<p>上图可以很明显的看出这四种方法计算半径的区别；</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="圆锥渐变"><a class="markdownIt-Anchor" href="#圆锥渐变"></a> 圆锥渐变</h2>
+<h3 id="原理-3"><a class="markdownIt-Anchor" href="#原理-3"></a> 原理</h3>
+<p>圆锥渐变的原理比较简单，就是指定一个<strong>中心点</strong>，然后区域内所有的点按照所在的<strong>角度</strong>（以<code>y</code>轴向上为<code>0</code>度）进行渐变的计算，而渐变点的位置也只能按照角度的范围进行指定，因此渐变方向就是弧度方向（顺时针）。</p>
+<h3 id="中心点-2"><a class="markdownIt-Anchor" href="#中心点-2"></a> 中心点</h3>
+<p><code>conic-gradient()</code>中心点的语法设置与径向渐变的语法一样，通过<code>at</code>关键字进行设置，不过要注意的是<code>at</code>的设置要放在第一个参数的<strong>最后</strong>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">background: conic-gradient(from 40deg at 20px 50%, red, blue); // 正确的写法</span><br><span class="line">background: conic-gradient(at 20px 50% from 40deg, red, blue); // 错误的写法</span><br></pre></td></tr></table></figure>
+<h3 id="起点"><a class="markdownIt-Anchor" href="#起点"></a> 起点</h3>
+<p>圆锥渐变的起点跟其他渐变不一样，圆锥渐变的起点实际上只是指定从某个弧度开始（相当于指定<code>0deg</code>的轴）；不设置起点，默认就是<code>0deg</code>；通过<code>from</code>关键字来指定：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.demo</span> &#123;</span><br><span class="line">    <span class="attribute">background</span>: <span class="built_in">conic-gradient</span>(from <span class="number">40deg</span> at <span class="number">20px</span> <span class="number">50%</span>, red, blue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200130135418.png?imageslim" alt="20200130135418" /></p>
+<p>需要注意的是起点的单位只能是<code>deg</code>或<code>turn</code>，<strong>不能</strong>使用百分比（<code>%</code>）的语法！</p>
+<h3 id="渐变点-2"><a class="markdownIt-Anchor" href="#渐变点-2"></a> 渐变点</h3>
+<p>渐变点的单位跟起点类似，不过支持百分比的单位，百分比相对的是从<strong>起点弧度开始然后顺时针</strong>计算（每<code>100%</code> = <code>360deg</code>，因此可以实测可以超出<code>100%</code>）。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.demo1</span> &#123;</span><br><span class="line">    <span class="attribute">background</span>: <span class="built_in">conic-gradient</span>(from <span class="number">20deg</span> at <span class="number">20px</span> <span class="number">50%</span>, red <span class="number">20%</span>, blue <span class="number">0.4turn</span>, orange <span class="number">180deg</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200130135440.png?imageslim" alt="20200130135440" /></p>
+<h2 id="重复渐变"><a class="markdownIt-Anchor" href="#重复渐变"></a> 重复渐变</h2>
+<p>重复渐变的精髓就是：渐变的定义的部分<strong>并没有占渐变线或者渐变范围的全部</strong>，因此由这一部分<strong>定义好的渐变去重复的填充剩余的未定义部分</strong>。</p>
+<p>很明显，重复渐变对应前面的渐变也就有三种；</p>
+<h3 id="重复线性渐变"><a class="markdownIt-Anchor" href="#重复线性渐变"></a> 重复线性渐变</h3>
+<p><code>repeating-linear-gradient()</code></p>
+<h3 id="重复径向渐变"><a class="markdownIt-Anchor" href="#重复径向渐变"></a> 重复径向渐变</h3>
+<p><code>repeating-radial-gradient()</code></p>
+<h3 id="重复圆锥渐变"><a class="markdownIt-Anchor" href="#重复圆锥渐变"></a> 重复圆锥渐变</h3>
+<p><code>repeating-conic-gradient()</code></p>
+<h2 id="相关扩展"><a class="markdownIt-Anchor" href="#相关扩展"></a> 相关扩展</h2>
+<h3 id="关于渐变背景的动画或渐变效果"><a class="markdownIt-Anchor" href="#关于渐变背景的动画或渐变效果"></a> 关于渐变背景的动画或渐变效果</h3>
+<p>由于<code>background-image</code>属性本身就<strong>不</strong>被<code>animation</code>和<code>transition</code>所支持，因此没法<strong>直接</strong>使用<code>animation</code>和<code>transition</code>来进行渐变背景的动画效果，但是可以利用其它一些可以进行动画或过渡的属性来间接地进行渐变背景的动画效果，这个可以参考一下张鑫旭的文章：<a target="_blank" rel="noopener" href="https://www.zhangxinxu.com/wordpress/2018/03/background-gradient-transtion/">几种CSS渐变背景图片transtion动画方法 « 张鑫旭-鑫空间-鑫生活</a>。</p>
+<h2 id="相关文档"><a class="markdownIt-Anchor" href="#相关文档"></a> 相关文档</h2>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/Guide/CSS/Using_CSS_gradients">使用 CSS 渐变 - Web 开发者指南 | MDN</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/linear-gradient">linear-gradient - CSS（层叠样式表） | MDN</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/repeating-linear-gradient">repeating-linear-gradient - CSS（层叠样式表） | MDN</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/CSS/radial-gradient">radial-gradient() - CSS: Cascading Style Sheets | MDN</a></li>
+</ol>
+<hr class="footnotes-sep" />
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/CSS/linear-gradient">linear-gradient() - CSS: Cascading Style Sheets | MDN</a> <a href="#fnref1" class="footnote-backref">↩︎</a> <a href="#fnref1:1" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/css-gradient/" title="CSS渐变色">https://note.xiexuefeng.cc/post/css-gradient/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/css3/" rel="tag"># css3</a>
+              <a href="/tags/%E5%8A%A8%E6%95%88/" rel="tag"># 动效</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/css-animation/" rel="prev" title="CSS动画">
+                  <i class="fa fa-chevron-left"></i> CSS动画
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/js-arrow-function/" rel="next" title="关于箭头函数">
+                  关于箭头函数 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/css-gradient/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/css-gradient/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

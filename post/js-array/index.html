@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="js中的数组实际上就是一个Array对象的实例，继承来自Array.prototype的属性和方法！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="js数组属性和方法">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/js-array/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="js中的数组实际上就是一个Array对象的实例，继承来自Array.prototype的属性和方法！">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-04-16T13:03:52.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.873Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="js">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/js-array/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/js-array/","path":"post/js-array/","title":"js数组属性和方法"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>js数组属性和方法 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B1%9E%E6%80%A7"><span class="nav-number">1.</span> <span class="nav-text"> 属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BF%E9%97%AE%E6%96%B9%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text"> 访问方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E5%99%A8%E6%96%B9%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text"> 修改器方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%AD%E4%BB%A3%E6%96%B9%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text"> 迭代方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3"><span class="nav-number">5.</span> <span class="nav-text"> 参考文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/js-array/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="js数组属性和方法 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          js数组属性和方法
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-04-16 21:03:52" itemprop="dateCreated datePublished" datetime="2018-04-16T21:03:52+08:00">2018-04-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">技术</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>js中的数组实际上就是一个<code>Array</code>对象的实例，继承来自<code>Array.prototype</code>的属性和方法！</p>
+<span id="more"></span>
+<h3 id="属性"><a class="markdownIt-Anchor" href="#属性"></a> 属性</h3>
+<ol>
+<li>length（<code>Array.prototype.length</code>）：返回数组的长度；注意只有数字索引或者能被转换为数字的索引才会被计入！</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = [];</span><br><span class="line">arr[<span class="number">0</span>] = <span class="number">1</span>;</span><br><span class="line">arr[<span class="number">3</span>] = <span class="string">&quot;xxf&quot;</span>;</span><br><span class="line">arr[<span class="string">&quot;name&quot;</span>] = <span class="string">&quot;xuefeng&quot;</span>;</span><br><span class="line"></span><br><span class="line">arr.<span class="property">length</span>; <span class="comment">// 4</span></span><br><span class="line">arr[<span class="number">1</span>]; <span class="comment">// undefined</span></span><br><span class="line">arr.<span class="property">name</span>; <span class="comment">// xuefeng</span></span><br></pre></td></tr></table></figure>
+<p>js数组的长度是根据<font color=red><strong>索引中最大的数字</strong></font>决定的（？），且中间没有被赋值的索引被访问时的值默认为<code>undefined</code>！且其中的<font color=red><strong>非数字索引或者对象属性</strong></font>不会被计入到<code>length</code>中的，但是可以强制转化为十进制数字的索引是有效的：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = [];</span><br><span class="line">arr[<span class="string">&quot;12&quot;</span>] = <span class="string">&quot;cctv&quot;</span>; <span class="comment">// 索引&quot;12&quot;可以强制转化为数字12！</span></span><br><span class="line"></span><br><span class="line">arr.<span class="property">length</span>; <span class="comment">// 13</span></span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>constructor（<code>Array.prototype.constructor</code>）：返回的就是<code>Array</code>本身！即所有数组实例的构造器都是继承自<code>Array</code>对象！</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line">arr.<span class="property">constructor</span>; <span class="comment">// [Function: Array]</span></span><br></pre></td></tr></table></figure>
+<h3 id="访问方法"><a class="markdownIt-Anchor" href="#访问方法"></a> 访问方法</h3>
+<p>所有的访问方法<font color=red><strong>绝对不会改变调用它们的对象的值</strong></font>，只会返回一个新的数组或者返回一个其它的期望值。</p>
+<ol>
+<li>concat方法：用于合并多个数组或多个元素，返回一个新的数组；</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">接受一个或多个数组或元素</span></span><br><span class="line"><span class="comment">与原数组合并返回到一个新的数组！</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="title class_">Array</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="title function_">concat</span>(val1[, val2[, ...[, valN]]]);</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>join方法：连接数组内所有的元素并返回一个字符串；数组中元素值为<code>null</code>或<code>undefined</code>的，该元素则转化为空字符串！</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">separator为连接字符，可以不填</span></span><br><span class="line"><span class="comment">当不填时separator参数时，默认为&quot;,&quot;</span></span><br><span class="line"><span class="comment">当连接字符为空字符串&quot;&quot;时，元素之间没有连接字符，直接相连</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="title class_">Array</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="title function_">join</span>(separator);</span><br><span class="line"></span><br><span class="line"><span class="comment">//Example</span></span><br><span class="line"><span class="keyword">var</span> arr = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line">arr.<span class="title function_">join</span>(); <span class="comment">// &quot;1,2,3&quot;</span></span><br><span class="line">arr.<span class="title function_">join</span>(<span class="string">&quot;&quot;</span>); <span class="comment">// &quot;123&quot;</span></span><br><span class="line">arr.<span class="title function_">join</span>(<span class="string">&quot;-&quot;</span>); <span class="comment">// &quot;1-2-3&quot;</span></span><br><span class="line">arr.<span class="title function_">join</span>(<span class="string">&quot;, &quot;</span>); <span class="comment">// &quot;1, 2, 3&quot;  （最后一个空格自动去除？）</span></span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>slice方法：返回一个从开始到结束（<font color=red><strong>不包括结束索引的那个元素！</strong></font>）选择的数组的一部分<strong>浅拷贝</strong>到一个新数组对象。原始数组不会被修改。</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">begin和end参数分别为开始和结束索引，都是可选的</span></span><br><span class="line"><span class="comment">当两个参数都不填时，直接复制整个数组</span></span><br><span class="line"><span class="comment">当end参数不填时，复制从begin开始到最后一个的元素</span></span><br><span class="line"><span class="comment">begin和end的索引可以为负，代表倒数第几个元素！</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="title class_">Array</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="title function_">slice</span>([begin[, end]]);</span><br><span class="line"></span><br><span class="line"><span class="comment">//Example</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> arr = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line"></span><br><span class="line">arr.<span class="title function_">slice</span>(); <span class="comment">// [1, 2, 3]</span></span><br><span class="line">arr.<span class="title function_">slice</span>(<span class="number">1</span>); <span class="comment">// [2, 3]</span></span><br><span class="line">arr.<span class="title function_">slice</span>(<span class="number">0</span>, <span class="number">2</span>); <span class="comment">// [1, 2]</span></span><br><span class="line">arr.<span class="title function_">slice</span>(<span class="number">0</span>, -<span class="number">1</span>); <span class="comment">// [1, 2]</span></span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>
+<p>toString方法：相当于<code>arr.join()</code>，即直接用<code>,</code>连接所有元素返回一个字符串；</p>
+</li>
+<li>
+<p>indexOf方法：返回在数组中可以找到一个给定元素的<font color=red><strong>第一个索引</strong></font>，如果不存在，则返回-1；</p>
+</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">elem参数为所查找的元素</span></span><br><span class="line"><span class="comment">startIndex为开始查找的索引，可以为负，同上</span></span><br><span class="line"><span class="comment">当startIndex超出数组length时直接返回-1！</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="title class_">Array</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="title function_">indexOf</span>(elem[, startIndex=<span class="number">0</span>]);</span><br></pre></td></tr></table></figure>
+<h3 id="修改器方法"><a class="markdownIt-Anchor" href="#修改器方法"></a> 修改器方法</h3>
+<p>所有的修改器方法<font color=red><strong>会改变调用它们的对象自身的值</strong></font>！</p>
+<ol>
+<li>
+<p>push方法：在数组的末尾添加一个或多个元素，并返回数组的新长度；</p>
+</li>
+<li>
+<p>pop方法：删除数组的最后一个元素，并返回这个元素；</p>
+</li>
+<li>
+<p>reserve方法：颠倒数组中所有元素的顺序，并返回颠倒后的数组；</p>
+</li>
+<li>
+<p>shift方法：删除数组中第一个元素，并返回这个元素；</p>
+</li>
+<li>
+<p>unshift方法：在数组的开头添加一个或多个元素，并返回数组的新长度；</p>
+</li>
+<li>
+<p>sort方法：对数组元素进行排序，并返回当前数组；</p>
+</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">compareFunction参数为比较函数，是可选的；</span></span><br><span class="line"><span class="comment">若不填参数，默认按Unicode码进行排序；</span></span><br><span class="line"><span class="comment">compareFunction(a, b)若大于0，则b在a之前；</span></span><br><span class="line"><span class="comment">若小于0，则a在b之前；</span></span><br><span class="line"><span class="comment">若等于0，则a与b的相对位置不变！</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="title class_">Array</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="title function_">sort</span>([compareFunction]);</span><br><span class="line"></span><br><span class="line"><span class="comment">//MDN Example</span></span><br><span class="line"><span class="keyword">var</span> fruit = [<span class="string">&#x27;cherries&#x27;</span>, <span class="string">&#x27;apples&#x27;</span>, <span class="string">&#x27;bananas&#x27;</span>];</span><br><span class="line">fruit.<span class="title function_">sort</span>(); </span><br><span class="line"><span class="comment">// [&#x27;apples&#x27;, &#x27;bananas&#x27;, &#x27;cherries&#x27;]</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> scores = [<span class="number">1</span>, <span class="number">10</span>, <span class="number">21</span>, <span class="number">2</span>]; </span><br><span class="line">scores.<span class="title function_">sort</span>(); </span><br><span class="line"><span class="comment">// [1, 10, 2, 21]</span></span><br><span class="line"><span class="comment">// 注意10在2之前,</span></span><br><span class="line"><span class="comment">// 因为在 Unicode 指针顺序中&quot;10&quot;在&quot;2&quot;之前</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> things = [<span class="string">&#x27;word&#x27;</span>, <span class="string">&#x27;Word&#x27;</span>, <span class="string">&#x27;1 Word&#x27;</span>, <span class="string">&#x27;2 Words&#x27;</span>];</span><br><span class="line">things.<span class="title function_">sort</span>(); </span><br><span class="line"><span class="comment">// [&#x27;1 Word&#x27;, &#x27;2 Words&#x27;, &#x27;Word&#x27;, &#x27;word&#x27;]</span></span><br><span class="line"><span class="comment">// 在Unicode中, 数字在大写字母之前,</span></span><br><span class="line"><span class="comment">// 大写字母在小写字母之前.</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//要想让数字数组按照数值从小到大排序</span></span><br><span class="line"><span class="comment">//可以自定义一个compareFunction</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">    当a &gt; b时，返回值大于0</span></span><br><span class="line"><span class="comment">    当a &lt; b时，返回值小于0</span></span><br><span class="line"><span class="comment">    a = b时，返回值为0</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">compare</span>(<span class="params">a, b</span>)&#123;</span><br><span class="line">    <span class="keyword">return</span> a - b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> arr = [<span class="number">4</span>, <span class="number">1</span>, <span class="number">12</span>, <span class="number">9</span>];</span><br><span class="line">arr.<span class="title function_">sort</span>(compare); <span class="comment">// [1, 4, 9, 12]</span></span><br></pre></td></tr></table></figure>
+<ol start="7">
+<li>splice方法：通过删除现有元素和/或添加新元素来更改一个数组的内容，并且返回被删除的元素（以数组的形式）；</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">array.<span class="title function_">splice</span>(start)</span><br><span class="line"><span class="comment">// 删除数组从start开始到末尾的所有元素，start可以为负值</span></span><br><span class="line">array.<span class="title function_">splice</span>(start, deleteCount) </span><br><span class="line"><span class="comment">/* </span></span><br><span class="line"><span class="comment">删除数组从start开始的deleteCount个元素；</span></span><br><span class="line"><span class="comment">deleteCount可以为0，即不删除任何元素；</span></span><br><span class="line"><span class="comment">当deleteCount大于从start开始到末尾元素的个数，则删除从start开始到末尾的所有元素</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">array.<span class="title function_">splice</span>(start, deleteCount, item1, item2, ...)</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">item1,irem2,...为要添加的元素</span></span><br><span class="line"><span class="comment">从start开始添加</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//示例：删除数组中的某一个元素</span></span><br><span class="line"><span class="keyword">var</span> arr = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line">arr.<span class="title function_">splice</span>(<span class="number">1</span>, <span class="number">1</span>); <span class="comment">// 2 （即删除数组中索引为1的元素）</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//MDN示例：从第2位开始删除所有的元素</span></span><br><span class="line"><span class="keyword">var</span> myFish = [<span class="string">&#x27;angel&#x27;</span>, <span class="string">&#x27;clown&#x27;</span>, <span class="string">&#x27;mandarin&#x27;</span>, <span class="string">&#x27;sturgeon&#x27;</span>];</span><br><span class="line"><span class="keyword">var</span> removed = myFish.<span class="title function_">splice</span>(<span class="number">2</span>);</span><br><span class="line"><span class="comment">// 运算后的myFish ：[&quot;angel&quot;, &quot;clown&quot;] </span></span><br><span class="line"><span class="comment">// 被删除的元素数组： [&quot;mandarin&quot;, &quot;sturgeon&quot;]</span></span><br></pre></td></tr></table></figure>
+<h3 id="迭代方法"><a class="markdownIt-Anchor" href="#迭代方法"></a> 迭代方法</h3>
+<p>在下面的众多遍历方法中，有很多方法都需要指定一个回调函数作为参数。<font color=#39f><strong>在每一个数组元素都分别执行完回调函数之前，数组的length属性会被缓存在某个地方</strong></font>，所以，如果你在回调函数中为当前数组添加了新的元素，那么那些新添加的元素是不会被遍历到的。此外，如果在回调函数中对当前数组进行了其它修改，比如改变某个元素的值或者删掉某个元素，那么随后的遍历操作可能会受到未预期的影响。总之，不要尝试在遍历过程中对原数组进行任何修改，虽然规范对这样的操作进行了详细的定义，但为了可读性和可维护性，请不要这样做。（<strong>MDN</strong>）</p>
+<ol>
+<li>forEach方法：为数组中的每个元素执行一次回调函数；该方法没有返回值！</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">callback为回调函数</span></span><br><span class="line"><span class="comment">thisArg为可选参数，作为callback函数中this对象进行使用</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">array.<span class="title function_">forEach</span>(callback[, thisArg]);</span><br><span class="line"></span><br><span class="line">callback = <span class="keyword">function</span>(<span class="params">currentValue, index, array</span>)&#123;</span><br><span class="line">    <span class="comment">//do something</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">currentValue为当前遍历的元素值</span></span><br><span class="line"><span class="comment">index为当前遍历的元素索引</span></span><br><span class="line"><span class="comment">array为所遍历的数组本身</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>every方法：如果数组中的每个元素都满足测试函数，则返回<code>true</code>，否则返回 <code>false</code>；该方法不会改变原数组！</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">参数同上</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">arr.<span class="title function_">every</span>(callback[, thisArg]);</span><br></pre></td></tr></table></figure>
+<p><code>every</code>方法为数组中的每个元素执行一次 <code>callback</code> 函数，直到它找到一个使 <code>callback</code> 返回 <code>false</code>（表示可转换为布尔值 <code>false</code> 的值）的元素。如果发现了一个这样的元素，<code>every</code> 方法将会立即返回 <code>false</code>。否则，<code>callback</code> 为每一个元素返回 <code>true</code>，<code>every</code> 就会返回 <code>true</code>。<code>callback</code>只会为那些已经被赋值的索引调用。不会为那些被删除或从来没被赋值的索引调用。（<strong>MDN</strong>）</p>
+<ol start="3">
+<li>some方法：如果数组中至少有一个元素满足测试函数，则返回 <code>true</code>，否则返回 <code>false</code>。</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arr.<span class="title function_">some</span>(callback[, thisArg]);</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>filter方法：将所有在过滤函数中返回<code>true</code> 的数组元素<strong>放进一个新数组中并返回</strong>。</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//语法</span></span><br><span class="line"><span class="keyword">var</span> new_array = arr.<span class="title function_">filter</span>(callback[, thisArg]);</span><br><span class="line"></span><br><span class="line"><span class="comment">//MDN Example</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">isBigEnough</span>(<span class="params">value</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> value &gt;= <span class="number">10</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> filtered = [<span class="number">12</span>, <span class="number">5</span>, <span class="number">8</span>, <span class="number">130</span>, <span class="number">44</span>].<span class="title function_">filter</span>(isBigEnough);</span><br><span class="line"></span><br><span class="line"><span class="comment">// filtered is [12, 130, 44]</span></span><br></pre></td></tr></table></figure>
+<ol start="5">
+<li>map方法：返回一个由回调函数的返回值组成的新数组；</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> new_array = arr.<span class="title function_">map</span>(<span class="keyword">function</span> <span class="title function_">callback</span>(<span class="params">currentValue, index, array</span>) &#123; </span><br><span class="line">    <span class="comment">// Return element for new_array </span></span><br><span class="line">&#125;[, thisArg]);</span><br><span class="line"></span><br><span class="line"><span class="comment">// MDN实例：求每个元素的平方</span></span><br><span class="line"><span class="keyword">var</span> numbers = [<span class="number">1</span>, <span class="number">4</span>, <span class="number">9</span>];</span><br><span class="line"><span class="keyword">var</span> roots = numbers.<span class="title function_">map</span>(<span class="title class_">Math</span>.<span class="property">sqrt</span>);</span><br><span class="line"><span class="comment">// roots的值为[1, 2, 3], numbers的值仍为[1, 4, 9]</span></span><br></pre></td></tr></table></figure>
+<ol start="6">
+<li>reduce方法：</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">callback为回调函数，有四个参数</span></span><br><span class="line"><span class="comment">initialValue为可选参数，为累计值的初始值！</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">arr.<span class="title function_">reduce</span>(callback[, initialValue]);</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">accumulator：累加器累加回调的返回值;它是上一次调用回调时返回的累积值，或initialValue</span></span><br><span class="line"><span class="comment">currentValue：数组中正在处理的元素</span></span><br><span class="line"><span class="comment">currentIndex（可选）：数组中正在处理的当前元素的索引。</span></span><br><span class="line"><span class="comment">如果提供了initialValue，则索引号从0开始，否则为索引从1开始</span></span><br><span class="line"><span class="comment">array：调用reduce的数组</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">callback = <span class="keyword">function</span>(<span class="params">accumulator, currentValue, currentIndex, array</span>)&#123;</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">    do something</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="keyword">return</span> <span class="comment">/* some value */</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>回调函数第一次执行时，<code>accumulator</code> 和<code>currentValue</code>的取值有两种情况：调用<code>reduce</code>时提供<code>initialValue</code>，<code>accumulator</code>取值为<code>initialValue</code>，<code>currentValue</code>取数组中的第一个值；没有提供 <code>initialValue</code>，<code>accumulator</code>取数组中的第一个值，<code>currentValue</code>取数组中的第二个值。（<strong>MDN</strong>）</p>
+<ol start="7">
+<li>find方法：返回数组中<font color=red><strong>满足提供的测试函数的第一个元素的值</strong></font>，否则返回 <code>undefined</code>。</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">callback为回调函数，参数分别为（val，index，array）</span></span><br><span class="line"><span class="comment">thisArg用来指定callback的this参数</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">arr.<span class="title function_">find</span>(callback[, thisArg]);</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">enough</span>(<span class="params">val</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> val &gt; <span class="number">20</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> arr = [<span class="number">12</span>, <span class="number">16</span>, <span class="number">6</span>, <span class="number">23</span>, <span class="number">8</span>, <span class="number">29</span>];</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(arr.<span class="title function_">find</span>(enough)); <span class="comment">// 23</span></span><br></pre></td></tr></table></figure>
+<h3 id="参考文档"><a class="markdownIt-Anchor" href="#参考文档"></a> 参考文档</h3>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array">Array - JavaScript | MDN</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/js-array/" title="js数组属性和方法">https://note.xiexuefeng.cc/post/js-array/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/js/" rel="tag"># js</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/js-closure/" rel="next" title="关于js闭包">
+                  关于js闭包 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/js-array/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/js-array/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

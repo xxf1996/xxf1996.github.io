@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 transform属性是CSS基于图形学中矩阵变换和投影变换实现的产物，因此理论上基于矩阵变换和投影变换的视角效果都可以使用transform实现；诸如canvas&#x2F;webGL中常见的立体&#x2F;3D效果，物理运动效果等等，都可以等价转化为transform中的变换函数，只不过CSS的控制粒度目前只能局限于关键帧，无法对动效进行每一帧的控制（那种通过js来修改css的方式也算不上是控制每一帧，倒">
+<meta property="og:type" content="article">
+<meta property="og:title" content="transform应用场景的探索">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/css-transform-apply/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 transform属性是CSS基于图形学中矩阵变换和投影变换实现的产物，因此理论上基于矩阵变换和投影变换的视角效果都可以使用transform实现；诸如canvas&#x2F;webGL中常见的立体&#x2F;3D效果，物理运动效果等等，都可以等价转化为transform中的变换函数，只不过CSS的控制粒度目前只能局限于关键帧，无法对动效进行每一帧的控制（那种通过js来修改css的方式也算不上是控制每一帧，倒">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200816165718.gif?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200816165740.gif?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200816165801.gif?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200816165817.gif?imageslim">
+<meta property="article:published_time" content="2020-08-16T08:58:23.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.869Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="计算机图形">
+<meta property="article:tag" content="css">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20200816165718.gif?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/css-transform-apply/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/css-transform-apply/","path":"post/css-transform-apply/","title":"transform应用场景的探索"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>transform应用场景的探索 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AB%8B%E4%BD%93hover%E6%95%88%E6%9E%9C"><span class="nav-number">2.</span> <span class="nav-text"> 立体hover效果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E6%8B%9F%E7%89%A9%E7%90%86%E8%BF%90%E5%8A%A8"><span class="nav-number">3.</span> <span class="nav-text"> 模拟物理运动</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%B9%E6%80%A7%E5%BD%A2%E5%8F%98"><span class="nav-number">3.1.</span> <span class="nav-text"> 弹性形变</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9A%E4%BD%93%E7%A2%B0%E6%92%9E"><span class="nav-number">3.2.</span> <span class="nav-text"> 刚体碰撞</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%86%E5%B7%AE%E6%BB%9A%E5%8A%A8h5"><span class="nav-number">4.</span> <span class="nav-text"> 视差滚动H5</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E6%A1%A3"><span class="nav-number">5.</span> <span class="nav-text"> 相关文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/css-transform-apply/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="transform应用场景的探索 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          transform应用场景的探索
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-08-16 16:58:23" itemprop="dateCreated datePublished" datetime="2020-08-16T16:58:23+08:00">2020-08-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A2%E7%B4%A2/" itemprop="url" rel="index"><span itemprop="name">探索</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p><code>transform</code>属性是<code>CSS</code>基于图形学中<font color=#39f>矩阵变换和投影变换</font>实现的产物，因此理论上基于矩阵变换和投影变换的视角效果都可以使用<code>transform</code>实现；诸如<code>canvas/webGL</code>中常见的立体/3D效果，物理运动效果等等，都可以等价转化为<code>transform</code>中的变换函数，只不过<code>CSS</code>的控制粒度目前<font color=#f00>只能局限于关键帧</font>，无法对动效进行每一帧的控制（那种通过<code>js</code>来修改<code>css</code>的方式也算不上是控制每一帧，倒是目前还在实现中的<code>CSS Houdini</code>规范可以做到）；</p>
+<p>下面只是一些简单的初步探索，后续可能会发现更多有趣的应用。</p>
+<span id="more"></span>
+<h2 id="立体hover效果"><a class="markdownIt-Anchor" href="#立体hover效果"></a> 立体hover效果</h2>
+<p>实现逼真的立体效果，肯定需要开启透视投影；而透视投影可以对某个元素单独设置，也可以对容器元素进行设置；</p>
+<ul>
+<li><strong>单个元素</strong>：单个元素可以直接使用<code>perspective()</code>这个<code>transform-function</code>，这样当前元素就会具有透视投影效果，而不需要依赖其容器元素；</li>
+<li><strong>容器元素</strong>：容器元素则可以直接通过<font color=#f00><code>perspective</code>属性</font>进行设置，这样就相当于创建了一个独立的相机空间，也就是其子元素默认具有相同的投影设置（前提是容器元素的<code>transform-style``为preserve-3d</code>）；这种方式再配合<code>z</code>坐标（即<code>translateZ</code>或者能够改变<code>z</code>坐标的变换），就能很方便地对整个容器内元素进行立体效果模拟；</li>
+</ul>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200816165718.gif?imageslim" alt="img" /></p>
+<p><code>Demo</code>地址：<a target="_blank" rel="noopener" href="https://codepen.io/xxf1996/pen/XWdJvNv">3D transform button hover effect</a></p>
+<h2 id="模拟物理运动"><a class="markdownIt-Anchor" href="#模拟物理运动"></a> 模拟物理运动</h2>
+<h3 id="弹性形变"><a class="markdownIt-Anchor" href="#弹性形变"></a> 弹性形变</h3>
+<p>在真实世界中，物体的运动或者冲击通常会产生形变，如果在类似的运动动画中加上模拟形变的效果，就会显得更加的真实；同样地，<code>transform</code>也可以模拟这些运动形变，<font color=#39f>模拟的诀窍就是观察这些运动形变的关键帧特点，以及形变和速度变化/大小之间的关系</font>；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200816165740.gif?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200816165801.gif?imageslim" alt="img" /></p>
+<p>上述这些形变都是<strong>弹性形变</strong>，属于比较简单和直观的，<font color=#39f>通常是在一个或两个方向上不停地震荡</font>，然后趋于稳定，因此模拟起来比较简单；下面是<code>Demo</code>地址：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://codepen.io/xxf1996/full/WNwvGRy">CodePen - css transform animation: physical movement</a></li>
+<li><a target="_blank" rel="noopener" href="https://codepen.io/xxf1996/full/VwaLygW">CodePen - css transform animation: physical movement 2</a></li>
+</ul>
+<h3 id="刚体碰撞"><a class="markdownIt-Anchor" href="#刚体碰撞"></a> 刚体碰撞</h3>
+<p>如果是要模拟诸如<font color=#f00>刚体碰撞</font>这样的效果，那就会有点棘手，因为其中除了会有物体变换，还会有变换中心（<code>transform-origin</code>）的改变，这样就<font color=#39f>需要观察关键帧在对应时间点应该使用哪个位置作为变换中心</font>了；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200816165817.gif?imageslim" alt="img" /></p>
+<p><code>Demo</code>地址：<a target="_blank" rel="noopener" href="https://codepen.io/xxf1996/full/poyJOwQ">CodePen - css transform animation: rigid body motion</a></p>
+<blockquote>
+<p>注：刚体碰撞是刚体运动的一种，所谓的<font color=#39f>刚体运动简单地来说就是只有旋转和平移变换</font>，即不发生形变；</p>
+</blockquote>
+<h2 id="视差滚动h5"><a class="markdownIt-Anchor" href="#视差滚动h5"></a> 视差滚动H5</h2>
+<p>所谓的视差滚动简单的可以理解为：视觉层面上有不同景深（即<code>z</code>坐标）的平面，<font color=#39f>当滚动时不同景深之间的移动速度有差异</font>，这种差异就会形成视差；</p>
+<p>利用<code>transform</code>的透视投影确实可以做到简单的视差滚动效果，但考虑到很多视差效果的H5交互作品通常具有很多场景元素，这时纯靠CSS那显然是吃力的，所以借助成熟的<code>3D</code>渲染框架来实现比较好，比如：<code>PIXI</code>，这类框架一般是基于图形学和游戏制作的框架概念实现的，因此更适合制作较更多元素更复杂的动画/交互展示；</p>
+<p>这里有两个优秀的应用视差效果的<code>H5</code>可以推荐一下：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://go.163.com/2017/1231/taidu/">态度日历 让每一天更有趣</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jiandoukeji.com/h5/2018/ala/project/jiandou/life/index.html">别不相信，你是一颗星星</a></li>
+</ul>
+<h2 id="相关文档"><a class="markdownIt-Anchor" href="#相关文档"></a> 相关文档</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://codepen.io/yuhomyan/pen/OJMejWJ">Candy Color Button Animation</a>：很棒的按钮hover效果</li>
+<li><a target="_blank" rel="noopener" href="https://codepen.io/alphardex/pen/WNNVJeZ">Rotating Text</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.prototypr.io/this-aint-disney-a-practical-guide-to-css-transitions-and-animations-a8b87e7c5531">https://blog.prototypr.io/this-aint-disney-a-practical-guide-to-css-transitions-and-animations-a8b87e7c5531</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/28239508">Android 中基于物理特性的动画简介 - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E5%BD%A2%E8%AE%8A">https://zh.wikipedia.org/wiki/形變</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/css-transform-apply/" title="transform应用场景的探索">https://note.xiexuefeng.cc/post/css-transform-apply/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2/" rel="tag"># 计算机图形</a>
+              <a href="/tags/css/" rel="tag"># css</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/css-transform-math/" rel="prev" title="transform属性的数学原理">
+                  <i class="fa fa-chevron-left"></i> transform属性的数学原理
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/css-transform-h5/" rel="next" title="transform相关H5案例">
+                  transform相关H5案例 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/css-transform-apply/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/css-transform-apply/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

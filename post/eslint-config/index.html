@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 要将代码规范落实不仅是靠个人自觉的遵守，还得需要一个工具可以进行强制性地检测校验，这样就能真正地将规范落实到实处。而ESLint就是用来检测JS(X)&#x2F;TS(X)代码的不二选择。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ESLint配置参数">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/eslint-config/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 要将代码规范落实不仅是靠个人自觉的遵守，还得需要一个工具可以进行强制性地检测校验，这样就能真正地将规范落实到实处。而ESLint就是用来检测JS(X)&#x2F;TS(X)代码的不二选择。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200531213836.jpg?imageslim">
+<meta property="article:published_time" content="2020-05-31T13:30:08.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.871Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="ESLint">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20200531213836.jpg?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/eslint-config/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/eslint-config/","path":"post/eslint-config/","title":"ESLint配置参数"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>ESLint配置参数 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E5%8F%82%E6%95%B0"><span class="nav-number">2.</span> <span class="nav-text"> 常用参数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#extends"><span class="nav-number">2.1.</span> <span class="nav-text"> extends</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="nav-number">2.1.1.</span> <span class="nav-text"> 字符串</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%95%B0%E7%BB%84"><span class="nav-number">2.1.2.</span> <span class="nav-text"> 字符串数组</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#env"><span class="nav-number">2.2.</span> <span class="nav-text"> env</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#parseroptions"><span class="nav-number">2.3.</span> <span class="nav-text"> parserOptions</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ecmafeatures"><span class="nav-number">2.3.1.</span> <span class="nav-text"> ecmaFeatures</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#parser"><span class="nav-number">2.4.</span> <span class="nav-text"> parser</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#root"><span class="nav-number">2.5.</span> <span class="nav-text"> root</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#rules"><span class="nav-number">2.6.</span> <span class="nav-text"> rules</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#overrides"><span class="nav-number">2.7.</span> <span class="nav-text"> overrides</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#files"><span class="nav-number">2.7.1.</span> <span class="nav-text"> files</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E6%A1%A3"><span class="nav-number">3.</span> <span class="nav-text"> 相关文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/eslint-config/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="ESLint配置参数 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ESLint配置参数
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-05-31 21:30:08" itemprop="dateCreated datePublished" datetime="2020-05-31T21:30:08+08:00">2020-05-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">工具</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p>要将代码规范落实不仅是靠个人自觉的遵守，还得需要一个工具可以进行强制性地检测校验，这样就能真正地将规范落实到实处。而<code>ESLint</code>就是用来检测<code>JS(X)/TS(X)</code>代码的不二选择。</p>
+<span id="more"></span>
+<h2 id="常用参数"><a class="markdownIt-Anchor" href="#常用参数"></a> 常用参数</h2>
+<h3 id="extends"><a class="markdownIt-Anchor" href="#extends"></a> extends</h3>
+<p>用来继承已有的<code>ESLint</code>配置，这个配置可以是内置的，也可以是<code>npm</code>插件；其值的格式有字符串和字符串数组两种；</p>
+<h4 id="字符串"><a class="markdownIt-Anchor" href="#字符串"></a> 字符串</h4>
+<p>当只是一个字符串时，这个字符串可以是：</p>
+<ul>
+<li>配置文件<strong>路径</strong>；</li>
+<li>共享配置名称（即<code>npm</code>插件）；当<code>npm</code>插件名称为<code>eslint-config-*</code>格式时，可以省略前面的<code>eslint-config-</code>前缀，如：<code>eslint-config-airbnb</code>可以直接写成<code>airbnb</code>；</li>
+<li><code>ESLint</code>内置集成的配置；如：<code>eslint:recommended</code>，<code>eslint:all</code>；</li>
+</ul>
+<h4 id="字符串数组"><a class="markdownIt-Anchor" href="#字符串数组"></a> 字符串数组</h4>
+<p>数组形式，每个字符串都可以是上述格式；但是数组中<strong>后面的配置会覆盖前面的配置</strong>（当出现相同规则时）；如：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">extends</span>: [</span><br><span class="line">        <span class="string">&#x27;plugin:vue/strongly-recommended&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;@vue/standard&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;@vue/typescript/recommended&#x27;</span> <span class="comment">// ts检测</span></span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="env"><a class="markdownIt-Anchor" href="#env"></a> env</h3>
+<p><code>env</code>参数可以设置代码环境，启用一个环境，<code>eslint</code>就能够自动识别对应环境所有的<strong>全局变量</strong>；常用的环境有：</p>
+<ul>
+<li><code>browser</code>：浏览器环境；</li>
+<li><code>node</code>：<code>Node.js</code>环境；</li>
+<li><code>shared-node-browser</code>：浏览器和<code>Node.js</code>通用的全局变量；</li>
+<li><code>es6</code>：启用除了<code>modules</code>以外的所有<code>ECMAScript 6</code>特性；</li>
+<li><code>jquery</code>：<code>jQuery</code>相关全局变量；</li>
+<li><code>worker</code>：<code>Web Worker</code>环境；</li>
+</ul>
+<p>除了上述的环境，<code>eslint</code>还支持很多比较常用的库作为环境（支持其全局变量），详情可以参考<a target="_blank" rel="noopener" href="https://cn.eslint.org/docs/user-guide/configuring#specifying-environments">官方文档</a>；</p>
+<p><code>env</code>的设置方式很简单，其值为一个对象，当需要开启某个环境时，只需要将对应环境的值设置为<code>true</code>即可：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">env</span>: &#123;</span><br><span class="line">        <span class="attr">node</span>: <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="parseroptions"><a class="markdownIt-Anchor" href="#parseroptions"></a> parserOptions</h3>
+<p><code>parserOptions</code>是用来设置要支持检测的<code>ES</code>语法版本的；其设置值也是一个<strong>对象</strong>，包含三个选项（键）：</p>
+<ul>
+<li><code>ecmaVersion</code>：用来设置支持的<code>ECMAScript</code>语言版本；可以是<code>3</code>，<code>5</code>，<code>6</code>这种经典版本号，也可以是用年份来设置版本号，如：<code>2015</code>（同<code>6</code>），<code>2020</code>（同<code>11</code>）；<code>ES6</code>及其之后的版本就可以使用对应的年份来设置版本号。<strong>默认值是<code>5</code></strong>。</li>
+<li><code>sourceType</code>：具体作用细节还不清楚，网上找不到详细的资料；目前有两个选项，一个是<code>script</code>（脚本模式，<strong>默认值</strong>），另一个是<code>module</code>（<code>ES</code>模块）；</li>
+<li><code>ecmaFeatures</code>：用于设置一些<strong>额外的语言特性</strong>，比如<code>JSX</code>等等；</li>
+</ul>
+<h4 id="ecmafeatures"><a class="markdownIt-Anchor" href="#ecmafeatures"></a> ecmaFeatures</h4>
+<p>目前支持的额外语言特性有<code>4</code>个：</p>
+<ul>
+<li><code>jsx</code>：<code>JSX</code>语法；</li>
+<li><code>impliedStrict</code>：全局<code>strict</code>模式；</li>
+<li><code>globalReturn</code>：全局作用域使用<code>return</code>语句；</li>
+<li><code>experimentalObjectRestSpread</code>：实验性功能，对象属性展开及剩余操作（目前该特性已经为<code>stage-4</code>了，<code>ES2018</code>）；</li>
+</ul>
+<p>该属性设置方式同<code>env</code>一样，设置为<code>true</code>则开启，反之<code>false</code>则关闭；</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">parserOptions</span>: &#123;</span><br><span class="line">        <span class="attr">ecmaVersion</span>: <span class="number">2020</span>,</span><br><span class="line">        <span class="attr">ecmaFeatures</span>: &#123;</span><br><span class="line">            <span class="attr">jsx</span>: <span class="literal">false</span> <span class="comment">// 关闭对jsx的支持</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="parser"><a class="markdownIt-Anchor" href="#parser"></a> parser</h3>
+<p>设置<code>ESLint</code>的解析器，解析器用来解析代码的语法树；其默认解析器为<code>Espree</code>，但是还有其他可以兼容的解析器（需要单独安装相应的<code>npm</code>包）：</p>
+<ul>
+<li><code>esprima</code></li>
+<li><code>babel-eslint</code>：对<code>babel</code>的封装；</li>
+<li><code>@typescript-eslint/parser</code>：支持对<code>TS</code>文件的解析；</li>
+</ul>
+<p>好像也可以直接在<code>parserOptions</code>里面设置<code>parser</code>：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">parserOptions</span>: &#123;</span><br><span class="line">        <span class="attr">parser</span>: <span class="string">&#x27;@typescript-eslint/parser&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="root"><a class="markdownIt-Anchor" href="#root"></a> root</h3>
+<p>由于<code>ESLint</code>配置默认遵循层叠原则，即每级目录可以单独配置<code>.eslintrc.*</code>相关文件，如果该级目录没有文件<strong>则会向上一级查找直至根目录</strong>；不过如果设置<code>root</code>为<code>true</code>之后，项目中所有的检测文件不再会遵循层叠原则，而是统一以根目录中的配置文件为准来检测代码。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">root</span>: <span class="literal">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="rules"><a class="markdownIt-Anchor" href="#rules"></a> rules</h3>
+<p>除了继承已有的配置，还能手动修改通过<code>rules</code>属性来手动修改<code>ESLint</code>相关配置；每个检测规则都有其独特的键名，当要修改某条规则时，则使用键名然后设置相应的值即可；<code>ESLint</code>自带的规则表可以查看<a target="_blank" rel="noopener" href="http://eslint.cn/docs/rules/">官方文档</a>，使用其它<code>ESLint</code>插件则需要查看对应插件给出的规则；</p>
+<p>每个规则都遵循一些简单的设置：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200531213836.jpg?imageslim" alt="img" /></p>
+<p>有些规则可能支持更详细的配置，比如数组，对象等等；</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">rules</span>: &#123;</span><br><span class="line">    <span class="string">&#x27;no-console&#x27;</span>: <span class="string">&#x27;off&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;no-debugger&#x27;</span>: process.<span class="property">env</span>.<span class="property">NODE_ENV</span> === <span class="string">&#x27;production&#x27;</span> ? <span class="string">&#x27;error&#x27;</span> : <span class="string">&#x27;off&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;generator-star-spacing&#x27;</span>: <span class="string">&#x27;off&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;no-mixed-operators&#x27;</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="string">&#x27;vue/max-attributes-per-line&#x27;</span>: [</span><br><span class="line">      <span class="number">2</span>,</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="string">&#x27;singleline&#x27;</span>: <span class="number">5</span>,</span><br><span class="line">        <span class="string">&#x27;multiline&#x27;</span>: &#123;</span><br><span class="line">          <span class="string">&#x27;max&#x27;</span>: <span class="number">1</span>,</span><br><span class="line">          <span class="string">&#x27;allowFirstLine&#x27;</span>: <span class="literal">false</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="overrides"><a class="markdownIt-Anchor" href="#overrides"></a> overrides</h3>
+<p><code>overrides</code>可以匹配特定的文件，然后专门为其设置相应的<code>ESLint</code>配置（相当于一个<strong>优先级更高</strong>的配置文件）；</p>
+<h4 id="files"><a class="markdownIt-Anchor" href="#files"></a> files</h4>
+<p>通过这个参数可以<strong>来匹配特定的文件</strong>，其语法遵循<a target="_blank" rel="noopener" href="https://github.com/isaacs/node-glob"><code>glob</code>匹配模式</a>；值的形式为数组，数组中每个字符串代表一个匹配模式，如：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">overrides</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">files</span>: [</span><br><span class="line">            <span class="string">&#x27;**/__tests__/*.&#123;j,t&#125;s?(x)&#x27;</span>, <span class="comment">// 匹配jsx/tsx</span></span><br><span class="line">            <span class="string">&#x27;**/tests/unit/**/*.spec.&#123;j,t&#125;s?(x)&#x27;</span> <span class="comment">// 匹配单元测试脚本</span></span><br><span class="line">          ],</span><br><span class="line">          <span class="attr">env</span>: &#123;</span><br><span class="line">            <span class="attr">jest</span>: <span class="literal">true</span></span><br><span class="line">          &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">files</span>: [</span><br><span class="line">            <span class="string">&#x27;*.js&#x27;</span> <span class="comment">// 匹配所有的js文件</span></span><br><span class="line">          ],</span><br><span class="line">          <span class="attr">rules</span>: &#123;</span><br><span class="line">            <span class="string">&#x27;@typescript-eslint/no-var-requires&#x27;</span>: <span class="literal">false</span> <span class="comment">// 关闭typescript-eslint对js文件检测require语句</span></span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="相关文档"><a class="markdownIt-Anchor" href="#相关文档"></a> 相关文档</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://cn.eslint.org/docs/user-guide/configuring">Configuring ESLint - ESLint中文</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/ad1e46faaea2">Eslint 超简单入门教程 - 简书</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/eslint-config/" title="ESLint配置参数">https://note.xiexuefeng.cc/post/eslint-config/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/ESLint/" rel="tag"># ESLint</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/webgl-reflection-model/" rel="prev" title="webGL常见光照模型">
+                  <i class="fa fa-chevron-left"></i> webGL常见光照模型
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/clipboard-data-and-data-transfer/" rel="next" title="clipboardData属性与DataTransfer对象">
+                  clipboardData属性与DataTransfer对象 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/eslint-config/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/eslint-config/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言  OneDrive 是微软公司提供的一项云存储服务。用户可以通过 Microsoft 账户注册 OneDrive 后获得一定量的免费存储空间，例如起初通常有 5GB 的免费存储空间。OneDrive 支持多种操作系统，包括 Windows、macOS、iOS、Android 等。用户可以在不同设备上同步文件，并能够通过设置共享链接与他人共享文件。  对我来说Onedrive是一个很不错的云">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Onedrive API的使用">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/using-onedrive-api/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言  OneDrive 是微软公司提供的一项云存储服务。用户可以通过 Microsoft 账户注册 OneDrive 后获得一定量的免费存储空间，例如起初通常有 5GB 的免费存储空间。OneDrive 支持多种操作系统，包括 Windows、macOS、iOS、Android 等。用户可以在不同设备上同步文件，并能够通过设置共享链接与他人共享文件。  对我来说Onedrive是一个很不错的云">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240523153605.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240523154248.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240523155020.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240523155451.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240523155840.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240523160223.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240523160526.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240523161705.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240523161740.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240523164301.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240513172927.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240523171031.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240513193658.png?imageslim">
+<meta property="article:published_time" content="2024-05-23T09:49:31.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.884Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="Onedrive">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20240523153605.png?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/using-onedrive-api/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/using-onedrive-api/","path":"post/using-onedrive-api/","title":"Onedrive API的使用"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Onedrive API的使用 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E7%BD%AE%E5%87%86%E5%A4%87"><span class="nav-number">2.</span> <span class="nav-text"> 前置准备</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0api%E6%9D%83%E9%99%90"><span class="nav-number">2.1.</span> <span class="nav-text"> 添加API权限</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AF%86%E7%A0%81"><span class="nav-number">2.2.</span> <span class="nav-text"> 创建客户端密码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8E%88%E6%9D%83%E6%B5%81%E7%A8%8B"><span class="nav-number">3.</span> <span class="nav-text"> 授权流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E-tenant"><span class="nav-number">3.0.1.</span> <span class="nav-text"> 关于 tenant</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#onedrive-api"><span class="nav-number">4.</span> <span class="nav-text"> Onedrive API</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E8%AE%BF%E9%97%AE%E7%9A%84%E6%96%B9%E5%BC%8F"><span class="nav-number">4.1.</span> <span class="nav-text"> 文件访问的方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#access-token-%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="nav-number">4.1.1.</span> <span class="nav-text"> access token 的使用</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E6%8E%A5%E5%8F%A3%E9%94%99%E8%AF%AF"><span class="nav-number">5.</span> <span class="nav-text"> 常见接口错误</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#idx14100-jwt-is-not-well-formed"><span class="nav-number">5.1.</span> <span class="nav-text"> IDX14100: JWT is not well formed</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3"><span class="nav-number">6.</span> <span class="nav-text"> 参考文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/using-onedrive-api/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Onedrive API的使用 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Onedrive API的使用
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-05-23 17:49:31" itemprop="dateCreated datePublished" datetime="2024-05-23T17:49:31+08:00">2024-05-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B8%9A%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">业务</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h1>
+<blockquote>
+<p>OneDrive 是微软公司提供的一项云存储服务。用户可以通过 Microsoft 账户注册 OneDrive 后获得一定量的免费存储空间，例如起初通常有 5GB 的免费存储空间。OneDrive 支持多种操作系统，包括 Windows、macOS、iOS、Android 等。用户可以在不同设备上同步文件，并能够通过设置共享链接与他人共享文件。</p>
+</blockquote>
+<p>对我来说<code>Onedrive</code>是一个很不错的云同步工具，我日常用它来进行笔记数据的多端同步，然后搭配<code>Obsidian</code>这类<code>Local First</code>的笔记<code>APP</code>进行使用，就可以安心地在多端进行笔记同步（顺便完成数据的备份）。总得来说，5GB的免费空间对于笔记这类文档资源来说可以用好多年了，且<code>Onedrive</code>的文件同步真的很快速且安全，很少出现同步错误的情况。</p>
+<p><code>Onedrive</code>同样提供了<code>API</code>的方式让开发者去访问授权用户的存储空间，进行存储空间内文件的增删改查相关操作，以便开发集成<code>Onedrive</code>的应用。不过我这里主要是利用<code>Onedrive</code>的<code>API</code>去接入自动化服务，以便可以让自动化服务能够修改特定文件达到<strong>个人信息流</strong>入口聚合的功能。</p>
+<p>虽说这里我使用<code>Onedrive API</code>的目的只是为了访问自身的存储空间，但实际上访问其它授权用户的存储空间也是一样的流程，没有区别。</p>
+<span id="more"></span>
+<h1 id="前置准备"><a class="markdownIt-Anchor" href="#前置准备"></a> 前置准备</h1>
+<p>目前使用<code>Onedrive</code>的<code>API</code>都需要先到<a target="_blank" rel="noopener" href="https://aka.ms/AppRegistrations/?referrer=https%3A%2F%2Fdev.onedrive.com">Microsoft Azure</a>去注册一个应用<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240523153605.png?imageslim" alt="image.png" /></p>
+<p>注册应用要填的内容很少，除了应用名称，就是选择应用面向的微软账户类型了（一般选个人账户就行）；还有一个重定向URI是可选的，这个就是用来返回用户授权码的回调地址，也就是当微软用户对当前应用完成授权后会返回的一个地址（其中授权码会以<code>code=xxx</code>的形式放在路径中）。</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240523154248.png?imageslim" alt="image.png" /></p>
+<p>如果是像我这样纯个人使用，重定向URI填个<code>localhost</code>的地址就行，也能拿到授权码。</p>
+<h2 id="添加api权限"><a class="markdownIt-Anchor" href="#添加api权限"></a> 添加API权限</h2>
+<p>注册完应用后，需要添加该应用的具体要使用权限点，以便向用户进行授权申请。</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240523155020.png?imageslim" alt="image.png" /></p>
+<p><code>Onedrive</code>相关的<code>API</code>权限都放在<code>Microsoft Graph</code>分组中，直接在该分组中进行搜索查找即可。</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240523155451.png?imageslim" alt="image.png" /></p>
+<p>对于<code>Onedrive</code>来说，常用的权限无非就是文件的读写了，因此找到<code>Files</code>一栏，根据需要自己找到合适范围的读写权限点即可：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240523155840.png?imageslim" alt="image.png" /></p>
+<p>不过不难发现，这里的读写权限覆盖范围实际上是由小及大的，其中对于<code>Files.ReadWrite.AppFolder</code>这个权限点来说，它能对<code>Onedrive</code>的应用文件夹下拥有读写权限，这也是很多<code>Onedrive</code>第三方应用所选的权限点。</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240523160223.png?imageslim" alt="image.png" /></p>
+<p>除了读写权限，<code>Onedrive</code>应用还有一个权限也是经常要用到的，就是<code>offline_access</code>这个权限，该权限可以保证在授权完成后哪怕<strong>用户本身没有在线</strong>也可以使用进行授权的<code>API</code>对数据进行访问和操作。</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240523160526.png?imageslim" alt="image.png" /></p>
+<h2 id="创建客户端密码"><a class="markdownIt-Anchor" href="#创建客户端密码"></a> 创建客户端密码</h2>
+<p>在基于请求获取<code>access token</code>（访问令牌）和<code>refresh token</code>（刷新令牌）时，除了<code>auth code/refresh token</code>，还要加上客户端密码才能得到想要的<code>token</code>信息。当然，除了客户端密码这种形式，还可以用证书（秘钥）的形式进行<code>token</code>的获取<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>，理论上使用证书这种形式应该会更安全一点。</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240523161705.png?imageslim" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240523161740.png?imageslim" alt="image.png" /></p>
+<p>可以根据需要选择客户端密码的有效期，添加完后就会生成一个客户端密码，复制进行传参即可<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup>。</p>
+<h1 id="授权流程"><a class="markdownIt-Anchor" href="#授权流程"></a> 授权流程</h1>
+<p>当应用注册以及相关的应用配置都完成了后，就可以开始基于<code>API</code>进行<code>Onedrive</code>的相关操作了。不过由于所有的<code>API</code>操作都需要用到<code>access token</code>，所以需要先完成授权，而授权流程如下：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240523164301.png?imageslim" alt="image.png" /></p>
+<p>如图所示，先完成授权得到授权码，然后兑换授权码就可以得到最初的<code>access token</code>以及<code>refresh token</code>；由于<code>access token</code>只有一个小时的有效期，当<code>access token</code>失效后就可以兑换之前的<code>refresh token</code>得到新的<code>access token</code>和新的<code>refresh token</code>。因此完成授权后，理论上可以长期得到有效的<code>access token</code>，保证后续<code>API</code>的正常请求。</p>
+<h3 id="关于-tenant"><a class="markdownIt-Anchor" href="#关于-tenant"></a> 关于 tenant</h3>
+<p>上述获取授权码和令牌的接口中，有一个<code>tenant</code>的参数，实际上就跟应用申请的账户类型有关：</p>
+<ul>
+<li><code>common</code>：对应的账户类型为组织和个人账户</li>
+<li><code>organizations</code>：对应的账户类型为组织账户</li>
+<li><code>consumers</code>：对应的账户为个人账户</li>
+</ul>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240513172927.png?imageslim" alt="image.png" /></p>
+<p>举个例子，如果应用选择的账户类型为<strong>个人账户</strong>时，对应的授权接口地址如下：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize">https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize</a></li>
+</ul>
+<p>如果传错了<code>tenant</code>（也就是用错了请求地址），则会得到如下的接口报错：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">The request is not valid for the application&#x27;s &#x27;userAudience&#x27; configuration. In order to use /common/ endpoint, the application must not be configured with &#x27;Consumer&#x27; as the user audience. The userAudience should be configured with &#x27;All&#x27; to use /common/ endpoint.</span><br></pre></td></tr></table></figure>
+<h1 id="onedrive-api"><a class="markdownIt-Anchor" href="#onedrive-api"></a> Onedrive API</h1>
+<p><code>Onedrive API</code>的本质就是对<code>DriveItems</code>进行操作，因此只需要查看<code>DriveItems</code>列出的<a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-cn/onedrive/developer/rest-api/resources/driveitem?view=odsp-graph-online#methods">API列表</a>即可，根据需要自行索引。如果只是访问用户的存储空间，那么对应的接口<code>Base URL</code><sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup>如下：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://graph.microsoft.com/v1.0/me">https://graph.microsoft.com/v1.0/me</a></li>
+</ul>
+<p>然后根据<code>API</code>列表给出的相对路径进行拼接即可得到完整的请求地址：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240523171031.png?imageslim" alt="image.png" /></p>
+<h2 id="文件访问的方式"><a class="markdownIt-Anchor" href="#文件访问的方式"></a> 文件访问的方式</h2>
+<p>如果要访问具体的文件或文件夹，有两种方式：</p>
+<ul>
+<li>一种是通过<code>item-id</code>进行访问，即<code>/drive/items/&#123;item-id&#125;</code></li>
+<li>而另一种就很符合直觉，即通过文件的绝对路径进行访问，<code>/drive/root:/path/to/file</code></li>
+</ul>
+<p>虽然很多接口都只列出了<code>item-id</code>形式的<code>API</code>地址，不过实测使用文件的绝对路径方式也能正常请求，因此我个人采用的事基于文件路径的形式进行接口请求。举个例子，如果在<code>Onedrive</code>存储空间下有个<code>xxx</code>文件夹，<code>xxx</code>文件夹中有个<code>test.md</code>的文件，那么下载该文件的请求地址为：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://graph.microsoft.com/v1.0/me/drive/root:/xxx/test.md:/content">https://graph.microsoft.com/v1.0/me/drive/root:/xxx/test.md:/content</a></li>
+</ul>
+<h3 id="access-token-的使用"><a class="markdownIt-Anchor" href="#access-token-的使用"></a> access token 的使用</h3>
+<p>对接过使用<code>JWT</code>的接口的人对这套流程应该很熟悉了，就是在请求头里加上一个<code>Authorization</code>头：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Authorization</span>: <span class="string">`bearer <span class="subst">$&#123;accessToken&#125;</span>`</span></span><br></pre></td></tr></table></figure>
+<h1 id="常见接口错误"><a class="markdownIt-Anchor" href="#常见接口错误"></a> 常见接口错误</h1>
+<h2 id="idx14100-jwt-is-not-well-formed"><a class="markdownIt-Anchor" href="#idx14100-jwt-is-not-well-formed"></a> IDX14100: JWT is not well formed</h2>
+<p>这个错误实际上是使用过期的<code>access token</code>进行接口请求时发出的错误信息<sup class="footnote-ref"><a href="#fn5" id="fnref5">[5]</a></sup>，然而这个错误信息很不准确，乍一看还以为<code>JWT</code>的问题。</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240513193658.png?imageslim" alt="image.png" /></p>
+<p>为了避免使用到过期的<code>access token</code>，我的做法是每次进行<code>API</code>请求前都使用<code>refresh token</code>得到一个新的<code>access token</code>，当然实际应用不推荐这么做，毕竟我这调用<code>API</code>的频率比较低🙈。</p>
+<h1 id="参考文档"><a class="markdownIt-Anchor" href="#参考文档"></a> 参考文档</h1>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-cn/entra/identity-platform/v2-oauth2-auth-code-flow">微软身份平台和 OAuth 2.0 授权代码流 - Microsoft identity platform | Microsoft Learn</a> 使用授权码、<code>access token</code>以及<code>refresh token</code>的流程</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/remotely-save/remotely-save/blob/master/src/fsOnedrive.ts#L56">remotely-save/src/fsOnedrive.ts at master · remotely-save/remotely-save</a> 需要的<code>onedrive</code>权限可以参考这里，但是这里使用了<code>App</code>文件夹下的读写权限</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/dkatavic/onedrive-api?tab=readme-ov-file#itemsupdate">dkatavic/onedrive-api: OneDrive API module for Node.js</a></li>
+<li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-cn/onedrive/developer/rest-api/resources/driveitem?view=odsp-graph-online">DriveItem - OneDrive API - OneDrive dev center | Microsoft Learn</a> <code>DriveItem</code>是<code>onedrive</code>的操作对象，涉及到很多种动作</li>
+<li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-cn/onedrive/developer/rest-api/getting-started/app-registration?view=odsp-graph-online">使用 Microsoft Graph 创建应用 - OneDrive API - OneDrive dev center | Microsoft Learn</a> 使用<code>Onedrive API</code>前需要创建一个应用（以便进行授权）</li>
+</ul>
+<hr class="footnotes-sep" />
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-cn/onedrive/developer/rest-api/getting-started/app-registration?view=odsp-graph-online#register-your-app-with-microsoft">https://learn.microsoft.com/zh-cn/onedrive/developer/rest-api/getting-started/app-registration?view=odsp-graph-online#register-your-app-with-microsoft</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-cn/entra/identity-platform/v2-oauth2-auth-code-flow#request-an-access-token-with-a-certificate-credential">https://learn.microsoft.com/zh-cn/entra/identity-platform/v2-oauth2-auth-code-flow#request-an-access-token-with-a-certificate-credential</a> <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-cn/entra/identity-platform/v2-oauth2-auth-code-flow#request-an-access-token-with-a-client_secret">https://learn.microsoft.com/zh-cn/entra/identity-platform/v2-oauth2-auth-code-flow#request-an-access-token-with-a-client_secret</a> <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-cn/onedrive/developer/rest-api/?view=odsp-graph-online#microsoft-graph-root-resources">https://learn.microsoft.com/zh-cn/onedrive/developer/rest-api/?view=odsp-graph-online#microsoft-graph-root-resources</a> <a href="#fnref4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/answers/questions/1382499/invalidauthenticationtoken-with-https-graph-micros">InvalidAuthenticationToken with https://graph.microsoft.com/v1.0/me/calendar/events - Microsoft Q&amp;A</a> <a href="#fnref5" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/using-onedrive-api/" title="Onedrive API的使用">https://note.xiexuefeng.cc/post/using-onedrive-api/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Onedrive/" rel="tag"># Onedrive</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/vue-app-performance-enhancement-record/" rel="prev" title="某Vue应用页面性能优化实录">
+                  <i class="fa fa-chevron-left"></i> 某Vue应用页面性能优化实录
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/certimate-ssl-certificate-auto-update/" rel="next" title="基于certimate自动化更新免费SSL证书">
+                  基于certimate自动化更新免费SSL证书 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/using-onedrive-api/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/using-onedrive-api/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

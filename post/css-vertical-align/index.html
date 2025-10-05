@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 关于vertical-align属性被用得最多的场景就是用于对一些内联元素的垂直居中显示，然而事情永远不是我们想的那样简单，给了一个middle就能永远如我们所愿，很多时候基本就会发现图片和文字压根就没有垂直居中对齐……这个时候基本上都不知道为啥，试了一些其他属性值之后如果未果那么基本上就会用上flex布局暴力居中了，我一般就是这样做的 ￣□￣｜｜。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于vertical-align属性">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/css-vertical-align/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 关于vertical-align属性被用得最多的场景就是用于对一些内联元素的垂直居中显示，然而事情永远不是我们想的那样简单，给了一个middle就能永远如我们所愿，很多时候基本就会发现图片和文字压根就没有垂直居中对齐……这个时候基本上都不知道为啥，试了一些其他属性值之后如果未果那么基本上就会用上flex布局暴力居中了，我一般就是这样做的 ￣□￣｜｜。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200321124522.jpg?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200321124549.jpg?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200321124616.jpg?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200321124635.jpg?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200321124653.jpg?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200321124707.jpg?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200321124723.jpg?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200321124741.jpg?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200321124757.jpg?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200321124811.jpg?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200321124831.jpg?imageslim">
+<meta property="article:published_time" content="2020-03-21T04:48:50.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.870Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="css">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20200321124522.jpg?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/css-vertical-align/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/css-vertical-align/","path":"post/css-vertical-align/","title":"关于vertical-align属性"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>关于vertical-align属性 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#vertical-align%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="nav-number">2.</span> <span class="nav-text"> vertical-align的作用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E4%BA%8E%E5%86%85%E8%81%94%E5%85%83%E7%B4%A0"><span class="nav-number">2.1.</span> <span class="nav-text"> 对于内联元素</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5"><span class="nav-number">2.2.</span> <span class="nav-text"> 相关概念</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E7%BA%BF%E5%92%8C-x-%E9%AB%98%E5%BA%A6"><span class="nav-number">2.2.1.</span> <span class="nav-text"> 基线和 x 高度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#inline-boxes-%E5%92%8C-line-boxes"><span class="nav-number">2.2.2.</span> <span class="nav-text"> inline boxes 和 line boxes</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#vertical-align%E7%9A%84%E5%B1%9E%E6%80%A7%E5%80%BC"><span class="nav-number">2.3.</span> <span class="nav-text"> vertical-align的属性值</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AF%B9%E9%BD%90%E5%AF%B9%E8%B1%A1%E4%B8%BA%E7%88%B6%E5%85%83%E7%B4%A0"><span class="nav-number">2.3.1.</span> <span class="nav-text"> 对齐对象为父元素</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E-inline-box"><span class="nav-number">2.3.2.</span> <span class="nav-text"> 关于 inline box</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E6%B2%A1%E6%9C%89%E5%9F%BA%E7%BA%BF%E7%9A%84%E5%85%83%E7%B4%A0"><span class="nav-number">2.3.3.</span> <span class="nav-text"> 关于没有基线的元素</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E-content-area-%E5%8F%8A%E5%85%B6%E9%A1%B6%E9%83%A8%E4%BD%8D%E7%BD%AE"><span class="nav-number">2.3.4.</span> <span class="nav-text"> 关于 content area 及其顶部位置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AF%B9%E9%BD%90%E5%AF%B9%E8%B1%A1%E4%B8%BA-line-box"><span class="nav-number">2.3.5.</span> <span class="nav-text"> 对齐对象为 line box</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E-line-box-%E5%8F%8A%E5%85%B6%E9%AB%98%E5%BA%A6"><span class="nav-number">2.3.6.</span> <span class="nav-text"> 关于 line box 及其高度</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E4%BA%8E%E5%8D%95%E5%85%83%E6%A0%BC%E5%85%83%E7%B4%A0"><span class="nav-number">2.4.</span> <span class="nav-text"> 对于单元格元素</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B9%BD%E7%81%B5%E7%A9%BA%E7%99%BD%E8%8A%82%E7%82%B9"><span class="nav-number">3.</span> <span class="nav-text"> （幽灵）空白节点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A9%BA%E7%99%BD%E8%8A%82%E7%82%B9%E7%9A%84%E6%9D%A5%E6%BA%90"><span class="nav-number">3.1.</span> <span class="nav-text"> 空白节点的来源</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A9%BA%E7%99%BD%E8%8A%82%E7%82%B9%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="nav-number">3.2.</span> <span class="nav-text"> 空白节点的影响</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AF%BC%E8%87%B4%E5%9B%BE%E7%89%87%E4%B8%8D%E8%83%BD%E6%AD%A3%E5%B8%B8%E5%B1%85%E4%B8%AD"><span class="nav-number">3.2.1.</span> <span class="nav-text"> 导致图片不能正常居中</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E5%AE%83%E9%97%AE%E9%A2%98"><span class="nav-number">4.</span> <span class="nav-text"> 其它问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%BE%E6%A0%87%E5%92%8C%E6%96%87%E5%AD%97%E4%B8%8D%E8%83%BD%E5%9E%82%E7%9B%B4%E5%B1%85%E4%B8%AD%E5%AF%B9%E9%BD%90"><span class="nav-number">4.1.</span> <span class="nav-text"> 图标和文字不能垂直居中对齐</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BD%95%E4%BF%AE%E6%94%B9%E5%AF%B9%E9%BD%90%E6%96%B9%E5%BC%8F%E4%BC%9A%E5%AF%BC%E8%87%B4line-box%E5%9F%BA%E7%BA%BF%E4%BD%8D%E7%BD%AE%E5%8F%98%E5%8C%96"><span class="nav-number">4.2.</span> <span class="nav-text"> 为何修改对齐方式会导致line box基线位置变化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8E%E8%AF%9D"><span class="nav-number">5.</span> <span class="nav-text"> 后话</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3"><span class="nav-number">6.</span> <span class="nav-text"> 参考文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/css-vertical-align/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="关于vertical-align属性 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          关于vertical-align属性
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-03-21 12:48:50" itemprop="dateCreated datePublished" datetime="2020-03-21T12:48:50+08:00">2020-03-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A2%E7%B4%A2/" itemprop="url" rel="index"><span itemprop="name">探索</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p>关于<code>vertical-align</code>属性被用得最多的场景就是用于对一些内联元素的<strong>垂直居中</strong>显示，然而事情永远不是我们想的那样简单，给了一个<code>middle</code>就能永远如我们所愿，很多时候基本就会发现图片和文字压根就没有垂直居中对齐……这个时候基本上都不知道为啥，<strong>试了一些其他属性值之后如果未果</strong>那么基本上就会用上<code>flex</code>布局暴力居中了，我一般就是这样做的 ￣□￣｜｜。</p>
+<span id="more"></span>
+<h2 id="vertical-align的作用"><a class="markdownIt-Anchor" href="#vertical-align的作用"></a> vertical-align的作用</h2>
+<h3 id="对于内联元素"><a class="markdownIt-Anchor" href="#对于内联元素"></a> 对于内联元素</h3>
+<blockquote>
+<p>内联元素包括<code>display: inline</code>、<code>display: inline-*</code>和匿名内联元素（如文本节点等）；</p>
+</blockquote>
+<p><code>vertical-align</code>可以设置内联元素与其<strong>容器元素</strong>（父元素或<code>line boxes</code>）在<strong>垂直方向的对齐方式</strong>；要理解对齐方式，首先要理解以下几个概念：</p>
+<ul>
+<li>基线</li>
+<li><code>x</code>高度</li>
+<li><code>inline boxes</code></li>
+<li><code>line box</code></li>
+</ul>
+<h3 id="相关概念"><a class="markdownIt-Anchor" href="#相关概念"></a> 相关概念</h3>
+<h4 id="基线和-x-高度"><a class="markdownIt-Anchor" href="#基线和-x-高度"></a> 基线和 x 高度</h4>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200321124522.jpg?imageslim" alt="img" /></p>
+<p>可以看一下维基百科的一张图<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>，一目了然；<code>x</code>高度指的就是小写字母<code>x</code>的高度，而基线指的就是小写字母<code>x</code>的<strong>底部边缘处</strong>；这张图的其他概念也扩展一下：</p>
+<ul>
+<li><code>ascent</code>：升部；即高于小写<code>x</code>字母以上的部分；</li>
+<li><code>ascent height</code>：升部高度；某个字符位于升部区域的高度；</li>
+<li><code>descent</code>：降部；即低于小写<code>x</code>字母以下的部分；</li>
+<li><code>descent height</code>：降部高度；某个字符位于降部区域的高度；</li>
+</ul>
+<h4 id="inline-boxes-和-line-boxes"><a class="markdownIt-Anchor" href="#inline-boxes-和-line-boxes"></a> inline boxes 和 line boxes</h4>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200321124549.jpg?imageslim" alt="img" /></p>
+<p>这里借用张老师的一张图<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>，也是一目了然；</p>
+<ul>
+<li>
+<p><code>inline box</code>：其实就是各种内联元素外面包裹的一层盒子，其高度与<code>font-size</code>和<code>line-height</code>有关；</p>
+</li>
+<li>
+<p><code>line box</code>：顾名思义，指的就是一行内联元素所包裹的盒子，可以包含多个<code>inline box</code>。可以用鼠标选中内联元素，高亮的区域的高度就是其对应的<code>line box</code>的高度。</p>
+</li>
+</ul>
+<h3 id="vertical-align的属性值"><a class="markdownIt-Anchor" href="#vertical-align的属性值"></a> vertical-align的属性值</h3>
+<p><code>vertical-align</code>的对齐对象有两类，因此属性值作用的对象也有两类，一类是<strong>父元素</strong>，一类是<code>line boxes</code>（即每一行）；</p>
+<h4 id="对齐对象为父元素"><a class="markdownIt-Anchor" href="#对齐对象为父元素"></a> 对齐对象为父元素</h4>
+<blockquote>
+<p>The following values only have meaning with respect to a parent <strong>inline element</strong>, or to the <strong>strut</strong> of a parent block container element.<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup></p>
+</blockquote>
+<ul>
+<li><code>baseline</code>：<strong>默认值</strong>，使内联元素盒子（<code>inline box</code>，下同）基线与父元素的基线对齐；不过父元素的基线位置有多种情况，需要单独说明；</li>
+<li><code>middle</code>：使内联元素盒子的中线与父元素基线向上<code>0.5</code>个<code>x</code>高度的位置对齐；很明显，我们平时把<code>middle</code>理解为内联元素的中线与父元素的中线对齐<font color=red><strong>是错误的</strong></font>！</li>
+<li><code>text-top</code>：使内联元素盒子的顶部与父元素<code>content area</code>的顶部对齐；</li>
+<li><code>text-bottom</code>：使内联元素盒子的底部与父元素<code>content area</code>的底部对齐；</li>
+<li><code>sub</code>：使内联元素盒子的基线与父元素的<strong>下标基线</strong>对齐；</li>
+<li><code>super</code>：使内联元素盒子的基线与父元素的<strong>上标基线</strong>对齐；</li>
+<li><code>&lt;length&gt;</code>：使内联元素盒子的基线与父元素基线向上给定长度的位置对齐；<strong>可以为负值</strong>，负值则代表基线向下给定长度的位置；</li>
+<li><code>&lt;percentage&gt;</code>：与<code>&lt;length&gt;</code>同理，百分比相对的是内联元素的<code>line-height</code>；</li>
+</ul>
+<h4 id="关于-inline-box"><a class="markdownIt-Anchor" href="#关于-inline-box"></a> 关于 inline box</h4>
+<p>这里内联盒子的范围可以参考<code>W3C</code>的官方定义：</p>
+<blockquote>
+<p>In the following definitions, for inline non-replaced elements, the box used for alignment is the box whose height is the ‘line-height’ (containing the box’s glyphs and the half-leading on each side, see above). For all other elements, the box used for alignment is the margin box.<sup class="footnote-ref"><a href="#fn3" id="fnref3:1">[3:1]</a></sup></p>
+</blockquote>
+<p>简言之，对不可替换元素，这个<code>inline box</code>的高度就是<code>line-height</code>；反之则是<code>margin-box</code>；</p>
+<blockquote>
+<p>On a block container element whose content is composed of inline-level elements, ‘line-height’ specifies the minimal height of line boxes within the element. The minimum height consists of a minimum height above the baseline and a minimum depth below it, exactly as if each line box starts with a zero-width inline box with the element’s font and line height properties. We call that imaginary box a “strut.”<sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup></p>
+</blockquote>
+<h4 id="关于没有基线的元素"><a class="markdownIt-Anchor" href="#关于没有基线的元素"></a> 关于没有基线的元素</h4>
+<p>对于<font color=red><strong>没有基线的元素</strong></font>来说，其基线用<code>margin-box</code>区域的底边缘来替代！然而对于表现形式为<font color=red><code>inline-block</code></font>的内联元素来说，其基线的确定要<strong>稍微特殊一点</strong>：当<code>inline-block</code>元素内部没有任何内联子元素或者<code>overflow</code>的值不为<code>visible</code>时，其基线位置还是<code>margin-box</code>的底边缘，否则就是其内部最后一个<code>line box</code>的基线位置！</p>
+<blockquote>
+<p>The baseline of an ‘inline-block’ is <strong>the baseline of its last line box</strong> in the normal flow, <strong>unless</strong> it has either no in-flow line boxes or if its ‘overflow’ property has a computed value other than ‘visible’, <strong>in which case the baseline is the bottom margin edge</strong>.<sup class="footnote-ref"><a href="#fn3" id="fnref3:2">[3:2]</a></sup></p>
+</blockquote>
+<h4 id="关于-content-area-及其顶部位置"><a class="markdownIt-Anchor" href="#关于-content-area-及其顶部位置"></a> 关于 content area 及其顶部位置</h4>
+<p><code>content area</code>是什么？<code>content area</code>的顶部位置又是如何确定的？本来我也没想过深究这些，直到我准备查看一下<code>text-top</code>属性值的效果时，我简直一脸懵逼，不知道发生了什么……看个例子：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.demo</span> &#123;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">200px</span>;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">50px</span>;</span><br><span class="line">  <span class="attribute">line-height</span>: <span class="number">50px</span>;</span><br><span class="line">  <span class="attribute">background-color</span>: lightcyan;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.pic</span> &#123;</span><br><span class="line">  <span class="attribute">vertical-align</span>: text-top;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;demo&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">img</span> <span class="attr">class</span>=<span class="string">&quot;pic&quot;</span> <span class="attr">src</span>=<span class="string">&quot;https://placekitten.com/40/40&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200321124616.jpg?imageslim" alt="img" /></p>
+<p>很明显<code>&lt;img&gt;</code>的对齐区域应该是其<code>margin-box</code>，那么为何其父元素的<code>content area</code>的顶部不是<code>&lt;div&gt;</code>的顶部？可能的解释就是，其对齐的父元素不是外层的<code>&lt;div&gt;</code>，而是<code>line box</code>！那么如何确定<code>line box</code>的<code>content area</code>？</p>
+<p>关于<code>content area</code>的高度，<code>W3C</code>有这么一段说明：</p>
+<blockquote>
+<p>The <strong>height of the content area</strong> should be based on the font, but this specification does not specify how. A UA may, e.g., use the em-box or <strong>the maximum ascender and descender of the font</strong>.<sup class="footnote-ref"><a href="#fn3" id="fnref3:3">[3:3]</a></sup></p>
+</blockquote>
+<p>据我观察，谷歌浏览和火狐浏览器应该都是采用了字体的最大升部高度和最大降部高度组成高度；即：</p>
+<blockquote>
+<p><code>content area height</code> = <code>x</code>高度 + 最大升部高度 + 最大降部高度</p>
+</blockquote>
+<p>因为这个<code>line box</code>的顶部位置正好可以通过<code>line-height - font-size * 1.4</code>计算得到（这个<code>1.4</code>根据具体字体可能有差异）；</p>
+<p>当<code>content area</code>的高度小于<code>line box</code>的高度时，那么<code>line box</code>的<code>content area</code>顶部就是：</p>
+<blockquote>
+<p><code>line box height</code> - <code>content area height</code></p>
+</blockquote>
+<p>反之，那么<code>line box</code>的<code>content area</code>顶部就是<code>line-box</code>的顶部；</p>
+<p>可以利用上面的公式大概计算一下，怎样可以使得上述的<code>text-top</code>能够对齐到<code>&lt;div&gt;</code>的顶部，即<code>line box</code>的<code>content area</code>的高度等于<code>line-height</code>；由于<code>line-height</code>设置为<code>50px</code>，所以推出<code>font-size</code>为<code>50/1.4</code>，约等于<code>36px</code>；看下<code>font-size</code>为<code>36px</code>的情况：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200321124635.jpg?imageslim" alt="img" /></p>
+<p>差不多就是这个逻辑；</p>
+<h4 id="对齐对象为-line-box"><a class="markdownIt-Anchor" href="#对齐对象为-line-box"></a> 对齐对象为 line box</h4>
+<ul>
+<li><code>top</code>：内联元素<strong>及其后代</strong>的顶部与<code>line box</code>的顶部对齐；</li>
+<li><code>bottom</code>：内联元素<strong>及其后代</strong>的底部与<code>line box</code>的底部对齐；</li>
+</ul>
+<p>除了上面的简单定义，<code>W3C</code>的规范里还提到了一点：</p>
+<blockquote>
+<p>The inline-level boxes are aligned vertically according to their ‘vertical-align’ property. In case they are aligned <strong>‘top’ or ‘bottom’</strong>, they must <strong>be aligned so as to minimize the line box height</strong>. <sup class="footnote-ref"><a href="#fn5" id="fnref5">[5]</a></sup></p>
+</blockquote>
+<p>也就是说，使用<code>top</code>和<code>bottom</code>对齐时，会使得<code>line box</code>的高度保持在尽量小的程度；而<code>line box</code>的<font color=red>最小高度</font>就是<code>line-height</code>，这一点规范上也有说明：</p>
+<blockquote>
+<p>On a block container element whose content is composed of inline-level elements, <strong>‘line-height’ specifies the minimal height</strong> of line boxes within the element<sup class="footnote-ref"><a href="#fn4" id="fnref4:1">[4:1]</a></sup></p>
+</blockquote>
+<h4 id="关于-line-box-及其高度"><a class="markdownIt-Anchor" href="#关于-line-box-及其高度"></a> 关于 line box 及其高度</h4>
+<p>关于<code>line box</code>，<code>W3C</code>有这么一段定义：</p>
+<blockquote>
+<p>In an inline formatting context, boxes are laid out horizontally, one after the other, beginning at the top of a containing block. Horizontal margins, borders, and padding are respected between these boxes. The boxes may be aligned vertically in different ways: their bottoms or tops may be aligned, or the baselines of text within them may be aligned. <strong>The rectangular area that contains the boxes that form a line is called a line box.</strong><sup class="footnote-ref"><a href="#fn6" id="fnref6">[6]</a></sup></p>
+</blockquote>
+<p>简言之，就是<strong>每一行</strong>上包裹这一行内所有<code>inline box</code>的那个区域就是<code>line box</code>；而<code>line box</code>的高度则是由其内部<strong>最靠上</strong>的<code>inline box</code>顶部到<strong>最靠下</strong>的<code>inline box</code>底部之间的距离（因为可能各个<code>inline box</code>之间的高度和垂直对齐方式不一致）：</p>
+<blockquote>
+<p>The height of a line box is determined as follows:</p>
+<ol>
+<li>…</li>
+<li>…</li>
+<li>The line box height is <strong>the distance between the uppermost box top and the lowermost box bottom</strong>. (This includes the strut, as explained under ‘line-height’ below.)<sup class="footnote-ref"><a href="#fn5" id="fnref5:1">[5:1]</a></sup></li>
+</ol>
+</blockquote>
+<h3 id="对于单元格元素"><a class="markdownIt-Anchor" href="#对于单元格元素"></a> 对于单元格元素</h3>
+<blockquote>
+<p>单元格元素包括<code>&lt;td&gt;</code>及<code>display: table-cell</code>的元素；</p>
+</blockquote>
+<p><code>vertical-align</code>除了可以设置内联元素的垂直对齐方式外，还能用于设置单元格的垂直对齐方式，其属性值有：</p>
+<ul>
+<li><code>baseline</code>：使单元格的基线与当前行中<strong>其它所有以基线对齐方式</strong>的单元格的基线对齐；</li>
+<li><code>top</code>：使单元格的<code>padding-box</code>的顶边缘与当前行的顶部对齐；</li>
+<li><code>bottom</code>：使单元格的<code>padding-box</code>的底边缘与当前行的底部对齐；</li>
+<li><code>middle</code>：使单元格的<code>padding-box</code>居中；</li>
+</ul>
+<h2 id="幽灵空白节点"><a class="markdownIt-Anchor" href="#幽灵空白节点"></a> （幽灵）空白节点</h2>
+<p><strong>空白节点的特征</strong>就是：本身是一个<code>inline box</code>，宽度为<code>0</code>，但是具有（<strong>继承</strong>）<code>font</code>和<code>line-height</code>属性；因此空白节点本身是看不见的。关于这种空白节点，貌似找不到很明显的官方定义；张老师把这种空白节点称之为“幽灵空白节点”，因为这些空白节点都是无意或者<code>html</code>在解析的过程中自动产生的，且不能直接控制，所以谓之“幽灵”。</p>
+<p>理解空白节点的存在对于弄清楚之前使用<code>vertical-align: middle</code>等属性值为何不生效（或者不符合预期）是必须的。</p>
+<h3 id="空白节点的来源"><a class="markdownIt-Anchor" href="#空白节点的来源"></a> 空白节点的来源</h3>
+<p>大致有两处来源：</p>
+<ul>
+<li>
+<p>标签后面<strong>换行符</strong>或<strong>空格</strong>产生的；如：</p>
+  <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.demo</span> &#123;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">200px</span>;</span><br><span class="line">  <span class="attribute">background-color</span>: lightcyan;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.pic</span> &#123;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">40px</span>;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">40px</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;demo&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">img</span> <span class="attr">class</span>=<span class="string">&quot;pic&quot;</span> <span class="attr">src</span>=<span class="string">&quot;https://placekitten.com/40/40&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200321124653.jpg?imageslim" alt="img" /></p>
+<p>可以看到图片底部留有空隙，空隙产生的原因就是<code>&lt;img&gt;</code>后面进行了换行，因此<code>html</code>解析后多出一个空白节点；空白节点虽然宽度为<code>0</code>，但是继承了<code>line-height</code>属性，因此其高度就是<code>line-height</code>，所以<code>&lt;img&gt;</code>元素的<code>margin-box</code>底部会与空白节点的<code>inline box</code>基线进行对齐！</p>
+</li>
+<li>
+<p><code>line box</code>内部默认第一个<code>inline box</code>就是空白节点；</p>
+<blockquote>
+<p>exactly as if <strong>each line box starts with a zero-width inline box</strong> with the element’s font and line height properties. We call that imaginary box a <strong>“strut”</strong><sup class="footnote-ref"><a href="#fn4" id="fnref4:2">[4:2]</a></sup></p>
+</blockquote>
+<p><code>W3C</code>把这种空白节点称之为“<strong>strut</strong>”，意为“支柱”；可能是撑起行高的作用。</p>
+</li>
+</ul>
+<h3 id="空白节点的影响"><a class="markdownIt-Anchor" href="#空白节点的影响"></a> 空白节点的影响</h3>
+<h4 id="导致图片不能正常居中"><a class="markdownIt-Anchor" href="#导致图片不能正常居中"></a> 导致图片不能正常居中</h4>
+<p>有时候我们可能想使用<code>line-height</code>等于<code>height</code>加上<code>vertical-align: middle</code>使图片在某区域中垂直居中这种套路，结果发现图片总是中间偏下一点：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.demo</span> &#123;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">200px</span>;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">50px</span>;</span><br><span class="line">  <span class="attribute">background-color</span>: lightcyan;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.pic</span> &#123;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">30px</span>;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">30px</span>;</span><br><span class="line">  <span class="attribute">vertical-align</span>: middle;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;demo&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">img</span> <span class="attr">class</span>=<span class="string">&quot;pic&quot;</span> <span class="attr">src</span>=<span class="string">&quot;https://placekitten.com/40/40&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200321124707.jpg?imageslim" alt="img" /></p>
+<p>这个就是空白节点捣的鬼，由于空白节点继承了<code>line-height</code>，进而有了基线位置，因此<code>line box</code>的基线位置就变了空白节点的基线位置，然而字体基线位置并不是在中线位置往下<code>0.5</code>个<code>x</code>高度的地方，而是更下一点的位置，也就是“<strong>基线下沉</strong>”。因此，此时基线往上<code>0.5</code>个<code>x</code>高度之后的位置并不是<code>inline box</code>的中线位置，而且偏下一些的位置；至于到底偏下多少，这取决于<strong>字体及字体大小</strong>。</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200321124723.jpg?imageslim" alt="img" /></p>
+<p>可以在<code>&lt;img&gt;</code>加上一个<code>x</code>来查看基线位置（可以当做“显形”的空白节点），蓝色框就是文本节点的<code>inline box</code>区域，可以看到基线位置明显偏下（<code>inline box</code>整体居中），因此<code>&lt;img&gt;</code>对齐的地方根本不是<code>inline box</code>的中线位置，所以就会偏下。</p>
+<p><strong>解决办法</strong>：虽然不能直接控制空白节点的样式，但是由于空白节点<strong>继承</strong><code>font</code>和<code>line-height</code>属性，所以可以操纵外层元素的<code>font-size</code>来影响空白节点的基线位置。设置外层<code>font-size: 0</code>，可以使得空白节点的<code>line-height</code>为<code>0</code>，因此其高度也为<code>0</code>，那么所有的“线”都重合了，处于<code>line box</code>的中线处，所以<code>&lt;img&gt;</code>此时对齐的位置就是<code>line box</code>的中线：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200321124741.jpg?imageslim" alt="img" /></p>
+<h2 id="其它问题"><a class="markdownIt-Anchor" href="#其它问题"></a> 其它问题</h2>
+<h3 id="图标和文字不能垂直居中对齐"><a class="markdownIt-Anchor" href="#图标和文字不能垂直居中对齐"></a> 图标和文字不能垂直居中对齐</h3>
+<p>同一行中，混有图标和文字时，若使父级元素的<code>height</code>等于<code>line-height</code>，图标高度也等同于父级元素的高度，但是可以看到文字并非和图片一样垂直居中，而是<strong>偏下</strong>一些。如：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.demo</span> &#123;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">200px</span>;</span><br><span class="line">  <span class="attribute">line-height</span>: <span class="number">20px</span>;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">20px</span>;</span><br><span class="line">  <span class="attribute">background-color</span>: lightcyan;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.pic</span> &#123;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">20px</span>;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">20px</span>;</span><br><span class="line">  <span class="attribute">vertical-align</span>: middle;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;demo&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">img</span> <span class="attr">class</span>=<span class="string">&quot;pic&quot;</span> <span class="attr">src</span>=<span class="string">&quot;./test.png&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span>&gt;</span>x开头的一段话<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200321124757.jpg?imageslim" alt="img" /></p>
+<p>可以分析一下，由于<code>vertical-align</code>的默认值就是<code>baseline</code>，因此图片和文字都是基线对齐其父元素，即外层<code>line box</code>的基线位置；从上图可以很明显看出，此时<code>line box</code>的基线位置就是<code>&lt;div&gt;</code>区域的底部边缘，因此文字基线就会对齐底部，而非想象中的居中。</p>
+<p>那么把对齐方式都改为<code>middle</code>又如何？</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200321124811.jpg?imageslim" alt="img" /></p>
+<p>显然，由于<strong>基线下沉</strong>的影响，文字对齐的位置会相对中间线偏下一点点。</p>
+<p><strong>解决办法</strong>：只需要将图标的对齐方式设置为<code>top</code>即可，此时图标和文字就会居中对齐：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200321124831.jpg?imageslim" alt="img" /></p>
+<p>因为<code>top</code>对齐会使得<code>line box</code>的高度保持在最低，此时由于<code>inline box</code>的高度都没有超过<code>line-height</code>，因此此时<code>line box</code>的高度就是<code>line-height</code>的高度。</p>
+<h3 id="为何修改对齐方式会导致line-box基线位置变化"><a class="markdownIt-Anchor" href="#为何修改对齐方式会导致line-box基线位置变化"></a> 为何修改对齐方式会导致line box基线位置变化</h3>
+<p>虽然可以说<code>x</code>底部边缘位置就是<code>line box</code>的基线所在位置，但是为何修改<code>inline box</code>的对齐方式会导致<code>line box</code>的基线位置发生改变？关键就在于如何确定<code>line box</code>的基线位置，然而要命的就是<code>CSS</code>规范里面竟然<font color=red><strong>没有定义</strong></font><code>line box</code>的基线位置！！！</p>
+<blockquote>
+<p>there are multiple solutions and CSS 2.1 <strong>does not define the position of the line box’s baseline</strong><sup class="footnote-ref"><a href="#fn5" id="fnref5:2">[5:2]</a></sup></p>
+</blockquote>
+<p>看到这里我突然觉得为啥围绕着竖直对齐为何会产生那么多说不清的地方了……因为很多对齐方式基本上都是根据<code>line box</code>的基线位置进行对齐，然而<code>line box</code>的基线位置居然没有官方定义。</p>
+<p><strong>？？？</strong></p>
+<p>然而实际上浏览器在实现渲染的时候，肯定会有关于<code>line box</code>基线位置的定义的，不过不知道该去哪里能找到这份定义，不然就一直在这个地方纠结不清了。</p>
+<h2 id="后话"><a class="markdownIt-Anchor" href="#后话"></a> 后话</h2>
+<p>为何使用<code>vertical-align</code>属性的时候会心里没底，查完那么多资料我终于明白了，因为牵扯到的规范实在是太多了！</p>
+<p>还有，这次之所以引用了那么多的<code>W3C</code>规范，是因为根据<code>MDN</code>的资料和网上一些文章压根不足以解答心中的疑惑。因此，去查看一手资料是最直接了当的方式，也免得道听途说误解了什么。不过这样查资料确实挺耗费时间的，但得到的收获也少不了。</p>
+<h2 id="参考文档"><a class="markdownIt-Anchor" href="#参考文档"></a> 参考文档</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.zhangxinxu.com/wordpress/2015/08/css-deep-understand-vertical-align-and-line-height/">CSS深入理解vertical-align和line-height的基友关系 « 张鑫旭-鑫空间-鑫生活</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.im/post/5e64ee1df265da573e6734ed">关于 vertical-align 你应该知道的一切 - 掘金</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.zhangxinxu.com/wordpress/2015/06/about-letter-x-of-css/">字母’x’在CSS世界中的角色和故事 « 张鑫旭-鑫空间-鑫生活</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/vertical-align">vertical-align - CSS（层叠样式表） | MDN</a></li>
+</ul>
+<hr class="footnotes-sep" />
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/X%E5%AD%97%E9%AB%98">X字高 - 维基百科，自由的百科全书</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://www.zhangxinxu.com/wordpress/2010/01/css-float%e6%b5%ae%e5%8a%a8%e7%9a%84%e6%b7%b1%e5%85%a5%e7%a0%94%e7%a9%b6%e3%80%81%e8%af%a6%e8%a7%a3%e5%8f%8a%e6%8b%93%e5%b1%95%e4%b8%80/">CSS float浮动的深入研究、详解及拓展(一) « 张鑫旭-鑫空间-鑫生活</a> <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://www.w3.org/TR/CSS2/visudet.html#propdef-vertical-align">https://www.w3.org/TR/CSS2/visudet.html#propdef-vertical-align</a> <a href="#fnref3" class="footnote-backref">↩︎</a> <a href="#fnref3:1" class="footnote-backref">↩︎</a> <a href="#fnref3:2" class="footnote-backref">↩︎</a> <a href="#fnref3:3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://www.w3.org/TR/CSS2/visudet.html#propdef-line-height">https://www.w3.org/TR/CSS2/visudet.html#propdef-line-height</a> <a href="#fnref4" class="footnote-backref">↩︎</a> <a href="#fnref4:1" class="footnote-backref">↩︎</a> <a href="#fnref4:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://www.w3.org/TR/CSS2/visudet.html#line-height">https://www.w3.org/TR/CSS2/visudet.html#line-height</a> <a href="#fnref5" class="footnote-backref">↩︎</a> <a href="#fnref5:1" class="footnote-backref">↩︎</a> <a href="#fnref5:2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn6" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://www.w3.org/TR/CSS2/visuren.html#inline-formatting">https://www.w3.org/TR/CSS2/visuren.html#inline-formatting</a> <a href="#fnref6" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/css-vertical-align/" title="关于vertical-align属性">https://note.xiexuefeng.cc/post/css-vertical-align/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/css/" rel="tag"># css</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/valueof-tostring-toprimitive/" rel="prev" title="关于valueOf、toString和[Symbol.toPrimitive]方法">
+                  <i class="fa fa-chevron-left"></i> 关于valueOf、toString和[Symbol.toPrimitive]方法
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/qiniu-sdk-upload/" rel="next" title="接入七牛云SDK上传文件">
+                  接入七牛云SDK上传文件 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/css-vertical-align/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/css-vertical-align/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

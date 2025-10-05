@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="基本概念  字符：在XML文档中，字符是指带有一个数字值的一个或多个字节，数字值与Unicode标准对应。例如，字母g是Unicode值为103的字符。 符号：符号（glyph）是指字符的视觉呈现。每个字符都可以用很多不同的符号来呈现。   一个符号可能由多个字符构成。一些字体为特定的字母组合（如fl和ff）准备了单独的符号，以使它们更好看，这种特性叫作“连字”（ligature）。有时候，一个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="svg之文本">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/svg-text/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="基本概念  字符：在XML文档中，字符是指带有一个数字值的一个或多个字节，数字值与Unicode标准对应。例如，字母g是Unicode值为103的字符。 符号：符号（glyph）是指字符的视觉呈现。每个字符都可以用很多不同的符号来呈现。   一个符号可能由多个字符构成。一些字体为特定的字母组合（如fl和ff）准备了单独的符号，以使它们更好看，这种特性叫作“连字”（ligature）。有时候，一个">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/180531/2JgFLIFaJI.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/180531/k7DKGDJdd5.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/180531/AmmD7e2JGA.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/180531/ALmfED4kAH.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/180531/5DaGeeH1dh.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/180531/B3i6GH6D48.png?imageslim">
+<meta property="article:published_time" content="2018-05-31T08:04:33.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.882Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="svg">
+<meta property="article:tag" content="note">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/180531/2JgFLIFaJI.png?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/svg-text/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/svg-text/","path":"post/svg-text/","title":"svg之文本"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>svg之文本 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text"> 基本概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B1%9E%E6%80%A7%E8%AE%BE%E7%BD%AE"><span class="nav-number">2.</span> <span class="nav-text"> 属性设置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E5%B1%9E%E6%80%A7"><span class="nav-number">2.1.</span> <span class="nav-text"> 基本属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E6%9C%AC%E6%96%B9%E5%90%91"><span class="nav-number">2.2.</span> <span class="nav-text"> 文本方向</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E6%9C%AC%E5%AF%B9%E9%BD%90"><span class="nav-number">2.3.</span> <span class="nav-text"> 文本对齐</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E6%9C%AC%E8%B7%AF%E5%BE%84"><span class="nav-number">2.4.</span> <span class="nav-text"> 文本路径</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E6%9C%AC%E9%95%BF%E5%BA%A6"><span class="nav-number">2.5.</span> <span class="nav-text"> 文本长度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tspan%E5%85%83%E7%B4%A0"><span class="nav-number">2.6.</span> <span class="nav-text"> tspan元素</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%8D%E7%BD%AE%E8%B0%83%E6%95%B4"><span class="nav-number">2.6.1.</span> <span class="nav-text"> 位置调整</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%98%E5%BD%A2"><span class="nav-number">2.6.2.</span> <span class="nav-text"> 变形</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3"><span class="nav-number">3.</span> <span class="nav-text"> 参考文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/svg-text/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="svg之文本 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          svg之文本
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-05-31 16:04:33" itemprop="dateCreated datePublished" datetime="2018-05-31T16:04:33+08:00">2018-05-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="基本概念"><a class="markdownIt-Anchor" href="#基本概念"></a> 基本概念</h2>
+<ul>
+<li><strong>字符</strong>：在<code>XML</code>文档中，字符是指带有一个数字值的一个或多个字节，数字值与<code>Unicode</code>标准对应。例如，字母<code>g</code>是<code>Unicode</code>值为<code>103</code>的字符。</li>
+<li><strong>符号</strong>：符号（<code>glyph</code>）是指字符的<font color=#39f><strong>视觉呈现</strong></font>。每个字符都可以用很多不同的符号来呈现。</li>
+</ul>
+<blockquote>
+<p>一个符号可能由多个字符构成。一些字体为特定的字母组合（如fl和ff）准备了单独的符号，以使它们更好看，这种特性叫作“连字”（ligature）。有时候，一个字符也可能由几个符号组合而成，比如打印程序可能会组合符号e和重音符号（ˊ）来打印字符é（Unicode 值为 233）。</p>
+</blockquote>
+<span id="more"></span>
+<ul>
+<li><strong>字体</strong>：字体是指代表某个<strong>字符集合</strong>的一组符号。</li>
+<li><strong>基线</strong>：字体中的所有符号以基线对齐。需要注意的是，<font color=red><strong>中文字体中的基线概念并没有西文字体那么明确</strong></font>。</li>
+</ul>
+<p><img src="https://pic.xiexuefeng.cc/markdown/180531/2JgFLIFaJI.png?imageslim" alt="mark" /></p>
+<ul>
+<li><strong>上坡度</strong>：基线到字体中最高字符顶部的距离称为上坡度（<code>ascent</code>）。</li>
+<li><strong>下坡度</strong>：基线到最深字符底部的距离称为下坡度（<code>descent</code>）。</li>
+<li><strong>em高度</strong>：字符的总高度为上坡度和下坡度之和，也称为em高度。</li>
+<li><strong>em box</strong>：指宽度为em高度的方块。</li>
+<li><strong>大写字母高度</strong>：大写字母高度（<code>cap-height</code>）是指基线上的大写字母的高度。</li>
+<li><strong>x高度</strong>：指基线到小写字母<code>x</code>顶部的高度。<strong>x 高度通常能比em高度更好地衡量一个字体的尺寸和可读性</strong>。</li>
+</ul>
+<h2 id="属性设置"><a class="markdownIt-Anchor" href="#属性设置"></a> 属性设置</h2>
+<h3 id="基本属性"><a class="markdownIt-Anchor" href="#基本属性"></a> 基本属性</h3>
+<p><code>svg</code>字体的基本属性与<code>css</code>的属性基本一致：</p>
+<ul>
+<li>font-family：</li>
+<li>font-size：</li>
+<li>font-weight：</li>
+<li>font-style：</li>
+<li>text-decoration：</li>
+<li>word-spacing：</li>
+<li>letter-spacing：</li>
+</ul>
+<h3 id="文本方向"><a class="markdownIt-Anchor" href="#文本方向"></a> 文本方向</h3>
+<p>可以通过<code>writing-mode</code>属性（<code>css3</code>中也有这个属性）来设置文本排列的方向，如从右往左，从上往下等等；不过在svg中<code>writing-mode</code>属性使用的选项值是按照<code>IE</code>的规则：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-ms-<span class="attribute">writing-mode</span>: lr-tb | rl-tb | tb-rl | bt-rl | tb-lr | bt-lr | lr-bt | rl-bt | lr | rl | tb</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/180531/k7DKGDJdd5.png?imageslim" alt="mark" /></p>
+<p>不过在实际使用中这些属性值貌似不是每一个都被支持，只有<code>tb</code>（<code>top to bottom</code>，纵向排列）是被支持的：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/180531/AmmD7e2JGA.png?imageslim" alt="mark" /></p>
+<h3 id="文本对齐"><a class="markdownIt-Anchor" href="#文本对齐"></a> 文本对齐</h3>
+<p>可以通过设置<code>&lt;text&gt;</code>元素的<code>x</code>，<code>y</code>属性来确定文本的起点位置，而根据不同的对齐方式，字体符号所呈现的方式有所不同；可以通过<code>text-anchor</code>属性来设置文本与起点坐标的关系，<code>text-anchor</code>属性有以下几个选项：</p>
+<ul>
+<li><strong>start（默认值）</strong>：以文本从左往右排列为例，<code>x</code>表示该文本第一个符号的<code>em box</code>的左侧位置，而<code>y</code>表示基线位置；</li>
+<li><strong>middle</strong>：同理，<code>x</code>表示该文本的水平中点位置，而<code>y</code>表示基线位置；</li>
+<li><strong>end</strong>：<code>x</code>表示该文本最后一个符号的<code>em box</code>的右侧位置，而<code>y</code>表示基线位置；</li>
+</ul>
+<p><img src="https://pic.xiexuefeng.cc/markdown/180531/ALmfED4kAH.png?imageslim" alt="mark" /></p>
+<h3 id="文本路径"><a class="markdownIt-Anchor" href="#文本路径"></a> 文本路径</h3>
+<p>通过在<code>&lt;text&gt;</code>元素内使用<code>&lt;textPath&gt;</code>元素可以为文字指定一条<code>path</code>，并按照<code>path</code>的形状进行文字排列；使用方法如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">path</span> <span class="attr">d</span>=<span class="string">&quot;M100 200h150 v100&quot;</span> <span class="attr">id</span>=<span class="string">&quot;pathID&quot;</span> <span class="attr">fill</span>=<span class="string">&quot;none&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">path</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">text</span>&gt;</span><span class="tag">&lt;<span class="name">textPath</span> <span class="attr">xlink:href</span>=<span class="string">&quot;#pathID&quot;</span>&gt;</span>一段文字<span class="tag">&lt;/<span class="name">textPath</span>&gt;</span><span class="tag">&lt;/<span class="name">text</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这样<code>textPath</code>内包含的文字就会按照所指定的<code>#pathID</code>路径进行排列，这里既可以指定定义在<code>&lt;defs&gt;</code>内的路径，也可以是实际出现过的路径；<font color=red><strong>需要注意的是只能是<code>&lt;path&gt;</code>元素所定义的路径，像诸如<code>&lt;rect&gt;</code>这样的基本形状是不能被指定为路径的</strong></font>！</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/180531/5DaGeeH1dh.png?imageslim" alt="mark" /></p>
+<h3 id="文本长度"><a class="markdownIt-Anchor" href="#文本长度"></a> 文本长度</h3>
+<p>在<code>&lt;text&gt;</code>元素内文本并不会由于超过某一长度就会自动换行，也无法事先知道文本的终点在哪，但是可以通过<code>textLength</code>来控制文字的总长度（若文字原长度超过总长度也会被『压缩』在总长度内），并通过<code>lengthAdjust</code>属性来设置文本符号之间的间距和符号自身的大小；<code>lengthAdjust</code>属性有以下选项：</p>
+<ul>
+<li>
+<p><strong>spacing（默认值）</strong>：只调整符号之间的间距，而不会改变符号本身的尺寸大小；因此当设置的<code>textLength</code>小于文本原有长度时，字符的间距为『负』，也就是会被挤压重叠到一块：</p>
+</li>
+<li>
+<p><strong>spacingAndGlyphs</strong>：间距和符号本身的大小一起调整，按比例缩放。</p>
+</li>
+</ul>
+<p><img src="https://pic.xiexuefeng.cc/markdown/180531/B3i6GH6D48.png?imageslim" alt="mark" /></p>
+<h3 id="tspan元素"><a class="markdownIt-Anchor" href="#tspan元素"></a> tspan元素</h3>
+<p><code>&lt;tspan&gt;</code>元素有点类似<code>html</code>中的行内元素<code>&lt;span&gt;</code>，可以用来对<code>&lt;text&gt;</code>内的一段文本进行单独调整；除了基本的文字样式之外，<code>&lt;tspan&gt;</code>元素还可以调整文本的位置和变形。</p>
+<h4 id="位置调整"><a class="markdownIt-Anchor" href="#位置调整"></a> 位置调整</h4>
+<ul>
+<li><strong>x，y</strong>：指定绝对位置坐标；</li>
+<li><strong>dx，dy</strong>：指定相对位置坐标；</li>
+</ul>
+<p>需要注意的是，<font color=red><strong>设置以上属性会影响该<code>&lt;tspan&gt;</code>后面的文本</strong></font>！</p>
+<ul>
+<li><strong>baseline-shift</strong>：调整文本符号的<font color=#36f><strong>基线位置</strong></font>，可以是一个长度值，也可以是<code>super</code>（上标）和<code>sub</code>（下标）；该属性只会对<code>&lt;tspan&gt;</code>内产生作用！</li>
+</ul>
+<h4 id="变形"><a class="markdownIt-Anchor" href="#变形"></a> 变形</h4>
+<ul>
+<li><strong>rotate</strong>：对<code>&lt;tspan&gt;</code>内的每个文本符号进行旋转（单独地？），单位为<strong>度数</strong>。</li>
+</ul>
+<h2 id="参考文档"><a class="markdownIt-Anchor" href="#参考文档"></a> 参考文档</h2>
+<ol>
+<li><a target="_blank" rel="noopener" href="http://www.zhangxinxu.com/wordpress/2016/04/css-writing-mode/">改变CSS世界纵横规则的writing-mode属性 « 张鑫旭-鑫空间-鑫生活</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.ituring.com.cn/book/1542">《SVG精髓（第2版）》</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/svg-text/" title="svg之文本">https://note.xiexuefeng.cc/post/svg-text/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/svg/" rel="tag"># svg</a>
+              <a href="/tags/note/" rel="tag"># note</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/svg-gradient/" rel="prev" title="svg之渐变填充">
+                  <i class="fa fa-chevron-left"></i> svg之渐变填充
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/css-before-after/" rel="next" title="css3伪元素探究：before和after">
+                  css3伪元素探究：before和after <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/svg-text/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/svg-text/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

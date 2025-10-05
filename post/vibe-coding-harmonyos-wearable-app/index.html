@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="TLDR（省流版）  鸿蒙穿戴应用（即华为智能手表&#x2F;手环）应用开发的技术栈太小众了，再加上华为这块的开发文档过于混乱和黑箱（一点都不 open），所以 Vibe 不了一点，全是坑，只能各种手动调试代码来保证功能的可行性。 当然，即便如此，通过把鸿蒙穿戴应用开发的技术栈文档作为项目级别的知识库，Cursor 也能相对准确的辅助代码补全，提高这门小众技术栈开发的效率。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="当Vibe Coding遇上鸿蒙穿戴应用开发">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/vibe-coding-harmonyos-wearable-app/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="TLDR（省流版）  鸿蒙穿戴应用（即华为智能手表&#x2F;手环）应用开发的技术栈太小众了，再加上华为这块的开发文档过于混乱和黑箱（一点都不 open），所以 Vibe 不了一点，全是坑，只能各种手动调试代码来保证功能的可行性。 当然，即便如此，通过把鸿蒙穿戴应用开发的技术栈文档作为项目级别的知识库，Cursor 也能相对准确的辅助代码补全，提高这门小众技术栈开发的效率。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503291800124.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503291703147.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503292218114.png?imageView2/2/w/600">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503291732645.png?imageView2/2/w/600">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503291739861.png?imageView2/2/w/600">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503291748635.png?imageView2/2/w/600">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503301139376.png?imageView2/2/w/600">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503301144754.png?imageView2/2/w/600">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503301201539.png?imageView2/2/w/800">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503301201948.png?imageView2/2/w/800">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503291855593.png?imageView2/2/w/800">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503291908025.png?imageView2/2/w/800">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503291909198.png?imageView2/2/w/800">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503292200857.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503292208161.png?imageView2/2/w/200">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503301013779.png?imageView2/2/w/600">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503301014627.png?imageView2/2/w/800">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503301021565.jpeg?imageView2/2/w/300">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503301028924.jpeg?imageView2/2/w/300">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503301031089.jpeg?imageView2/2/w/300">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503301038817.png?imageView2/2/w/600">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503301041589.png?imageView2/2/w/400">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503301049807.jpeg?imageView2/2/w/300">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503301106407.png?imageView2/2/w/600">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503272202596.png?imageView2/2/w/500">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503301119545.png?imageView2/2/w/200">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503301120233.png?imageView2/2/w/200">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503301124197.png?imageView2/2/w/200">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503291148609.png?imageView2/2/w/600">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503301444154.png?imageView2/2/w/200">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503301424269.png?imageView2/2/w/300">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503301223652.png?imageView2/2/w/400">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503301221437.png?imageView2/2/w/600">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503301227963.png?imageView2/2/w/400">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503301236432.png?imageView2/2/w/200">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503301414342.png?imageView2/2/w/600">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503301415760.png?imageView2/2/w/400">
+<meta property="article:published_time" content="2025-03-30T06:55:16.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.885Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="MCP">
+<meta property="article:tag" content="Agent">
+<meta property="article:tag" content="AI-IDE">
+<meta property="article:tag" content="鸿蒙">
+<meta property="article:tag" content="穿戴应用">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/202503291800124.png?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/vibe-coding-harmonyos-wearable-app/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/vibe-coding-harmonyos-wearable-app/","path":"post/vibe-coding-harmonyos-wearable-app/","title":"当Vibe Coding遇上鸿蒙穿戴应用开发"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>当Vibe Coding遇上鸿蒙穿戴应用开发 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#tldr%E7%9C%81%E6%B5%81%E7%89%88"><span class="nav-number">1.</span> <span class="nav-text"> TLDR（省流版）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#vibe-coding-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">2.</span> <span class="nav-text"> Vibe Coding 是什么？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9C%80%E6%B1%82%E8%83%8C%E6%99%AF"><span class="nav-number">3.</span> <span class="nav-text"> 需求背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%8E%E4%B8%BA-lite-wearable-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91%E7%9A%84%E7%8E%B0%E7%8A%B6"><span class="nav-number">4.</span> <span class="nav-text"> 华为 Lite Wearable 应用开发的现状</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#lite-wearable-%E5%92%8C-wearable"><span class="nav-number">4.1.</span> <span class="nav-text"> Lite Wearable 和 Wearable</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#js-%E5%BC%80%E5%8F%91%E6%A1%86%E6%9E%B6%E8%B6%85%E8%BF%B7%E4%BD%A0%E7%89%88-mvvm-%E6%A1%86%E6%9E%B6"><span class="nav-number">4.2.</span> <span class="nav-text"> JS 开发框架——超迷你版 MVVM 框架</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#js-%E5%BC%80%E5%8F%91%E6%A1%86%E6%9E%B6%E8%83%BD%E5%8A%9B%E4%BA%A6%E6%9C%89%E4%B8%8D%E5%90%8C"><span class="nav-number">4.3.</span> <span class="nav-text"> JS 开发框架能力亦有不同</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E8%83%BD%E5%8A%9B%E5%BE%88%E4%B8%8D-open"><span class="nav-number">4.4.</span> <span class="nav-text"> 系统能力很不 Open</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%A4%E4%BA%86%E5%9D%91%E8%BF%98%E6%98%AF%E5%9D%91"><span class="nav-number">4.5.</span> <span class="nav-text"> 除了坑还是坑</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%B8%A9%E5%9D%91%E5%AE%9E%E5%BD%95"><span class="nav-number">5.</span> <span class="nav-text"> 踩坑实录</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E5%8F%91%E4%BF%A1%E6%81%AF"><span class="nav-number">5.1.</span> <span class="nav-text"> 开发信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%84%E4%BB%B6%E5%86%85%E5%AE%B9%E5%B0%BA%E5%AF%B8%E8%87%AA%E9%80%82%E5%BA%94"><span class="nav-number">5.2.</span> <span class="nav-text"> 组件内容尺寸自适应</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BB%9A%E5%8A%A8%E5%AE%B9%E5%99%A8"><span class="nav-number">5.3.</span> <span class="nav-text"> 滚动容器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hap-%E5%8C%85"><span class="nav-number">5.4.</span> <span class="nav-text"> HAP 包</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%BE%E5%90%8D"><span class="nav-number">5.4.1.</span> <span class="nav-text"> 签名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9C%9F%E6%9C%BA%E5%AE%89%E8%A3%85%E8%B0%83%E8%AF%95"><span class="nav-number">5.4.2.</span> <span class="nav-text"> 真机安装调试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hap-%E5%8C%85%E5%B8%B8%E8%A7%81%E5%AE%89%E8%A3%85%E6%8A%A5%E9%94%99"><span class="nav-number">5.4.3.</span> <span class="nav-text"> HAP 包常见安装报错</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%A3%E5%8E%8B%E5%8C%85%E5%90%8Dhap%E5%A4%B1%E8%B4%A5"><span class="nav-number">5.4.3.1.</span> <span class="nav-text"> 解压&lt;包名.hap&gt;失败</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#40%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E9%94%99%E8%AF%AF"><span class="nav-number">5.4.3.2.</span> <span class="nav-text"> 40.配置文件格式错误</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#10%E5%86%85%E9%83%A8%E9%94%99%E8%AF%AF"><span class="nav-number">5.4.3.3.</span> <span class="nav-text"> 10.内部错误</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%9B%BE%E6%A0%87%E9%85%8D%E7%BD%AE"><span class="nav-number">5.5.</span> <span class="nav-text"> 应用图标配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A1%B9%E7%9B%AE%E5%B1%82%E7%BA%A7-node_modules-%E5%86%B2%E7%AA%81"><span class="nav-number">5.6.</span> <span class="nav-text"> 项目层级 node_modules 冲突</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#cursor-rules-%E7%9A%84%E7%94%A8%E6%B3%95"><span class="nav-number">6.</span> <span class="nav-text"> Cursor Rules 的用法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%87%E4%BB%A4%E7%BC%A9%E5%86%99%E5%87%BD%E6%95%B0"><span class="nav-number">6.1.</span> <span class="nav-text"> 指令缩写“函数”</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%B9%E5%AE%9A%E6%96%87%E4%BB%B6%E7%9A%84%E4%B8%93%E5%B1%9E%E7%9F%A5%E8%AF%86%E5%BA%93"><span class="nav-number">6.2.</span> <span class="nav-text"> 特定文件的专属知识库</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/vibe-coding-harmonyos-wearable-app/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="当Vibe Coding遇上鸿蒙穿戴应用开发 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          当Vibe Coding遇上鸿蒙穿戴应用开发
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-03-30 14:55:16" itemprop="dateCreated datePublished" datetime="2025-03-30T14:55:16+08:00">2025-03-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%B8%A9%E5%9D%91/" itemprop="url" rel="index"><span itemprop="name">踩坑</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="tldr省流版"><a class="markdownIt-Anchor" href="#tldr省流版"></a> TLDR（省流版）</h1>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503291800124.png?imageslim" alt="image.png" /></p>
+<p>鸿蒙穿戴应用（即华为智能手表/手环）应用开发的技术栈太小众了，再加上华为这块的开发文档过于混乱和黑箱（一点都不 open），所以 Vibe 不了一点，<strong>全是坑</strong>，只能各种手动调试代码来保证功能的可行性。</p>
+<p>当然，即便如此，通过把鸿蒙穿戴应用开发的技术栈文档作为项目级别的知识库，Cursor 也能相对准确的辅助代码补全，提高这门小众技术栈开发的效率。</p>
+<span id="more"></span>
+<h1 id="vibe-coding-是什么"><a class="markdownIt-Anchor" href="#vibe-coding-是什么"></a> Vibe Coding 是什么？</h1>
+<p>Vibe Coding 这个概念最近很火，我个人对此有一个简单粗暴的理解——别管技术栈和编程语言是什么，我们就是<strong>甲方</strong>，而 AI IDE/Agent 就是乙方，就当做<strong>自己不懂代码</strong>就好了，我们只管<strong>输出想法</strong>和进行<strong>产品验收</strong>，而 AI 负责去进行代码的开发。</p>
+<p>社区里也有人总结出 Vibe Coding 相关的原则，比如：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://creatoreconomy.so/p/12-rules-to-vibe-code-without-frustration">12 Rules to Vibe Code Without Frustration</a></li>
+</ul>
+<h1 id="需求背景"><a class="markdownIt-Anchor" href="#需求背景"></a> 需求背景</h1>
+<p>最近忙着给自己规划各种事项的 SOP，想要<strong>随时</strong>查看 SOP 方便去执行和迭代；而目前对我本人来说，<strong>智能手表</strong>才是最贴身的，也是最方便随时查看简单信息的载体。</p>
+<p>而我用的手表是华为的 watch fit3，有应用市场，所以我觉得官方应该提供了开发应用的 SDK 吧，正好最近 vibe coding 很火，因此想试试能不能用 Cursor 搭配 vibe coding<strong>速通</strong>鸿蒙系统的穿戴应用开发，毕竟 vibe coding 的最大优势就是无视<strong>技术栈的壁垒</strong>（然而我高估了鸿蒙开发生态的完整性😂）。</p>
+<blockquote>
+<p>其实前不久为了同步 obsidian 笔记中的日程到手环中，想尝试开发一个手环应用来着，可惜鸿蒙穿戴应用从底层设计上没有提供网络请求能力（因为我这款手表没有独立连接网络和独立 sim 卡的功能），所以如果要实现从网络上同步日程就得在手机端开发一个 App 提供数据传送的功能，这个代码量就稍微有点大了，因此就放弃了这个方案。</p>
+</blockquote>
+<p>其实拆分需求特别简单：</p>
+<ul>
+<li><strong>SOP 列表</strong>：显示有哪些事项的 SOP</li>
+<li><strong>SOP 详情</strong>：点击事项查看 SOP 内容</li>
+</ul>
+<p>如果这些需求放在网页端的技术栈，我相信是真的可以用 Cursor + vibe coding 用不了几分钟就能给实现；可惜的是鸿蒙穿戴应用的<strong>运行时环境</strong>和开发技术栈跟网页开发有挺大差异。</p>
+<h1 id="华为-lite-wearable-应用开发的现状"><a class="markdownIt-Anchor" href="#华为-lite-wearable-应用开发的现状"></a> 华为 Lite Wearable 应用开发的现状</h1>
+<h2 id="lite-wearable-和-wearable"><a class="markdownIt-Anchor" href="#lite-wearable-和-wearable"></a> Lite Wearable 和 Wearable</h2>
+<p>华为目前把旗下的智能穿戴设备分为了两种：</p>
+<ul>
+<li>智能穿戴（Wearable）</li>
+<li>轻量级智能穿戴（Lite Wearable）</li>
+</ul>
+<p>从名字不难看出，Lite Wearable 应用的功能与 Wearable 相比肯定有所阉割（后面才深刻地体会到其实是超大的阉割😅），不幸的是我用的是 watch fit3 就是 Lite Wearable 设备。根据穿戴设备类型的不同，所用的开发语言就不同：</p>
+<ul>
+<li>智能穿戴（Wearable）：可以使用 JS 和 JAVA 两种语言进行开发</li>
+<li>轻量级智能穿戴（Lite Wearable）：<strong>只能</strong>用 JS 语言进行开发</li>
+</ul>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503291703147.png?imageslim" alt="image.png" /></p>
+<h2 id="js-开发框架超迷你版-mvvm-框架"><a class="markdownIt-Anchor" href="#js-开发框架超迷你版-mvvm-框架"></a> JS 开发框架——超迷你版 MVVM 框架</h2>
+<p>如果各位开发过微信小程序，就会对华为设计的这套 JS 开发框架很熟了，一套极其初始版本的 MVVM 框架，毫无开发体验，写起来很累：</p>
+<ul>
+<li><strong>HML</strong>：跟 WXML 类似，就是 View 模块；可以使用内置的一些<strong>组件</strong>（千万不要下意识的当成 html 元素来用，尽管里面有跟 html 标签同名的，但实际上完全不同！），有简单的数据绑定、事件绑定和自定义组件功能，也提供 for、if、ref 和 show 等指令；详情参考——<a target="_blank" rel="noopener" href="https://developer.huawei.com/consumer/cn/doc/harmonyos-references-V5/js-lite-framework-syntax-hml-V5">HML语法参考</a></li>
+<li><strong>CSS</strong>：究极阉割版的 CSS 样式，只能用 flex 布局和一些特别核心的样式属性、尺寸属性等；官方文档还说支持 scss 和 less 呢，详情参考——<a target="_blank" rel="noopener" href="https://developer.huawei.com/consumer/cn/doc/harmonyos-references-V5/js-lite-framework-syntax-css-V5">CSS语法参考</a></li>
+<li><strong>JS</strong>：提供页面层级和应用层级的一些生命周期以及状态管理等功能；详情参考——<a target="_blank" rel="noopener" href="https://developer.huawei.com/consumer/cn/doc/harmonyos-references-V5/js-lite-framework-syntax-js-V5">JS语法参考</a></li>
+<li><strong>ohpm</strong>：仿照 pnpm 设计的用于 Open Harmony 的模块管理工具，一些跟系统能力相关的模块也通过它进行使用，我觉得目前应该没人给穿戴应用环境适配 ohpm 包吧……</li>
+</ul>
+<p>噢，值得一提的是，它居然提供了简单的 Canvas API<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>，难以置信🙃：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503292218114.png?imageView2/2/w/600" alt="image.png" /></p>
+<h2 id="js-开发框架能力亦有不同"><a class="markdownIt-Anchor" href="#js-开发框架能力亦有不同"></a> JS 开发框架能力亦有不同</h2>
+<p>不得不说，华为为开发者准备的文档真是有种完全不管你死活的美；作为一个鸿蒙生态开发的新手，我想要开发穿戴应用，最先找到的文档就是这个 <sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503291732645.png?imageView2/2/w/600" alt="image.png" /></p>
+<p>结果点进去发现是一点入门的信息都没有，好像默认你就会使用它们的语法一样；只有一些关于集成 Wear Engine SDK 的功能示例，而这个 SDK 就是用于跟手机端 APP 进行各种通信相关的功能。我也不知道找了多久，终于找到 JS 开发框架相关的文档 <sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup>：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503291739861.png?imageView2/2/w/600" alt="image.png" /></p>
+<p>我当时还很高兴呢，觉得终于找到 JS 框架相关的文档，这下就可以把这些文档导入到项目知识库然后等着 Cursor 发力就行了，后面我才发现我太 naive 了；因为我发现这里面说的很多组件以及组件属性在使用后都没法正常编译，后面我终于知道了原来 JS 框架的还分为 Full 和 Lite 两种 <sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup>，而且文档上也完全不说 Full 和 Lite 适用的范围，虽然不难猜到 Lite 适用于 Lite Wearable 设备，但是文档的作用不就是让开发过程变得清晰吗，结果全要靠开发者去猜……</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503291748635.png?imageView2/2/w/600" alt="image.png" /></p>
+<p>尽管一步步了解到 Lite Wearable 应用能力的边界在不断缩小这一点令我对该应用的产出预期越来越低，但更令人不爽的是华为这<strong>糟糕</strong>的文档管理方式，完全分散在各个角落，明明可以顺手在一开始的地方对这些文档做一下引用和适用范围说明。</p>
+<h2 id="系统能力很不-open"><a class="markdownIt-Anchor" href="#系统能力很不-open"></a> 系统能力很不 Open</h2>
+<p>目前对于 SDK 在 4.0.0(10) 及以上的穿戴应用开发，完全不知道如何调用系统能力，因为内置的 <code>@system</code> 模块所提供的大多数模块和方法都已经弃用了：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503301139376.png?imageView2/2/w/600" alt="image.png" /></p>
+<p>没错，上面模块中的方法就没几个能用；而看起来用来替代 <code>@system</code> 模块的 <code>@ohos</code> 模块也没几个方法可以使用：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503301144754.png?imageView2/2/w/600" alt="image.png" /></p>
+<p>除此之外，无论是 <code>@system</code> 模块还是 <code>@ohos</code> 模块的 router 方法都没法正常使用，这就导致路由跳转相关的功能形同虚设😅。</p>
+<p>不仅如此，从 watch fit3 来看，这个手环侧面有两个按钮——上面是旋钮，下面是长按钮；这两个按钮都应该有交互事件可以来监听才对，尤其是旋钮包含旋转交互，这些能力在系统应用和一些第三方应用中都有调用；从系统应用和第三方应用不难发现应该有一些更丰富的系统组件可以使用，不然很难想象用这么<strong>简陋</strong>的系统能力和组件怎么写出一些很优雅的渲染和交互的。所以要么就是<strong>文档没来得及写</strong>，要么就是这些系统能力只对华为内部和合作伙伴开放，<strong>不对外开放</strong>，无论怎样都是💩。</p>
+<h2 id="除了坑还是坑"><a class="markdownIt-Anchor" href="#除了坑还是坑"></a> 除了坑还是坑</h2>
+<p>很难想象现在在鸿蒙系统开发应用的开发者有多痛苦🤣，仅从穿戴应用开发来看，除了上面提到的开发文档特别混乱和系统能力不透明不开放以外，我从【华为开发者联盟】社区里面各种开发者求助的帖子就不能看出，华为官方就没有投入足够的<strong>人员</strong>和<strong>尊重</strong>来回应社区里各种问题和关切，经常就是很久没人回答或者就一个客服回应就没了下文：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503301201539.png?imageView2/2/w/800" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503301201948.png?imageView2/2/w/800" alt="image.png" /></p>
+<p>类似的帖子我看过太多了，甚至有的帖子<strong>过了几年</strong>还有人反馈有同样的问题😅。因此，目前开发鸿蒙穿戴应用除了坑还是坑……不知道 Apple Watch 的应用开发有这么痛苦吗😀。</p>
+<h1 id="踩坑实录"><a class="markdownIt-Anchor" href="#踩坑实录"></a> 踩坑实录</h1>
+<p>说多了都是泪，感觉我不是在写代码，而是在反编译一个黑箱产物。</p>
+<h2 id="开发信息"><a class="markdownIt-Anchor" href="#开发信息"></a> 开发信息</h2>
+<ul>
+<li>穿戴设备：Watch Fit3 + HarmonyOS 5.0.0</li>
+<li>DevEco Studio：5.0.3 Beta2(Mac + intel)</li>
+<li>SDK：4.0.0（10）</li>
+</ul>
+<h2 id="组件内容尺寸自适应"><a class="markdownIt-Anchor" href="#组件内容尺寸自适应"></a> 组件内容尺寸自适应</h2>
+<p>不好意思，目前提供的系统组件<strong>不存在高度自适应</strong>（即 height 为 auto），需要手动设置一个固定高度或相对高度，不然默认高度就是 0，所以当你看到某个元素没有显示时大概率就是没有设置 height 样式。</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503291855593.png?imageView2/2/w/800" alt="image.png" /></p>
+<p>同样的，宽度也一样。所以当你明白这一点的时候你就知道，写 Lite Wearable 应用有多痛苦了，几乎要全部手动设置宽高，相当于没有布局引擎，就跟你在不使用第三方工具库的情况下基于 Canvas 渲染图形一样，图形的位置和大小全都要自己计算。</p>
+<p>当然，有一个组件是例外的，那就是 text 组件，毕竟如果文本的宽高还要自行计算的话，那这个渲染框架简直设计了个寂寞，干脆让开发者自行写一套渲染引擎得了😅。不过实际上使用 text 组件时需要手动设置一个宽度，不然文本过长时它会直接<strong>超出容器</strong>而不会自动换行（这也太 auto 了……）：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503291908025.png?imageView2/2/w/800" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503291909198.png?imageView2/2/w/800" alt="image.png" /></p>
+<h2 id="滚动容器"><a class="markdownIt-Anchor" href="#滚动容器"></a> 滚动容器</h2>
+<p>令人不敢相信的是，内置的容器组件大多都<strong>没有提供滚动</strong>的功能，即不能像 HTML 那样设置 overflow 属性；但是经过尝试（是的，官方文档没有明确写出来哪个容器内可以进行上下滚动），list 组件内部的 list-item 高度超出容器高度时就可以触摸进行上下滑动：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503292200857.png?imageslim" alt="image.png" /></p>
+<p>然而由于前面提到的，组件内容并不会高度自适应，所以要让 list-item 组件内的内容完整显示，你要么自行写一个布局引擎根据样式来<strong>计算渲染高度</strong>（我试过让 Cursor 写一个文本渲染高度计算，但布局引擎的各种边界条件很多，要想完全实现精准计算代码的<strong>复杂度</strong>就很高了），要么跟我一样写一个很大的高度值😅。</p>
+<p>奇怪的是，watch fit3 里面的系统应用和一些<strong>第三方</strong>应用有着很明显的带滚动条的视图（是的，list 虽然可以当滚动容器，但不会出现滚动条的 UI 提示）：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503292208161.png?imageView2/2/w/200" alt="image.png" /></p>
+<p>而且这种带滚动条的视图，还可以基于 watch fit3 右侧的<strong>旋钮转动</strong>来完成上下滚动的交互，这怎么看都是一种<strong>标准</strong>的组件和系统交互，可惜完全看不到相关的文档。</p>
+<h2 id="hap-包"><a class="markdownIt-Anchor" href="#hap-包"></a> HAP 包</h2>
+<blockquote>
+<p>HAP（Harmony Ability Package）是应用安装和运行的基本单元。HAP 包是由代码、资源、第三方库、配置文件等打包生成的模块包，其主要分为两种类型：entry 和 feature。</p>
+<ul>
+<li>entry：应用的主模块，作为应用的入口，提供了应用的基础功能。</li>
+<li>feature：应用的动态特性模块，作为应用能力的扩展，可以根据用户的需求和设备类型进行选择性安装。</li>
+</ul>
+<p>应用程序包可以只包含一个基础的 entry 包，也可以包含一个基础的 entry 包和多个功能性的 feature 包。<sup class="footnote-ref"><a href="#fn5" id="fnref5">[5]</a></sup></p>
+</blockquote>
+<p>简言之，HAP 包就是项目编译后打包得到的一种压缩包。</p>
+<h3 id="签名"><a class="markdownIt-Anchor" href="#签名"></a> 签名</h3>
+<p>相比普通的前端项目开发，Lite Wearable 应用最大的不同就是打包时需要进行签名，如果没有签名那么就无法到真机上进行调试；虽然 DevEco Studio 提供了自动签名的功能，但不幸的是目前 Lite Wearable 应用只能使用手动签名，而手动签名的步骤有<strong>亿点点</strong>繁琐：</p>
+<ol>
+<li>在 DevEco Studio 生成项目的密钥和证书文件，会得到 <code>.p12</code> 和 <code>.csr</code> 这两个文件；详细步骤可以参考官方文档——<a target="_blank" rel="noopener" href="https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-signing#section462703710326">生成密钥和证书请求文件</a></li>
+<li>然后需要在华为的 <a target="_blank" rel="noopener" href="https://developer.huawei.com/consumer/cn/service/josp/agc/index.html">AppGallery Connect</a> 申请 APP ID、调试证书、注册调试证书和调试 Profile，会得到 <code>.cer</code> 和 <code>.p7b</code> 这两个文件；详细步骤可以参考官方文档——<a target="_blank" rel="noopener" href="https://developer.huawei.com/consumer/cn/doc/app/agc-help-debug-app-0000001914423098">调试HarmonyOS应用/元服务</a></li>
+<li>最后在 DevEco Studio 配置项目的签名信息；详细步骤可以参考官方文档——<a target="_blank" rel="noopener" href="https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-signing#section112371245115818">手动配置签名信息</a></li>
+</ol>
+<p>配置签名的步骤特别多，需要<strong>严格</strong>按照官方文档进行设置，因为只要错了其中的一个步骤就会导致签名失败或者签名不正确，然后安装失败😅。其中特别需要注意的是，在申请 APP ID 时，要确保应用包名与项目配置中的包名是一致的：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503301013779.png?imageView2/2/w/600" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503301014627.png?imageView2/2/w/800" alt="image.png" /></p>
+<h3 id="真机安装调试"><a class="markdownIt-Anchor" href="#真机安装调试"></a> 真机安装调试</h3>
+<p>在华为应用市场安装【应用调测助手】这个 APP（不确定其它手机应用市场有没有这个）：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503301021565.jpeg?imageView2/2/w/300" alt="2846fe8825cf48a0073c7eb4de159f49.jpeg" /></p>
+<p>该 APP 就是用来在华为穿戴设备上安装 HAP 包的，还可以查看穿戴设备的 debug 日志：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503301028924.jpeg?imageView2/2/w/300" alt="59df0d3db20f7455bc0fd85b976652f4.jpeg" /></p>
+<p>顺便一提，这里的 UDID 在签名时注册调试设备时需要用到。其中的应用管理就是可以从当前手机的 haps 目录中读取可安装的 HAP 包：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503301031089.jpeg?imageView2/2/w/300" alt="66efdcfc7ac763346f51b0a6151c78d8.jpeg" /></p>
+<p>那么如何获取到 HAP 包呢？在 DevEco Studio 菜单栏下面找到 Product 图标，Build Mode 选择 debug 模式，然后 apply：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503301038817.png?imageView2/2/w/600" alt="image.png" /></p>
+<p>如果发现 apply 按钮置灰，可以把 Build Mode 改成其它模式编译一遍，然后再切回 debug 模式就能 apply 了（我也不知道这是 bug 还是 feature……）。最后就能在 build 目录中找到编译好的 HAP 包：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503301041589.png?imageView2/2/w/400" alt="image.png" /></p>
+<p>其中名字带 signed 的就是签名了的 HAP 包，我们要安装到真机的就是这个包。把这个包复制到手机的 haps 目录后，就可以到【应用调测助手】中的应用管理安装上述的 HAP 包了：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503301049807.jpeg?imageView2/2/w/300" alt="a00abef21e1e541504915cea048e7578.jpeg" /></p>
+<h3 id="hap-包常见安装报错"><a class="markdownIt-Anchor" href="#hap-包常见安装报错"></a> HAP 包常见安装报错</h3>
+<p>然而实际上 HAP 包的安装不是一帆风顺的，总会遇到各种报错导致无法安装，以下就是我遇到的一些安装报错：</p>
+<h4 id="解压包名hap失败"><a class="markdownIt-Anchor" href="#解压包名hap失败"></a> 解压&lt;包名.hap&gt;失败</h4>
+<p>这个错误我也不记得我是怎么解决的了🤣，因为在网上找相关的错误只有一篇文章提及，而且只说了有这个错误，但没人给出解决方案 <sup class="footnote-ref"><a href="#fn6" id="fnref6">[6]</a></sup>。我应该是重新编译之后就没有这个报错，猜测应该是 build mode 选错了。</p>
+<h4 id="40配置文件格式错误"><a class="markdownIt-Anchor" href="#40配置文件格式错误"></a> 40.配置文件格式错误</h4>
+<p>出现这个报错时，一种可能就是字面意思，<code>config.json</code> 中的某些字段设置错了 <sup class="footnote-ref"><a href="#fn7" id="fnref7">[7]</a></sup>；而我碰到的则是另一种——SDK 版本不兼容，讲真的，我不知道鸿蒙里面的 SDK 版本和系统版本之间的关系是啥，因为只看 SDK 版本号你会直觉地认为这就是跟系统版本一一对应的：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503301106407.png?imageView2/2/w/600" alt="image.png" /></p>
+<p>而我的手环系统版本就是 5.0.0，所以我一开始选择的 SDK 就是 5.0.0(12)；后面也是发现一篇文章提到他是通过降低 SDK 版本 <sup class="footnote-ref"><a href="#fn8" id="fnref8">[8]</a></sup> 解决了这个 40 报错，我就把 SDK 版本降到了 4.0.0(12)，果然就解决了这个报错😀：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503272202596.png?imageView2/2/w/500" alt="image.png" /></p>
+<h4 id="10内部错误"><a class="markdownIt-Anchor" href="#10内部错误"></a> 10.内部错误</h4>
+<p>这个错误大概率就是因为签名配置不正确导致的，比如：</p>
+<ul>
+<li>没签名或签名不对 <sup class="footnote-ref"><a href="#fn9" id="fnref9">[9]</a></sup></li>
+<li>包名不一致 <sup class="footnote-ref"><a href="#fn9" id="fnref9:1">[9:1]</a></sup></li>
+</ul>
+<h2 id="应用图标配置"><a class="markdownIt-Anchor" href="#应用图标配置"></a> 应用图标配置</h2>
+<p>关于穿戴应用图标的尺寸和相关配置的规范，我完全没有找到相关文档😅。所以一开始就是按照新建项目后默认提供的图标尺寸——114x114，结果发现安装到真机后，完全不匹配：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503301119545.png?imageView2/2/w/200" alt="image.png" /></p>
+<p>后面我通过类似二分查找的方法，最终测试感觉图标大小应该是 102：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503301120233.png?imageView2/2/w/200" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503301124197.png?imageView2/2/w/200" alt="image.png" /></p>
+<p>由于应用需要的是一个圆形的图标，所以需要用工具把图标进行一个剪裁，如：<a target="_blank" rel="noopener" href="https://crop-circle.imageonline.co/cn/">在图像中剪切圆圈 - 免费工具</a></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503291148609.png?imageView2/2/w/600" alt="image.png" /></p>
+<p>不过后面我仔细对比了一下其它应用的图标，发现 102 的尺寸有些许的偏小，所以推测实际上图标尺寸应该是 104 左右？</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503301444154.png?imageView2/2/w/200" alt="image.png" /></p>
+<p>关于图标，还有一个坑——目前 watch fit3 有两种桌面形态，即棋盘和列表；不知道为啥我这应用在<strong>棋盘模式下不会出现</strong>，但在列表模式下会出现，且在选择 APP 的列表也能发现这个应用，难道要让应用出现在棋盘桌面下还另有配置？我反正完全找不到相关文档和说明😅。</p>
+<h2 id="项目层级-node_modules-冲突"><a class="markdownIt-Anchor" href="#项目层级-node_modules-冲突"></a> 项目层级 node_modules 冲突</h2>
+<p>我本来想在该项目使用 Bun 来执行 TS 脚本，于是就在项目层级进行了初始化，但貌似如果项目根目录出现 node_modules 目录，就无法正常进行编译了，大概是跟以前的鸿蒙应用使用了普通的 npm 包来进行模块管理，现在换成了 ohpm 但没有完全去除之前的那套逻辑？解决办法就是不要在项目层级初始化 node_modules，移到某个<strong>子目录</strong>下即可：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503301424269.png?imageView2/2/w/300" alt="image.png" /></p>
+<h1 id="cursor-rules-的用法"><a class="markdownIt-Anchor" href="#cursor-rules-的用法"></a> Cursor Rules 的用法</h1>
+<p>整个应用的开发过程，除了踩了很多坑之外，令人<strong>欣慰</strong>的是还无意中解锁了一些 Cursor 的有意思的用法。</p>
+<h2 id="指令缩写函数"><a class="markdownIt-Anchor" href="#指令缩写函数"></a> 指令缩写“函数”</h2>
+<p>在使用 Agent 将华为的开发文档转为本地 markdown 文档的过程中，我突然意识到每次重复一条条相似的指令有点“蠢”，指令应该也能复用吧？于是正好想到了 Cursor 有个 Rules 功能来着，然后试了一下，果然通过 Rules 可以把复杂的指令进行<strong>缩写</strong>，保留关键信息即可，就如同编程中复用逻辑时创建函数一样：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503301223652.png?imageView2/2/w/400" alt="image.png" /></p>
+<p>上面的就是原始的提示词，不难发现这个提示词有两个参数——网址和文件名，那么可以编写如下的 Rules：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503301221437.png?imageView2/2/w/600" alt="image.png" /></p>
+<p>通过指定上面的 Rules，Agent 就可以通过缩写后的指令来补全还原成原始的提示词：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503301227963.png?imageView2/2/w/400" alt="image.png" /></p>
+<p>这样在进行重复操作时，要写的提示词就大大变少了；不过都抽象成“函数”了，要是 Cursor 能够提供一种自定义提示词模板的 UI 交互就更方便，比如<strong>只填参数</strong>内容，然后把参数填到模板中，再把完整的提示词发送给 Agent😏。</p>
+<h2 id="特定文件的专属知识库"><a class="markdownIt-Anchor" href="#特定文件的专属知识库"></a> 特定文件的专属知识库</h2>
+<p>通过上面的方法，我收集了一些跟穿戴应用 JS 开发框架相关的核心文档：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503301236432.png?imageView2/2/w/200" alt="image.png" /></p>
+<p>而这些文档就可以作为开发应用页面时的专属知识库，以便让 Cursor 可以写出符合文档的代码（不然它可能会把相关的代码开发当成普通的 html 或者小程序的语法），这样就不用每次都在提示词中指定知识库上下文了：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503301414342.png?imageView2/2/w/600" alt="image.png" /></p>
+<p>当然，同一个项目可以为<strong>不同范围</strong>的文件指定不同的规则，比如：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503301415760.png?imageView2/2/w/400" alt="image.png" /></p>
+<hr class="footnotes-sep" />
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://developer.huawei.com/consumer/cn/doc/harmonyos-references-V5/js-lite-components-canvas-canvas-V5">canvas组件-画布组件-兼容JS的类Web开发范式（ArkUI.Lite）-JS组件-ArkUI（方舟UI框架）-应用框架 - 华为HarmonyOS开发者</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://developer.huawei.com/consumer/cn/doc/connectivity-Guides/fitnesswatch-dev-0000001051423561">穿戴设备侧应用开发（JS）-穿戴侧应用开发-穿戴能力 - 华为HarmonyOS开发者</a> <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://developer.huawei.com/consumer/cn/doc/harmonyos-guides-V5/js-framework-syntax-V5">语法-框架说明-UI开发 (兼容JS的类Web开发范式)-ArkUI（方舟UI框架）-应用框架 - 华为HarmonyOS开发者</a> <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://developer.huawei.com/consumer/cn/doc/harmonyos-references-V5/arkui-js-lite-comp-V5">兼容JS的类Web开发范式（ArkUI.Lite）-JS组件-ArkUI（方舟UI框架）-应用框架 - 华为HarmonyOS开发者</a> <a href="#fnref4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://developer.huawei.com/consumer/cn/doc/harmonyos-guides-V5/hap-package-V5">HAP-应用程序包开发与使用-应用程序包基础知识-开发基础知识-基础入门 - 华为HarmonyOS开发者</a> <a href="#fnref5" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn6" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://developer.huawei.com/consumer/cn/forum/topic/0202581858260590377">使用应用调测助手安装lite wearable时提示安装失败:已经安装应用数量达到上限 -华为开发者问答 | 华为开发者联盟</a> <a href="#fnref6" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn7" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://developer.huawei.com/consumer/cn/forum/topic/0201158528739384548">使用应用调测助手安装应用时提示40.配置文件格式错误-华为开发者问答 | 华为开发者联盟</a> <a href="#fnref7" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn8" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/developer-huawei/p/17002462.html">【HarmonyOS】调测助手安装失败10内部错误 - 华为开发者论坛 - 博客园</a> <a href="#fnref8" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn9" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://developer.huawei.com/consumer/cn/forum/topic/0201500133662960061">鸿蒙os手表应用 lite wearable 真机调试问题-华为开发者问答 | 华为开发者联盟</a> <a href="#fnref9" class="footnote-backref">↩︎</a> <a href="#fnref9:1" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/vibe-coding-harmonyos-wearable-app/" title="当Vibe Coding遇上鸿蒙穿戴应用开发">https://note.xiexuefeng.cc/post/vibe-coding-harmonyos-wearable-app/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/MCP/" rel="tag"># MCP</a>
+              <a href="/tags/Agent/" rel="tag"># Agent</a>
+              <a href="/tags/AI-IDE/" rel="tag"># AI-IDE</a>
+              <a href="/tags/%E9%B8%BF%E8%92%99/" rel="tag"># 鸿蒙</a>
+              <a href="/tags/%E7%A9%BF%E6%88%B4%E5%BA%94%E7%94%A8/" rel="tag"># 穿戴应用</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/cursor-mcp-figma-design-restoration/" rel="prev" title="Cursor MCP实战之还原Figma设计稿">
+                  <i class="fa fa-chevron-left"></i> Cursor MCP实战之还原Figma设计稿
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/modded-pbr-rendering-multi-light-optimization/" rel="next" title="魔改PBR渲染管线支持大量灯光场景">
+                  魔改PBR渲染管线支持大量灯光场景 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/vibe-coding-harmonyos-wearable-app/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/vibe-coding-harmonyos-wearable-app/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

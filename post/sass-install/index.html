@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="安装  安装Ruby 由于Sass和Compass都是依赖于ruby的，所以首先得安装ruby；windows直接去官网下载或者使用rubyinstaller，推荐使用后者，下载一键配置，关键是下载速度快！ 在ruby中安装各种包都是基于gem命令（类似于node.js中的npm），由于服务器在国外，安装包的速度当然慢的要死，所以要更换一下镜像，推荐使用ruby-China的镜像（淘宝的镜像今后">
+<meta property="og:type" content="article">
+<meta property="og:title" content="sass的安装与配置">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/sass-install/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="安装  安装Ruby 由于Sass和Compass都是依赖于ruby的，所以首先得安装ruby；windows直接去官网下载或者使用rubyinstaller，推荐使用后者，下载一键配置，关键是下载速度快！ 在ruby中安装各种包都是基于gem命令（类似于node.js中的npm），由于服务器在国外，安装包的速度当然慢的要死，所以要更换一下镜像，推荐使用ruby-China的镜像（淘宝的镜像今后">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/180417/7FGdb3GChg.png?imageslim">
+<meta property="article:published_time" content="2018-04-16T13:46:58.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.880Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="sass">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/180417/7FGdb3GChg.png?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/sass-install/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/sass-install/","path":"post/sass-install/","title":"sass的安装与配置"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>sass的安装与配置 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-number">1.</span> <span class="nav-text"> 安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85ruby"><span class="nav-number">1.1.</span> <span class="nav-text"> 安装Ruby</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85sass"><span class="nav-number">1.2.</span> <span class="nav-text"> 安装Sass</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85compass"><span class="nav-number">1.3.</span> <span class="nav-text"> 安装compass</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BAcompass%E5%B7%A5%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text"> 创建compass工程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#configrb%E6%96%87%E4%BB%B6"><span class="nav-number">2.1.</span> <span class="nav-text"> config.rb文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%A8webstorm%E4%B8%AD%E9%85%8D%E7%BD%AEcompass%E5%B7%A5%E7%A8%8B"><span class="nav-number">2.2.</span> <span class="nav-text"> 在webStorm中配置compass工程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%AF%91"><span class="nav-number">3.</span> <span class="nav-text"> 编译</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/sass-install/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="sass的安装与配置 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          sass的安装与配置
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-04-16 21:46:58" itemprop="dateCreated datePublished" datetime="2018-04-16T21:46:58+08:00">2018-04-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">工具</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="安装"><a class="markdownIt-Anchor" href="#安装"></a> 安装</h2>
+<h3 id="安装ruby"><a class="markdownIt-Anchor" href="#安装ruby"></a> 安装Ruby</h3>
+<p>由于Sass和Compass都是依赖于ruby的，所以首先得安装ruby；windows直接去官网下载或者使用<a target="_blank" rel="noopener" href="https://rubyinstaller.org/">rubyinstaller</a>，推荐使用后者，下载一键配置，关键是下载速度快！</p>
+<p>在ruby中安装各种包都是基于<code>gem</code>命令（类似于node.js中的<code>npm</code>），由于服务器在国外，安装包的速度当然慢的要死，所以要更换一下镜像，推荐使用ruby-China的镜像（淘宝的镜像今后不会维护了）：</p>
+<p>更换前最好把自带的镜像删除（可以用<code>gem source --remove</code>命令移除），查看镜像列表可以使用命令行<code>gem source -l</code>；</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gem <span class="built_in">source</span> -a https://gems.ruby-china.org</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
+<h3 id="安装sass"><a class="markdownIt-Anchor" href="#安装sass"></a> 安装Sass</h3>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gem sass</span><br></pre></td></tr></table></figure>
+<h3 id="安装compass"><a class="markdownIt-Anchor" href="#安装compass"></a> 安装compass</h3>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gem compass</span><br></pre></td></tr></table></figure>
+<h2 id="创建compass工程"><a class="markdownIt-Anchor" href="#创建compass工程"></a> 创建compass工程</h2>
+<p>通过<code>compass create</code>可以创建一个compass工程；</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">compass create projectNmae</span><br></pre></td></tr></table></figure>
+<p>创建后会生成一个名为<code>projectName</code>的文件夹，该文件夹代表了一个compass和sass工程，该文件夹下还会有一些默认生成的文件夹和文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">|---stylesheets</span><br><span class="line">    |---*.css</span><br><span class="line">|---sass</span><br><span class="line">    |---*.scss</span><br><span class="line">|---.sass-cache</span><br><span class="line">    |---</span><br><span class="line">|---config.rb</span><br></pre></td></tr></table></figure>
+<p>这些文件夹的名称可以通过命令行参数进行定制，也可以直接在<code>config.rb</code>配置文件中进行设定；</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">compass create -sass-dir <span class="string">&quot;sass&quot;</span> -css-dir <span class="string">&quot;css&quot;</span> -javascript-dir <span class="string">&quot;js&quot;</span> -image-dir <span class="string">&quot;img&quot;</span> </span><br></pre></td></tr></table></figure>
+<p>也可以创建一个空的compass工程，即没有一些预定的css和scss文件；</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">compass create --bare </span><br></pre></td></tr></table></figure>
+<h3 id="configrb文件"><a class="markdownIt-Anchor" href="#configrb文件"></a> config.rb文件</h3>
+<p><code>config.rb</code>文件时compass工程的核心，它设定了如何编译sass文件，怎么生成css文件；</p>
+<p>一个常见的配置文件如下：</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">require</span> <span class="string">&#x27;compass/import-once/activate&#x27;</span></span><br><span class="line"><span class="comment"># 通过 require 命令导入其它的compass插件</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># http_path代表工程根目录的路径</span></span><br><span class="line">http_path = <span class="string">&quot;/&quot;</span></span><br><span class="line">css_dir = <span class="string">&quot;css&quot;</span></span><br><span class="line">sass_dir = <span class="string">&quot;sass&quot;</span></span><br><span class="line">images_dir = <span class="string">&quot;images&quot;</span></span><br><span class="line">javascripts_dir = <span class="string">&quot;javascripts&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># cache代表是否开启sass编译缓存，默认开启（true）</span></span><br><span class="line">cache = <span class="literal">false</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># output_style代表css文件输出样式</span></span><br><span class="line"><span class="comment"># output_style = :expanded or :nested or :compact or :compressed</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 是否开启资源相对路径功能</span></span><br><span class="line"><span class="comment"># relative_assets = true</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 是否在css文件中选择器的位置显示调试注释，默认开启</span></span><br><span class="line"></span><br><span class="line">line_comments = <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+<p>css输出样式有四种：<code>:expanded</code>，<code>:nested</code>，<code>:compact</code>，<code>:compressed</code>；</p>
+<h3 id="在webstorm中配置compass工程"><a class="markdownIt-Anchor" href="#在webstorm中配置compass工程"></a> 在webStorm中配置compass工程</h3>
+<ol>
+<li>
+<p>找到<code>setting</code>-<code>language</code>-<code>stylesheets</code>-<code>compass</code>，设置正确的compass安装路径和compass工程的config.rb文件路径；要注意的是compass安装路径指的是<code>compass.bat</code>文件所在地方，如：<code>D:\Ruby\bin\compass.bat</code>；</p>
+</li>
+<li>
+<p>到<code>setting</code>-<code>tool</code>-<code>File Watchers</code>中新增一个<code>Compass Scss</code>的实例，以实现自动监视scss文件的改动并进行实时编译；</p>
+</li>
+</ol>
+<p><img src="https://pic.xiexuefeng.cc/markdown/180417/7FGdb3GChg.png?imageslim" alt="file watcher设置" /></p>
+<h2 id="编译"><a class="markdownIt-Anchor" href="#编译"></a> 编译</h2>
+<p>当编译的时候，对于文件名以<font color=red>下划线<code>_</code>开头</font>的<code>.scss</code>文件是不会编译的；且编译后的<code>.css</code>文件名与<code>.scss</code>的文件名一致！</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/sass-install/" title="sass的安装与配置">https://note.xiexuefeng.cc/post/sass-install/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/sass/" rel="tag"># sass</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/css3-flex/" rel="prev" title="灵活的flex布局">
+                  <i class="fa fa-chevron-left"></i> 灵活的flex布局
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/js-inherit/" rel="next" title="js中的继承方法">
+                  js中的继承方法 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/sass-install/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/sass-install/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

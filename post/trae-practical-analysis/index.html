@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言  关于 AI IDE 最近（2025-02）看到消息说字节推出了一个免费版的 AI IDE——Trae，于是就去试了一下，毕竟之前用 AI IDE 的还是 Cursor 刚推出的那会（应该是 2023 年初），那时候的 AI IDE 可以说就是个玩具，所以后面有很长一段时间都没咋用过 AI IDE 了，日常也就是在 VSCode 里用一些免费的 LLM 代码补全插件（如 Codeium）。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Trae实战分析">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/trae-practical-analysis/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言  关于 AI IDE 最近（2025-02）看到消息说字节推出了一个免费版的 AI IDE——Trae，于是就去试了一下，毕竟之前用 AI IDE 的还是 Cursor 刚推出的那会（应该是 2023 年初），那时候的 AI IDE 可以说就是个玩具，所以后面有很长一段时间都没咋用过 AI IDE 了，日常也就是在 VSCode 里用一些免费的 LLM 代码补全插件（如 Codeium）。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503061756093.png?imageView2/2/w/200">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503061801719.png?imageView2/2/w/300">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503061849618.png?imageView2/2/w/500">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503061853736.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503061854581.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503061855120.png?imageView2/2/w/400">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503061858129.png?imageView2/2/w/500">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503061905364.png?imageView2/2/w/400">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503061910031.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503061916458.png?imageView2/2/w/400">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503071217134.png?imageView2/2/w/400">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503071227994.png?imageView2/2/w/400">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503071228425.png?imageView2/2/w/400">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503071229604.png?imageView2/2/w/400">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503071232041.png?imageView2/2/w/400">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503071459645.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503071512464.png?imageView2/2/w/400">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503072212270.png?imageView2/2/w/400">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503072218713.png?imageView2/2/w/400">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503072220710.png?imageView2/2/w/400">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503072242863.png?imageView2/2/w/400">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503072253663.png?imageView2/2/w/400">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503081050397.png?imageView2/2/w/400">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503081055449.png?imageView2/2/w/400">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503081059966.png?imageView2/2/w/400">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503081111153.png?imageView2/2/w/400">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503081112908.png?imageView2/2/w/400">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503081113203.png?imageView2/2/w/400">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503081114360.png?imageView2/2/w/400">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503081130782.png?imageView2/2/w/400">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503081117363.png?imageView2/2/w/400">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503081154607.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503081521833.png?imageView2/2/w/400">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202503081522440.png?imageView2/2/w/400">
+<meta property="article:published_time" content="2025-03-08T08:23:54.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.883Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="AI">
+<meta property="article:tag" content="IDE">
+<meta property="article:tag" content="LLM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/202503061756093.png?imageView2/2/w/200">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/trae-practical-analysis/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/trae-practical-analysis/","path":"post/trae-practical-analysis/","title":"Trae实战分析"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Trae实战分析 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E-ai-ide"><span class="nav-number">1.1.</span> <span class="nav-text"> 关于 AI IDE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E-trae"><span class="nav-number">1.2.</span> <span class="nav-text"> 关于 Trae</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E6%88%98"><span class="nav-number">2.</span> <span class="nav-text"> 实战</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E7%BD%91%E7%AB%99%E5%BC%80%E5%8F%91"><span class="nav-number">2.1.</span> <span class="nav-text"> 静态网站开发</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#21stdev-%E7%9A%84%E7%94%A8%E6%B3%95"><span class="nav-number">2.1.1.</span> <span class="nav-text"> 21st.dev 的用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E7%BB%84%E4%BB%B6%E5%BC%80%E5%8F%91"><span class="nav-number">2.1.2.</span> <span class="nav-text"> 使用组件开发</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%84%E4%BB%B6%E7%9A%84%E5%BE%AE%E8%B0%83"><span class="nav-number">2.1.3.</span> <span class="nav-text"> 组件的微调</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">2.1.4.</span> <span class="nav-text"> 总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E7%BC%96%E5%86%99"><span class="nav-number">2.2.</span> <span class="nav-text"> 测试用例编写</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#nestjs-jest-%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95"><span class="nav-number">2.2.1.</span> <span class="nav-text"> NestJS + Jest 单元测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#nextjs-playwright-e2e-%E6%B5%8B%E8%AF%95"><span class="nav-number">2.2.2.</span> <span class="nav-text"> NextJS + Playwright e2e 测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#vue3-vitest-%E7%BB%84%E4%BB%B6%E6%B5%8B%E8%AF%95"><span class="nav-number">2.2.3.</span> <span class="nav-text"> Vue3 + Vitest 组件测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-2"><span class="nav-number">2.2.4.</span> <span class="nav-text"> 总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E8%89%BA%E6%9C%AF%E4%BD%9C%E5%93%81%E5%BC%80%E5%8F%91"><span class="nav-number">2.3.</span> <span class="nav-text"> 生成艺术作品开发</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-3"><span class="nav-number">2.3.1.</span> <span class="nav-text"> 总结</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%8E%E8%AF%9D"><span class="nav-number">3.</span> <span class="nav-text"> 后话</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#code-review"><span class="nav-number">3.1.</span> <span class="nav-text"> Code Review</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AD%A6%E6%83%95%E5%B9%BB%E8%A7%89"><span class="nav-number">3.2.</span> <span class="nav-text"> 警惕幻觉</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#trae-%E7%9B%B8%E6%AF%94-cursor-%E7%9A%84%E4%B8%8D%E8%B6%B3"><span class="nav-number">3.3.</span> <span class="nav-text"> Trae 相比 Cursor 的不足</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E6%8E%A5%E5%85%A5-ui-%E7%A8%BF"><span class="nav-number">3.4.</span> <span class="nav-text"> 如何接入 UI 稿？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B0%E7%9A%84%E5%BC%80%E5%8F%91%E6%A8%A1%E5%BC%8F%E5%B7%B2%E7%BB%8F%E5%88%B0%E6%9D%A5"><span class="nav-number">3.5.</span> <span class="nav-text"> 新的开发模式已经到来</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/trae-practical-analysis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Trae实战分析 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Trae实战分析
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-03-08 16:23:54" itemprop="dateCreated datePublished" datetime="2025-03-08T16:23:54+08:00">2025-03-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A2%E7%B4%A2/" itemprop="url" rel="index"><span itemprop="name">探索</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h1>
+<h2 id="关于-ai-ide"><a class="markdownIt-Anchor" href="#关于-ai-ide"></a> 关于 AI IDE</h2>
+<p>最近（2025-02）看到消息说字节推出了一个免费版的 AI IDE——<a target="_blank" rel="noopener" href="https://www.trae.ai/">Trae</a>，于是就去试了一下，毕竟之前用 AI IDE 的还是 Cursor 刚推出的那会（应该是 2023 年初），那时候的 AI IDE 可以说就是个玩具，所以后面有很长一段时间都没咋用过 AI IDE 了，日常也就是在 VSCode 里用一些免费的 LLM 代码补全插件（如 Codeium）。但 2024 年随着 LLM 大爆发，生产力早就不可同日而语了，因此顺带着 Cursor 和 windsurf 这类 AI IDE 也开始声名大噪。</p>
+<p>由于 Trae 不像其它 AI IDE 那样是需要收费的（估计后面会收费），而且免费提供的模型没有次数限制，因此就可以用它在项目中放心进行各种尝试了，所以是目前用于入门 AI IDE 的最佳选择了。</p>
+<span id="more"></span>
+<h2 id="关于-trae"><a class="markdownIt-Anchor" href="#关于-trae"></a> 关于 Trae</h2>
+<p>由于这篇文章的目的并不是介绍 Trae 怎么操作的，因此我不想在这方面赘述，可以看看阮一峰老师最近给 Trae 写的推广文——<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/x54VUa-7OdqgjSWrnz1g3w">Trae 国内版出来了，真的好用吗？</a>，或者去看官方文档。顺便说一下，国内版提供的大模型不咋地（可以看上面那篇文章的评论区），<strong>推荐用国际版</strong>。只能说还好我一开始用的是国际版，不然我又会对 AI IDE 失望一阵子才会去使用😅；国际版目前提供的模型如下：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503061756093.png?imageView2/2/w/200" alt="image.png" /></p>
+<p>有时候列表里还会出现 GPT-4o，估计 token 用完了模型就会移出列表吧……然而这些模型中可以稳定使用的就 Claude3.5，像 R1 和 Claude3.7 这类热门且又是新进推出的模型很多时候都会出现排队的情况：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503061801719.png?imageView2/2/w/300" alt="image.png" /></p>
+<p>因此我在日常使用直接就锁死用 Claude3.5 了，毕竟长期使用的话稳定性很重要，而且 Claude3.5 在日常使用中感觉也挺不错的。只是听说 3.7 相比 3.5 又提升了不小，估计需要花点钞能力去 Cursor 里稳定体验一下才能知道了。</p>
+<h1 id="实战"><a class="markdownIt-Anchor" href="#实战"></a> 实战</h1>
+<h2 id="静态网站开发"><a class="markdownIt-Anchor" href="#静态网站开发"></a> 静态网站开发</h2>
+<h3 id="21stdev-的用法"><a class="markdownIt-Anchor" href="#21stdev-的用法"></a> 21st.dev 的用法</h3>
+<p>由于不久前在油管上看到一个 <a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=8MPElOdNjtk">视频</a>，讲了一个基于 AI IDE 快速开发网站的思路——即利用 shadcn 组件，直接找到心仪的 UI 组件，然后让 AI 使用这些 UI 组件完成页面功能。</p>
+<p>当然这里具体涉及的组件实际上是 <a target="_blank" rel="noopener" href="https://21st.dev/?tab=components&amp;sort=recommended">21st.dev </a> 提供的，只不过它可以基于 shadcn 进行安装，且支持直接生成使用对应组件的<strong>提示词</strong>，粘贴使用即可让 AI 使用对应的组件，而不需要自己手动安装：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503061849618.png?imageView2/2/w/500" alt="image.png" /></p>
+<p>然而实际上查看生成的提示词你会发现，提示词完全就是把组件的完整源码写进去让 AI 复制然后进行组件的创建，并完成一些 npm 依赖的安装，因此生成的提示词长度完全跟源码有关：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503061853736.png?imageslim" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503061854581.png?imageslim" alt="image.png" /></p>
+<p>然而大多数组件的源码都挺长的，但 Trae 目前支持的最大输入 Token 数为 6000，因此无法使用这种方式：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503061855120.png?imageView2/2/w/400" alt="image.png" /></p>
+<p>不过有一说一，这种方式完全就是土豪作风（所以油管视频里博主用的是 Cursor），随随便便就是上万的输入 Token，其实基于命令行手动安装挺方便的，只有一行命令：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503061858129.png?imageView2/2/w/500" alt="image.png" /></p>
+<h3 id="使用组件开发"><a class="markdownIt-Anchor" href="#使用组件开发"></a> 使用组件开发</h3>
+<p>当通过 shadcn 把组件下载到项目后，就可以使用 Trae 的 Builder 让 AI 使用指定的组件完成某些功能的开发，如：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503061905364.png?imageView2/2/w/400" alt="image.png" /></p>
+<p>上面示例中并没有直接在上下文中指定组件，而是写了要使用的组件的名字，因为 Trae 在新增文件后会自动更新文件的索引，只要组件文件名字不是普通重复的，AI 一般是不会理解错的；但是通过 Trae 的<strong>上下文</strong>功能指定则可以更直接的使用目标组件，如：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503061910031.png?imageslim" alt="image.png" /></p>
+<h3 id="组件的微调"><a class="markdownIt-Anchor" href="#组件的微调"></a> 组件的微调</h3>
+<p>由于 shadcn 导入的组件实际上就是本地文件，因此直接在上下文中指定组件文件，并提出修改的需求即可：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503061916458.png?imageView2/2/w/400" alt="image.png" /></p>
+<h3 id="总结"><a class="markdownIt-Anchor" href="#总结"></a> 总结</h3>
+<p>由于该项目是一个很小的静态网站项目，且对 UI 没有细致的要求，套模板即可，因此一个熟练的前端开发起来最多也就一两天，而使用 Trae 开发也要几个小时，所以单从花费的时间上来看并没比传统开发快多少。</p>
+<p>但实际上这个项目使用了 Nextjs + shadcn 的技术栈，而我之前压根就没用过这个技术栈，甚至连 React 都不怎么用，但基于 Trae 进行开发我基本上无视了技术栈的入门，因为它给出的代码很少有致命的 bug，运行比较顺利，因此我只需要把注意力花在页面呈现的校验上。</p>
+<p>此外，这确实是一个简单的项目，熟练的前端工程师确实不需要费太多功夫就能完成相关需求。然而，这个过程其实是挺<strong>枯燥</strong>的，因为<strong>脑子</strong>里早就想好了大多数的细节，但<strong>手上</strong>不得不去写那些<strong>早就熟的不行</strong>的步骤——新建项目、新建页面、选择组件和插件，然后写胶水代码搭积木……而用 Trae 写这个项目大多数时候就是<strong>输入想法</strong>，然后等它输出完后进行 <strong>Code Review</strong> 和页面功能检查即可，有 bug 则告诉它报错信息和 bug 表现即可，如此反复，除非碰到它<strong>幻觉严重</strong>无法解决的时候才需介入，这种模式极大了减轻了写这种简单业务时脑中的无聊感，甚至在它输出 Code 的途中你还能去干干其它事情😁，这下真可以“一心二用”了。</p>
+<h2 id="测试用例编写"><a class="markdownIt-Anchor" href="#测试用例编写"></a> 测试用例编写</h2>
+<p>由于这两年写了一些个人项目，但精力有限，测试可以说都是随缘进行，因此我很担心过一段时间就写出各种自相矛盾的功能（毕竟过一段时间哪怕是自己写的代码都未必都能全了解😅），所以最好把各种测试用例给覆盖上，不过实在挤不出时间来写，所以这次就想试试让 AI 帮我试试各种各样的测试用例编写了，涵盖了前后端开发中常见的测试用例类型：</p>
+<ul>
+<li>单元测试</li>
+<li>e2e 测试</li>
+<li>组件测试</li>
+</ul>
+<h3 id="nestjs-jest-单元测试"><a class="markdownIt-Anchor" href="#nestjs-jest-单元测试"></a> NestJS + Jest 单元测试</h3>
+<p>NestJS 项目自带的测试框架就是 Jest，而且测试配置默认都开箱即用了，因此让 AI 直接开始写单测用例即可：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503071217134.png?imageView2/2/w/400" alt="image.png" /></p>
+<p>由于 NestJS 是一个参考了 Angular 架构模式的依赖注入式后端框架，再加上之前也较少写过单测，所以一开始看到 AI 给我生成的单测文件我充满了疑惑，这单测用例咋全是 mock 数据，全是 mock 这还测啥呢，因此我就以为 AI 写的单测不对，然后就问起了 AI 为啥要这么写，问了几个问题后我才恍然大悟，🤡竟是我自己：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503071227994.png?imageView2/2/w/400" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503071228425.png?imageView2/2/w/400" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503071229604.png?imageView2/2/w/400" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503071232041.png?imageView2/2/w/400" alt="image.png" /></p>
+<p>通过 AI 给出的单测用例代码以及 AI 的回答，我才知道 AI 一开始给出的单测用例就是规范的，只是我脑里设想的那种按照真实运行情况去测试的方式实际上是 e2e 测试，单测的侧重点应该是：</p>
+<ul>
+<li>隔离外部依赖模块的影响：所以依赖模块应该都进行 mock 处理（当一个模块的副作用特别多时，mock 起来岂不是特别费劲了😂）</li>
+<li>只关注当前测试模块<strong>本身代码</strong>的运行逻辑</li>
+</ul>
+<p>而数据库的操作想要一一 mock 就很费劲了，好在现在的 ORM 都支持内存数据库，所以每次测试时创建一个内存数据库，直接使用内存数据库进行操作，既避免了对真实数据库的影响又是一种对数据库操作的完美 mock。</p>
+<p>只能说 AI 不仅帮我把单测用例写好了，还顺便教会了我如何写规范的单测用例🙈，这简直就是老师的行为。不过 AI 输出的测试用例还需要认真检查，除了查看用例本身执行是否正确以外，还需要看看最表面的测试覆盖率：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503071459645.png?imageslim" alt="image.png" /></p>
+<p>当然，也不能盲目相信测试覆盖率，因为覆盖率这个指标仅仅只是体现了测试用例覆盖代码的整体情况，并不能判断具体的测试用例是否有效。因此 AI 输出的测试用例可以很好地用来快速初始化用例，而具体的用例是否有效还得结合实际测试的代码进行一一判断（这种细致的 Review 工作量也不小的😅）。当发现测试用例覆盖不够时，也能指出让 AI 进行补充用例：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503071512464.png?imageView2/2/w/400" alt="image.png" /></p>
+<h3 id="nextjs-playwright-e2e-测试"><a class="markdownIt-Anchor" href="#nextjs-playwright-e2e-测试"></a> NextJS + Playwright e2e 测试</h3>
+<p>对于前端项目来说，页面中的业务逻辑用 e2e 测试是比较有效的，因为这样的测试模式更贴近用户实际操作，这里选择了目前比较流行的 Playwright 作为 e2e 的测试框架。跟编写单元测试用例，让 AI 写 e2e 测试用例也是一样的简单：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503072212270.png?imageView2/2/w/400" alt="image.png" /></p>
+<p>跟写单测用例类似，这里的 Code Review 需要比较细致去判断是否真的有效，很依赖开发者自身的经验；值得一提的是，playwright 本身并不提供测试覆盖率的功能，而 AI 却认为 playwright 也跟其他单元测试框架类似，提供了 <code>--coverage</code> 参数，实际上并没有提供：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503072218713.png?imageView2/2/w/400" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503072220710.png?imageView2/2/w/400" alt="image.png" /></p>
+<p>所以不难看出，这里 AI 出现了比较严重的<strong>幻觉</strong>现象，如果没有开发背景估计很可能就被坑到了😅。而关于 e2e 测试的测试覆盖率，我在 <a target="_blank" rel="noopener" href="https://www.reddit.com/r/QualityAssurance/comments/1c2jeb9/code_coverage_for_e2e_tests_what_do_you_use/">reddit</a> 上看到一个有意思的讨论，实际上也有人为 playwright 写了统计测试覆盖率的插件——<a target="_blank" rel="noopener" href="https://github.com/mxschmitt/playwright-test-coverage">playwright-test-coverage</a>，不过测试覆盖率这个指标对于 e2e 测试来说有多大的作用，我心里打个问号。</p>
+<h3 id="vue3-vitest-组件测试"><a class="markdownIt-Anchor" href="#vue3-vitest-组件测试"></a> Vue3 + Vitest 组件测试</h3>
+<p>组件测试实际上就是针对 UI 组件的单元测试，只不过单个 Vue 组件的源码并不是最终在运行时执行的完整代码（因为框架层面需要把组件转换成 JS 函数），因此在进行组件测试的时候需要使用 Vue 提供的官方测试套件——<code>@vue/test-utils</code>，把测试的组件进行一层转换然后再进行单元测试。既然本质上就是单测，所以在配置好测试框架后就跟前面写单测一样：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503072242863.png?imageView2/2/w/400" alt="image.png" /></p>
+<p>不过在这里我发现有时候 AI 并不一定完全根据你指定的组件源码内容进行用例的编写，而会出现一些幻觉，开始<strong>意淫</strong>你这个组件应该包含了哪些功能然后擅自给你加到用例里去测试，而实际上组件里压根没有提供对应的功能和 Props😅，因此需要好好进行甄别。</p>
+<p>此外在用 Vitest 进行组件测试时，有一些小问题值得注意一下，一个是 vitest 配置文件中的配置应该跟 vite 的配置保持一致（主要就是 plugins 和 resolve），不然运行测试用例的时候会出现一堆报错（因为配置不一致会导致运行环境和开发环境不同）；另一个就是 Vitest 的运行时环境方面，happy-dom 的兼容性比不上 jsdom。</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503072253663.png?imageView2/2/w/400" alt="image.png" /></p>
+<h3 id="总结-2"><a class="markdownIt-Anchor" href="#总结-2"></a> 总结</h3>
+<p>经过让 AI 编写各种类型的测试用例之后，我发现这类场景下最大的瓶颈反而是我的 Code Review 速度赶不上 AI 生成用例的速度，毕竟平时真的挺少写这些测试用例的😅，而对国内的很多开发团队来说写测试用例是一件比较<strong>奢侈</strong>的事情，现在借助 AI 来辅助用例的编写是个很好的尝试，毕竟搞不好以后写代码真的以 review 为主了；不过好在 AI 给出的测试用例在<strong>规范性</strong>方面简直无话可说，我们可以跟 AI 进行学习，然后加强这方面的实操，等积累了更多的经验后 review 的速度应该会大大提高。</p>
+<h2 id="生成艺术作品开发"><a class="markdownIt-Anchor" href="#生成艺术作品开发"></a> 生成艺术作品开发</h2>
+<p>在用了一会 Trae 后，我萌生了一个想法——让 AI 进行生成艺术作品的开发，毕竟这类作品通常充满了细节，跟普通的业务逻辑相比没有那么规律，因此难度应该大一点；如果 AI 真能大大加快这类作品的开发效率，那我可太高兴了🤓，毕竟这方面积累的想法太多了，实现不过来。</p>
+<p>这次我就试试让 AI 完成“随机生成一棵水彩风格的 3D 树，并提供 GUI 进行粗细，层级，树叶数量等参数控制”的需求。</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503081050397.png?imageView2/2/w/400" alt="image.png" /></p>
+<p>甚至可以上传参考图让 AI 实现图中的风格：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503081055449.png?imageView2/2/w/400" alt="image.png" /></p>
+<p>然而让 AI 直接临摹参考图的尝试最后效果并不太行，甚至连颜色提取都不是很精准，可能跟具体模型的识图能力有关？虽然 AI 按它自己的理解绘制出了一点类似水彩的效果，但跟真实的水彩相比还是差了一些：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503081059966.png?imageView2/2/w/400" alt="image.png" /></p>
+<p>AI 通过添加很多噪点来简单粗暴的模拟“水彩”效果，实际上并没有水彩的那种晕染涂抹的效果。而在某些细节问题上，我让 AI 去实现它，但似乎 AI 压根不能理解我说的需求也没法从我反馈的实际渲染图中察觉到问题的所在，甚至越反馈越改越离谱的情况（我甚至后面用 Cursor 试了一下解决同样的也是如此……）：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503081111153.png?imageView2/2/w/400" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503081112908.png?imageView2/2/w/400" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503081113203.png?imageView2/2/w/400" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503081114360.png?imageView2/2/w/400" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503081130782.png?imageView2/2/w/400" alt="image.png" /></p>
+<p>这个问题我跟 AI 沟通了<strong>几十轮</strong>，到最后得到的效果越来越离谱，以至于我后面索性回退成了之前的版本😅。实际上这个问题在算法层面上的实现并没有那么难，可能是给的提示词和上下文让 AI 产生误解和偏差？也可能是使用的模型对于这个专业问题并没有太多相关的训练数据？</p>
+<p>至于水彩风格的渲染，后面我特地从 Shadertoy 上找了一些比较接近水彩渲染效果的 <a target="_blank" rel="noopener" href="https://www.shadertoy.com/view/4tdyRj">着色器源码</a>，让 AI 模仿出类似的渲染效果，结果也不尽人意，跟提供参考的着色器相比可以说是完全不得精髓：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503081117363.png?imageView2/2/w/400" alt="image.png" /></p>
+<h3 id="总结-3"><a class="markdownIt-Anchor" href="#总结-3"></a> 总结</h3>
+<p>通过跟 AI 的各种沟通，我发现让 AI 开发这类艺术作品它确实能够很快的理解你的大致意图，并迅速地把大致框架和算法给你实现出来。然而这类艺术作品最需要实现的细节部分，AI 好像理解起来有点费劲，每次只能实现细节中的很少一部分，甚至跟它反馈完又给你改偏题，所以在<strong>准确地</strong>实现作品细节方面目前还得是靠自己，一个是参数的微调，一个是算法的适配问题。</p>
+<p>目前该作品实现的效果如下：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503081154607.png?imageslim" alt="image.png" /></p>
+<p>只能说，“<strong>距离产生美</strong>”。作品地址：<a target="_blank" rel="noopener" href="https://dao.xiexuefeng.cc/ai-random-tree">https://dao.xiexuefeng.cc/ai-random-tree</a></p>
+<h1 id="后话"><a class="markdownIt-Anchor" href="#后话"></a> 后话</h1>
+<p>感觉整篇文章写下来就是展示和 AI 的聊天记录😂，事实上目前基于 AI IDE 的开发模式就是如此——聊天 + Code Review。</p>
+<h2 id="code-review"><a class="markdownIt-Anchor" href="#code-review"></a> Code Review</h2>
+<p>尽管目前的 AI IDE 还不能完全接管程序员的所有开发流程，也就是说我们仍然要自己写一点“<strong>传统代码</strong>”（最近正好看到 Antfu 大佬在 B 站直播给自己起的标题就是写传统代码，底下就有人调侃到以后写代码也要变成非遗了😁）；记得在阮一峰大佬某篇文章下有人针对这一点提出了抱怨，大意是“目前的 AI IDE 最多也就<strong>只能</strong>完成 80% 的工作，剩下的 20% 的还是需要人来完成”，好一个“只能”😅，能达到这种效果就足以颠覆现有的开发模式了。</p>
+<p>肉眼的可见的未来（我觉得当下就已经开始了）代码开发的模式肯定变成了以 Code Review 为主，剩下的 AI 目前无法解决的那部分才需要人去手动介入接管；而我相信随着 LLM 和 Agent 的快速发展，以后程序员真的就是全职去做 Code Review 了，所以我个人认为如何<strong>高效地</strong>进行 Code Review 是接下来需要重点突破的方向之一（仅凭人肉去做 Code Review 是有很明显的上限的）。不过哪怕最终甚至设计出一个 Agent 接管了全部的 Code Review，还是需要人来做<strong>决策</strong>的，只不过这时候 AI 输出的代码就彻底变成了黑箱了……</p>
+<h2 id="警惕幻觉"><a class="markdownIt-Anchor" href="#警惕幻觉"></a> 警惕幻觉</h2>
+<p>由于 LLM 的原理，所以这类模型都或多或少的存在幻觉现象——即乱编一通，因为它的输出本质上是计算概率得到的，而非<strong>真正的智能</strong>。具体到输出代码，就会存在乱编 API，乱编参数，使用的 API 版本错乱等等。</p>
+<p>所以目前来说，不要盲目相信 AI 输出的代码就一定是对的，当开发者缺乏相关背景知识时很有可能就被坑了，<strong>打铁还需自身硬</strong>。</p>
+<h2 id="trae-相比-cursor-的不足"><a class="markdownIt-Anchor" href="#trae-相比-cursor-的不足"></a> Trae 相比 Cursor 的不足</h2>
+<p>在用 Trae 的免费模型进行了一系列尝试后，我又试着重回 Cursor 看了看，结果发现 Cursor 在 AI IDE 这块的功能上强太多了，Agent 的流程明显智能多了，仅从单次回答过程中会自动修复文件的 Lint 错误和语法错误这一点来说，Cursor 的收费就值得：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503081521833.png?imageView2/2/w/400" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202503081522440.png?imageView2/2/w/400" alt="image.png" /></p>
+<p>这种做法可以显著地提高 AI 输出的代码质量，因为 Trae 没有这个自动检查流程就会频繁出现一些变量定义错误和 Lint 错误。更不用提 Cursor 提供了更丰富的上下文类型、模型和自定义规则等扩展玩法，所以等适应了 AI IDE 的用法后，Cursor 真的是性价比很高，每个月 20$ 真的一点不贵。</p>
+<h2 id="如何接入-ui-稿"><a class="markdownIt-Anchor" href="#如何接入-ui-稿"></a> 如何接入 UI 稿？</h2>
+<p>在实际的前端项目开发中，对接细致的 UI 稿这块需求还是特别显著的，毕竟不是所有的业务都可以靠套模板完成。虽说现在很多模型都是多模态的，即可以识别并理解图片的内容，如果把 UI 稿转成静态图片，AI 能够还原多少？如果涉及到已有项目，AI 是否能从图片中找到已经封装过的业务组件吗？这一点我还没有怎么实践过，我相信难度不小。</p>
+<p>不过前不久看到过一种新的对接 UI 的思路，那就是直接让 AI 生成 <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/xbFqY9DwTwwZskgBmeqAxA">网页版的UI稿</a> 和原型图，然后再让 AI 基于网页版的 UI 稿进行对接？</p>
+<h2 id="新的开发模式已经到来"><a class="markdownIt-Anchor" href="#新的开发模式已经到来"></a> 新的开发模式已经到来</h2>
+<p>这两年关于 AI 尤其是 LLM 及对应的 Agent 相关的消息简直是层出不穷，好像每天都要出一个<strong>爆炸性</strong>的模型和产品似的，所以贩卖焦虑的确实很多（卖课的也很多😅）。</p>
+<p>我对 AI 现在的进展既感到高兴也感到了焦虑，高兴是因为以前在上班写代码的时候总觉得写代码好枯燥啊，能不能给我自动化完成这些枯燥的业务逻辑（尽管那个时候已经有了半自动化的低代码开发模式，在研究了一阵之后我甚至觉得半自动化都不够，疑似有点太激进了🙈），毕竟这些业务逻辑不夸张的说基本上大部分的细节在脑海里<strong>一瞬</strong>就想好了，而剩下的时间只是看着自己把代码写出来而已，也就是说在工作里写代码大部分时间都是<strong>体力活</strong>罢了，而现在 AI IDE 的出现可以把我<strong>一定程度</strong>的从这种体力活中解放出来，所以我很高兴没过几年这种美梦就实现了；</p>
+<p>焦虑的是现实里工作本来就很卷了，这种级别的生产力解放势必会造成工作岗位的需求减少。现在程序员的处境就好比以前的纺织工碰到了工业革命带来的纺织机器，作为一名传统的手工从业者该如何面对机器带来的挑战？历史的答案告诉我们，我们应该成为掌握机器的那部分人（或者成为造机器的人？），这样才不至于被时代淘汰。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/trae-practical-analysis/" title="Trae实战分析">https://note.xiexuefeng.cc/post/trae-practical-analysis/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/AI/" rel="tag"># AI</a>
+              <a href="/tags/IDE/" rel="tag"># IDE</a>
+              <a href="/tags/LLM/" rel="tag"># LLM</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/certimate-ssl-certificate-auto-update/" rel="prev" title="基于certimate自动化更新免费SSL证书">
+                  <i class="fa fa-chevron-left"></i> 基于certimate自动化更新免费SSL证书
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/cursor-mcp-figma-design-restoration/" rel="next" title="Cursor MCP实战之还原Figma设计稿">
+                  Cursor MCP实战之还原Figma设计稿 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/trae-practical-analysis/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/trae-practical-analysis/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

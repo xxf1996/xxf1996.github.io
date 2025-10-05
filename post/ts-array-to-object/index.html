@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 这是一个我在基于TS编写一种配置型组件模型时所想到的一种类型推导，个人觉得还是挺有意思的，在推导过程中对TS类型编程的理解又加深了不少；">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数组层级到对象层级的TS类型推导">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/ts-array-to-object/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 这是一个我在基于TS编写一种配置型组件模型时所想到的一种类型推导，个人觉得还是挺有意思的，在推导过程中对TS类型编程的理解又加深了不少；">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201001123012.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201001123033.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201001123048.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201001123104.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201001123126.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201001123151.png?imageslim">
+<meta property="article:published_time" content="2020-10-01T04:29:40.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.883Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="TS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20201001123012.png?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/ts-array-to-object/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/ts-array-to-object/","path":"post/ts-array-to-object/","title":"数组层级到对象层级的TS类型推导"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>数组层级到对象层级的TS类型推导 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E6%80%9D%E8%80%83%E9%A2%98"><span class="nav-number">2.</span> <span class="nav-text"> 一个思考题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">3.</span> <span class="nav-text"> 背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A8%E5%AF%BC%E8%BF%87%E7%A8%8B"><span class="nav-number">4.</span> <span class="nav-text"> 推导过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BD%95%E4%B8%8D%E8%83%BD%E7%94%A8%E5%B8%A6%E7%B1%BB%E5%9E%8B%E6%A0%87%E6%B3%A8%E7%9A%84%E7%B1%BB%E5%9E%8B%E7%BB%93%E6%9E%84"><span class="nav-number">4.1.</span> <span class="nav-text"> 为何不能用带类型标注的类型结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86%E6%8E%A8%E5%AF%BC%E4%B8%AD%E5%87%BA%E7%8E%B0%E7%9A%84never%E5%92%8Cunknown"><span class="nav-number">4.2.</span> <span class="nav-text"> 如何处理推导中出现的never和unknown</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%81%94%E5%90%88%E7%B1%BB%E5%9E%8B%E8%BD%AC%E4%BA%A4%E5%8F%89%E7%B1%BB%E5%9E%8B"><span class="nav-number">4.3.</span> <span class="nav-text"> 联合类型转交叉类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#infer%E5%92%8Cextends%E7%9A%84%E6%B3%A8%E6%84%8F%E7%82%B9"><span class="nav-number">4.4.</span> <span class="nav-text"> infer和extends的注意点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BD%95%E4%BC%9A%E6%9C%89%E8%BF%87%E6%BB%A4%E5%8F%AF%E9%80%89%E5%B1%9E%E6%80%A7%E8%BF%99%E4%B8%80%E6%AD%A5%E9%AA%A4"><span class="nav-number">4.5.</span> <span class="nav-text"> 为何会有过滤可选属性这一步骤</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A8%E5%AF%BC%E4%BB%A3%E7%A0%81"><span class="nav-number">5.</span> <span class="nav-text"> 推导代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E6%A1%A3"><span class="nav-number">6.</span> <span class="nav-text"> 相关文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/ts-array-to-object/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="数组层级到对象层级的TS类型推导 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数组层级到对象层级的TS类型推导
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-10-01 12:29:40" itemprop="dateCreated datePublished" datetime="2020-10-01T12:29:40+08:00">2020-10-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A2%E7%B4%A2/" itemprop="url" rel="index"><span itemprop="name">探索</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p>这是一个我在基于<code>TS</code>编写一种配置型组件模型时所想到的一种类型推导，个人觉得还是挺有意思的，在推导过程中对<code>TS</code>类型编程的理解又加深了不少；</p>
+<span id="more"></span>
+<h2 id="一个思考题"><a class="markdownIt-Anchor" href="#一个思考题"></a> 一个思考题</h2>
+<p>已知有一个递归数据结构如下：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">interface</span> <span class="title class_">Item</span> &#123;</span><br><span class="line">  <span class="attr">key</span>: &#123;</span><br><span class="line">    [<span class="attr">name</span>: <span class="built_in">string</span>]: <span class="built_in">string</span> | <span class="built_in">number</span>;</span><br><span class="line">  &#125;;</span><br><span class="line">  <span class="attr">children</span>: <span class="title class_">Item</span>[];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后最外层的结构也是一个数组，即：<code>Item[]</code>；</p>
+<p>希望通过一个<code>TS</code>泛型（即类型函数）将该递归数组结构转换为递归的对象结构，即树状结构；有以下满足上述数组结构的数据：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> demo = [</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="attr">key</span>: &#123;</span><br><span class="line">      <span class="attr">name</span>: <span class="string">&#x27;&#x27;</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">children</span>: [</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="attr">key</span>: &#123;</span><br><span class="line">          <span class="attr">other</span>: <span class="string">&#x27;&#x27;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">children</span>: [</span><br><span class="line">          &#123;</span><br><span class="line">            <span class="attr">key</span>: &#123;</span><br><span class="line">              <span class="attr">age</span>: <span class="number">1</span></span><br><span class="line">            &#125;,</span><br><span class="line">            <span class="attr">children</span>: []</span><br><span class="line">          &#125;,</span><br><span class="line">          &#123;</span><br><span class="line">            <span class="attr">key</span>: &#123;</span><br><span class="line">              <span class="attr">sex</span>: <span class="string">&#x27;&#x27;</span></span><br><span class="line">            &#125;,</span><br><span class="line">            <span class="attr">children</span>: []</span><br><span class="line">          &#125;</span><br><span class="line">        ]</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="attr">key</span>: &#123;</span><br><span class="line">      <span class="attr">size</span>: &#123;&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">children</span>: [</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="attr">key</span>: &#123;</span><br><span class="line">          <span class="attr">width</span>: <span class="number">0</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">children</span>: []</span><br><span class="line">      &#125;,</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="attr">key</span>: &#123;</span><br><span class="line">          <span class="attr">height</span>: <span class="number">0</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">children</span>: []</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="attr">key</span>: &#123;</span><br><span class="line">      <span class="attr">sss</span>: <span class="number">12</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">children</span>: []</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<p>然后有一个函数形状为：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> transfer&lt;T <span class="keyword">extends</span> <span class="built_in">any</span>[]&gt; (<span class="attr">arr</span>: T): <span class="title class_">Transfer</span>&lt;T&gt;</span><br></pre></td></tr></table></figure>
+<p>通过该函数能够将变量<code>demo</code>转为树状层级结构的数据：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> target = <span class="title function_">transfer</span>(demo)</span><br></pre></td></tr></table></figure>
+<p>因此期望得到的target TS推导结构如下：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="attr">target</span>: &#123;</span><br><span class="line">    <span class="attr">name</span>: &#123;</span><br><span class="line">        <span class="attr">other</span>: &#123;</span><br><span class="line">            <span class="attr">age</span>: <span class="built_in">number</span>;</span><br><span class="line">            <span class="attr">sex</span>: <span class="built_in">string</span>;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="attr">size</span>: &#123;</span><br><span class="line">        <span class="attr">width</span>: <span class="built_in">number</span>;</span><br><span class="line">        <span class="attr">height</span>: <span class="built_in">number</span>;</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="attr">sss</span>: <span class="built_in">number</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>请思考如何实现<code>Transfer</code>泛型，使得推导结果满足上述要求。</p>
+<p><strong>注</strong>：这个类型推导很有挑战性，不久前我还一度认为<code>TS</code>不可能推导出来，事实上是<code>TS</code>确实有这个能力；如果能够写出<code>Transfer</code>泛型，基本上对于<code>TS</code>类型编程也就不会太吃力了；</p>
+<h2 id="背景"><a class="markdownIt-Anchor" href="#背景"></a> 背景</h2>
+<p>因为在尝试一个配置式复杂组件的数据层抽象，这个配置文件的结构是一个带层级信息的递归数组结构，跟上面的描述差不多，只是还多了一些很多其他的属性；期望从这个配置数据能够得到一个树状的对象结构，该对象就是组件具体承载的数据，以便输出调用，甚至响应化；</p>
+<p>所以希望<code>TS</code>能够从数组结构自动推导出该对象的数据结构，以更加方便地调用该数据，即数据结构透明化；由于输入的数组配置实际上是动态的，因此用<code>TS</code>推导起来还是颇具难度的。</p>
+<h2 id="推导过程"><a class="markdownIt-Anchor" href="#推导过程"></a> 推导过程</h2>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201001123012.png?imageslim" alt="img" /></p>
+<p>由于<code>TS</code>本身语法的限制，最后得到的推导路线确实是比较曲折的，其中有不少的细节还是值得注意的；</p>
+<h3 id="为何不能用带类型标注的类型结构"><a class="markdownIt-Anchor" href="#为何不能用带类型标注的类型结构"></a> 为何不能用带类型标注的类型结构</h3>
+<p>假如我们得到的层级数组结构一开始就被标记成自定义的类型，或者在参数传递过程中被推导成了自定义类型，那么<font color=#f00>后续的推导就变得不再具体起来</font>，因为赋予了类型的结构在推导过程中会被<code>TS</code>默认识别成自定义类型，而非根据实际值来推导得到的具体键值对结构；</p>
+<h3 id="如何处理推导中出现的never和unknown"><a class="markdownIt-Anchor" href="#如何处理推导中出现的never和unknown"></a> 如何处理推导中出现的never和unknown</h3>
+<p>由于推导数组元素的联合类型时，空数组会被自动推导成<code>never[]</code>，而<code>never</code>类型在跟其它类型进行组合时会得到意外不到的类型，因此需要特别处理<code>never</code>类型的出现；</p>
+<p><code>unknown</code>则会在使用一些自定义泛型时，<code>TS</code>得不到一个<font color=#39f>透明的推导结构</font>，因此会用<code>unknown</code>来代替；其危害性在于<font color=#f00>会阻碍后续结构的推导</font>，因此也需要特殊处理；</p>
+<p>所以问题来了，那么怎样判断一个类型是<code>never</code>或<code>unknown</code>类型呢？当然本能地会想到使用<code>extends</code>语法来判断，用这个来判断<code>never</code>好像没啥问题，但是用这个来判断<code>unknown</code>类型就有点问题了；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201001123033.png?imageslim" alt="img" /></p>
+<p>这样使用<code>extends</code>来判断<code>unknown</code>类型就会永远只得到<code>unknown</code>；不过后面仔细想了想，这是由于<code>unknown</code>是<code>TS</code>中的<font color=#39f>顶级类型</font>，因此非<code>any</code>类型自然都会满足条件判断，因此换个位置就好了；不过，为了安全起见，想了一个泛型函数来进行同类型的判断：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="title class_">IsSame</span>&lt;A, B&gt; = (A | B) <span class="title function_">extends</span> (A &amp; B) ? <span class="literal">true</span> : <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+<p>这里为啥要把<code>A &amp; B</code>放在后面也是有点原因的，因为当两个原始类型不同时，进行交叉操作就会得到<code>never</code>类型，而<code>never</code>是一个<font color=#39f>底层类型</font>，即<code>never</code>是所有类型的子类型，因此放在<code>extends</code>前面就会造成误判；</p>
+<h3 id="联合类型转交叉类型"><a class="markdownIt-Anchor" href="#联合类型转交叉类型"></a> 联合类型转交叉类型</h3>
+<p>联合类型转成相应的交叉类型，这也是一个技巧，这主要是利用了<font color=#f00><code>TS</code>目前唯一可用的逆变</font>：即函数参数的类型兼容性（实际上是双向协变）；</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 联合类型转交叉类型</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">type</span> <span class="title class_">UnionToIntersection</span>&lt;U&gt; = </span><br><span class="line">  (U <span class="keyword">extends</span> <span class="built_in">any</span> ? <span class="function">(<span class="params"><span class="attr">k</span>: U</span>) =&gt;</span> <span class="built_in">void</span> : <span class="built_in">never</span>) <span class="title function_">extends</span> (<span class="function">(<span class="params"><span class="attr">k</span>: infer I</span>) =&gt;</span> <span class="built_in">void</span>) ? I : <span class="built_in">never</span></span><br></pre></td></tr></table></figure>
+<p>至于为啥要把联合类型转成交叉类型，是因为数组推导的是元素联合类型，一个成员类型只是对应目前对象中的一个属性，因此需要进一步合并每个属性得到对象；</p>
+<h3 id="infer和extends的注意点"><a class="markdownIt-Anchor" href="#infer和extends的注意点"></a> infer和extends的注意点</h3>
+<ul>
+<li><code>infer</code>只能用在<code>extends</code>语句的后面；</li>
+<li><code>extends</code>本质上是<font color=#39f>判断继承关系</font>，和常用的相等判断是有区别的；</li>
+</ul>
+<h3 id="为何会有过滤可选属性这一步骤"><a class="markdownIt-Anchor" href="#为何会有过滤可选属性这一步骤"></a> 为何会有过滤可选属性这一步骤</h3>
+<p>因为TS在对数组结构进行推导时，会自动合并同层级元素对象的属性，将某个元素不存在的属性，但是其他元素中存在的属性，变成其可选属性：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> demo = [</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="attr">key</span>: &#123;</span><br><span class="line">      <span class="attr">a</span>: <span class="string">&#x27;&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="attr">key</span>: &#123;</span><br><span class="line">      <span class="attr">b</span>: <span class="number">1</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<p>上述数组结构的自动推导结构为：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201001123048.png?imageslim" alt="img" /></p>
+<p>可以看到，原本在元素对象中不存在的属性自动就合并成可选属性了，这样的推导结果并不太准确，因为最好把其中的可选属性过滤掉；那么问题来了，怎么过滤掉对象类型中的可选属性？</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title class_">Demo</span> &#123;</span><br><span class="line">  <span class="attr">a</span>: <span class="built_in">string</span>;</span><br><span class="line">  <span class="attr">b</span>?: <span class="built_in">number</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201001123104.png?imageslim" alt="img" /></p>
+<p>由于一旦给属性加上了可选标识，其类型值会自动被加上<code>undefined</code>类型，因此可以利用这个特点来简单地判断一个可选属性:</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 获取对象类型中非可选的key</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">type</span> <span class="title class_">KeepRequiredKey</span>&lt;T&gt; = &#123;</span><br><span class="line">  [K <span class="keyword">in</span> keyof T]: <span class="literal">undefined</span> <span class="keyword">extends</span> T[K] ? <span class="built_in">never</span> : K;</span><br><span class="line">&#125;[keyof T]</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 过滤对象中可选的属性，如果对象类型为unknown，返回原值（降级处理）</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">type</span> <span class="title class_">KeepRequired</span>&lt;T&gt; = <span class="title class_">IsSame</span>&lt;<span class="title class_">KeepRequiredKey</span>&lt;T&gt;, <span class="built_in">unknown</span>&gt; <span class="keyword">extends</span> <span class="literal">true</span> ? T : <span class="title class_">Pick</span>&lt;T, <span class="title class_">KeepRequiredKey</span>&lt;T&gt;&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="推导代码"><a class="markdownIt-Anchor" href="#推导代码"></a> 推导代码</h2>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** 一个具有递归特性的数组层级结构 */</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">interface</span> ABC &#123;</span><br><span class="line">  <span class="attr">key</span>: &#123;</span><br><span class="line">    [<span class="attr">name</span>: <span class="built_in">string</span>]: <span class="built_in">string</span> | <span class="built_in">number</span>;</span><br><span class="line">  &#125;;</span><br><span class="line">  <span class="attr">children</span>: <span class="variable constant_">ABC</span>[];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 联合类型转交叉类型</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">type</span> <span class="title class_">UnionToIntersection</span>&lt;U&gt; = </span><br><span class="line">  (U <span class="keyword">extends</span> <span class="built_in">any</span> ? <span class="function">(<span class="params"><span class="attr">k</span>: U</span>) =&gt;</span> <span class="built_in">void</span> : <span class="built_in">never</span>) <span class="title function_">extends</span> (<span class="function">(<span class="params"><span class="attr">k</span>: infer I</span>) =&gt;</span> <span class="built_in">void</span>) ? I : <span class="built_in">never</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 获取对象类型中非可选的key</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">type</span> <span class="title class_">KeepRequiredKey</span>&lt;T&gt; = &#123;</span><br><span class="line">  [K <span class="keyword">in</span> keyof T]: <span class="literal">undefined</span> <span class="keyword">extends</span> T[K] ? <span class="built_in">never</span> : K;</span><br><span class="line">&#125;[keyof T]</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 过滤对象中可选的属性，如果对象类型为unknown，返回原值（降级处理）</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">type</span> <span class="title class_">KeepRequired</span>&lt;T&gt; = <span class="title class_">IsSame</span>&lt;<span class="title class_">KeepRequiredKey</span>&lt;T&gt;, <span class="built_in">unknown</span>&gt; <span class="keyword">extends</span> <span class="literal">true</span> ? T : <span class="title class_">Pick</span>&lt;T, <span class="title class_">KeepRequiredKey</span>&lt;T&gt;&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 交叉类型合并成对象类型</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">type</span> <span class="title class_">Compute</span>&lt;T&gt; =</span><br><span class="line">  T <span class="keyword">extends</span> <span class="title class_">Function</span></span><br><span class="line">  ? T</span><br><span class="line">  : &#123; [K <span class="keyword">in</span> keyof T]: T[K] &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 判断两个类型是否为同一类型</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">type</span> <span class="title class_">IsSame</span>&lt;A, B&gt; = (A | B) <span class="title function_">extends</span> (A &amp; B) ? <span class="literal">true</span> : <span class="literal">false</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 获取第一层以下所有层级的属性结构</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">type</span> <span class="title class_">ABCObjectUnion</span>&lt;T <span class="keyword">extends</span> <span class="built_in">any</span>[]&gt; = </span><br><span class="line">  T <span class="keyword">extends</span> <span class="title class_">Array</span>&lt;infer P&gt; ? </span><br><span class="line">  (P <span class="keyword">extends</span> &#123;</span><br><span class="line">    <span class="attr">key</span>: infer K, <span class="comment">// 推断得到当前元素的key</span></span><br><span class="line">    <span class="attr">children</span>: infer C <span class="comment">// 推断得到当前元素的子元素数组</span></span><br><span class="line">  &#125; ? (<span class="title class_">IsSame</span>&lt;C, <span class="built_in">never</span>[]&gt; <span class="keyword">extends</span> <span class="literal">true</span> ? <span class="title class_">KeepRequired</span>&lt;K&gt; : <span class="title class_">KeepRequired</span>&lt;&#123; <span class="comment">// 包装成key:type对象，递归处理下一层级</span></span><br><span class="line">    [<span class="variable constant_">CK</span> <span class="keyword">in</span> keyof K]: C <span class="keyword">extends</span> <span class="built_in">any</span>[] ? <span class="title class_">KeepRequired</span>&lt;<span class="title class_">ABCObject</span>&lt;C&gt;&gt; : <span class="built_in">never</span></span><br><span class="line">  &#125;&gt;) : <span class="built_in">never</span>) :</span><br><span class="line">  <span class="built_in">never</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/** </span></span><br><span class="line"><span class="comment"> * 合并 key:type 联合类型</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">type</span> <span class="title class_">ABCObject</span> &lt;T <span class="keyword">extends</span> <span class="built_in">any</span>[]&gt; = <span class="title class_">Compute</span>&lt;<span class="title class_">UnionToIntersection</span>&lt;<span class="title class_">ABCObjectUnion</span>&lt;T&gt;&gt;&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 模拟输出对象结构的函数</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> a 数组配置</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">function</span> test2&lt;T <span class="keyword">extends</span> <span class="built_in">any</span>[]&gt; (<span class="attr">a</span>: T): <span class="title class_">ABCObject</span>&lt;T&gt; &#123;</span><br><span class="line">  <span class="keyword">return</span> a <span class="keyword">as</span> <span class="built_in">any</span> <span class="keyword">as</span> <span class="title class_">ABCObject</span>&lt;T&gt;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** 一个满足指定类型的数组配置 */</span></span><br><span class="line"><span class="keyword">const</span> t1 = [</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="attr">key</span>: &#123;</span><br><span class="line">      <span class="attr">name</span>: <span class="string">&#x27;&#x27;</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">children</span>: [</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="attr">key</span>: &#123;</span><br><span class="line">          <span class="attr">other</span>: <span class="string">&#x27;&#x27;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">children</span>: [</span><br><span class="line">          &#123;</span><br><span class="line">            <span class="attr">key</span>: &#123;</span><br><span class="line">              <span class="attr">age</span>: <span class="number">1</span></span><br><span class="line">            &#125;,</span><br><span class="line">            <span class="attr">children</span>: []</span><br><span class="line">          &#125;,</span><br><span class="line">          &#123;</span><br><span class="line">            <span class="attr">key</span>: &#123;</span><br><span class="line">              <span class="attr">sex</span>: <span class="string">&#x27;&#x27;</span></span><br><span class="line">            &#125;,</span><br><span class="line">            <span class="attr">children</span>: []</span><br><span class="line">          &#125;</span><br><span class="line">        ]</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="attr">key</span>: &#123;</span><br><span class="line">      <span class="attr">size</span>: &#123;&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">children</span>: [</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="attr">key</span>: &#123;</span><br><span class="line">          <span class="attr">width</span>: <span class="number">0</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">children</span>: []</span><br><span class="line">      &#125;,</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="attr">key</span>: &#123;</span><br><span class="line">          <span class="attr">height</span>: <span class="number">0</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">children</span>: []</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="attr">key</span>: &#123;</span><br><span class="line">      <span class="attr">sss</span>: <span class="number">12</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">children</span>: []</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> c = <span class="title function_">test2</span>(t1)</span><br><span class="line"></span><br><span class="line">c.<span class="property">name</span>.<span class="property">other</span>.<span class="property">age</span></span><br><span class="line">c.<span class="property">size</span>.<span class="property">width</span></span><br></pre></td></tr></table></figure>
+<p><code>TS</code>推导后的结构为：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201001123126.png?imageslim" alt="img" /></p>
+<p>显然是想要的目标对象结构，说明这种推导时可行的；因此在使用该推导结构时<code>vscode</code>都会有相应的提示，十分便利；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201001123151.png?imageslim" alt="img" /></p>
+<h2 id="相关文档"><a class="markdownIt-Anchor" href="#相关文档"></a> 相关文档</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/36966444/how-to-create-a-circularly-referenced-type-in-typescript?noredirect=1&amp;lq=1">How to create a circularly referenced type in TypeScript? - Stack Overflow</a></li>
+<li><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/50374908/transform-union-type-to-intersection-type">typescript - Transform union type to intersection type - Stack Overflow</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/microsoft/TypeScript/issues/27995">Mapped tuples types iterates over all properties · Issue #27995 · microsoft/TypeScript · GitHub</a>：关于遍历<code>TS</code>元组类型的讨论，比较精彩</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/ts-array-to-object/" title="数组层级到对象层级的TS类型推导">https://note.xiexuefeng.cc/post/ts-array-to-object/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/TS/" rel="tag"># TS</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/the-nature-of-css/" rel="prev" title="探索CSS的本质">
+                  <i class="fa fa-chevron-left"></i> 探索CSS的本质
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/frontend-load-third-party-res/" rel="next" title="前端加载非公开第三方文件及接口数据">
+                  前端加载非公开第三方文件及接口数据 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/ts-array-to-object/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/ts-array-to-object/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

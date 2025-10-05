@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="事件对象 当为DOM元素添加一些事件的回调函数后，事件被触发时，会传给回调函数一个Event对象作为第一个参数；而这个Event对象包含关于触发的事件的一些信息及处理方法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Event对象与自定义事件">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/js-event-and-customed-js-event/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="事件对象 当为DOM元素添加一些事件的回调函数后，事件被触发时，会传给回调函数一个Event对象作为第一个参数；而这个Event对象包含关于触发的事件的一些信息及处理方法。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20190111183018.jpg?imageslim">
+<meta property="article:published_time" content="2019-01-11T12:19:35.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.874Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="DOM">
+<meta property="article:tag" content="js">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20190111183018.jpg?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/js-event-and-customed-js-event/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/js-event-and-customed-js-event/","path":"post/js-event-and-customed-js-event/","title":"Event对象与自定义事件"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Event对象与自定义事件 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8B%E4%BB%B6%E5%AF%B9%E8%B1%A1"><span class="nav-number">1.</span> <span class="nav-text"> 事件对象</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E5%B1%9E%E6%80%A7"><span class="nav-number">1.1.</span> <span class="nav-text"> 常用属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95"><span class="nav-number">1.2.</span> <span class="nav-text"> 常用方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dom%E4%BA%8B%E4%BB%B6%E6%B5%81"><span class="nav-number">1.3.</span> <span class="nav-text"> DOM事件流</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E5%BB%BA%E8%87%AA%E5%AE%9A%E4%B9%89%E4%BA%8B%E4%BB%B6"><span class="nav-number">2.</span> <span class="nav-text"> 构建自定义事件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#addeventlistener%E6%96%B9%E6%B3%95"><span class="nav-number">2.1.</span> <span class="nav-text"> addEventlistener方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BAevent%E5%AF%B9%E8%B1%A1"><span class="nav-number">2.2.</span> <span class="nav-text"> 创建Event对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dispatchevent"><span class="nav-number">2.3.</span> <span class="nav-text"> dispatchEvent()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A1%88%E4%BE%8B%E8%87%AA%E5%AE%9A%E4%B9%89tap%E4%BA%8B%E4%BB%B6"><span class="nav-number">2.4.</span> <span class="nav-text"> 案例：自定义tap事件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3"><span class="nav-number">3.</span> <span class="nav-text"> 参考文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/js-event-and-customed-js-event/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Event对象与自定义事件 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Event对象与自定义事件
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-01-11 20:19:35" itemprop="dateCreated datePublished" datetime="2019-01-11T20:19:35+08:00">2019-01-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="事件对象"><a class="markdownIt-Anchor" href="#事件对象"></a> 事件对象</h2>
+<p>当为<code>DOM</code>元素添加一些事件的回调函数后，事件被触发时，会传给回调函数一个<code>Event</code>对象作为第一个参数；而这个<code>Event</code>对象包含关于触发的事件的一些信息及处理方法。</p>
+<span id="more"></span>
+<h3 id="常用属性"><a class="markdownIt-Anchor" href="#常用属性"></a> 常用属性</h3>
+<ol>
+<li><code>bubbles</code>： <code>Boolean</code>（只读）， 表明事件是否冒泡；</li>
+<li><code>cancelable</code>： <code>Boolean</code> （只读）， 表明是否可以取消事件的默认行为；</li>
+<li><code>currentTarget</code>： <code>Element</code> （只读），事件处理程序当前正在处理事件的那个元素；</li>
+<li><code>defaultPrevented</code>： <code>Boolean</code> （只读）， 为<code>true</code>表示已经调用了<code>preventDefault()</code>（<code>DOM3</code>级事件中新增）</li>
+<li><code>detail</code>： <code>Integer</code> （只读），与事件相关的细节信息；</li>
+<li><code>eventPhase</code>： <code>Integer</code> （只读），调用事件处理程序的阶段： <code>1</code>表示捕获阶段，<code>2</code>表示『处于目标』（即<code>currentTarget</code>与<code>target</code>一致时），<code>3</code>表示冒泡阶段；</li>
+<li><code>target</code>： <code>Element</code> （只读），事件的目标；</li>
+<li><code>type</code>： <code>String</code> （只读），被触发的事件的类型；</li>
+<li><code>view</code>： <code>AbstractView</code>（只读），与事件关联的抽象视图。等同于发生事件的<code>window</code>对象；</li>
+</ol>
+<blockquote>
+<p>整理自《JavaScript 高级程序设计》</p>
+</blockquote>
+<h3 id="常用方法"><a class="markdownIt-Anchor" href="#常用方法"></a> 常用方法</h3>
+<ol>
+<li><code>preventDefault()</code>：<code>Function</code>（只读），取消事件的默认行为。如果<code>cancelable</code>是<code>true</code>，则可以使用这个方法；</li>
+<li><code>stopImmediatePropagation()</code>：<code>Function</code>（只读），取消事件的进一步捕获或冒泡，<strong>同时阻止任何事件处理程序被调用</strong>（<code>DOM3</code>级事件中新增）</li>
+<li><code>stopPropagation()</code>：<code>Function</code>（只读），取消事件的进一步捕获或冒泡。如果<code>bubbles</code>为<code>true</code>，则可以使用这个方法；</li>
+</ol>
+<blockquote>
+<p>整理自《JavaScript 高级程序设计》</p>
+</blockquote>
+<h3 id="dom事件流"><a class="markdownIt-Anchor" href="#dom事件流"></a> DOM事件流</h3>
+<blockquote>
+<p>“DOM2级事件”规定的事件流包括三个阶段：事件捕获阶段、处于目标阶段和事件冒泡阶段。</p>
+</blockquote>
+<h2 id="构建自定义事件"><a class="markdownIt-Anchor" href="#构建自定义事件"></a> 构建自定义事件</h2>
+<p>构建一个自定义事件的关键就是：</p>
+<ol>
+<li>
+<p><font color=red><strong>拦截原生事件，阻断原事件传播</strong></font>：利用<code>addEventlistener</code>的第三个参数，可以在某父级<code>DOM</code>上事件传播的捕获阶段触发回调函数，然后使用<code>stopPropagation</code>方法阻止原事件的进一步传递；</p>
+</li>
+<li>
+<p><font color=red><strong>构造自定义<code>Event</code>对象</strong></font>：利用<code>Event</code>构造函数构造一个自定义属性的事件对象；</p>
+</li>
+<li>
+<p><font color=red><strong>派发自定义事件</strong></font>：使用<code>EventTarget</code>对象自带的<code>dispatchEvent</code>方法进行事件对象的派发；</p>
+</li>
+</ol>
+<h3 id="addeventlistener方法"><a class="markdownIt-Anchor" href="#addeventlistener方法"></a> addEventlistener方法</h3>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">target.<span class="title function_">addEventListener</span>(type, listener[, useCapture])</span><br></pre></td></tr></table></figure>
+<p><code>addEventListener</code>可以为<code>DOM</code>绑定一个<code>DOM2</code>级事件的监听处理，一般第三个参数<code>useCapture</code>很少使用，其作用就是该事件是否在<strong>捕获阶段</strong>触发，默认为<code>false</code>，因此设置为<code>true</code>时可在捕获阶段触发监听处理函数！</p>
+<h3 id="创建event对象"><a class="markdownIt-Anchor" href="#创建event对象"></a> 创建Event对象</h3>
+<blockquote>
+<p>event = new Event(typeArg, eventInit);</p>
+</blockquote>
+<p>通过<code>Event</code>构造函数可以创建一个自定义属性的<code>Event</code>对象，相当于回调函数接收的第一个参数；</p>
+<ul>
+<li><code>typeArg</code>：事件的名称；</li>
+<li><code>eventInit</code>：事件的设置选项，为一个对象，该对象可以使用以下属性：
+<ul>
+<li><code>bubbles</code>：<code>Boolean</code>类型，表示该事件是否可以冒泡，默认值为<code>false</code>；</li>
+<li><code>cancelable</code>：<code>Boolean</code>类型，表示该事件是否可以使用<code>preventDefault()</code>方法进行取消，默认为<code>false</code>；</li>
+<li><code>composed</code>：<code>Boolean</code>类型，事件是否会在影子<code>DOM</code>根节点（<code>shadow root DOM</code>）之外触发侦听器，默认为<code>false</code>；</li>
+</ul>
+</li>
+</ul>
+<h3 id="dispatchevent"><a class="markdownIt-Anchor" href="#dispatchevent"></a> dispatchEvent()</h3>
+<blockquote>
+<p>EventTarget.dispatchEvent(event)</p>
+</blockquote>
+<ul>
+<li><code>EventTarget</code>：一般为触发事件时<code>Event</code>对象的<code>target</code>属性所指向的<code>DOM</code>节点；</li>
+<li><code>event</code>：<code>Event</code>对象；</li>
+</ul>
+<p>使用该方法就相当于某个<code>DOM</code>节点触发了某个<code>event</code>事件；</p>
+<h3 id="案例自定义tap事件"><a class="markdownIt-Anchor" href="#案例自定义tap事件"></a> 案例：自定义tap事件</h3>
+<p>由于现在的移动端设备的屏幕多是触摸屏，因此<code>H5</code>针对触摸屏特别制定了适用于触摸设备的<code>TouchEvent</code>事件规范，这使得触摸屏的点击事件变得更加灵敏了；</p>
+<p>为啥使用<code>click</code>事件就不灵敏了？由于一些<strong>历史原因</strong>，现在的移动端浏览器对于<code>click</code>事件和<code>touch event</code>事件的执行顺序遵守如下规则：<code>touchstart-&gt;touchmove-&gt;touchend-&gt;wait 300ms-&gt;click</code>；没错，<code>click</code>要在所有的<code>touch event</code>执行完后<font color=red><strong>延迟<code>300ms</code></strong></font>再执行；</p>
+<p>因此，如果在移动端使用<code>click</code>事件在点击时会出现一个很明显的延迟，对于用户体验来说是不利；其中一个解决办法就是利用<code>TouchEvent</code>封装一个<code>tap</code>点触事件，消除<code>300ms</code>的延迟：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">initTap</span>(<span class="params">eventType = <span class="string">&#x27;tap&#x27;</span></span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> isTap = <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">    <span class="variable language_">document</span>.<span class="property">body</span>.<span class="title function_">addEventListener</span>(<span class="string">&#x27;touchstart&#x27;</span>, <span class="function"><span class="params">e</span> =&gt;</span> &#123;</span><br><span class="line">        isTap = <span class="literal">true</span></span><br><span class="line">    &#125;, <span class="literal">true</span>)</span><br><span class="line"></span><br><span class="line">    <span class="variable language_">document</span>.<span class="property">body</span>.<span class="title function_">addEventListener</span>(<span class="string">&#x27;touchmove&#x27;</span>, <span class="function"><span class="params">e</span> =&gt;</span> &#123;</span><br><span class="line">        isTap = <span class="literal">false</span></span><br><span class="line">    &#125;, <span class="literal">true</span>)</span><br><span class="line"></span><br><span class="line">    <span class="variable language_">document</span>.<span class="property">body</span>.<span class="title function_">addEventListener</span>(<span class="string">&#x27;touchend&#x27;</span>, <span class="function"><span class="params">e</span> =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">if</span>(isTap) &#123;</span><br><span class="line">            e.<span class="title function_">stopPropagation</span>() <span class="comment">// 阻止原事件继续传递</span></span><br><span class="line">            <span class="keyword">let</span> tapEvent = <span class="keyword">new</span> <span class="title class_">Event</span>(eventType, &#123;</span><br><span class="line">                <span class="attr">bubbles</span>: <span class="literal">true</span>, <span class="comment">// 可以冒泡</span></span><br><span class="line">                <span class="attr">cancelable</span>: <span class="literal">false</span> <span class="comment">// 没有默认行为，不可取消默认行为</span></span><br><span class="line">            &#125;) <span class="comment">// 构建自定义tap事件（点触）</span></span><br><span class="line">            tapEvent.<span class="property">touches</span> = e.<span class="property">touches</span> <span class="comment">// 保留touchEvent的触点信息</span></span><br><span class="line">            tapEvent.<span class="property">targetTouches</span> = e.<span class="property">targetTouches</span></span><br><span class="line">            tapEvent.<span class="property">changedTouches</span> = e.<span class="property">changedTouches</span></span><br><span class="line">            e.<span class="property">target</span>.<span class="title function_">dispatchEvent</span>(tapEvent) <span class="comment">// 向target派发事件</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;, <span class="literal">true</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面给出的<code>initTap</code>方法实际上是在<code>body</code>元素上（也就是全局）劫持<code>TouchEvent</code>事件，只要判断不是<code>touchmove</code>事件，那么在<code>touchend</code>事件阶段就会在<code>target</code>对象上派发一个自定义的<code>tap</code>事件，即相当于在<code>touchend</code>事件后马上触发，因此也就没有<code>click</code>事件的<code>300ms</code>延迟，反应特别灵敏；这种方法可以直接在<code>Vue</code>中利用<code>v-on/@</code>进行监听（如<code>@tap=&quot;xxx&quot;</code>），十分方便！</p>
+<p>而且<code>TouchEvent</code>在移动端的兼容性非常好，可以大胆的使用：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20190111183018.jpg?imageslim" alt="mark" /></p>
+<h2 id="参考文档"><a class="markdownIt-Anchor" href="#参考文档"></a> 参考文档</h2>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/Event/Event">Event() | MDN</a></li>
+<li>《JavaScript 高级程序设计》</li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent">EventTarget.dispatchEvent() | MDN</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/TouchEvent">TouchEvent | MDN</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener">EventTarget.addEventListener() | MDN</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/dunken/p/4527869.html">移动端Click300毫秒点击延迟的来龙去脉(转) - 低调的大白兔 - 博客园</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/ustbhuangyi/better-scroll/blob/2e9513bd6d0bb1a1fd2a17af172ef600c70dadfd/src/util/dom.js#L137">https://github.com/ustbhuangyi/better-scroll/blob/2e9513bd6d0bb1a1fd2a17af172ef600c70dadfd/src/util/dom.js#L137</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/js-event-and-customed-js-event/" title="Event对象与自定义事件">https://note.xiexuefeng.cc/post/js-event-and-customed-js-event/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/DOM/" rel="tag"># DOM</a>
+              <a href="/tags/js/" rel="tag"># js</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/music-player-and-webaudio/" rel="prev" title="音频播放器的制作与WebAudio API">
+                  <i class="fa fa-chevron-left"></i> 音频播放器的制作与WebAudio API
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/css-transition/" rel="next" title="CSS过渡效果（transition）">
+                  CSS过渡效果（transition） <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/js-event-and-customed-js-event/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/js-event-and-customed-js-event/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

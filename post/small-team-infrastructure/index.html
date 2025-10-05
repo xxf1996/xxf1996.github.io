@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 我为什么会思考这个问题？这得从一篇演讲稿说起： 前端搞基建|堂主 - 如何推动前端团队的基础设施建设 - 知乎 上文最初大概是在2020年4、5月份的时候看到的（当时还是在语雀上，不过现在链接已经失效，好在知乎上面还找得到），作者在上述演讲稿中详尽地介绍了其团队在一年多的时间内如何从零到一构建了庞大的前端基础设施体系，以及这些基础设施到底起到了多大的作用；整篇演讲稿看完真是令人恍然大悟，原">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前端小团队应该建设哪些基础设施？">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/small-team-infrastructure/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 我为什么会思考这个问题？这得从一篇演讲稿说起： 前端搞基建|堂主 - 如何推动前端团队的基础设施建设 - 知乎 上文最初大概是在2020年4、5月份的时候看到的（当时还是在语雀上，不过现在链接已经失效，好在知乎上面还找得到），作者在上述演讲稿中详尽地介绍了其团队在一年多的时间内如何从零到一构建了庞大的前端基础设施体系，以及这些基础设施到底起到了多大的作用；整篇演讲稿看完真是令人恍然大悟，原">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20210109171646.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20210109171715.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20210109171741.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20210109171802.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20210109171827.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20210109171853.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20210109171923.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20210109171952.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20210109172024.png?imageslim">
+<meta property="article:published_time" content="2021-01-09T09:15:34.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.881Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="基建">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20210109171646.png?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/small-team-infrastructure/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/small-team-infrastructure/","path":"post/small-team-infrastructure/","title":"前端小团队应该建设哪些基础设施？"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>前端小团队应该建设哪些基础设施？ | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E5%9B%A2%E9%98%9F%E7%9A%84%E7%8E%B0%E5%AE%9E%E9%97%AE%E9%A2%98"><span class="nav-number">2.</span> <span class="nav-text"> 小团队的现实问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E5%9B%A2%E9%98%9F%E5%9F%BA%E5%BB%BA%E7%9A%84%E5%BF%85%E8%A6%81%E6%80%A7"><span class="nav-number">3.</span> <span class="nav-text"> 小团队基建的必要性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E5%9B%A2%E9%98%9F%E5%BA%94%E8%AF%A5%E5%BB%BA%E8%AE%BE%E5%93%AA%E4%BA%9B%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD"><span class="nav-number">4.</span> <span class="nav-text"> 小团队应该建设哪些基础设施？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8A%95%E5%85%A5%E4%BA%A7%E5%87%BA%E6%AF%94%E8%BE%83%E5%A4%A7%E7%9A%84%E5%9C%B0%E6%96%B9"><span class="nav-number">4.1.</span> <span class="nav-text"> 投入产出比较大的地方</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E5%BB%BA%E5%AE%9E%E8%B7%B5"><span class="nav-number">5.</span> <span class="nav-text"> 基建实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AC%E5%85%B1%E7%BB%84%E4%BB%B6%E4%BA%A7%E5%87%BA%E6%B5%81%E7%A8%8B"><span class="nav-number">5.1.</span> <span class="nav-text"> 公共组件产出流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B8%B2%E6%9F%93%E6%A8%A1%E5%9E%8Bdsl"><span class="nav-number">5.2.</span> <span class="nav-text"> 渲染模型&#x2F;DSL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E4%BB%96"><span class="nav-number">5.3.</span> <span class="nav-text"> 其他</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E5%BB%BA%E7%9A%84%E6%95%88%E6%9E%9C"><span class="nav-number">5.4.</span> <span class="nav-text"> 基建的效果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8E%E8%AF%9D"><span class="nav-number">6.</span> <span class="nav-text"> 后话</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%9D%E8%AF%95%E5%9F%BA%E5%BB%BA%E5%8F%AF%E4%BB%A5%E6%94%B6%E8%8E%B7%E5%BE%88%E5%A4%9A"><span class="nav-number">6.1.</span> <span class="nav-text"> 尝试基建可以收获很多</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E5%BB%BA%E6%B2%A1%E6%9C%89%E7%BB%88%E7%82%B9"><span class="nav-number">6.2.</span> <span class="nav-text"> 基建没有终点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E6%A1%A3"><span class="nav-number">7.</span> <span class="nav-text"> 相关文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/small-team-infrastructure/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="前端小团队应该建设哪些基础设施？ | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          前端小团队应该建设哪些基础设施？
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-09 17:15:34" itemprop="dateCreated datePublished" datetime="2021-01-09T17:15:34+08:00">2021-01-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A2%E7%B4%A2/" itemprop="url" rel="index"><span itemprop="name">探索</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p>我为什么会思考这个问题？这得从一篇演讲稿说起：</p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/148210793">前端搞基建|堂主 - 如何推动前端团队的基础设施建设 - 知乎</a></p>
+<p>上文最初大概是在<code>2020</code>年<code>4、5</code>月份的时候看到的（当时还是在语雀上，不过现在链接已经失效，好在知乎上面还找得到），作者在上述演讲稿中详尽地介绍了其团队在一年多的时间内如何从零到一构建了庞大的前端基础设施体系，以及这些基础设施到底起到了多大的作用；整篇演讲稿看完真是令人恍然大悟，原来前端可以如此高效以及成体系，看完后我真是对该团队拥有的前端基础设施垂涎三尺，然后臆想了一下在如此高效的前端体系中工作应该是一件很幸福的事情。</p>
+<p>不过，考虑到文中这种庞大的、成熟的前端基础设施是建立在庞大的前端团队以及超多的前端业务场景的积累下建设而成的，那么小团队怎么办？</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20210109171646.png?imageslim" alt="img" /></p>
+<p>于是很自然地我就想到了这个问题，也在一直试图寻找这个问题的答案；在经过<code>2020</code>年内大半年的在团队内部的基建实践（比较初级）后，我想<font color=#39f>也许是时候回答和整理这个问题的思路了</font>。</p>
+<span id="more"></span>
+<h2 id="小团队的现实问题"><a class="markdownIt-Anchor" href="#小团队的现实问题"></a> 小团队的现实问题</h2>
+<p>考虑到现实，毕竟大多数前端团队不像大厂那样有丰富的团队人员配置，大多数还是很小的团队，小团队在实施基建时就不可避免的遇到<strong>很现实的阻力</strong>：</p>
+<ul>
+<li>最大的阻力应该就是受限于团队规模小，无法投入较多精力处理<font color=#f00>作用于直接业务</font>以外的事情</li>
+<li>其次应该是团队内部对于基建的必要性和积极性认识不够（够用就行的思想）</li>
+</ul>
+<h2 id="小团队基建的必要性"><a class="markdownIt-Anchor" href="#小团队基建的必要性"></a> 小团队基建的必要性</h2>
+<p>综合上面的现实问题，是否就可以认为前端基建就是大厂/大团队的专属权利和义务呢？毕竟看起来有点无法下手和吃力不讨好的样子；</p>
+<p>在我看来，所谓的基建就是一切可以提升<font color=#f00>编码效率、团队协作效率及业务鲁棒性</font>的<strong>工具和方法</strong>的集合；只要是项目还在迭代、扩展，就不可避免地遇到新的问题以及效率瓶颈，更不用说很多项目内的业务痛点；目前很多的项目内问题解决路径就是：<strong>直到问题出现才会去解决问题</strong>（甚至是到问题严重的时候才会去解决问题）；</p>
+<blockquote>
+<p>这就是基建最核心的价值：帮助业务更好的活在未来。<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup></p>
+</blockquote>
+<p>我很认同上面这句话，基建不仅可以帮助提升当下的效率，还可以避免一些问题的出现，以便业务更好地可持续发展；</p>
+<h2 id="小团队应该建设哪些基础设施"><a class="markdownIt-Anchor" href="#小团队应该建设哪些基础设施"></a> 小团队应该建设哪些基础设施？</h2>
+<p>考虑到基建的必要性和小团队的现实问题，我给出的答案是：</p>
+<ul>
+<li><strong>优先级</strong>：优先发展<strong>投入产出比</strong>大的地方</li>
+<li><strong>范围</strong>：着眼于自身业务沉淀及业务需求</li>
+<li><strong>自动化程度</strong>：量力而行，不要一开始就追求大团队所拥有的成体系的自动化前端基建，推荐“<strong>局部研发链路的自动化</strong>”</li>
+</ul>
+<blockquote>
+<p>在设计工具的相关交流中，我们还发现了有的团队开始把交互相关的功能也做了进去，例如将页面跳转，后端处理流程逻辑等进行了可视化编辑，自动生成相应的接口和流程代码。这种探索可以概括成：“<font color=#f00>局部研发链路的自动化</font>”。它是一个初期提效很有用的方法。在对外交流中我们发现了两点有用的建议：</p>
+</blockquote>
+<blockquote>
+<p>一是任何团队都可以并且也都应该做，不必觉得自己团队研发实力不够，等大公司推出相应方案。<font color=#f00>局部自动化的关键其实对自己的业务和人员分工的一种总结和思考。在技术上，当自己的业务相对确定时，通过一些简单的方法就能实现</font>。而大公司要考虑的大而全，不一定适合。在人员组织上，几乎所有的自动化方案都有一定的分工要求，这也是因组织而异的。局部的自动化是之后整体架构变革的关键前提。<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup></p>
+</blockquote>
+<h3 id="投入产出比较大的地方"><a class="markdownIt-Anchor" href="#投入产出比较大的地方"></a> 投入产出比较大的地方</h3>
+<ul>
+<li><strong>规范文档</strong>：个人觉得规范文档应当是<font color=#f00>整个基建中的灵魂</font>，因为<font color=#39f>规范文档可以看做是整个团队的共识</font>，在没有共识的情况下开展基建不免会遇到很多不理解的地方；而且制订相应的规范可以先参考业界常用的，然后再具体讨论内部的细节，花费的时间不需要太多，但是带来的收益绝对是极大的（有效地提升团队协作共识和效率）；</li>
+<li><strong>业务（通用）组件</strong>：前端项目随着业务扩展，就会自然地抽象出可以被复用的业务组件，这也是一种业务沉淀；不过个人觉得<font color=#f00>组件的产出流程应该纳入基建中</font>，加以规范和流程化，否则容易造成组件复用率不高、扩展性不强，耦合度过高等问题；</li>
+<li><strong>工具函数</strong>：实际上跟业务组件类似，只是组件在前端项目内偏向于视图层，而工具函数就是逻辑层，同样地工具函数的产出流程也应当规范化；</li>
+<li><strong>代码检测</strong>：这个实际上是配合代码规范文档进行的<strong>一种辅助手段</strong>，因为口说无凭，规范毕竟不是一种实体性质的东西，实际编码过程中<strong>可能出现不遵守和遗忘代码规范的情况</strong>，如果缺乏一种强制手段来检测规范的执行，那么代码相关的规范约束力就会大打折扣；事实上，如今社区已经存在各种相应成熟的代码检测工具，只需要根据内部约定的规范做一些修改配置就够了；</li>
+<li><strong>脚手架</strong>：当公司业务项目之间出现高度的相似时，则可以利用脚手架将之前沉淀的项目配置规范化，完成项目创建流程的规范化，可以满足项目快速创建的目的，且项目初始化工作显著减少还可以复用已经沉淀的一些项目配置；</li>
+</ul>
+<h2 id="基建实践"><a class="markdownIt-Anchor" href="#基建实践"></a> 基建实践</h2>
+<p>说了这么多，那么如何在项目中实施前端基建呢？这里以我在内部的某个项目实践为例：</p>
+<ul>
+<li>项目背景：<code>APP</code>配套使用的<strong>业务后台</strong>；前期工作是从老项目中迁移（重构），后期加入各种新增模块；</li>
+<li>项目特点：模块繁多，某些模块功能相似度很高，表单复杂度较大；</li>
+</ul>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20210109171715.png?imageslim" alt="img" /></p>
+<p>上图就是我在项目中大概做的一些基建相关实践的概况；</p>
+<h3 id="公共组件产出流程"><a class="markdownIt-Anchor" href="#公共组件产出流程"></a> 公共组件产出流程</h3>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20210109171741.png?imageslim" alt="img" /></p>
+<h3 id="渲染模型dsl"><a class="markdownIt-Anchor" href="#渲染模型dsl"></a> 渲染模型/DSL</h3>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20210109171802.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20210109171827.png?imageslim" alt="img" /></p>
+<h3 id="其他"><a class="markdownIt-Anchor" href="#其他"></a> 其他</h3>
+<ul>
+<li><a href="https://note.xiexuefeng.cc/post/multi-branch-common-file/">解决多分支并行开发公共文件维护的几种方案 | snowdream</a></li>
+</ul>
+<h3 id="基建的效果"><a class="markdownIt-Anchor" href="#基建的效果"></a> 基建的效果</h3>
+<ul>
+<li>团队协作效率提升，规范性明显增强</li>
+<li>通过前期组件/公共的积累和沉淀，后续开发速度明显提升（搭积木式开发）</li>
+<li>代码复用率明显提高，减少复制粘贴次数</li>
+</ul>
+<h2 id="后话"><a class="markdownIt-Anchor" href="#后话"></a> 后话</h2>
+<h3 id="尝试基建可以收获很多"><a class="markdownIt-Anchor" href="#尝试基建可以收获很多"></a> 尝试基建可以收获很多</h3>
+<p>在项目中积极实践/推进基建后我才发现，原来尝试基建可以收获到很多东西：</p>
+<ul>
+<li>对前端项目整体会有更深、更本质的认识，能够找出更多的业务及编码痛点</li>
+<li>可以拓展提效的更多思路，接触到更多高效的编码体系及工具</li>
+<li>可以加强全局观念，认识到各种架构、解决方案的具体适用场景，然后尝试提出更适用于具体业务场景下的架构及解决方案</li>
+</ul>
+<p>简言之，积极尝试基建不仅可以对当下项目提效，还能提升自我解决问题的能力；在这不到一年的实践中脑海里已经闪出了各种各样的解决方案，有的是已经应用了，更多的则是还在探索和检验中，<font color=#f00>总之收获了很多灵感</font>：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20210109171853.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20210109171923.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20210109171952.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20210109172024.png?imageslim" alt="img" /></p>
+<ul>
+<li><a href="https://note.xiexuefeng.cc/post/a-skeleton-generation-method/">一个可行的全路由骨架屏生成方案 | snowdream</a></li>
+</ul>
+<h3 id="基建没有终点"><a class="markdownIt-Anchor" href="#基建没有终点"></a> 基建没有终点</h3>
+<p>我个人觉得只要是项目还在发展/迭代，基建就没有终点；这一点从大厂的实践来看也是一样的，大厂们正齐步从可视化搭建（半自动化）迈向智能化搭建（全自动化）的探索之路；</p>
+<h2 id="相关文档"><a class="markdownIt-Anchor" href="#相关文档"></a> 相关文档</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.yuque.com/zaotalk/posts/glkg6d">前端搞基建|堂主 - 如何推动前端团队的基础设施建设 · 语雀</a>：已失效</li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/107947462">前端 DSL 实践指南（上）—— 内部 DSL - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/38532183">如何从业务代码中提升技术：使用领域特定语言消除重复代码 - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.yuque.com/zaotalk/posts/oekk3r">前端搞基建|Scott - 如何在人单力薄时立项推动基建 · 语雀</a></li>
+</ul>
+<hr class="footnotes-sep" />
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/148210793">前端搞基建|堂主 - 如何推动前端团队的基础设施建设 - 知乎</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/66474056">长夜未央——企业级研发提效的下一阶段 - 知乎</a> <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/small-team-infrastructure/" title="前端小团队应该建设哪些基础设施？">https://note.xiexuefeng.cc/post/small-team-infrastructure/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E5%9F%BA%E5%BB%BA/" rel="tag"># 基建</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/vue3-reactive/" rel="prev" title="vue3核心原理：响应式数据系统">
+                  <i class="fa fa-chevron-left"></i> vue3核心原理：响应式数据系统
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/vue-cli-remote-preset/" rel="next" title="自定义vue-cli远程preset模板">
+                  自定义vue-cli远程preset模板 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/small-team-infrastructure/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/small-team-infrastructure/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

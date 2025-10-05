@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言  mongoose与mongodb的关系 mongodb实际上是一个跨平台的nosql型数据库软件，而mongoose是一个基于mongodb的官方js驱动实现的js库，即专门用于在node.js环境下与mongodb数据库进行连接操作。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mongoose的基本操作">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/mongoose-basic/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言  mongoose与mongodb的关系 mongodb实际上是一个跨平台的nosql型数据库软件，而mongoose是一个基于mongodb的官方js驱动实现的js库，即专门用于在node.js环境下与mongodb数据库进行连接操作。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/180902/gdlE8I6k7I.png?imageslim">
+<meta property="article:published_time" content="2018-11-04T04:18:28.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.877Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="mongodb">
+<meta property="article:tag" content="mongoose">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/180902/gdlE8I6k7I.png?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/mongoose-basic/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/mongoose-basic/","path":"post/mongoose-basic/","title":"mongoose的基本操作"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>mongoose的基本操作 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#mongoose%E4%B8%8Emongodb%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">1.1.</span> <span class="nav-text"> mongoose与mongodb的关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8mongoose"><span class="nav-number">1.2.</span> <span class="nav-text"> 为什么使用mongoose</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C"><span class="nav-number">2.</span> <span class="nav-text"> 基本操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5"><span class="nav-number">2.1.</span> <span class="nav-text"> 数据库连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%9E%E6%8E%A5%E9%9B%86%E5%90%88%E4%B8%8Emodel"><span class="nav-number">2.2.</span> <span class="nav-text"> 连接集合与Model</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%B8%80"><span class="nav-number">2.2.1.</span> <span class="nav-text"> 方法一</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%BA%8C"><span class="nav-number">2.2.2.</span> <span class="nav-text"> 方法二</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#crud"><span class="nav-number">2.3.</span> <span class="nav-text"> CRUD</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8F%92%E5%85%A5%E6%95%B0%E6%8D%AE"><span class="nav-number">2.3.1.</span> <span class="nav-text"> 插入数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2%E6%95%B0%E6%8D%AE"><span class="nav-number">2.3.2.</span> <span class="nav-text"> 查询数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9B%B4%E6%96%B0%E6%95%B0%E6%8D%AE"><span class="nav-number">2.3.3.</span> <span class="nav-text"> 更新数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E6%95%B0%E6%8D%AE"><span class="nav-number">2.3.4.</span> <span class="nav-text"> 删除数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">2.3.5.</span> <span class="nav-text"> 注意事项</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8E%E8%AF%9D"><span class="nav-number">3.</span> <span class="nav-text"> 后话</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3"><span class="nav-number">4.</span> <span class="nav-text"> 参考文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/mongoose-basic/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="mongoose的基本操作 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          mongoose的基本操作
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-11-04 12:18:28" itemprop="dateCreated datePublished" datetime="2018-11-04T12:18:28+08:00">2018-11-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<h3 id="mongoose与mongodb的关系"><a class="markdownIt-Anchor" href="#mongoose与mongodb的关系"></a> mongoose与mongodb的关系</h3>
+<p><code>mongodb</code>实际上是一个跨平台的<code>nosql</code>型数据库软件，而<code>mongoose</code>是一个基于<code>mongodb</code>的<a target="_blank" rel="noopener" href="https://mongodb.github.io/node-mongodb-native/">官方<code>js</code>驱动</a>实现的<code>js</code>库，即专门用于在<code>node.js</code>环境下与<code>mongodb</code>数据库进行连接操作。</p>
+<span id="more"></span>
+<h3 id="为什么使用mongoose"><a class="markdownIt-Anchor" href="#为什么使用mongoose"></a> 为什么使用mongoose</h3>
+<p>事实上<code>mongodb</code><strong>官方</strong>已经实现了基于<code>node.js</code>的驱动库，<code>npm</code>包名就叫<code>mongodb</code>，专门用来与<code>mongodb</code><strong>数据库</strong>进行连接操作的，所以<font color=red><strong>为何</strong></font>还要使用<strong>第三方</strong>实现的<code>mongoose</code>库。这是实际上还是取决于每个人的习惯和理念，由于<code>mongodb</code>在设计上就对于<code>collection</code>（对应于<code>sql</code>数据库中的<strong>数据表</strong>）的结构限制很少，可以认为其存取数据很灵活，也可以认为其存取数据比较松散，这完全是个人口味问题。</p>
+<p>而<font color=#39f><strong>我个人</strong></font>比较习惯对于同一集合（<code>collection</code>）中数据的格式要保持一致性，即每条数据的结构和类型是一致的，不然总觉得不同结构和类型的数据存放于同一集合中就太混乱了（也许是还无法适应<code>mongodb</code>的设计模式）。</p>
+<p>而<code>mongoose</code>就加入了<code>Schema</code>这一设计，使得集合中的数据保持<strong>结构和类型</strong>的一致性成为可能，方便数据管理。</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/180902/gdlE8I6k7I.png?imageslim" alt="mark" /></p>
+<h2 id="基本操作"><a class="markdownIt-Anchor" href="#基本操作"></a> 基本操作</h2>
+<h3 id="数据库连接"><a class="markdownIt-Anchor" href="#数据库连接"></a> 数据库连接</h3>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> mongoose = <span class="built_in">require</span>(<span class="string">&#x27;mongoose&#x27;</span>)</span><br><span class="line"><span class="comment">// mongodb连接地址：mongodb://ip:port/database</span></span><br><span class="line"><span class="keyword">const</span> url = <span class="string">&#x27;mongodb://0.0.0.0:27017/test&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> db = mongoose.<span class="title function_">createConnection</span>(url) <span class="comment">// 返回数据库的连接对象</span></span><br><span class="line">db.<span class="title function_">on</span>(<span class="string">&#x27;error&#x27;</span>, <span class="function">(<span class="params">err</span>)=&gt;</span>&#123; <span class="comment">// 监听数据库连接错误事件</span></span><br><span class="line">    <span class="keyword">throw</span> err</span><br><span class="line">&#125;)</span><br><span class="line">db.<span class="title function_">once</span>(<span class="string">&#x27;open&#x27;</span>, <span class="keyword">function</span>(<span class="params"></span>)&#123; <span class="comment">// 监听数据库连接成功事件（once就是监听一次）</span></span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;connect success&#x27;</span>)</span><br><span class="line">    db.<span class="title function_">close</span>() <span class="comment">// 关闭数据库连接</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p><font color=red><strong>注：</strong></font><code>mongodb</code>数据库的默认端口为<code>27017</code>；</p>
+<h3 id="连接集合与model"><a class="markdownIt-Anchor" href="#连接集合与model"></a> 连接集合与Model</h3>
+<p><code>Schema</code>可以看做是<code>Model</code>与<code>collection</code>之间的中介（相当于<code>proxy</code>），因为<strong>实际上</strong>不同的<code>Schema</code>可以连接到同一个<code>collection</code>，也就是即便是使用<code>mongoose</code>后仍然会出现同一个集合内存在<font color=#39f><strong>不同数据结构</strong></font>的数据；但是由于有<code>Schema</code>这层中介的存在，使得同一<code>Schema</code>内的数据结构是一致的，就不需要我们自己手动地去集合内约束和判断数据结构了（<strong>即把数据结构从集合中抽离出来，集合本身不再有固定的数据结构</strong>）。</p>
+<p>而<code>Model</code>可以看做某个<code>collecton</code>中具有某个<code>Schema</code>的<font color=red><strong>一部分</strong></font>数据，即一个<code>Model</code>需要通过某个<code>Schema</code>来对某个<code>collection</code>进行数据操作。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> mongoose = <span class="built_in">require</span>(<span class="string">&#x27;mongoose&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> <span class="title class_">Schema</span> = mongoose.<span class="property">Schema</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> testSchema = &#123;</span><br><span class="line">    <span class="attr">name</span>: <span class="title class_">String</span>,</span><br><span class="line">    <span class="attr">age</span>: <span class="title class_">Number</span>,</span><br><span class="line">    <span class="attr">habits</span>: [<span class="title class_">String</span>]</span><br><span class="line">&#125; <span class="comment">// 首先定义一个Schema结构</span></span><br></pre></td></tr></table></figure>
+<p>连接集合的方式有两种，一种是<code>mongoose</code>约定的形式；另一种是给<code>schema</code>指定一个具体的<code>collection</code>，使用此<code>schema</code>的<code>model</code>都自动连接到这个<code>collection</code>；</p>
+<h4 id="方法一"><a class="markdownIt-Anchor" href="#方法一"></a> 方法一</h4>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 方法一：指定一个具体的collection</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> schema = <span class="title class_">Schema</span>(testSchema, &#123;<span class="attr">collection</span>: <span class="string">&#x27;info&#x27;</span>&#125;) <span class="comment">// 将testSchema绑定到名为info的集合上</span></span><br><span class="line"><span class="comment">// db为数据库连接对象，该model自动连接schema绑定的集合上</span></span><br><span class="line"><span class="keyword">let</span> model = db.<span class="title function_">model</span>(<span class="string">&#x27;Habit&#x27;</span>, schema)</span><br></pre></td></tr></table></figure>
+<h4 id="方法二"><a class="markdownIt-Anchor" href="#方法二"></a> 方法二</h4>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 方法二：根据Model的名称自动查找</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> schema = <span class="title class_">Schema</span>(testSchema) <span class="comment">// schema没有绑定集合</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 此时model连接到其名称的复数形式（小写）的集合上，即habits集合</span></span><br><span class="line"><span class="keyword">let</span> model = db.<span class="title function_">model</span>(<span class="string">&#x27;Habit&#x27;</span>, schema)</span><br></pre></td></tr></table></figure>
+<h3 id="crud"><a class="markdownIt-Anchor" href="#crud"></a> CRUD</h3>
+<h4 id="插入数据"><a class="markdownIt-Anchor" href="#插入数据"></a> 插入数据</h4>
+<p>一条数据即一条<code>document</code>，而每条<code>document</code>都是某个<code>model</code>的实例；所以插入一条数据到某个<code>集合</code>就要先得到该<code>集合</code>的某个<code>Model</code>，然后<code>new</code>一个该<code>Model</code>的实例，填入数据后可以使用<code>save</code>方法进行插入；</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> schema = <span class="title class_">Schema</span>(testSchema, &#123;<span class="attr">collection</span>: <span class="string">&#x27;info&#x27;</span>&#125;)</span><br><span class="line"><span class="keyword">let</span> <span class="title class_">Habit</span> = db.<span class="title function_">model</span>(<span class="string">&#x27;Habit&#x27;</span>, schema)</span><br><span class="line"><span class="keyword">let</span> habit = <span class="keyword">new</span> <span class="title class_">Habit</span>(&#123;</span><br><span class="line">    <span class="string">&#x27;name&#x27;</span>: <span class="string">&#x27;xxf&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;age&#x27;</span>: <span class="number">22</span></span><br><span class="line">&#125;) <span class="comment">// 可以只填部分或不填数据，新增一条数据</span></span><br><span class="line"></span><br><span class="line">habit.<span class="title function_">save</span>(<span class="function"><span class="params">err</span> =&gt;</span> &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;) <span class="comment">// 使用save方法对新增的数据进行插入</span></span><br></pre></td></tr></table></figure>
+<h4 id="查询数据"><a class="markdownIt-Anchor" href="#查询数据"></a> 查询数据</h4>
+<hr />
+<p>查询条件应该是数据库操作中用的最多的操作，写法自然也是丰富多样，我觉得有必要<font color=red><strong>单独</strong></font>去专门写一个<code>mongoose</code>条件语句（<code>mongoose</code>实际上使用的条件语句格式是<code>mongodb</code>官方规定的语句）的文章，目前还没有使用那么多的语法（主要是还没有遇到那么多的应用场景……）。</p>
+<hr />
+<p><code>mongoose</code>的查询<code>API</code>有：</p>
+<ul>
+<li>Model.find()</li>
+<li>Model.findById()</li>
+<li>Model.findByIdAndDelete()</li>
+<li>Model.findByIdAndRemove()</li>
+<li>Model.findByIdAndUpdate()</li>
+<li>Model.findOne()</li>
+<li>Model.findOneAndDelete()</li>
+<li>Model.findOneAndRemove()</li>
+<li>Model.findOneAndUpdate()</li>
+</ul>
+<p>经常使用的方法主要是<code>find()</code>和<code>findOne()</code>这两个，前者可以返回<font color=#39f><strong>多条</strong></font>满足条件的数据，而后者只返回<font color=#39f><strong>第一条</strong></font>匹配条件的数据；</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> schema = <span class="title class_">Schema</span>(testSchema, &#123;<span class="attr">collection</span>: <span class="string">&#x27;info&#x27;</span>&#125;)</span><br><span class="line"><span class="keyword">let</span> <span class="title class_">Habit</span> = db.<span class="title function_">model</span>(<span class="string">&#x27;Habit&#x27;</span>, schema)</span><br><span class="line"></span><br><span class="line"><span class="title class_">Habit</span>.<span class="title function_">findOne</span>(&#123;<span class="string">&#x27;name&#x27;</span>: <span class="string">&#x27;xxf&#x27;</span>&#125;, <span class="function">(<span class="params">err, data</span>) =&gt;</span> &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>如上，<code>findOne()</code>方法的第一个参数为<strong>查询条件</strong>，第二个参数为<strong>回调函数</strong>（回调函数第一个参数为<code>Error</code>对象，当不为<code>undefined</code>时则代表查询发生错误，第二个参数为<font color=red><strong>匹配条件的数据</strong></font>）；</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> schema = <span class="title class_">Schema</span>(testSchema, &#123;<span class="attr">collection</span>: <span class="string">&#x27;info&#x27;</span>&#125;)</span><br><span class="line"><span class="keyword">let</span> <span class="title class_">Habit</span> = db.<span class="title function_">model</span>(<span class="string">&#x27;Habit&#x27;</span>, schema)</span><br><span class="line"></span><br><span class="line"><span class="title class_">Habit</span>.<span class="title function_">findOne</span>(&#123;<span class="string">&#x27;age&#x27;</span>: &#123;<span class="attr">$gt</span>: <span class="number">18</span>&#125;&#125;, <span class="function">(<span class="params">err, docs</span>) =&gt;</span> &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>而<code>find()</code>方法的用法几乎与<code>findOne()</code>的一致，只是回调函数的第二个参数是一个<strong>数组</strong>，包含<strong>所有</strong>满足查询条件的数据；</p>
+<h4 id="更新数据"><a class="markdownIt-Anchor" href="#更新数据"></a> 更新数据</h4>
+<p>更新的本质就是先查询后修改，所以也需要用到查询语句；但是除此外还需要用到<strong>修改语句</strong>，又是有许多内容可讲；</p>
+<p><code>mongoose</code>的更新数据<code>API</code>有：</p>
+<ul>
+<li>Model.replaceOne()</li>
+<li>Model.updateMany()</li>
+<li>Model.updateOne()</li>
+</ul>
+<h4 id="删除数据"><a class="markdownIt-Anchor" href="#删除数据"></a> 删除数据</h4>
+<p>删除操作也是先进行查询在删除的，所以也要用到查询语句；</p>
+<p><code>mongoose</code>的删除数据<code>API</code>有：</p>
+<ul>
+<li>Model.deleteMany()</li>
+<li>Model.deleteOne()</li>
+</ul>
+<h4 id="注意事项"><a class="markdownIt-Anchor" href="#注意事项"></a> 注意事项</h4>
+<p>当对某条数据的<strong>一部分（字段）的内容</strong>进行增删操作时，实际上还是属于更新数据的范畴，注意不要混淆！</p>
+<h2 id="后话"><a class="markdownIt-Anchor" href="#后话"></a> 后话</h2>
+<p>实际上<font color=red><strong>还有很多</strong></font>需要整理的，但是目前使用的场景并不多，使用的语法的也比较零散，还是需要时间和项目的使用慢慢积累才行。</p>
+<h2 id="参考文档"><a class="markdownIt-Anchor" href="#参考文档"></a> 参考文档</h2>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://mongoosejs.com/docs/">Mongoose v5.3.9: Getting Started</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.mongodb.com/manual/crud/">MongoDB CRUD Operations</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.mongodb.com/manual/reference/operator/query/">Query and Projection Operators —— MongoDB Manual</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/mongoose-basic/" title="mongoose的基本操作">https://note.xiexuefeng.cc/post/mongoose-basic/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/mongodb/" rel="tag"># mongodb</a>
+              <a href="/tags/mongoose/" rel="tag"># mongoose</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/js-this/" rel="prev" title="关于this的指向">
+                  <i class="fa fa-chevron-left"></i> 关于this的指向
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/mongodb-migrate/" rel="next" title="如何迁移linux主机上mongodb数据库">
+                  如何迁移linux主机上mongodb数据库 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/mongoose-basic/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/mongoose-basic/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

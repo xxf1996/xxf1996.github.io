@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言  注：本文写于2020年较早的时候，只是最近整理发布，因此关于渲染流程的认识比较肤浅，重点关注阻塞策略部分就好了；">
+<meta property="og:type" content="article">
+<meta property="og:title" content="网页加载与阻塞">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/web-load-and-block/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言  注：本文写于2020年较早的时候，只是最近整理发布，因此关于渲染流程的认识比较肤浅，重点关注阻塞策略部分就好了；">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201226113138.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201226113154.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201226113203.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201226113211.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201226113219.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201226113227.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201226113237.gif?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201226113246.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201226113256.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201226113304.png?imageslim">
+<meta property="article:published_time" content="2020-12-26T03:30:56.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.887Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="浏览器">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20201226113138.png?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/web-load-and-block/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/web-load-and-block/","path":"post/web-load-and-block/","title":"网页加载与阻塞"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>网页加载与阻塞 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%B5%81%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text"> 基本流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5"><span class="nav-number">3.</span> <span class="nav-text"> 相关概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%BB%E5%A1%9E%E7%AD%96%E7%95%A5"><span class="nav-number">4.</span> <span class="nav-text"> 阻塞策略</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B0%83%E6%95%B4script%E4%BD%8D%E7%BD%AE"><span class="nav-number">4.1.</span> <span class="nav-text"> 调整script位置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#deferasync%E5%B1%9E%E6%80%A7"><span class="nav-number">4.2.</span> <span class="nav-text"> defer&#x2F;async属性</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#defer%E5%B1%9E%E6%80%A7"><span class="nav-number">4.2.1.</span> <span class="nav-text"> defer属性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#async%E5%B1%9E%E6%80%A7"><span class="nav-number">4.2.2.</span> <span class="nav-text"> async属性</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%84%E5%8A%A0%E8%BD%BD%E7%AD%96%E7%95%A5"><span class="nav-number">5.</span> <span class="nav-text"> 预加载策略</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#preload%E5%92%8Cprefetch%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">5.1.</span> <span class="nav-text"> preload和prefetch的区别</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81%E5%AE%9E%E9%AA%8C"><span class="nav-number">6.</span> <span class="nav-text"> 验证实验</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E7%BB%93%E8%AE%BA"><span class="nav-number">6.1.</span> <span class="nav-text"> 实验结论</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E6%A1%A3"><span class="nav-number">7.</span> <span class="nav-text"> 相关文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/web-load-and-block/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="网页加载与阻塞 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          网页加载与阻塞
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-12-26 11:30:56" itemprop="dateCreated datePublished" datetime="2020-12-26T11:30:56+08:00">2020-12-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A2%E7%B4%A2/" itemprop="url" rel="index"><span itemprop="name">探索</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<blockquote>
+<p>注：本文写于2020年较早的时候，只是最近整理发布，因此关于渲染流程的认识比较肤浅，重点关注阻塞策略部分就好了；</p>
+</blockquote>
+<span id="more"></span>
+<h2 id="基本流程"><a class="markdownIt-Anchor" href="#基本流程"></a> 基本流程</h2>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201226113138.png?imageslim" alt="img" /></p>
+<h2 id="相关概念"><a class="markdownIt-Anchor" href="#相关概念"></a> 相关概念</h2>
+<ul>
+<li>
+<p><code>DOM</code>：<code>Document Object Model</code>，即文档对象模型；用于描述文档的结构及元素属性，是HTML和XML文档的编程接口（和<code>JS</code>进行交互的接口）。</p>
+</li>
+<li>
+<p><code>CSSOM</code>：<code>CSS Object Model</code>，即<code>CSS</code>对象模型；跟<code>DOM</code>类似，不过<code>CSSOM</code>是用来描述样式的结构和属性，是<code>CSS</code>的编程接口（和<code>JS</code>进行交互的接口）。</p>
+</li>
+<li>
+<p><code>Render Tree</code>：是<code>DOM</code>和<code>CSSOM</code>两者的结构，渲染树即包含<strong>可以被渲染</strong>的元素节点，同时也包含对应节点的样式信息；</p>
+<p>哪些节点是不会被解析到渲染树中？</p>
+<ul>
+<li>不包括<code>head</code>、<code>script</code>、<code>meta</code>等不可见的节点；</li>
+<li>某些通过<code>CSS</code>隐藏的节点在渲染树中也会被忽略，比如应用了<code>display:none</code> 规则的节点（<code>visibility: hidden</code>只是视觉不可见，仍占据空间，不会被忽略）<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>；</li>
+</ul>
+</li>
+<li>
+<p><code>Layout</code>：布局；根据渲染树进一步计算出每个渲染节点的位置和尺寸信息（对应顶点着色器的工作？）；</p>
+</li>
+<li>
+<p><code>Paint</code>：绘制；根据布局信息，得出渲染节点的像素信息，最终通过显卡绘制到屏幕的相应区域（对应片元着色器的工作？）；</p>
+</li>
+<li>
+<p><strong>回流</strong>：<code>reflow</code>，也叫重排；该流程会重新计算文档中元素的布局信息，某些对<code>DOM</code>或<code>CSS</code>的修改就会引发回流；</p>
+</li>
+<li>
+<p><strong>重绘</strong>：<code>repaint</code>，即重新绘制部分或全部文档元素；当元素的像素信息改变时会触发重绘，很明显，回流必定引发重绘；</p>
+</li>
+</ul>
+<h2 id="阻塞策略"><a class="markdownIt-Anchor" href="#阻塞策略"></a> 阻塞策略</h2>
+<p>虽然普通的<code>link</code>及<code>script</code>会阻塞<code>DOM</code>的解析，但是有一些方法可以调整原始的阻塞策略；</p>
+<h3 id="调整script位置"><a class="markdownIt-Anchor" href="#调整script位置"></a> 调整script位置</h3>
+<p>由于<code>script</code>不论内联还是外部，不论加载与否都会阻塞<code>DOM</code>的解析，因此将<code>script</code>标签移至<code>DOM</code>最后（即<code>&lt;body&gt;</code>闭合标签前），可以最小地影响<code>DOM</code>的解析。</p>
+<h3 id="deferasync属性"><a class="markdownIt-Anchor" href="#deferasync属性"></a> defer/async属性</h3>
+<p>这两个可以用于<strong>非内联</strong><code>script</code>标签（即必须设置<code>src</code>属性），当设置为<code>true</code>时，对应的<code>script</code>标签不会阻塞<code>DOM</code>的解析，但是两个属性的作用还是有所不同的。</p>
+<h4 id="defer属性"><a class="markdownIt-Anchor" href="#defer属性"></a> defer属性</h4>
+<p><code>defer</code>，意为延迟；该属性除了可以使<code>script</code>标签不阻塞<code>DOM</code>解析，还会使对应的<code>script</code>标签的执行阶段延迟到<font color=red><code>DOM</code>解析完成后，<code>DOMContentLoaded</code>事件触发前</font>；也就是所有的<code>defer</code>脚本都必须在加载完且<code>DOM</code>解析完成后才能执行，且<strong>按照顺序</strong>执行；</p>
+<h4 id="async属性"><a class="markdownIt-Anchor" href="#async属性"></a> async属性</h4>
+<p>这个属性就比较简单粗暴，仅仅只是不阻塞<code>DOM</code>而已，加载完后对应的<code>script</code>会按顺序执行，因此执行的时机取决于加载完成的时间点（有可能在<code>DOMContentLoaded</code>事件触发前执行，也可能在触发后执行），<font color=red>但是必定会在<code>window</code>的<code>load</code>事件触发前</font>执行；</p>
+<h2 id="预加载策略"><a class="markdownIt-Anchor" href="#预加载策略"></a> 预加载策略</h2>
+<p>预加载，顾名思义就是预先加载某些会用到的文件，可以是脚本、样式，也可以是媒体文件等；通过预加载设置可以改变原本的一些文件加载顺序和优先级；</p>
+<p>设置<code>link</code>标签的<code>rel</code>属性为<code>preload</code>或<code>prefetch</code>可以开启对应文件的预加载，此时<code>href</code>属性值就是预加载的文件地址，然后通过<code>as</code>属性可以指定文件用途（浏览器内部根据不同的<code>as</code>类型会有不同的加载优先级）；</p>
+<blockquote>
+<p>preload 还有许多其他好处。使用 as来指定将要预加载的内容的类型，将使得浏览器能够：</p>
+<ul>
+<li>更精确地优化资源加载优先级。</li>
+<li>匹配未来的加载需求，在适当的情况下，重复利用同一资源。</li>
+<li>为资源应用正确的内容安全策略。</li>
+<li>为资源设置正确的 Accept 请求头。<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup></li>
+</ul>
+</blockquote>
+<p>比如，可以通过设置对应的预加载，提前在头部加载脚本文件，然后在底部执行脚本；这样既能避免阻塞<code>DOM</code>解析，又可以提前加载脚本文件；</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- ... --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">href</span>=<span class="string">&quot;test.js&quot;</span> <span class="attr">rel</span>=<span class="string">&quot;preload&quot;</span> <span class="attr">as</span>=<span class="string">&quot;script&quot;</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- ... --&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- ... --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;test.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="preload和prefetch的区别"><a class="markdownIt-Anchor" href="#preload和prefetch的区别"></a> preload和prefetch的区别</h3>
+<p><code>prefetch</code>虽然也是对资源文件进行预加载，但是其设计目的是<strong>为了预加载下一页或之后可能会跳转的页面所需要用到的文件</strong>，因此其优先级低于<code>preload</code>。</p>
+<h2 id="验证实验"><a class="markdownIt-Anchor" href="#验证实验"></a> 验证实验</h2>
+<ol>
+<li>
+<p><code>script</code>的执行是否阻塞<code>DOM</code>的解析？</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">p</span> <span class="attr">id</span>=<span class="string">&quot;t1&quot;</span>&gt;</span>t1<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">1</span>; i &lt; <span class="number">1000000000</span>; i++) &#123;</span></span><br><span class="line"><span class="language-javascript">    <span class="comment">// 模拟同步执行耗时</span></span></span><br><span class="line"><span class="language-javascript">  &#125;</span></span><br><span class="line"><span class="language-javascript">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="number">1</span>, <span class="variable language_">window</span>.<span class="property">t2</span>)</span></span><br><span class="line"><span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span> <span class="attr">id</span>=<span class="string">&quot;t2&quot;</span>&gt;</span>t2<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="number">2</span>, <span class="variable language_">window</span>.<span class="property">t2</span>)</span></span><br><span class="line"><span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>根据上述代码设计，如果<code>script</code>的执行不会阻塞<code>DOM</code>解析，那么第一处打印应该不会是<code>undefined</code>；反之若阻塞<code>DOM</code>解析，则为<code>undefined</code>；实际结果为：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201226113154.png?imageslim" alt="img" /></p>
+<p>因此答案为：<code>script</code>的执行会阻塞<code>DOM</code>的解析；</p>
+</li>
+<li>
+<p><code>script</code>的加载是否阻塞<code>DOM</code>的解析？</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">    <span class="keyword">let</span> start = <span class="title class_">Date</span>.<span class="title function_">now</span>()</span></span><br><span class="line"><span class="language-javascript">  </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">    <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span></span><br><span class="line"><span class="language-javascript">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="number">1</span>, <span class="variable language_">window</span>.<span class="property">t1</span>)</span></span><br><span class="line"><span class="language-javascript">    &#125;, <span class="number">10</span>)</span></span><br><span class="line"><span class="language-javascript">  </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://cdn.bootcdn.net/ajax/libs/vue/2.6.11/vue.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span> <span class="attr">id</span>=<span class="string">&quot;t1&quot;</span>&gt;</span>t1<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title class_">Date</span>.<span class="title function_">now</span>() - start)</span></span><br><span class="line"><span class="language-javascript">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="number">2</span>, <span class="variable language_">window</span>.<span class="property">t1</span>)</span></span><br><span class="line"><span class="language-javascript">  </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>根据上述设计，如果外部<code>script</code>的加载不会阻塞<code>DOM</code>解析，那么第一处的打印将不会是<code>undefined</code>；反之则为<code>undefined</code>；测试的时候可以将网速调慢，这样对比更明显：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201226113203.png?imageslim" alt="img" /></p>
+<p>得到的测试结果为：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201226113211.png?imageslim" alt="img" /></p>
+<p>因此答案为：<code>script</code>的加载会阻塞<code>DOM</code>的解析；</p>
+</li>
+<li>
+<p><code>css</code>的加载是否阻塞<code>DOM</code>的解析？</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">    <span class="keyword">let</span> start = <span class="title class_">Date</span>.<span class="title function_">now</span>()</span></span><br><span class="line"><span class="language-javascript">  </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">    <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span></span><br><span class="line"><span class="language-javascript">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="number">1</span>, <span class="variable language_">window</span>.<span class="property">t1</span>)</span></span><br><span class="line"><span class="language-javascript">    &#125;, <span class="number">100</span>)</span></span><br><span class="line"><span class="language-javascript">  </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">link</span> <span class="attr">href</span>=<span class="string">&quot;https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap-grid.css&quot;</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span> <span class="attr">id</span>=<span class="string">&quot;t1&quot;</span>&gt;</span>t1<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title class_">Date</span>.<span class="title function_">now</span>() - start)</span></span><br><span class="line"><span class="language-javascript">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="number">2</span>, <span class="variable language_">window</span>.<span class="property">t1</span>)</span></span><br><span class="line"><span class="language-javascript">  </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>同理，首先降低网速，得到的打印结果为：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201226113219.png?imageslim" alt="img" /></p>
+<p>因此答案为：<code>css</code>的加载不会阻塞<code>DOM</code>的解析；</p>
+</li>
+<li>
+<p><code>css</code>的加载是否阻塞<code>JS</code>的执行？</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">    <span class="keyword">let</span> start = <span class="title class_">Date</span>.<span class="title function_">now</span>()</span></span><br><span class="line"><span class="language-javascript">  </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">link</span> <span class="attr">href</span>=<span class="string">&quot;https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap-grid.css&quot;</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title class_">Date</span>.<span class="title function_">now</span>() - start)</span></span><br><span class="line"><span class="language-javascript">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="number">1</span>, <span class="variable language_">window</span>.<span class="property">t1</span>)</span></span><br><span class="line"><span class="language-javascript">  </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span> <span class="attr">id</span>=<span class="string">&quot;t1&quot;</span>&gt;</span>t1<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>同样地，降低网速进行测试，得到打印结果：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201226113227.png?imageslim" alt="img" /></p>
+<p>显然，<code>css</code>文件之后的<code>js</code>是在<code>css</code>文件加载之后才执行的；</p>
+<p>因此答案为：<code>css</code>的加载会阻塞<code>JS</code>的执行；</p>
+</li>
+<li>
+<p><code>css</code>的加载是否阻塞<code>DOM</code>的渲染？</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">    <span class="selector-id">#t1</span> &#123;</span></span><br><span class="line"><span class="language-css">      <span class="attribute">color</span>: red;</span></span><br><span class="line"><span class="language-css">    &#125;</span></span><br><span class="line"><span class="language-css">  </span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">    <span class="keyword">let</span> start = <span class="title class_">Date</span>.<span class="title function_">now</span>()</span></span><br><span class="line"><span class="language-javascript">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;start&#x27;</span>)</span></span><br><span class="line"><span class="language-javascript">    <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span></span><br><span class="line"><span class="language-javascript">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="number">1</span>, <span class="variable language_">window</span>.<span class="property">t1</span>)</span></span><br><span class="line"><span class="language-javascript">    &#125;, <span class="number">10</span>)</span></span><br><span class="line"><span class="language-javascript">  </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">link</span> <span class="attr">href</span>=<span class="string">&quot;https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.css&quot;</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span> <span class="attr">id</span>=<span class="string">&quot;t1&quot;</span>&gt;</span>t1<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title class_">Date</span>.<span class="title function_">now</span>() - start)</span></span><br><span class="line"><span class="language-javascript">  </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>同样地，降低网速进行测试，录制结果为：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201226113237.gif?imageslim" alt="img" /></p>
+<p>从录制<code>gif</code>可以明显看到虽然<code>css</code>加载不阻塞<code>DOM</code>的解析，但是加载过程中<code>DOM</code>是不会被渲染到浏览器的，直到<code>css</code>文件加载完成（<code>CSSOM</code>构建完成）才会进行渲染，因此<code>css</code>的加载会阻塞<code>DOM</code>的渲染，造成白屏；</p>
+</li>
+<li>
+<p>设置<code>defer</code>的<code>script</code>加载是否阻塞<code>DOM</code>的解析？</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">    <span class="keyword">let</span> start = <span class="title class_">Date</span>.<span class="title function_">now</span>()</span></span><br><span class="line"><span class="language-javascript">  </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">    <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span></span><br><span class="line"><span class="language-javascript">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="number">1</span>, <span class="variable language_">window</span>.<span class="property">t1</span>)</span></span><br><span class="line"><span class="language-javascript">    &#125;, <span class="number">0</span>)</span></span><br><span class="line"><span class="language-javascript">  </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;./test06.js&quot;</span> <span class="attr">defer</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span> <span class="attr">id</span>=<span class="string">&quot;t1&quot;</span>&gt;</span>t1<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">    <span class="variable language_">document</span>.<span class="title function_">addEventListener</span>(<span class="string">&#x27;DOMContentLoaded&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span></span><br><span class="line"><span class="language-javascript">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title class_">Date</span>.<span class="title function_">now</span>() - start)</span></span><br><span class="line"><span class="language-javascript">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;DOMContentLoaded&#x27;</span>, <span class="variable language_">window</span>.<span class="property">t1</span>)</span></span><br><span class="line"><span class="language-javascript">    &#125;)</span></span><br><span class="line"><span class="language-javascript">  </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
+ <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// test06.js</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;外部JS&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p>同样地，降低网速进行测试，得到打印结果：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201226113246.png?imageslim" alt="img" /></p>
+<p>从打印结果不难看出加了<code>defer</code>属性的<code>script</code>加载并不会阻塞<code>DOM</code>的解析，而且会在<code>DOMContentLoaded</code>事件之前执行完；</p>
+</li>
+<li>
+<p>设置<code>async</code>的<code>script</code>加载是否阻塞<code>DOM</code>的解析？</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">    <span class="keyword">let</span> start = <span class="title class_">Date</span>.<span class="title function_">now</span>()</span></span><br><span class="line"><span class="language-javascript">  </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">    <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span></span><br><span class="line"><span class="language-javascript">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="number">1</span>, <span class="variable language_">window</span>.<span class="property">t1</span>)</span></span><br><span class="line"><span class="language-javascript">    &#125;, <span class="number">0</span>)</span></span><br><span class="line"><span class="language-javascript">  </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;./test07.js&quot;</span> <span class="attr">async</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span> <span class="attr">id</span>=<span class="string">&quot;t1&quot;</span>&gt;</span>t1<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">    <span class="variable language_">document</span>.<span class="title function_">addEventListener</span>(<span class="string">&#x27;DOMContentLoaded&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span></span><br><span class="line"><span class="language-javascript">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title class_">Date</span>.<span class="title function_">now</span>() - start)</span></span><br><span class="line"><span class="language-javascript">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;DOMContentLoaded&#x27;</span>, <span class="variable language_">window</span>.<span class="property">t1</span>)</span></span><br><span class="line"><span class="language-javascript">    &#125;)</span></span><br><span class="line"><span class="language-javascript">    <span class="variable language_">window</span>.<span class="title function_">addEventListener</span>(<span class="string">&#x27;load&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span></span><br><span class="line"><span class="language-javascript">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;load&#x27;</span>)</span></span><br><span class="line"><span class="language-javascript">    &#125;)</span></span><br><span class="line"><span class="language-javascript">  </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>同样地，降低网速进行测试，得到打印结果：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201226113256.png?imageslim" alt="img" /></p>
+<p>结果跟<code>defer</code>类似，不会阻塞<code>DOM</code>的解析，而且<code>async</code>脚本并不会影响到<code>DOMContentLoaded</code>事件的触发，但是会影响到<code>load</code>事件的触发；</p>
+</li>
+<li>
+<p>进行预加载（<code>preload</code>）的<code>script</code>是否阻塞<code>DOM</code>的解析？</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">    <span class="keyword">let</span> start = <span class="title class_">Date</span>.<span class="title function_">now</span>()</span></span><br><span class="line"><span class="language-javascript">  </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">    <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span></span><br><span class="line"><span class="language-javascript">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="number">1</span>, <span class="variable language_">window</span>.<span class="property">t1</span>)</span></span><br><span class="line"><span class="language-javascript">    &#125;, <span class="number">0</span>)</span></span><br><span class="line"><span class="language-javascript">  </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">link</span> <span class="attr">href</span>=<span class="string">&quot;./test08.js&quot;</span> <span class="attr">rel</span>=<span class="string">&quot;preload&quot;</span> <span class="attr">as</span>=<span class="string">&quot;script&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span> <span class="attr">id</span>=<span class="string">&quot;t1&quot;</span>&gt;</span>t1<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;./test08.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>同样地，降低网速进行测试，得到打印结果：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201226113304.png?imageslim" alt="img" /></p>
+<p>结果很明显：预加载的<code>script</code>不会阻塞<code>DOM</code>的解析；</p>
+<p>但是，如果预加载的<code>script</code>后面有其他<code>DOM</code>，这时仍然会阻塞后面的<code>DOM</code>解析！</p>
+</li>
+</ol>
+<p>上述实验源码放在这里：<a target="_blank" rel="noopener" href="https://github.com/xxf1996/web-load-test">https://github.com/xxf1996/web-load-test</a></p>
+<h3 id="实验结论"><a class="markdownIt-Anchor" href="#实验结论"></a> 实验结论</h3>
+<p>根据以上实验测试，可以得出：</p>
+<ol>
+<li><code>css</code>的加载会阻塞其后的<code>js</code>执行，不会阻塞<code>DOM</code>的解析，但是会阻塞<code>DOM</code>的渲染；</li>
+<li><code>js</code>的加载和执行都会阻塞<code>DOM</code>的解析；</li>
+<li>给<code>script</code>设置<code>defer</code>或<code>async</code>属性可以避免阻塞<code>DOM</code>的解析；</li>
+</ol>
+<h2 id="相关文档"><a class="markdownIt-Anchor" href="#相关文档"></a> 相关文档</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/29418126">浏览器的渲染：过程与原理 - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.im/post/5b879d0fe51d4538843631c1">页面渲染：过程分析 - 掘金</a></li>
+<li><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000010298038">浏览器渲染页面过程与页面优化 - 前端小事 - SegmentFault 思否</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/Document_Object_Model/Introduction">DOM概述 - Web API 接口参考 | MDN</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.w3cplus.com/javascript/cssom-css-typed-om.html">初探CSS对象模型（CSSOM）_JavaScript, CSS, CSSOM, 会员专栏 教程_w3cplus</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Preloading_content">Preloading content with rel=“preload” - HTML: Hypertext Markup Language | MDN</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/Events/DOMContentLoaded">DOMContentLoaded - 事件参考 | MDN</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.im/post/5b88ddca6fb9a019c7717096">css加载会造成阻塞吗？ - 掘金</a></li>
+<li><a target="_blank" rel="noopener" href="http://pij.robinqu.me/Browser_Scripting/Document_Loading/ScriptTag.html">Script标签和脚本执行顺序 - JavaScript编程语言</a></li>
+</ul>
+<hr class="footnotes-sep" />
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://juejin.im/post/5b879d0fe51d4538843631c1">页面渲染：过程分析 - 掘金</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/HTML/Preloading_content">通过rel=&quot;preload&quot;进行内容预加载 - HTML（超文本标记语言） | MDN</a> <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/web-load-and-block/" title="网页加载与阻塞">https://note.xiexuefeng.cc/post/web-load-and-block/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" rel="tag"># 浏览器</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/ts-union-to-tuple/" rel="prev" title="TS类型转换：union（联合）转tuple（元组）">
+                  <i class="fa fa-chevron-left"></i> TS类型转换：union（联合）转tuple（元组）
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/vue3-reactive/" rel="next" title="vue3核心原理：响应式数据系统">
+                  vue3核心原理：响应式数据系统 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/web-load-and-block/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/web-load-and-block/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

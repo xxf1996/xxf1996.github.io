@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 最近一直在制作一个音乐web app的练习项目，播放器的功能当然是音乐类app的基础；除此之外，个人对于音乐可视化也比较感兴趣，一旦遇上音乐就想着可视化；然而这些功能都离不开HTML5推出的audio元素以及强大的WebAudio API。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="音频播放器的制作与WebAudio API">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/music-player-and-webaudio/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 最近一直在制作一个音乐web app的练习项目，播放器的功能当然是音乐类app的基础；除此之外，个人对于音乐可视化也比较感兴趣，一旦遇上音乐就想着可视化；然而这些功能都离不开HTML5推出的audio元素以及强大的WebAudio API。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20190103173643.png?imageslim">
+<meta property="article:published_time" content="2019-01-03T10:34:08.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.877Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="H5">
+<meta property="article:tag" content="WebAudio">
+<meta property="article:tag" content="visualization">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20190103173643.png?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/music-player-and-webaudio/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/music-player-and-webaudio/","path":"post/music-player-and-webaudio/","title":"音频播放器的制作与WebAudio API"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>音频播放器的制作与WebAudio API | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#audio%E5%85%83%E7%B4%A0"><span class="nav-number">2.</span> <span class="nav-text"> audio元素</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E5%B1%9E%E6%80%A7"><span class="nav-number">2.1.</span> <span class="nav-text"> 常用属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E7%9A%84dom%E5%B1%9E%E6%80%A7"><span class="nav-number">2.2.</span> <span class="nav-text"> 常用的DOM属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95"><span class="nav-number">2.3.</span> <span class="nav-text"> 常用方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%92%AD%E6%94%BE%E5%99%A8%E7%9A%84%E5%88%B6%E4%BD%9C"><span class="nav-number">3.</span> <span class="nav-text"> 播放器的制作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9F%B3%E9%A2%91%E5%8F%AF%E8%A7%86%E5%8C%96"><span class="nav-number">4.</span> <span class="nav-text"> 音频可视化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E9%A2%91%E7%8E%87%E4%BF%A1%E6%81%AF"><span class="nav-number">4.1.</span> <span class="nav-text"> 获取频率信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#analysernode"><span class="nav-number">4.2.</span> <span class="nav-text"> AnalyserNode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%AF%E8%A7%86%E5%8C%96"><span class="nav-number">4.3.</span> <span class="nav-text"> 可视化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A7%BB%E5%8A%A8%E7%AB%AF%E5%85%BC%E5%AE%B9%E6%80%A7%E9%97%AE%E9%A2%98"><span class="nav-number">4.4.</span> <span class="nav-text"> 移动端兼容性问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3"><span class="nav-number">5.</span> <span class="nav-text"> 参考文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/music-player-and-webaudio/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="音频播放器的制作与WebAudio API | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          音频播放器的制作与WebAudio API
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-01-03 18:34:08" itemprop="dateCreated datePublished" datetime="2019-01-03T18:34:08+08:00">2019-01-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A2%E7%B4%A2/" itemprop="url" rel="index"><span itemprop="name">探索</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p>最近一直在制作一个音乐<code>web app</code>的练习项目，播放器的功能当然是音乐类<code>app</code>的基础；除此之外，个人对于音乐可视化也比较感兴趣，一旦遇上音乐就想着可视化；然而这些功能都离不开<code>HTML5</code>推出的<code>audio</code>元素以及强大的<code>WebAudio API</code>。</p>
+<span id="more"></span>
+<h2 id="audio元素"><a class="markdownIt-Anchor" href="#audio元素"></a> audio元素</h2>
+<p><code>audio</code>元素是<code>H5</code>新增的多媒体标签，通过它就可以轻松的用来进行音频播放等一些操作；</p>
+<h3 id="常用属性"><a class="markdownIt-Anchor" href="#常用属性"></a> 常用属性</h3>
+<ol>
+<li>
+<p><code>src</code>：音频地址；</p>
+</li>
+<li>
+<p><code>autoplay</code>：布尔属性，默认值为<code>false</code>；当设置时，音频会马上播放，而非等到音频加载完后再播放；</p>
+</li>
+<li>
+<p><code>loop</code>：布尔属性，默认值为<code>false</code>；设置时音频播放完后会<strong>自动循环播放</strong>；</p>
+</li>
+<li>
+<p><code>controls</code>：布尔属性，默认值为<code>false</code>；设置时浏览器会给<code>audio</code>元素提供一个默认的控制面板（<code>UI</code>，可以进行播放，暂停等操作）；</p>
+</li>
+<li>
+<p><code>preload</code>：用来提示浏览器<strong>以什么方式来加载音频信息</strong>，有<code>auto</code>、<code>none</code>和<code>metadata</code>三个选项，当设置值为<strong>空字符串时</strong>等同于<code>auto</code>；<font color=red><strong>没有规定的默认值</strong></font>，所以不同浏览器的默认值可能不一样；<code>autoplay</code>属性的优先级大于<code>preload</code>！</p>
+<ul>
+<li><code>none</code>：示意用户可能不会播放该音频，或者服务器希望节省带宽；换句话说，<font color=red><strong>该音频不会被缓存</strong></font>；</li>
+<li><code>metadata</code>：示意即使用户可能不会播放该音频，但<font color=red><strong>获取元数据</strong></font> (例如音频长度) 还是有必要的。</li>
+<li><code>auto</code>：示意用户可能会播放音频；换句话说，如果有必要，<font color=red><strong>整个音频都将被加载</strong></font>，即使用户不期望使用。</li>
+</ul>
+</li>
+<li>
+<p><code>muted</code>：布尔属性，默认为<code>false</code>；设置时代表音频是<strong>静音</strong>的；</p>
+</li>
+</ol>
+<h3 id="常用的dom属性"><a class="markdownIt-Anchor" href="#常用的dom属性"></a> 常用的<code>DOM</code>属性</h3>
+<ol>
+<li>
+<p><code>paused</code>：音频元素是否处于暂停状态（<code>true</code>or<code>false</code>），<font color=red><strong>缓冲状态并不算暂停状态</strong></font>！</p>
+</li>
+<li>
+<p><code>currentTime</code>：音频元素的当前播放时间，<strong>单位为秒</strong>（浮点型）；设置该属性可以调整音频的当前播放时间！</p>
+</li>
+<li>
+<p><code>duration</code>：音频元素的总时间长度，<strong>单位为秒</strong>；没有音频文件时，值为<code>0</code>！</p>
+</li>
+</ol>
+<h3 id="常用方法"><a class="markdownIt-Anchor" href="#常用方法"></a> 常用方法</h3>
+<ol>
+<li><code>play()</code>：播放音频；</li>
+<li><code>pause()</code>：暂停播放；</li>
+</ol>
+<h2 id="播放器的制作"><a class="markdownIt-Anchor" href="#播放器的制作"></a> 播放器的制作</h2>
+<p>虽说<code>audio</code>元素可以使用自带的控制器进行操作，但是一般为了融合进产品，当然会重新设计；所以一般是隐藏<code>audio</code>元素，利用<code>js</code>获取其<code>DOM</code>，然后使用自带的方法和属性进行控制；</p>
+<ol>
+<li>
+<p><strong>播放/暂停/停止</strong>：这些利用<code>play()</code>和<code>pause()</code>方法即可实现；</p>
+</li>
+<li>
+<p><strong>进度条显示</strong>：利用<code>currentTime</code>和<code>duration</code>属性即可获知当前播放进度的百分比；</p>
+</li>
+<li>
+<p><strong>进度跳转</strong>：点击进度条元素时获取其<code>event.offsetX</code>及其容器宽度即可知道<font color=#39f><strong>点击位置对应的进度百分比</strong></font>，然后设置<code>currentTime</code>即可；</p>
+</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">timePoint</span>(<span class="params">e</span>) &#123; <span class="comment">// 歌曲进度条跳转</span></span><br><span class="line">    $player.<span class="property">currentTime</span> = $player.<span class="property">duration</span> * e.<span class="property">offsetX</span> / barWidth</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li><strong>上一首/下一首/其它切换操作</strong>：直接设置<code>src</code>即可；</li>
+</ol>
+<h2 id="音频可视化"><a class="markdownIt-Anchor" href="#音频可视化"></a> 音频可视化</h2>
+<p>音频可视化一般是获取音频频率进行相应转换，形成与音乐同步的视觉信息；而要获取频率信息就需要借助<code>WebAudio API</code>的方法了。</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20190103173643.png?imageslim" alt="mark" /></p>
+<p>上面是来自<code>MDN</code>的一张图，很好地表达了<code>Audio context</code>与<code>Audio node</code>之间的关系，其中<code>Inputs</code>就是音频文件或信息，而<code>Destination</code>则是播放设备；因此，一个<code>Audio context</code>的作用就是引入音源，连接中间节点（<code>AudioNode</code>，可以多个进行串联，有不同类型的<code>AudioNode</code>），最后输出到播放设备；</p>
+<h3 id="获取频率信息"><a class="markdownIt-Anchor" href="#获取频率信息"></a> 获取频率信息</h3>
+<ol>
+<li><strong>创建上下文</strong>：</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="title class_">AudioContext</span> = <span class="variable language_">window</span>.<span class="property">AudioContext</span> || <span class="variable language_">window</span>.<span class="property">webkitAudioContext</span></span><br><span class="line"><span class="keyword">let</span> ctx = <span class="keyword">new</span> <span class="title class_">AudioContext</span>()</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li><strong>创建音源</strong>：</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> source = ctx.<span class="title function_">createMediaElementSource</span>(<span class="variable language_">this</span>.<span class="property">$player</span>)</span><br></pre></td></tr></table></figure>
+<p><code>createMediaElementSource</code>只是创建音源的其中一种方法，该方法接受一个<code>audio</code>元素或<code>video</code>元素作为音源对象，得到一个<code>MediaElementAudioSourceNode</code>对象（属于<code>AudioNode</code>节点）；</p>
+<ol start="3">
+<li><strong>创建分析器节点</strong>：</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> analyser = ctx.<span class="title function_">createAnalyser</span>()</span><br></pre></td></tr></table></figure>
+<p><code>createAnalyser</code>方法可以创建一个<code>AnalyserNode</code>，而<code>AnalyserNode</code>可以实时获取音频的频率相关信息（前提是连接了音源节点）；</p>
+<ol start="4">
+<li><strong>连接音源、分析器和播放设备</strong>：</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">source.<span class="title function_">connect</span>(analyser)</span><br><span class="line">analyser.<span class="title function_">connect</span>(ctx.<span class="property">destination</span>)</span><br></pre></td></tr></table></figure>
+<p>将音源与分析器连接后，分析器就可以工作了；<code>destination</code>属性是默认的音频渲染设备，连接<code>destination</code>后就能正常输出音频信息；</p>
+<p>以上就是获取<font color=#39f><strong>音频频率信息</strong></font>的最直接方法，其实可以在音源和<code>destination</code>之间添加多个不同的<code>AudioNode</code>，玩出更多的花样。</p>
+<h3 id="analysernode"><a class="markdownIt-Anchor" href="#analysernode"></a> AnalyserNode</h3>
+<p>分析器节点拥有丰富的频率信息，是可视化的主要信息来源；常用的属性和方法有：</p>
+<ol>
+<li><code>fftSize</code>：音频频域的<code>FFT</code>样本窗口大小；</li>
+</ol>
+<blockquote>
+<p>fftSize 属性的值必须是从32到32768范围内的2的非零幂； 其默认值为2048.</p>
+</blockquote>
+<ol start="2">
+<li>
+<p><code>frequencyBinCount</code>：数值为<code>fftSize</code>属性值的一半，代表可用于可视化的频率信息数量；</p>
+</li>
+<li>
+<p><code>getByteFrequencyData(arr)</code>：获取当前频率信息至<code>Uint8Array</code>类型数组中；<code>Uint8Array</code>类型数组中元素值为<code>0~255</code>之间的整数；</p>
+</li>
+<li>
+<p><code>getFloatFrequencyData(arr)</code>：获取当前频率信息至<code>Float32Array</code>类型数组中；<code>Float32Array</code>类型数组中元素值为32位浮点数，因此方法获取的数据具有更高的精度；</p>
+</li>
+</ol>
+<h3 id="可视化"><a class="markdownIt-Anchor" href="#可视化"></a> 可视化</h3>
+<p>当成功创建音源和分析器并进行连接后，可以利用<code>AnalyserNode</code>的方法和属性获取实时频率信息，进而进行绘制：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> arr = <span class="keyword">new</span> <span class="title class_">Uint8Array</span>(analyser.<span class="property">frequencyBinCount</span>)</span><br><span class="line">analyser.<span class="title function_">getByteFrequencyData</span>(arr)</span><br></pre></td></tr></table></figure>
+<p>以上步骤就能获取实时的音频频率数据了，只需在<code>requestAnimationFrame</code>中不停地利用<code>getByteFrequencyData</code>等方法获取实时数据就能实现各种各样的音乐可视化，数据有了，后面就靠创意了。</p>
+<h3 id="移动端兼容性问题"><a class="markdownIt-Anchor" href="#移动端兼容性问题"></a> 移动端兼容性问题</h3>
+<p>目前使用过程中发现，在移动端的某些浏览器使用<code>getByteFrequencyData</code>获取数据时会出现数据全为<code>0</code>的情况，找了很久也没找到解决办法，可能是某些浏览器内核对于<code>WebAudio API</code>的支持程度不够吧。</p>
+<h2 id="参考文档"><a class="markdownIt-Anchor" href="#参考文档"></a> 参考文档</h2>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/audio">audio | MDN</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement">HTMLMediaElement | MDN</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/AudioContext">AudioContext | MDN</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/AnalyserNode">AnalyserNode | MDN</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/Guide/Events/Media_events">媒体相关事件 | MDN</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/music-player-and-webaudio/" title="音频播放器的制作与WebAudio API">https://note.xiexuefeng.cc/post/music-player-and-webaudio/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/H5/" rel="tag"># H5</a>
+              <a href="/tags/WebAudio/" rel="tag"># WebAudio</a>
+              <a href="/tags/visualization/" rel="tag"># visualization</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/sync-lyric/" rel="prev" title="如何实现歌词同步显示">
+                  <i class="fa fa-chevron-left"></i> 如何实现歌词同步显示
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/js-event-and-customed-js-event/" rel="next" title="Event对象与自定义事件">
+                  Event对象与自定义事件 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/music-player-and-webaudio/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/music-player-and-webaudio/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

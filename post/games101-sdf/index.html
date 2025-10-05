@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 由于在不久前终于完成了整个GAMES101课程的视频学习（当然除了大作业以外的作业也认真弄了），所以终于可以来挑战一下大作业了；虽然可以自由组织项目，但是作为菜鸟个人觉得课程给出的大作业选题就足够有意思和有挑战了（主要是想不出……），而且这里的选题符合课程内容方向，也比较容易去上手和扩展。 反正一眼扫过去，第一想要做的就是这个了：  因为这个一看就知道，只需要写片段着色器就好了，不需要操作">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GAMES101大作业之SDF场景渲染">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/games101-sdf/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 由于在不久前终于完成了整个GAMES101课程的视频学习（当然除了大作业以外的作业也认真弄了），所以终于可以来挑战一下大作业了；虽然可以自由组织项目，但是作为菜鸟个人觉得课程给出的大作业选题就足够有意思和有挑战了（主要是想不出……），而且这里的选题符合课程内容方向，也比较容易去上手和扩展。 反正一眼扫过去，第一想要做的就是这个了：  因为这个一看就知道，只需要写片段着色器就好了，不需要操作">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20211023174019.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20211023174048.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20211023174119.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20211023174155.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20211023174217.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20211023174251.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20211023174315.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20211023174340.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20211023174420.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20211023174447.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20211023174526.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20211023174547.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20211023174611.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20211023174634.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20211023174658.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20211023174724.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20211023174749.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20211023174811.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20211023174853.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20211023174916.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20211023174944.png?imageslim">
+<meta property="article:published_time" content="2021-10-23T09:37:33.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.872Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="计算机图形">
+<meta property="article:tag" content="GAMES">
+<meta property="article:tag" content="SDF">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20211023174019.png?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/games101-sdf/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/games101-sdf/","path":"post/games101-sdf/","title":"GAMES101大作业之SDF场景渲染"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>GAMES101大作业之SDF场景渲染 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E6%95%88%E6%9E%9C"><span class="nav-number">1.1.</span> <span class="nav-text"> 实现效果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%BA%E6%99%AF%E6%90%AD%E5%BB%BA"><span class="nav-number">2.</span> <span class="nav-text"> 场景搭建</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#sdf"><span class="nav-number">2.1.</span> <span class="nav-text"> SDF</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%BA%E6%99%AF%E6%8B%86%E8%A7%A3"><span class="nav-number">2.2.</span> <span class="nav-text"> 场景拆解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%B0%E6%9D%BF"><span class="nav-number">2.2.1.</span> <span class="nav-text"> 地板</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AB%A0%E9%B1%BC"><span class="nav-number">2.2.2.</span> <span class="nav-text"> “章鱼”</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9F%B1%E5%AD%90"><span class="nav-number">2.2.3.</span> <span class="nav-text"> 柱子</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%BA%E6%99%AF%E6%B8%B2%E6%9F%93"><span class="nav-number">3.</span> <span class="nav-text"> 场景渲染</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ray-martching"><span class="nav-number">3.1.</span> <span class="nav-text"> ray martching</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E6%88%90%E5%83%8F%E5%B9%B3%E9%9D%A2%E7%9A%84%E4%BD%8D%E7%BD%AE"><span class="nav-number">3.2.</span> <span class="nav-text"> 获取成像平面的位置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%89%E7%BA%BF%E4%B8%8E%E7%89%A9%E4%BD%93%E6%B1%82%E4%BA%A4"><span class="nav-number">3.3.</span> <span class="nav-text"> 光线与物体求交</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B8%B2%E6%9F%93"><span class="nav-number">3.4.</span> <span class="nav-text"> 渲染</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E6%B3%95%E5%90%91%E9%87%8F"><span class="nav-number">3.4.1.</span> <span class="nav-text"> 获取法向量</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%86%E8%8A%82"><span class="nav-number">4.</span> <span class="nav-text"> 细节</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%B9%E5%87%B8%E6%98%A0%E5%B0%84"><span class="nav-number">4.1.</span> <span class="nav-text"> 凹凸映射</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BD%AF%E9%98%B4%E5%BD%B1"><span class="nav-number">4.2.</span> <span class="nav-text"> 软阴影</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ao%E7%8E%AF%E5%A2%83%E5%85%89%E9%81%AE%E8%94%BD"><span class="nav-number">4.3.</span> <span class="nav-text"> AO（环境光遮蔽）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%93%E7%A7%AF%E5%85%89%E6%95%A3%E5%B0%84%E5%85%89"><span class="nav-number">4.4.</span> <span class="nav-text"> 体积光&#x2F;散射光</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8E%E8%AF%9D"><span class="nav-number">5.</span> <span class="nav-text"> 后话</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E6%A1%A3"><span class="nav-number">6.</span> <span class="nav-text"> 相关文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/games101-sdf/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="GAMES101大作业之SDF场景渲染 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          GAMES101大作业之SDF场景渲染
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-10-23 17:37:33" itemprop="dateCreated datePublished" datetime="2021-10-23T17:37:33+08:00">2021-10-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p>由于在不久前终于完成了整个<a target="_blank" rel="noopener" href="https://sites.cs.ucsb.edu/~lingqi/teaching/games101.html"><code>GAMES101</code>课程</a>的视频学习（当然除了大作业以外的作业也认真弄了），所以终于可以来挑战一下大作业了；虽然可以自由组织项目，但是作为菜鸟个人觉得课程给出的大作业选题就足够有意思和有挑战了（主要是想不出……），而且这里的选题符合课程内容方向，也比较容易去上手和扩展。</p>
+<p>反正一眼扫过去，第一想要做的就是这个了：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20211023174019.png?imageslim" alt="img" /></p>
+<p>因为这个一看就知道，只需要写片段着色器就好了，不需要操作其他的数据了，因而用<code>webGL</code>也正好；然后打开相关的资料一看，这作者太熟悉了，著名的<code>iq</code>大神（<code>ShaderToy</code>网站的创建者，且热衷于在其<a target="_blank" rel="noopener" href="https://www.iquilezles.org/index.html">博客</a>上分享各种图形学的干货内容，其制作的各种着色器<code>demo</code>或动画更是令人惊奇）：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20211023174048.png?imageslim" alt="img" /></p>
+<p><code>iq</code>在上述场景渲染的演讲<code>PPT</code>中虽然没有给出完整的着色器代码，但是关于渲染的各种重要部分都给出了伪代码和原理讲解，所以推荐仔细阅读这个<code>PPT</code>；</p>
+<p>不过，尽管这种渲染方式无需准备复杂场景的顶点数据和繁琐的矩阵变换等等，但绝不代表着就很容易实现。</p>
+<h3 id="实现效果"><a class="markdownIt-Anchor" href="#实现效果"></a> 实现效果</h3>
+<p><a target="_blank" rel="noopener" href="https://xiexuefeng.cc/app/we/demo/games101-sdf/">https://xiexuefeng.cc/app/we/demo/games101-sdf/</a></p>
+<span id="more"></span>
+<h2 id="场景搭建"><a class="markdownIt-Anchor" href="#场景搭建"></a> 场景搭建</h2>
+<h3 id="sdf"><a class="markdownIt-Anchor" href="#sdf"></a> SDF</h3>
+<p><code>SDF</code>，即<code>signed distance function/field</code>（有向距离函数/场）；原理很简单，给定某个点的坐标，距离函数可以得到该点在场景中距离最近的点的距离，如果距离<strong>为正</strong>则表明该点在<font color=#f00>物体外面</font>，<strong>为负</strong>则在<font color=#f00>物体内部</font>；更多的原理讲解可以参考这篇文章——<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/93901692">Signed Distance Field(基础篇) - 知乎</a>，就不再赘述。</p>
+<p>总之就是给定了一个物体甚至是一个场景的<code>SDF</code>后，就能根据<code>SDF</code>渲染出对应的物体或场景；所以如何才能得到一个物体的<code>SDF</code>呢？尤其是那种看起来很复杂的，一眼压根想不出来对应的<code>SDF</code>。</p>
+<p>其实就跟建模类似，再复杂的物体都可以通过一些基本图形的组合操作来组成；这里可以推荐<code>iq</code>总结<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>的常见的<code>3D</code>基本图形的<code>SDF</code>了，可以说是十分丰富：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20211023174119.png?imageslim" alt="img" /></p>
+<p>除了<code>SDF</code>，这篇文章甚至给出了常见的<code>SDF</code>图形之间的组合操作，如并集、交集，补集操作等，还有各种变形操作等等，十分有用的技巧：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20211023174155.png?imageslim" alt="img" /></p>
+<p>没错，学会了上述技巧之后，场景和复杂物体的搭建无非<font color=#39f><strong>就跟建模一样</strong></font>，各种组合和调参而已，接下来就是对场景物体的拆解了；</p>
+<h3 id="场景拆解"><a class="markdownIt-Anchor" href="#场景拆解"></a> 场景拆解</h3>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20211023174217.png?imageslim" alt="img" /></p>
+<p>如上图所示，这里的场景大致可以分成三个部分：</p>
+<ul>
+<li>柱子</li>
+<li>地板</li>
+<li>类似于“章鱼”的东西</li>
+</ul>
+<h4 id="地板"><a class="markdownIt-Anchor" href="#地板"></a> 地板</h4>
+<p>地板就是大量的长方体组成的，然后不停地重复，所以比较简单，当然那种散乱的堆砌又是其他的细节了；</p>
+<h4 id="章鱼"><a class="markdownIt-Anchor" href="#章鱼"></a> “章鱼”</h4>
+<p>而“章鱼”部分就是一个球体加上几个重复的扭曲状圆柱体组成，这一点<code>PPT</code>上有提及：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20211023174251.png?imageslim" alt="img" /></p>
+<h4 id="柱子"><a class="markdownIt-Anchor" href="#柱子"></a> 柱子</h4>
+<p>这个物体也是大量的重复，关于重复某个物体的技巧也可以看看上面提到的文章<sup class="footnote-ref"><a href="#fn1" id="fnref1:1">[1:1]</a></sup>；但是单个的柱子还是比较复杂的，可以继续拆解：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20211023174315.png?imageslim" alt="img" /></p>
+<p>呃，穹顶那个部分实在是不知道怎么构造，看起来不像是简单的半球形，所以暂时略过；上面的建模也并非完全按照一比一进行复原的，目的<font color=#39f>并非一比一复原上述场景</font>，所以有个大概的样子就够了😂；把上述拆解的物体进行拼接即可得到类似的柱体：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20211023174340.png?imageslim" alt="img" /></p>
+<h2 id="场景渲染"><a class="markdownIt-Anchor" href="#场景渲染"></a> 场景渲染</h2>
+<p>在根据场景建模得到完整场景的<code>SDF</code>后，就可以开始相应的渲染了；按照一般流程，渲染所需要的信息大概有：</p>
+<ul>
+<li>顶点位置</li>
+<li>法线方向</li>
+<li>纹理坐标</li>
+</ul>
+<p>由于这里并没有相关的纹理贴图，所以可以不用纹理坐标，因而需要根据<code>SDF</code>得到每个着色点对应的顶点位置和法线方向；</p>
+<h3 id="ray-martching"><a class="markdownIt-Anchor" href="#ray-martching"></a> ray martching</h3>
+<p>由于<code>SDF</code>没法直接得到当前着色点对应的物体坐标点，因而常借助<code>ray martching</code>技术来获取当前着色点应该渲染哪个坐标点；原理实际上就是从着色点发射一束光线（射线），然后根据步长的<code>SDF</code>来计算这束光线是否碰到物体，碰到则渲染交点位置；实际上就是一般成像过程的<strong>逆过程</strong>，即<font color=#f00>以相机位置作为原点</font>，以成像平面上的每个像素点为投射点，构建射线；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20211023174420.png?imageslim" alt="img" /></p>
+<p>而投射的光线则可以构建出相应的射线方程：</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>r</mi><mo stretchy="false">(</mo><mi>t</mi><mo stretchy="false">)</mo><mo>=</mo><mover accent="true"><mi>o</mi><mo stretchy="true">→</mo></mover><mo>+</mo><mi>t</mi><mo>∗</mo><mover accent="true"><mi>d</mi><mo stretchy="true">→</mo></mover></mrow><annotation encoding="application/x-tex">r(t) = \overrightarrow{o} + t * \overrightarrow{d}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mopen">(</span><span class="mord mathnormal">t</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.03589em;vertical-align:-0.08333em;"></span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9525600000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">o</span></span></span><span class="svg-align" style="top:-3.43056em;"><span class="pstrut" style="height:3em;"></span><span class="hide-tail" style="height:0.522em;min-width:0.888em;"><svg width='400em' height='0.522em' viewBox='0 0 400000 522' preserveAspectRatio='xMaxYMin slice'><path d='M0 241v40h399891c-47.3 35.3-84 78-110 128
+-16.7 32-27.7 63.7-33 95 0 1.3-.2 2.7-.5 4-.3 1.3-.5 2.3-.5 3 0 7.3 6.7 11 20
+ 11 8 0 13.2-.8 15.5-2.5 2.3-1.7 4.2-5.5 5.5-11.5 2-13.3 5.7-27 11-41 14.7-44.7
+ 39-84.5 73-119.5s73.7-60.2 119-75.5c6-2 9-5.7 9-11s-3-9-9-11c-45.3-15.3-85
+-40.5-119-75.5s-58.3-74.8-73-119.5c-4.7-14-8.3-27.3-11-40-1.3-6.7-3.2-10.8-5.5
+-12.5-2.3-1.7-7.5-2.5-15.5-2.5-14 0-21 3.7-21 11 0 2 2 10.3 6 25 20.7 83.3 67
+ 151.7 139 205zm0 0v40h399900v-40z'/></svg></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.61508em;vertical-align:0em;"></span><span class="mord mathnormal">t</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.21644em;vertical-align:0em;"></span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:1.21644em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">d</span></span></span><span class="svg-align" style="top:-3.69444em;"><span class="pstrut" style="height:3em;"></span><span class="hide-tail" style="height:0.522em;min-width:0.888em;"><svg width='400em' height='0.522em' viewBox='0 0 400000 522' preserveAspectRatio='xMaxYMin slice'><path d='M0 241v40h399891c-47.3 35.3-84 78-110 128
+-16.7 32-27.7 63.7-33 95 0 1.3-.2 2.7-.5 4-.3 1.3-.5 2.3-.5 3 0 7.3 6.7 11 20
+ 11 8 0 13.2-.8 15.5-2.5 2.3-1.7 4.2-5.5 5.5-11.5 2-13.3 5.7-27 11-41 14.7-44.7
+ 39-84.5 73-119.5s73.7-60.2 119-75.5c6-2 9-5.7 9-11s-3-9-9-11c-45.3-15.3-85
+-40.5-119-75.5s-58.3-74.8-73-119.5c-4.7-14-8.3-27.3-11-40-1.3-6.7-3.2-10.8-5.5
+-12.5-2.3-1.7-7.5-2.5-15.5-2.5-14 0-21 3.7-21 11 0 2 2 10.3 6 25 20.7 83.3 67
+ 151.7 139 205zm0 0v40h399900v-40z'/></svg></span></span></span></span></span></span></span></span></span></span></p>
+<p><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mi>o</mi><mo stretchy="true">→</mo></mover></mrow><annotation encoding="application/x-tex">\overrightarrow{o}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9525600000000001em;vertical-align:0em;"></span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9525600000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">o</span></span></span><span class="svg-align" style="top:-3.43056em;"><span class="pstrut" style="height:3em;"></span><span class="hide-tail" style="height:0.522em;min-width:0.888em;"><svg width='400em' height='0.522em' viewBox='0 0 400000 522' preserveAspectRatio='xMaxYMin slice'><path d='M0 241v40h399891c-47.3 35.3-84 78-110 128
+-16.7 32-27.7 63.7-33 95 0 1.3-.2 2.7-.5 4-.3 1.3-.5 2.3-.5 3 0 7.3 6.7 11 20
+ 11 8 0 13.2-.8 15.5-2.5 2.3-1.7 4.2-5.5 5.5-11.5 2-13.3 5.7-27 11-41 14.7-44.7
+ 39-84.5 73-119.5s73.7-60.2 119-75.5c6-2 9-5.7 9-11s-3-9-9-11c-45.3-15.3-85
+-40.5-119-75.5s-58.3-74.8-73-119.5c-4.7-14-8.3-27.3-11-40-1.3-6.7-3.2-10.8-5.5
+-12.5-2.3-1.7-7.5-2.5-15.5-2.5-14 0-21 3.7-21 11 0 2 2 10.3 6 25 20.7 83.3 67
+ 151.7 139 205zm0 0v40h399900v-40z'/></svg></span></span></span></span></span></span></span></span></span>即投射的起点，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mi>d</mi><mo stretchy="true">→</mo></mover></mrow><annotation encoding="application/x-tex">\overrightarrow{d}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.21644em;vertical-align:0em;"></span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:1.21644em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">d</span></span></span><span class="svg-align" style="top:-3.69444em;"><span class="pstrut" style="height:3em;"></span><span class="hide-tail" style="height:0.522em;min-width:0.888em;"><svg width='400em' height='0.522em' viewBox='0 0 400000 522' preserveAspectRatio='xMaxYMin slice'><path d='M0 241v40h399891c-47.3 35.3-84 78-110 128
+-16.7 32-27.7 63.7-33 95 0 1.3-.2 2.7-.5 4-.3 1.3-.5 2.3-.5 3 0 7.3 6.7 11 20
+ 11 8 0 13.2-.8 15.5-2.5 2.3-1.7 4.2-5.5 5.5-11.5 2-13.3 5.7-27 11-41 14.7-44.7
+ 39-84.5 73-119.5s73.7-60.2 119-75.5c6-2 9-5.7 9-11s-3-9-9-11c-45.3-15.3-85
+-40.5-119-75.5s-58.3-74.8-73-119.5c-4.7-14-8.3-27.3-11-40-1.3-6.7-3.2-10.8-5.5
+-12.5-2.3-1.7-7.5-2.5-15.5-2.5-14 0-21 3.7-21 11 0 2 2 10.3 6 25 20.7 83.3 67
+ 151.7 139 205zm0 0v40h399900v-40z'/></svg></span></span></span></span></span></span></span></span></span>为射线方向（单位向量），<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi></mrow><annotation encoding="application/x-tex">t</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.61508em;vertical-align:0em;"></span><span class="mord mathnormal">t</span></span></span></span>就是步长了；</p>
+<h3 id="获取成像平面的位置"><a class="markdownIt-Anchor" href="#获取成像平面的位置"></a> 获取成像平面的位置</h3>
+<p>由于着色点和成像平面上的像素点实际上是一一对应的，因而可以根据<strong>相机参数</strong>得到成像平面上像素点的坐标，然后根据着色点进行映射即可得到当前着色点在相机空间坐标系中的坐标，最后进行坐标系变换即可得到对应的世界坐标系；</p>
+<h3 id="光线与物体求交"><a class="markdownIt-Anchor" href="#光线与物体求交"></a> 光线与物体求交</h3>
+<p>根据成像平面的像素点位置和相机位置即可得到当前发射的光线的方向，因而就可以得到对应的射线方程，接下来就是查找是否有物体和光线相交了；</p>
+<p>当然，可以设置一个固定的步长，每次迭代都增加这个步长，然后根据<code>SDF</code>得到当前点的距离，判断是否与物体相交；不过这种方式可能会出现精度较低（步长较大时）或迭代次数大（步长较小）的问题；</p>
+<p>那么有没有办法得到一个合适的步长？答案是有的，因为根据<code>SDF</code>的特性可知，<code>SDF</code>得到的是当前点到物体的距离，因此如果这个<code>SDF</code>包含场景下所有的物体时，得到的自然是当前点到场景下所有物体表面的最近距离，所以下一次迭代就可以用这个距离增加步长，就会大大地减少迭代次数和精度丢失的问题；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20211023174447.png?imageslim" alt="img" /></p>
+<p>根据上图就可以看得很明显，这种以当前<code>SDF</code>值作为下一次步长的增量的方式，只会导致两种结果：</p>
+<ul>
+<li>刚好到达物体的表面</li>
+<li>还没到达物体的表面</li>
+</ul>
+<p>所以不必担心下次迭代就穿透物体，导致精度很差；一般步骤可以描述如下：</p>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">vec4</span> rayMartch () &#123;</span><br><span class="line">  <span class="type">vec3</span> ro = eyePos; <span class="comment">// 光线原点</span></span><br><span class="line">  <span class="type">vec3</span> pos = getWorldPos(); <span class="comment">// 当前着色点对应的坐标</span></span><br><span class="line">  <span class="type">vec3</span> rd = <span class="built_in">normalize</span>(pos - ro); <span class="comment">// 光线方向</span></span><br><span class="line">  <span class="type">vec4</span> color = <span class="type">vec4</span>(<span class="type">vec3</span>(<span class="number">0.0</span>), <span class="number">1.0</span>);</span><br><span class="line">  <span class="type">float</span> t = <span class="number">0.0</span>; <span class="comment">// 当前步长</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; maxStep; i++) &#123;</span><br><span class="line">    <span class="type">vec3</span> curPos = ro + rd * t;</span><br><span class="line">    <span class="type">float</span> next = sdf(curPos); <span class="comment">// 每次都获取最近距离作为步长</span></span><br><span class="line">    <span class="keyword">if</span> (next &lt; <span class="number">0.001</span>) &#123; <span class="comment">// 这里必须使用大于0的一个微小值来作为阈值判断</span></span><br><span class="line">      color.xyz = render(curPos); <span class="comment">// 相交时进行渲染</span></span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (t &gt; far) &#123; <span class="comment">// 光线超出最大距离不再计算</span></span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    t += next;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> color;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="渲染"><a class="markdownIt-Anchor" href="#渲染"></a> 渲染</h3>
+<p>当投射的光线与物体相交时就可以对相交点进行渲染了，即把相交点的渲染当做着色点最终呈现的物体颜色（自然地处理了<code>Z-buffer</code>的关系）；到了这一步是已经知道了物体的位置信息，这里以<code>blinn-phong</code>着色模型为例，还需要知道当前点对应的<strong>法向量</strong>；</p>
+<h4 id="获取法向量"><a class="markdownIt-Anchor" href="#获取法向量"></a> 获取法向量</h4>
+<p>实际上，法向量就是物体位置的一阶导数，因而可以通过求梯度来<strong>近似</strong>求导：</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mover accent="true"><mi>n</mi><mo stretchy="true">→</mo></mover><mo>=</mo><mi>n</mi><mi>o</mi><mi>r</mi><mi>m</mi><mi>a</mi><mi>l</mi><mi>i</mi><mi>z</mi><mi>e</mi><mo stretchy="false">(</mo><mspace linebreak="newline"></mspace><mtable rowspacing="0.24999999999999992em" columnalign="right" columnspacing=""><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>S</mi><mi>D</mi><mi>F</mi><mo stretchy="false">(</mo><mi>x</mi><mo>+</mo><mi mathvariant="normal">Δ</mi><mi>x</mi><mo separator="true">,</mo><mi>y</mi><mo separator="true">,</mo><mi>z</mi><mo stretchy="false">)</mo><mo>−</mo><mi>S</mi><mi>D</mi><mi>F</mi><mo stretchy="false">(</mo><mi>x</mi><mo>−</mo><mi mathvariant="normal">Δ</mi><mi>x</mi><mo separator="true">,</mo><mi>y</mi><mo separator="true">,</mo><mi>z</mi><mo stretchy="false">)</mo><mo separator="true">,</mo></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>S</mi><mi>D</mi><mi>F</mi><mo stretchy="false">(</mo><mi>x</mi><mo separator="true">,</mo><mi>y</mi><mo>+</mo><mi mathvariant="normal">Δ</mi><mi>y</mi><mo separator="true">,</mo><mi>z</mi><mo stretchy="false">)</mo><mo>−</mo><mi>S</mi><mi>D</mi><mi>F</mi><mo stretchy="false">(</mo><mi>x</mi><mo separator="true">,</mo><mi>y</mi><mo>−</mo><mi mathvariant="normal">Δ</mi><mi>y</mi><mo separator="true">,</mo><mi>z</mi><mo stretchy="false">)</mo><mo separator="true">,</mo></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>S</mi><mi>D</mi><mi>F</mi><mo stretchy="false">(</mo><mi>x</mi><mo separator="true">,</mo><mi>y</mi><mo separator="true">,</mo><mi>z</mi><mo>+</mo><mi mathvariant="normal">Δ</mi><mi>z</mi><mo stretchy="false">)</mo><mo>−</mo><mi>S</mi><mi>D</mi><mi>F</mi><mo stretchy="false">(</mo><mi>x</mi><mo separator="true">,</mo><mi>y</mi><mo separator="true">,</mo><mi>z</mi><mo>−</mo><mi mathvariant="normal">Δ</mi><mi>z</mi><mo stretchy="false">)</mo></mrow></mstyle></mtd></mtr></mtable><mspace linebreak="newline"></mspace><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\overrightarrow{n} = normalize(\\
+\begin{aligned}
+SDF(x + \Delta x, y, z) - SDF(x - \Delta x, y, z), \\
+SDF(x, y + \Delta y, z) - SDF(x, y - \Delta y, z),  \\
+SDF(x, y, z + \Delta z) - SDF(x, y, z - \Delta z)
+\end{aligned}\\
+)
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9525600000000001em;vertical-align:0em;"></span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9525600000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">n</span></span></span><span class="svg-align" style="top:-3.43056em;"><span class="pstrut" style="height:3em;"></span><span class="hide-tail" style="height:0.522em;min-width:0.888em;"><svg width='400em' height='0.522em' viewBox='0 0 400000 522' preserveAspectRatio='xMaxYMin slice'><path d='M0 241v40h399891c-47.3 35.3-84 78-110 128
+-16.7 32-27.7 63.7-33 95 0 1.3-.2 2.7-.5 4-.3 1.3-.5 2.3-.5 3 0 7.3 6.7 11 20
+ 11 8 0 13.2-.8 15.5-2.5 2.3-1.7 4.2-5.5 5.5-11.5 2-13.3 5.7-27 11-41 14.7-44.7
+ 39-84.5 73-119.5s73.7-60.2 119-75.5c6-2 9-5.7 9-11s-3-9-9-11c-45.3-15.3-85
+-40.5-119-75.5s-58.3-74.8-73-119.5c-4.7-14-8.3-27.3-11-40-1.3-6.7-3.2-10.8-5.5
+-12.5-2.3-1.7-7.5-2.5-15.5-2.5-14 0-21 3.7-21 11 0 2 2 10.3 6 25 20.7 83.3 67
+ 151.7 139 205zm0 0v40h399900v-40z'/></svg></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">n</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal">m</span><span class="mord mathnormal">a</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right:0.04398em;">z</span><span class="mord mathnormal">e</span><span class="mopen">(</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:4.500000000000002em;vertical-align:-2.000000000000001em;"></span><span class="mord"><span class="mtable"><span class="col-align-r"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:2.5000000000000004em;"><span style="top:-4.66em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mord mathnormal" style="margin-right:0.13889em;">F</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord">Δ</span><span class="mord mathnormal">x</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.04398em;">z</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mord mathnormal" style="margin-right:0.13889em;">F</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord">Δ</span><span class="mord mathnormal">x</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.04398em;">z</span><span class="mclose">)</span><span class="mpunct">,</span></span></span><span style="top:-3.16em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mord mathnormal" style="margin-right:0.13889em;">F</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord">Δ</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.04398em;">z</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mord mathnormal" style="margin-right:0.13889em;">F</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord">Δ</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.04398em;">z</span><span class="mclose">)</span><span class="mpunct">,</span></span></span><span style="top:-1.6599999999999993em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mord mathnormal" style="margin-right:0.13889em;">F</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.04398em;">z</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord">Δ</span><span class="mord mathnormal" style="margin-right:0.04398em;">z</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mord mathnormal" style="margin-right:0.13889em;">F</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.04398em;">z</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord">Δ</span><span class="mord mathnormal" style="margin-right:0.04398em;">z</span><span class="mclose">)</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:2.000000000000001em;"><span></span></span></span></span></span></span></span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mclose">)</span></span></span></span></span></p>
+<p>转化为代码就是这样：</p>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">vec3</span> getNormal (<span class="type">vec3</span> p) &#123;</span><br><span class="line">  <span class="type">vec2</span> diff = <span class="type">vec2</span>(<span class="number">0.001</span>, <span class="number">0.0</span>); <span class="comment">// 设置一个较小的变化值</span></span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">normalize</span>(<span class="type">vec3</span>(</span><br><span class="line">    scene(p + diff.xyy) - scene(p - diff.xyy),</span><br><span class="line">    scene(p + diff.yxy) - scene(p - diff.yxy),</span><br><span class="line">    scene(p + diff.yyx) - scene(p - diff.yyx)</span><br><span class="line">  ));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="细节"><a class="markdownIt-Anchor" href="#细节"></a> 细节</h2>
+<p>虽然通过上述一系列计算已经可以得到一个<code>SDF</code>场景的渲染结果了，但是观察<code>iq</code>的作品不难发现里面还加了“<strong>亿点点</strong>”细节，用于营造更真实的环境；</p>
+<h3 id="凹凸映射"><a class="markdownIt-Anchor" href="#凹凸映射"></a> 凹凸映射</h3>
+<p>凹凸映射，简言之就是通过对物体的法向量进行一定的扰动使得物体表面“看起来”凹凸不平，但是实际上位置并没有改变；虽然可以通过纹理贴图来实现，不过也能通过类似于<font color=#39f>生成噪声的方法</font>来实时生成凹凸映射的值。</p>
+<p><code>PPT</code>中有提及到使用<code>fbm</code>（<code>Fractional Brownian Motion</code>，<strong>分形布朗运动</strong>）来生成<code>bumping</code>，而<code>fbm</code>的基本算法<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>如下：</p>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">float</span> fbm( <span class="keyword">in</span> vecN x, <span class="keyword">in</span> <span class="type">float</span> H )</span><br><span class="line">&#123;    </span><br><span class="line">    <span class="type">float</span> G = <span class="built_in">exp2</span>(-H);</span><br><span class="line">    <span class="type">float</span> f = <span class="number">1.0</span>;</span><br><span class="line">    <span class="type">float</span> a = <span class="number">1.0</span>;</span><br><span class="line">    <span class="type">float</span> t = <span class="number">0.0</span>;</span><br><span class="line">    <span class="keyword">for</span>( <span class="type">int</span> i=<span class="number">0</span>; i&lt;numOctaves; i++ )</span><br><span class="line">    &#123;</span><br><span class="line">        t += a*noise(f*x);</span><br><span class="line">        f *= <span class="number">2.0</span>;</span><br><span class="line">        a *= G;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> t;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>即不停地<strong>提高频率</strong>且同时<strong>减小振幅</strong>，然后累加噪声值，即可得到相应噪声的<code>fbm</code>；由于这里是三维物体，所以随便挑选一个三维的噪声即可，这里我使用了三维的<strong>柏林噪声</strong>：</p>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 2维柏林噪声(xz平面)</span></span><br><span class="line"><span class="type">float</span> perlinNoise2d (<span class="type">vec3</span> pos) &#123;</span><br><span class="line">  <span class="type">vec3</span> ipos = <span class="built_in">floor</span>(pos);</span><br><span class="line">  <span class="type">vec3</span> fpos = <span class="built_in">fract</span>(pos);</span><br><span class="line">  <span class="type">float</span> a = <span class="built_in">dot</span>(random3d(ipos), fpos);</span><br><span class="line">  <span class="type">float</span> b = <span class="built_in">dot</span>(random3d(ipos + topRight), fpos - topRight);</span><br><span class="line">  <span class="type">float</span> c = <span class="built_in">dot</span>(random3d(ipos + bottomLeft), fpos - bottomLeft);</span><br><span class="line">  <span class="type">float</span> d = <span class="built_in">dot</span>(random3d(ipos + bottomRight), fpos - bottomRight);</span><br><span class="line">  <span class="type">vec2</span> f = <span class="built_in">smoothstep</span>(<span class="number">0.0</span>, <span class="number">1.0</span>, fpos.xz);</span><br><span class="line">  <span class="type">float</span> y1 = <span class="built_in">mix</span>(a, b, f.x);</span><br><span class="line">  <span class="type">float</span> y2 = <span class="built_in">mix</span>(c, d, f.x);</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">mix</span>(y1, y2, f.y);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 3维柏林噪声，立方体插值，先得到上下两个xz平面的插值，最后对y方向进行插值</span></span><br><span class="line"><span class="type">float</span> perlinNoise3d (<span class="type">vec3</span> p) &#123;</span><br><span class="line">  <span class="type">vec3</span> bottom = <span class="type">vec3</span>(p.x, <span class="built_in">floor</span>(p.y), p.z);</span><br><span class="line">  <span class="type">vec3</span> top = bottom + <span class="type">vec3</span>(<span class="number">0.0</span>, <span class="number">1.0</span>, <span class="number">0.0</span>);</span><br><span class="line">  <span class="type">float</span> y1 = perlinNoise2d(bottom);</span><br><span class="line">  <span class="type">float</span> y2 = perlinNoise2d(top);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">mix</span>(y1, y2, <span class="built_in">fract</span>(p.y));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>柏林噪声思路虽然简单，但是计算量还是偏多，其实也可以使用改进版的<code>simplex</code>噪声；不过我在<code>iq</code>的博客<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup>上发现一个有意思的思路，就是用特定的<code>SDF</code>来替代噪声，让<code>SDF</code>与<code>fbm</code>进行结合，看起来效果也不错，计算量也少了很多；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20211023174526.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20211023174547.png?imageslim" alt="img" /></p>
+<h3 id="软阴影"><a class="markdownIt-Anchor" href="#软阴影"></a> 软阴影</h3>
+<p>用<code>SDF</code>来生成硬阴影实在是过于便利，因为只需要像<code>ray matching</code>那样从当前点发出一束光线到光源位置即可，若在碰到光源之前就碰到了其他物体就是位于阴影之中；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20211023174611.png?imageslim" alt="img" /></p>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 硬阴影</span></span><br><span class="line"><span class="type">float</span> hardShadow (<span class="type">vec3</span> ro, <span class="type">vec3</span> rd) &#123;</span><br><span class="line">  <span class="type">float</span> res = <span class="number">1.0</span>;</span><br><span class="line">  <span class="type">float</span> t = <span class="number">0.05</span>; <span class="comment">// t的起步值要大于0，否则会出现全暗或密纹</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; maxStep; i++) &#123;</span><br><span class="line">    <span class="type">vec3</span> curPos = ro + rd * t;</span><br><span class="line">    <span class="type">float</span> d = <span class="built_in">distance</span>(curPos, light);</span><br><span class="line">    <span class="type">float</span> next = <span class="built_in">min</span>(d, scene(curPos)); <span class="comment">// 每次都获取最近距离作为步长（要考虑点光源的位置）</span></span><br><span class="line">    <span class="keyword">if</span> (d == next) &#123; <span class="comment">// 直接碰到光源</span></span><br><span class="line">      res = <span class="number">1.0</span>;</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (next &lt; <span class="number">0.001</span>) &#123; <span class="comment">// 这里必须使用大于0的一个微小值来作为阈值判断</span></span><br><span class="line">      res = <span class="number">0.0</span>; <span class="comment">// 光线被遮挡</span></span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    t += next;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>不过，硬阴影看起来效果有点<strong>突兀</strong>，所以相应的就有了软阴影；软阴影实际上就是在原本的阴影区边缘部分会产生一层过渡，导致阴影看起来不是那么锐利，也更接近现实效果；实际上，在上述方法的基础上只需要额外计算一个值<sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup>就能获得不错的软阴影效果：</p>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">float</span> softshadow( <span class="keyword">in</span> <span class="type">vec3</span> ro, <span class="keyword">in</span> <span class="type">vec3</span> rd, <span class="type">float</span> mint, <span class="type">float</span> maxt, <span class="type">float</span> k )</span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">float</span> res = <span class="number">1.0</span>;</span><br><span class="line">    <span class="keyword">for</span>( <span class="type">float</span> t=mint; t&lt;maxt; )</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">float</span> h = map(ro + rd*t);</span><br><span class="line">        <span class="keyword">if</span>( h&lt;<span class="number">0.001</span> )</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0.0</span>;</span><br><span class="line">        res = <span class="built_in">min</span>( res, k*h/t ); <span class="comment">// 这里多了一个当前步长与当前最近距离的比值</span></span><br><span class="line">        t += h;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20211023174634.png?imageslim" alt="img" /></p>
+<p>至于为何这个<strong>比值</strong>的计算就能得到不错的软阴影效果，是因为这个比值实际上就是<strong>近似地</strong>得到了<font color=#f00>当前光线与途径物体表面之间的距离关系</font>；顺着这个思路实际上也可以只比较每次的步长用于得到一个最小的步长来近似光线到途径物体表面的最小距离：</p>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 用光线到物体表面的最近距离来插值软阴影程度</span></span><br><span class="line"><span class="type">float</span> softShadow (<span class="type">vec3</span> ro, <span class="type">vec3</span> rd, <span class="type">float</span> k) &#123;</span><br><span class="line">  <span class="type">float</span> res = <span class="number">1.0</span>;</span><br><span class="line">  <span class="type">float</span> t = <span class="number">0.1</span>; <span class="comment">// t的起步值要大于0，否则会出现全暗或密纹</span></span><br><span class="line">  <span class="type">float</span> minD = <span class="number">1000.0</span>; <span class="comment">// 最小步长，用于近似获取光线到物体的最近距离</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; maxStep; i++) &#123;</span><br><span class="line">    <span class="type">vec3</span> curPos = ro + rd * t;</span><br><span class="line">    <span class="type">float</span> d = <span class="built_in">distance</span>(curPos, light);</span><br><span class="line">    <span class="type">float</span> next = <span class="built_in">min</span>(scene(curPos), d); <span class="comment">// 每次都获取最近距离作为步长（要考虑点光源的位置）</span></span><br><span class="line">    <span class="keyword">if</span> (d == next) &#123; <span class="comment">// 直接碰到光源</span></span><br><span class="line">      res = <span class="built_in">smoothstep</span>(<span class="number">0.0</span>, <span class="number">0.5</span>, minD);</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (next &lt; <span class="number">0.001</span>) &#123; <span class="comment">// 这里必须使用大于0的一个微小值来作为阈值判断</span></span><br><span class="line">      res = <span class="number">0.0</span>; <span class="comment">// 光线被遮挡</span></span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (t &gt; <span class="number">1.0</span>) &#123; <span class="comment">// 保证光线先离开渲染表面一段距离后才计算最近距离，避免光线刚开始得到的距离特别小但并不是有效的</span></span><br><span class="line">      minD = <span class="built_in">min</span>(minD, next * k);</span><br><span class="line">    &#125;</span><br><span class="line">    t += next;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20211023174658.png?imageslim" alt="img" /></p>
+<p>从上图可以看到，利用这种思路也能得到软阴影效果；不过上述这两种软阴影的计算都不算太准确，所以<code>iq</code>的文章<sup class="footnote-ref"><a href="#fn4" id="fnref4:1">[4:1]</a></sup>中提到了一个比较巧妙的改进方法：利用<code>ray matching</code>中相邻两次的步长，然后形成两个球面，最后可以得到两球面的<font color=#39f>相交圆</font>，然后计算光线到该圆的距离，这个距离可以更加精确地得到该光线到物体表面的最近距离！</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20211023174724.png?imageslim" alt="img" /></p>
+<p>好巧不巧，不久前正好在一本书中看到关于<strong>卫星导航定位</strong>的科普，里面就提到了一种定位思路，大致上是相似的：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20211023174749.png?imageslim" alt="img" /></p>
+<h3 id="ao环境光遮蔽"><a class="markdownIt-Anchor" href="#ao环境光遮蔽"></a> AO（环境光遮蔽）</h3>
+<p><code>AO</code>的思路实际上就是根据物体<strong>被周围物体</strong>遮挡程度来给定不同环境光，而非一个恒定的环境光值，因此更加接近真实效果；所以该如何计算物体被遮挡的程度？<code>PPT</code>中提到了一个极其巧妙的思路：从当前点沿着法线方向前进，每隔一段步长比较此时的<code>SDF</code>值和累进步长之间的关系；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20211023174811.png?imageslim" alt="img" /></p>
+<p>用公式可以表示为如下：</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>a</mi><mi>o</mi><mo>=</mo><mn>1.0</mn><mo>−</mo><mi>k</mi><mo>∗</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mn>5</mn></munderover><mfrac><mn>1</mn><msup><mn>2</mn><mi>i</mi></msup></mfrac><mo stretchy="false">(</mo><mi>i</mi><mo>∗</mo><mi mathvariant="normal">Δ</mi><mo>−</mo><mi>S</mi><mi>D</mi><mi>F</mi><mo stretchy="false">(</mo><mi>p</mi><mo>+</mo><mi>n</mi><mo>∗</mo><mi>i</mi><mo>∗</mo><mi mathvariant="normal">Δ</mi><mo stretchy="false">)</mo><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">ao = 1.0 - k * \sum_{i = 1}^{5}\frac{1}{2^i}(i * \Delta - SDF(p + n * i * \Delta))
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">a</span><span class="mord mathnormal">o</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">1</span><span class="mord">.</span><span class="mord">0</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:3.0787820000000004em;vertical-align:-1.277669em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.8011130000000004em;"><span style="top:-1.872331em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.050005em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span><span style="top:-4.3000050000000005em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">5</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.277669em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.32144em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.750664em;"><span style="top:-2.9890000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mopen">(</span><span class="mord mathnormal">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord">Δ</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mord mathnormal" style="margin-right:0.13889em;">F</span><span class="mopen">(</span><span class="mord mathnormal">p</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.46528em;vertical-align:0em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.65952em;vertical-align:0em;"></span><span class="mord mathnormal">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Δ</span><span class="mclose">)</span><span class="mclose">)</span></span></span></span></span></p>
+<p>其中：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi></mrow><annotation encoding="application/x-tex">\Delta</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord">Δ</span></span></span></span>为每步前进的步长，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi></mrow><annotation encoding="application/x-tex">p</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">p</span></span></span></span>为物体位置，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi></mrow><annotation encoding="application/x-tex">n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">n</span></span></span></span>为物体法向量，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi></mrow><annotation encoding="application/x-tex">k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span></span></span></span>为<font color=#39f>调整遮挡程度</font>的系数；对应的<code>glsl</code>实现如下：</p>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取当前点的环境光遮蔽（AO）系数近似值，size（步长）越大AO越小</span></span><br><span class="line"><span class="comment">// 算法参照PPT</span></span><br><span class="line"><span class="type">float</span> getAO (<span class="type">vec3</span> p, <span class="type">vec3</span> n, <span class="type">float</span> size, <span class="type">float</span> k) &#123;</span><br><span class="line">  <span class="type">float</span> hidden = <span class="number">0.0</span>; <span class="comment">// 累计遮挡程度</span></span><br><span class="line">  <span class="type">float</span> basis = <span class="number">0.5</span>; <span class="comment">// 权重系数</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt; <span class="number">6</span>; i++) &#123;</span><br><span class="line">    <span class="type">float</span> delta = <span class="type">float</span>(i) * size;</span><br><span class="line">    hidden += basis * (delta - sdf(p + n * delta));</span><br><span class="line">    basis *= <span class="number">0.5</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="number">1.0</span> - k * hidden;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20211023174853.png?imageslim" alt="img" /></p>
+<p>从上图可以看到，开启<code>AO</code>之后，一些边角的地方变得更暗了；</p>
+<h3 id="体积光散射光"><a class="markdownIt-Anchor" href="#体积光散射光"></a> 体积光/散射光</h3>
+<p>在现实中，光线除了直接照射到物体上被感知到，还有一种沿着空气传播被人看到的即视感，类似于“<strong>丁达尔效应</strong>”，这种感知是字面上的“<strong>光线</strong>”；这种现象就是光被空气中的胶体/微粒所<strong>散射</strong>而造成的，<code>CG</code>中称之为<strong>体积光</strong>；</p>
+<p>知道了体积光产生的原因，可能会立马想到直接通过在场景中添加一定数量的微粒物体不就好了；但是，很明显这种方式会导致计算量飙涨；而常用的一个计算体积光方法就是利用<code>ray martching</code>技术从相机位置沿着屏幕平面一点的方向进行均匀步长的采样计算：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20211023174916.png?imageslim" alt="img" /></p>
+<p>关于这种技术的细节和实现推荐阅读这篇文章：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/124297905">在 Unity 中实现体积光渲染 - 知乎</a>；加上体积光之后，场景的光线确实看起来更加有“仙气”了，尤其是光线碰到遮挡物后：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20211023174944.png?imageslim" alt="img" /></p>
+<p>虽然加上体积光会让场景看起来更真实，但是在这种<code>SDF</code>场景的渲染中，每次着色器渲染都会调用<code>SDF</code>上万次，这种计算量实在是过大，经测试开启体积光和不开启体积光渲染时间大致为<code>10：1</code>；</p>
+<h2 id="后话"><a class="markdownIt-Anchor" href="#后话"></a> 后话</h2>
+<p>虽然这个课题看似很简单，但是实现过程中才发现原来还隐藏了那么多的渲染细节，真的是一边实现一边找资料对比和优化，学到了很多；</p>
+<p>本来是想把这个<code>SDF</code>场景做成一个实时的动画，加上一种类似于烟雾缭绕的效果，但是加上体积光的渲染是真的无法达到实时效果，哪怕是不加上体积光也只能做到<code>10FPS</code>，远达不到最低的<code>24FPS</code>，所以还得看看有没有更高效的基于<code>SDF</code>的体积光实现方法了；</p>
+<h2 id="相关文档"><a class="markdownIt-Anchor" href="#相关文档"></a> 相关文档</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/329521044">shader 中，fwidth 或者说 ddx/ddy 到底是什么意思？ - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/50128840">入门Distance Field Soft Shadows - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/26217154">Signed Distance Field - 知乎</a>：常见二维图形的<code>SDF</code>描述</li>
+</ul>
+<hr class="footnotes-sep" />
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm">Inigo Quilez :: fractals, computer graphics, mathematics, shaders, demoscene and more</a> <a href="#fnref1" class="footnote-backref">↩︎</a> <a href="#fnref1:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://www.iquilezles.org/www/articles/fbm/fbm.htm">fBM - 2019</a> <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://www.iquilezles.org/www/articles/fbmsdf/fbmsdf.htm">FBM detail in SDFs - 2019</a> <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://www.iquilezles.org/www/articles/rmshadows/rmshadows.htm">soft shadows in raymarched SDFs - 2010</a> <a href="#fnref4" class="footnote-backref">↩︎</a> <a href="#fnref4:1" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/games101-sdf/" title="GAMES101大作业之SDF场景渲染">https://note.xiexuefeng.cc/post/games101-sdf/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2/" rel="tag"># 计算机图形</a>
+              <a href="/tags/GAMES/" rel="tag"># GAMES</a>
+              <a href="/tags/SDF/" rel="tag"># SDF</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/gcs-and-perf/" rel="prev" title="getComputedStyle 方法与性能问题">
+                  <i class="fa fa-chevron-left"></i> getComputedStyle 方法与性能问题
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/cloth-render-test/" rel="next" title="布料渲染总结">
+                  布料渲染总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/games101-sdf/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/games101-sdf/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

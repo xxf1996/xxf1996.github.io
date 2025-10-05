@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 husky是一个npm包，可以将git内置的钩子暴露出来，很方便地进行钩子的命令注入，而不需要在.git目录下自己写shell脚本了；不仅可以执行js文件作为脚本，还可以将脚本暴露出来，方便在git项目中进行管理。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="husky钩子的一些用法">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/husky-and-git-hooks/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 husky是一个npm包，可以将git内置的钩子暴露出来，很方便地进行钩子的命令注入，而不需要在.git目录下自己写shell脚本了；不仅可以执行js文件作为脚本，还可以将脚本暴露出来，方便在git项目中进行管理。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200624175043.png?imageslim">
+<meta property="article:published_time" content="2020-06-24T09:51:19.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.873Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="git">
+<meta property="article:tag" content="husky">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20200624175043.png?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/husky-and-git-hooks/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/husky-and-git-hooks/","path":"post/husky-and-git-hooks/","title":"husky钩子的一些用法"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>husky钩子的一些用法 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text"> 基本用法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-number">2.1.</span> <span class="nav-text"> 原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%E9%85%8D%E7%BD%AE"><span class="nav-number">2.2.</span> <span class="nav-text"> 命令配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E9%92%A9%E5%AD%90"><span class="nav-number">2.3.</span> <span class="nav-text"> 常用钩子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E6%8A%80%E5%B7%A7"><span class="nav-number">3.</span> <span class="nav-text"> 一些技巧</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%A8-node-%E8%84%9A%E6%9C%AC%E4%B8%AD%E5%A6%82%E4%BD%95%E9%80%80%E5%87%BA"><span class="nav-number">3.1.</span> <span class="nav-text"> 在 node 脚本中如何退出</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%A8-node-%E4%B8%AD%E6%89%A7%E8%A1%8C-shell-%E5%91%BD%E4%BB%A4"><span class="nav-number">3.2.</span> <span class="nav-text"> 在 node 中执行 shell 命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%A8-commit-msg-%E9%92%A9%E5%AD%90%E4%B8%AD%E8%8E%B7%E5%8F%96%E4%BF%AE%E6%94%B9-commit-%E6%B6%88%E6%81%AF"><span class="nav-number">3.3.</span> <span class="nav-text"> 在 commit-msg 钩子中获取&#x2F;修改 commit 消息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%92%A9%E5%AD%90%E6%B2%A1%E6%9C%89%E8%A7%A6%E5%8F%91"><span class="nav-number">3.4.</span> <span class="nav-text"> 钩子没有触发</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E7%94%A8-shell-%E5%91%BD%E4%BB%A4%E6%94%B6%E9%9B%86"><span class="nav-number">4.</span> <span class="nav-text"> 可用 shell 命令收集</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E5%BD%93%E5%89%8D-git-%E5%88%86%E6%94%AF%E5%90%8D%E7%A7%B0"><span class="nav-number">4.1.</span> <span class="nav-text"> 获取当前 git 分支名称</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E6%9C%80%E6%96%B0%E7%9A%84%E4%B8%80%E6%9D%A1-git-%E6%8F%90%E4%BA%A4%E4%BF%A1%E6%81%AF"><span class="nav-number">4.2.</span> <span class="nav-text"> 获取最新的一条 git 提交信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%BB%E5%8F%96%E6%88%96%E5%86%99%E5%85%A5%E6%96%87%E4%BB%B6"><span class="nav-number">4.3.</span> <span class="nav-text"> 读取或写入文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E6%A1%A3"><span class="nav-number">5.</span> <span class="nav-text"> 相关文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/husky-and-git-hooks/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="husky钩子的一些用法 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          husky钩子的一些用法
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-06-24 17:51:19" itemprop="dateCreated datePublished" datetime="2020-06-24T17:51:19+08:00">2020-06-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">工具</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p><code>husky</code>是一个<code>npm</code>包，可以将<code>git</code>内置的钩子暴露出来，很方便地进行钩子的命令注入，而不需要在<code>.git</code>目录下自己写<code>shell</code>脚本了；不仅可以执行<code>js</code>文件作为脚本，还可以将脚本暴露出来，方便在<code>git</code>项目中进行管理。</p>
+<span id="more"></span>
+<h2 id="基本用法"><a class="markdownIt-Anchor" href="#基本用法"></a> 基本用法</h2>
+<h3 id="原理"><a class="markdownIt-Anchor" href="#原理"></a> 原理</h3>
+<p><code>husky</code>支持的钩子就是<a target="_blank" rel="noopener" href="https://git-scm.com/docs/githooks">git hooks</a>，可以在对应钩子指定一条<code>shell</code>命令，<code>husky</code>会自动将这个命令写入<code>.git</code>目录下的对应钩子脚本，当触发这个<code>git</code>钩子时则会执行我们写入的命令；</p>
+<p>因此<code>husky</code>本质上就是执行<code>shell</code>命令，因此只要是<code>shell</code>命令都可以在钩子中执行；<font color=#39f>由于<code>nodeJS</code>也可以通过命令行执行</font>，所以直接用<code>js</code>来充当脚本也是可以的；</p>
+<h3 id="命令配置"><a class="markdownIt-Anchor" href="#命令配置"></a> 命令配置</h3>
+<p>可以在<code>package.json</code>文件的<code>husky.hooks</code>对象中写入相应的命令即可，键名就是<font color=#f00>钩子名称</font>，键值就是<font color=#f00>需要执行的命令</font>，如：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;husky&quot;</span>: &#123;</span><br><span class="line">    <span class="string">&quot;hooks&quot;</span>: &#123;</span><br><span class="line">      <span class="string">&quot;pre-commit&quot;</span>: <span class="string">&quot;node ./hooks/pre-commit&quot;</span>,</span><br><span class="line">      <span class="string">&quot;commit-msg&quot;</span>: <span class="string">&quot;node ./hooks/commit-msg $HUSKY_GIT_PARAMS &amp;&amp; commitlint -E HUSKY_GIT_PARAMS&quot;</span>,</span><br><span class="line">      <span class="string">&quot;post-merge&quot;</span>: <span class="string">&quot;node ./hooks/post-merge&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>husky</code>当然也支持通过专门的配置文件来指定钩子命令，但是使用过程中经常发生钩子配置不起作用的情况，还是<code>package.json</code>这种方式最稳定；</p>
+<h3 id="常用钩子"><a class="markdownIt-Anchor" href="#常用钩子"></a> 常用钩子</h3>
+<ul>
+<li><code>pre-commit</code>：由<code>git commit</code>命令触发，在<code>commit-msg</code>之前；</li>
+<li><code>commit-msg</code>：<code>git commit</code>和<code>git merge</code>都会触发，会传递一个参数，该参数为存放当前<code>commit</code>消息的<strong>临时文件路径</strong>；可以通过<code>--no-verify</code>参数来跳过<code>commit-msg</code>钩子；</li>
+<li><code>post-merge</code>：触发于<code>merge</code>完成后；</li>
+</ul>
+<h2 id="一些技巧"><a class="markdownIt-Anchor" href="#一些技巧"></a> 一些技巧</h2>
+<h3 id="在-node-脚本中如何退出"><a class="markdownIt-Anchor" href="#在-node-脚本中如何退出"></a> 在 node 脚本中如何退出</h3>
+<p>当使用<code>node</code>脚本进行检测，希望检测不通过时阻止<code>git</code>进行下一步操作，即终止操作；仅仅抛出错误是不能终止命令的，只能抛出<code>exit</code>状态才能终止；如：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">process.<span class="title function_">exit</span>(<span class="number">1</span>) <span class="comment">// exit状态为1才能终止</span></span><br></pre></td></tr></table></figure>
+<h3 id="在-node-中执行-shell-命令"><a class="markdownIt-Anchor" href="#在-node-中执行-shell-命令"></a> 在 node 中执行 shell 命令</h3>
+<p>有些用于检测的信息<font color=#39f>只能通过<code>shell</code>命令执行获取</font>（如<code>git</code>相关的信息），如果想要在<code>node</code>中获取到这些信息，可以使用<code>node</code>自带的一些方法来执行；比如<code>exec</code>和<code>spawn</code>方法。</p>
+<p>上面两个都是<code>child_process</code>模块里面的方法：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; spawn, exec &#125; = <span class="built_in">require</span>(<span class="string">&#x27;child_process&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p>虽然这两个方法都可以执行<code>shell</code>命令，但是具体用途有所不同；就作用而言，<code>spawn</code>方法更加广泛，可控性更强；</p>
+<ul>
+<li>当仅仅需要执行<code>shell</code>命令来获取信息（文本）时，可以使用<code>exec</code>方法；</li>
+<li>如果需要按照<font color=#f00>原格式</font>（即包含颜色，缩进，换行等）暴露<code>shell</code>命令的标准输出，那么就需要用到<code>spawn</code>方法了；因为exec得到的标准输出已经格式化了，仅仅是普通的文本字符串；</li>
+</ul>
+<p>可以将上述方法包装成<code>Promise</code>对象，这样更加<font color=#39f>方便进行同步调用</font>：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 执行shell命令，返回promise；</span></span><br><span class="line"><span class="comment"> * 这种方式不会捕获的命令输出会被格式化，即没有颜色缩进等；</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> &#123;<span class="type">string</span>&#125; shell shell命令</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">execShell</span> (<span class="params">shell</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">exec</span>(shell, <span class="function">(<span class="params">err, stdout, stderr</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (err) &#123;</span><br><span class="line">        process.<span class="property">stdout</span>.<span class="title function_">write</span>(stdout)</span><br><span class="line">        <span class="title function_">error</span>(<span class="string">`命令执行错误！\n\n<span class="subst">$&#123;stderr&#125;</span>`</span>)</span><br><span class="line">        <span class="title function_">reject</span>(stderr)</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="title function_">resolve</span>(stdout)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 执行shell命令，返回promise；</span></span><br><span class="line"><span class="comment"> * 这种方式不能捕获命令输出，但是可以按原格式进行输出；</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> &#123;<span class="type">string</span>&#125; shell shell命令</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">execShellOrigin</span> (<span class="params">shell</span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> shellArr = shell.<span class="title function_">split</span>(<span class="string">&#x27; &#x27;</span>)</span><br><span class="line">  <span class="keyword">const</span> process = <span class="title function_">spawn</span>(shellArr[<span class="number">0</span>], shellArr.<span class="title function_">slice</span>(<span class="number">1</span>), &#123;</span><br><span class="line">    <span class="attr">stdio</span>: <span class="string">&#x27;inherit&#x27;</span> <span class="comment">// 命令的输出按原格式进行输出</span></span><br><span class="line">  &#125;)</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">    process.<span class="title function_">on</span>(<span class="string">&#x27;close&#x27;</span>, <span class="function"><span class="params">code</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (code) &#123; <span class="comment">// 根据exit code可以判断命令执行结果</span></span><br><span class="line">        <span class="title function_">reject</span>(code)</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="title function_">resolve</span>()</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="在-commit-msg-钩子中获取修改-commit-消息"><a class="markdownIt-Anchor" href="#在-commit-msg-钩子中获取修改-commit-消息"></a> 在 commit-msg 钩子中获取/修改 commit 消息</h3>
+<p>执行<code>commit</code>命令后，<code>git</code>会将<code>commit</code>消息存放于一个<font color=#39f>临时文件</font>中；然后触发<code>pre-commit</code>钩子，<code>pre-commit</code>钩子成功之后就会触发<code>commit-msg</code>，<code>commit-msg</code>钩子成功后则会将临时文件中的文本作为此次<code>commit</code>消息进行存储；</p>
+<p>并且<code>commit-msg</code>钩子会对脚本传一个参数，这个参数就是存放<code>commit</code>消息的临时文件的路径；所以得到这个参数，就可以读取该文件的内容，也就能得到当前<code>commit</code>消息了；同理，在<code>commit-msg</code>钩子中覆盖这个文件就能对此次<code>commit</code>消息进行修改了；</p>
+<blockquote>
+<p>It takes a single parameter, the name of the file that holds the proposed commit log message.<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup></p>
+</blockquote>
+<p>不过，由于在<code>husky</code>中的指定的<code>commit-msg</code>钩子命令并不是git直接执行的，因此只能通过<code>husky</code>间接暴露的变量<code>$HUSKY_GIT_PARAMS</code>来获取临时文件的地址，如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># $HUSKY_GIT_PARAMS变量就是commit-msg钩子传递的文件路径参数</span></span><br><span class="line">node ./hooks/commit-msg <span class="variable">$HUSKY_GIT_PARAMS</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Git hooks can get parameters via command-line arguments and stdin. Husky makes them accessible via HUSKY_GIT_PARAMS and HUSKY_GIT_STDIN environment variables.<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup></p>
+</blockquote>
+<p>在<code>node</code>脚本内部就可以利用<code>process.argv</code>来获取命令行参数了；</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> param = process.<span class="property">argv</span>[process.<span class="property">argv</span>.<span class="property">length</span> - <span class="number">1</span>] <span class="comment">// 获取git commit消息临时存放文件地址</span></span><br></pre></td></tr></table></figure>
+<p>读取和写入操作既可以依靠<code>node</code>自带的方法，也可以利用<code>shell</code>命令（<code>shell</code>命令简单粗暴）；</p>
+<h3 id="钩子没有触发"><a class="markdownIt-Anchor" href="#钩子没有触发"></a> 钩子没有触发</h3>
+<p>当第一次安装<code>husky</code>的时候，可能会出现<code>.git/hooks</code>里面的文件没有被覆盖的情况；此时，<code>git hooks</code>仍然是之前的状态（默认是没有效果的）；如果是<code>husky</code>安装正常，使用命令<code>ls .git/hoooks</code>查看文件则是下面这样：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200624175043.png?imageslim" alt="img" /></p>
+<p>随便打开一个钩子脚本文件，内容可能是这样：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"><span class="comment"># husky</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Created by Husky v4.2.5 (https://github.com/typicode/husky#readme)</span></span><br><span class="line"><span class="comment">#   At: 2020-6-16 17:14:54</span></span><br><span class="line"><span class="comment">#   From: /Users/snowdream/Desktop/bhb/dp-admin/node_modules/husky (https://github.com/typicode/husky#readme)</span></span><br><span class="line"></span><br><span class="line">. <span class="string">&quot;<span class="subst">$(dirname <span class="string">&quot;<span class="variable">$0</span>&quot;</span>)</span>/husky.sh&quot;</span></span><br></pre></td></tr></table></figure>
+<p>如果不是上述形式，那么就是<code>husky</code><font color=#f00>注入失败</font>；可以通过重新安装（先<code>uninstall</code>再<code>install</code>）进行重新注入，因为每次安装<code>husky</code>时会重新覆盖一次<code>.git/hooks</code>脚本文件。</p>
+<h2 id="可用-shell-命令收集"><a class="markdownIt-Anchor" href="#可用-shell-命令收集"></a> 可用 shell 命令收集</h2>
+<h3 id="获取当前-git-分支名称"><a class="markdownIt-Anchor" href="#获取当前-git-分支名称"></a> 获取当前 git 分支名称</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git symbolic-ref --short -q HEAD</span><br></pre></td></tr></table></figure>
+<h3 id="获取最新的一条-git-提交信息"><a class="markdownIt-Anchor" href="#获取最新的一条-git-提交信息"></a> 获取最新的一条 git 提交信息</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git rev-list --no-walk --header HEAD</span><br></pre></td></tr></table></figure>
+<p>可以得到很详细的信息，用于进一步检测，比如检测最新的一次提交是不是<code>merge</code>，<code>merge</code>行为是否合法等待；</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">635a70d8e1eaccfe7a460e76ae400a0e5cc95161</span><br><span class="line">tree 6ff519aef0471392e6da9f068cace81f3e874b56</span><br><span class="line">parent c4e3385d4cab66b27ba64f2bce3df179b0bb4d3a</span><br><span class="line">author xiexuefeng &lt;xxx@qq.com&gt; 1592881689 +0800</span><br><span class="line">committer xiexuefeng &lt;xxx@qq.com&gt; 1592881689 +0800</span><br><span class="line"></span><br><span class="line">    fix: xxx</span><br></pre></td></tr></table></figure>
+<h3 id="读取或写入文件"><a class="markdownIt-Anchor" href="#读取或写入文件"></a> 读取或写入文件</h3>
+<p>读取使用<code>cat</code>命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> file-path</span><br></pre></td></tr></table></figure>
+<p>写入使用<code>echo</code>命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;content&quot;</span> &gt; file-path</span><br></pre></td></tr></table></figure>
+<h2 id="相关文档"><a class="markdownIt-Anchor" href="#相关文档"></a> 相关文档</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://git-scm.com/docs/githooks">Git - githooks Documentation</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.inanzzz.com/index.php/post/7qfs/automatically-amending-the-commit-message-with-commit-msg-hook">inanzzz | Automatically amending the commit message with commit-msg hook</a></li>
+<li><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/18825493/retaining-output-colors-when-shelling-out-to-node/20145153#20145153">javascript - Retaining output colors when shelling out to node - Stack Overflow</a>：输出原格式的来源</li>
+<li><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/section/1138780">git rev-list (Plumbing Commands) - Git 中文开发手册 - 开发者手册 - 云+社区 - 腾讯云</a>：<code>rev list</code>命令文档，该命令十分强大</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/typicode/husky/issues/445">Husky cannot execute hooks · Issue #445 · typicode/husky · GitHub</a></li>
+</ul>
+<hr class="footnotes-sep" />
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://git-scm.com/docs/githooks#_commit_msg">Git - githooks Documentation</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://github.com/typicode/husky#access-git-params-and-stdin">GitHub - typicode/husky: Git hooks made easy 🐶 woof!</a> <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/husky-and-git-hooks/" title="husky钩子的一些用法">https://note.xiexuefeng.cc/post/husky-and-git-hooks/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/git/" rel="tag"># git</a>
+              <a href="/tags/husky/" rel="tag"># husky</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/ts-in-type-system/" rel="prev" title="从类型系统的角度看TS">
+                  <i class="fa fa-chevron-left"></i> 从类型系统的角度看TS
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/codepen-challenge-sliding/" rel="next" title="codepen挑战（2020-6-17）：滑动">
+                  codepen挑战（2020-6-17）：滑动 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/husky-and-git-hooks/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/husky-and-git-hooks/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

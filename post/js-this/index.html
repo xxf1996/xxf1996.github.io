@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 在写js代码的时候，尤其是写带有面向对象编程式的代码的时候，我总是会想我这里使用的this到底指的是什么，这个问题真是困扰了我很久。虽然代码写久了会有一些基于经验的直觉感受，不过从本质出发是最直接的理解途径。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于this的指向">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/js-this/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 在写js代码的时候，尤其是写带有面向对象编程式的代码的时候，我总是会想我这里使用的this到底指的是什么，这个问题真是困扰了我很久。虽然代码写久了会有一些基于经验的直觉感受，不过从本质出发是最直接的理解途径。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-10-14T04:34:06.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.875Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="js">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/js-this/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/js-this/","path":"post/js-this/","title":"关于this的指向"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>关于this的指向 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#this%E7%9A%84%E6%8C%87%E5%90%91"><span class="nav-number">2.</span> <span class="nav-text"> this的指向</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%BB%98%E8%AE%A4%E6%83%85%E5%86%B5"><span class="nav-number">2.1.</span> <span class="nav-text"> 默认情况</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E5%BC%95%E7%94%A8"><span class="nav-number">2.2.</span> <span class="nav-text"> 函数引用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B4%E6%8E%A5%E7%BB%91%E5%AE%9A"><span class="nav-number">2.3.</span> <span class="nav-text"> 直接绑定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#new%E7%BB%91%E5%AE%9A"><span class="nav-number">2.4.</span> <span class="nav-text"> new绑定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0"><span class="nav-number">2.5.</span> <span class="nav-text"> 箭头函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3"><span class="nav-number">3.</span> <span class="nav-text"> 参考文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/js-this/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="关于this的指向 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          关于this的指向
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-10-14 12:34:06" itemprop="dateCreated datePublished" datetime="2018-10-14T12:34:06+08:00">2018-10-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A2%E7%B4%A2/" itemprop="url" rel="index"><span itemprop="name">探索</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p>在写<code>js</code>代码的时候，尤其是写带有面向对象编程式的代码的时候，我总是会想我这里使用的<code>this</code>到底指的是什么，这个问题真是困扰了我很久。虽然代码写久了会有一些<strong>基于经验的直觉感受</strong>，不过从<font color=#39f><strong>本质</strong></font>出发是最直接的理解途径。</p>
+<span id="more"></span>
+<h2 id="this的指向"><a class="markdownIt-Anchor" href="#this的指向"></a> this的指向</h2>
+<h3 id="默认情况"><a class="markdownIt-Anchor" href="#默认情况"></a> 默认情况</h3>
+<p>当在某个函数（<code>function</code>）中使用了<code>this</code>时，这个<code>this</code>指向的是<font color=red><strong>该函数调用时所在的作用域</strong></font>，比如：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">foo</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="variable language_">this</span>.<span class="property">a</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> a = <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="title function_">foo</span>() <span class="comment">// 会输出 1</span></span><br></pre></td></tr></table></figure>
+<p>可以看出上面的<code>foo</code>函数在执行的时候，实际上位于全局作用域（即<code>window</code>的作用域）中，所以<code>this</code>实际上指向了<strong>全局对象</strong><code>window</code>，而全局作用域内声明的变量实际上都变成了<code>window</code>对象的属性，所以<code>foo</code>函数内部的<code>this.a</code>实际上就是<code>window.a</code>；但是需要注意的是，如果使用的为<font color=red><strong>严格模式</strong></font>（<code>&quot;use strict&quot;</code>），函数在执行时是<strong>不能指向全局对象</strong>的！</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&quot;use strict&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">foo</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="variable language_">this</span>.<span class="property">a</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> a = <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="title function_">foo</span>() <span class="comment">// TypeError: this is undefined</span></span><br></pre></td></tr></table></figure>
+<p>这时候<code>foo</code>函数的内部的<code>this</code>实际上就是<code>undefined</code>；</p>
+<h3 id="函数引用"><a class="markdownIt-Anchor" href="#函数引用"></a> 函数引用</h3>
+<p>当函数被某个对象的属性所引用时，该<strong>函数属性</strong>（即指向该函数的<font color=red><strong>对象属性</strong></font>）在执行的时候，<code>this</code>指向的为该属性所属的对象（需要注意的是对象属性可以为对象，也就是对象可以嵌套，因此该对象指的是<font color=red><strong>直接包含该属性的那层对象</strong></font>）；比如：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">foo</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="variable language_">this</span>.<span class="property">a</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> obj = &#123;</span><br><span class="line">    <span class="attr">a</span>: <span class="string">&#x27;just do it&#x27;</span>,</span><br><span class="line">    <span class="attr">fn</span>: foo</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">obj.<span class="title function_">fn</span>() <span class="comment">// 输出 &#x27;just do it&#x27;</span></span><br></pre></td></tr></table></figure>
+<p><font color=red><strong>注</strong></font>：当函数已经被某个对象属性所引用，然后又有其他变量或对象属性指向该对象属性，其实际上还是指向原函数；如同<code>a → foo</code>，<code>b → a</code>，实际上就是<code>b → foo</code>；不管<font color=#39f><strong>中间经历多少个指向，最终指向的一定是原函数</strong></font>。比如：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">foo</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="variable language_">this</span>.<span class="property">a</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> obj = &#123;</span><br><span class="line">    <span class="attr">a</span>: <span class="string">&#x27;just do it&#x27;</span>,</span><br><span class="line">    <span class="attr">fn</span>: foo</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> bar = obj.<span class="property">fn</span> <span class="comment">// obj.fn实际指向foo，因此bar指向了foo，实际上相当于 bar = foo</span></span><br><span class="line"><span class="title function_">bar</span>() <span class="comment">// undefined</span></span><br></pre></td></tr></table></figure>
+<p>从上面可以看出，中间经历多重指向后，实际上还是<strong>指向原函数</strong>，因此<code>this</code>具体指向要看执行时该函数是作为<strong>函数属性还是普通函数</strong>执行的。</p>
+<h3 id="直接绑定"><a class="markdownIt-Anchor" href="#直接绑定"></a> 直接绑定</h3>
+<p><code>Function.prototype</code>具有3个特殊的方法：<code>call()</code>、<code>apply()</code>和<code>bind()</code>。这个三个函数之所以特殊，是因为它们都提供了一个参数用来绑定函数内部的<code>this</code>对象，因此可以利用这3个函数直接将我们想要<code>this</code>指向的对象与<code>this</code>进行绑定。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">foo</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="variable language_">this</span>.<span class="property">a</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> obj = &#123;</span><br><span class="line">    <span class="attr">a</span>: <span class="string">&#x27;ok&#x27;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foo.<span class="title function_">call</span>(obj) <span class="comment">// 输出 &#x27;ok&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>上面的<code>obj</code>对象利用<code>call</code>方法绑定到<code>foo</code>函数的<code>this</code>上，因此执行的时候<code>this.a</code>实际上就是<code>obj.a</code>。</p>
+<h3 id="new绑定"><a class="markdownIt-Anchor" href="#new绑定"></a> new绑定</h3>
+<p>在进行面向对象式的编程时，经常将函数作为构造器使用<code>new</code>来『<strong>构造</strong>』一个新对象，之前总以为<code>new</code>返回了函数的内部<code>this</code>对象，且<code>this</code>指向的应该就是新『构造』的实例。然而实际上这种想法是<font color=red><strong>错误</strong></font>的，<code>new</code>关键词所做的无非是一个<font color=#39f><strong>稍微特殊</strong></font>的函数调用：当该函数<font color=red><strong>没有返回值或返回值不是对象（引用类型？）时</strong></font>时，<code>new</code>会构造一个对象，<strong>将该对象的<code>__proto__</code>属性连接到函数的<code>prototype</code>属性，并将该对象指向函数内部的<code>this</code>对象</strong>，然后返回该对象；若该函数有<font color=red><strong>对象返回值</strong></font>，则直接返回该对象返回值（即此时相当于普通函数的调用而已）。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1. 没有返回值的情况</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">foo</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">a</span> = <span class="string">&#x27;nothing&#x27;</span></span><br><span class="line">    <span class="keyword">let</span> b = <span class="string">&#x27;何でもない&#x27;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> o1 = <span class="keyword">new</span> <span class="title function_">foo</span>()</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(o1) <span class="comment">// &#123;a: &#x27;nothing&#x27;&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 2. 有对象返回值的情况</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">bar</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">a</span> = <span class="string">&#x27;nothing&#x27;</span></span><br><span class="line">    <span class="keyword">let</span> b = <span class="string">&#x27;何でもない&#x27;</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="attr">a</span>: b&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> o2 = <span class="keyword">new</span> <span class="title function_">bar</span>()</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(o2) <span class="comment">// &#123;a: &#x27;何でもない&#x27;&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 3. 有返回值，但不是对象的情况</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">fb</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">a</span> = <span class="string">&#x27;nothing&#x27;</span></span><br><span class="line">    <span class="keyword">let</span> b = <span class="string">&#x27;何でもない&#x27;</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> b</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> o3 = <span class="keyword">new</span> <span class="title function_">fb</span>()</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(o3) <span class="comment">// &#123;a: &#x27;nothing&#x27;&#125;</span></span><br></pre></td></tr></table></figure>
+<h3 id="箭头函数"><a class="markdownIt-Anchor" href="#箭头函数"></a> 箭头函数</h3>
+<p><code>ES6</code>新增的箭头函数中使用的<code>this</code>跟普通定义的函数有所不同，这里的<code>this</code>指向的实际上是箭头函数<font color=red><strong>定义时离得最近的一层外层函数作用域</strong></font>内的<code>this</code>对象；</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">foo</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="variable language_">this</span>.<span class="property">a</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> obj = &#123;</span><br><span class="line">    <span class="attr">a</span>: <span class="string">&#x27;so what&#x27;</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> bar = foo.<span class="title function_">call</span>(obj)</span><br><span class="line"><span class="title function_">bar</span>() <span class="comment">// 输出 &#x27;so what&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>上面通过将<code>obj</code>对象作为<code>foo</code>函数的<code>this</code>对象，然后返回一个箭头函数，该箭头函数<strong>在定义的时候</strong>内部的<code>this</code>实际上指向的就是此时<code>foo</code>函数内部的<code>this</code>对象，即<code>obj</code>对象。</p>
+<p><strong>注</strong>：当有多个箭头函数嵌套时，<code>this</code>的指向也是在定义处一层一层往上直至<font color=red><strong>最近的外层非箭头函数</strong></font>的内部<code>this</code>对象。</p>
+<h2 id="参考文档"><a class="markdownIt-Anchor" href="#参考文档"></a> 参考文档</h2>
+<ol>
+<li>《你不知道的JavaScript（上卷）》——第二章：this全面解析</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/js-this/" title="关于this的指向">https://note.xiexuefeng.cc/post/js-this/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/js/" rel="tag"># js</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/3d-transform-parallax-scrolling/" rel="prev" title="利用3D transform实现视差滚动">
+                  <i class="fa fa-chevron-left"></i> 利用3D transform实现视差滚动
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/mongoose-basic/" rel="next" title="mongoose的基本操作">
+                  mongoose的基本操作 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/js-this/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/js-this/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

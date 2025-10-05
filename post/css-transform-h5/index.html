@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 现在H5中应用了大量的CSS动效，而这些动效很多都与transform属性相关（没办法，transform就是天生适合产生动效的），借助和分析比较典型的H5案例可以更好地应用transform属性；">
+<meta property="og:type" content="article">
+<meta property="og:title" content="transform相关H5案例">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/css-transform-h5/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 现在H5中应用了大量的CSS动效，而这些动效很多都与transform属性相关（没办法，transform就是天生适合产生动效的），借助和分析比较典型的H5案例可以更好地应用transform属性；">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200816171610.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200816171625.gif?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200816171641.gif?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200816171650.gif?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200816171658.gif?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200816171710.gif?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200816171728.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200816171737.gif?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200816171749.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200816171802.gif?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200816171816.gif?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200816171906.gif?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200816171925.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200816171935.gif?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200816171951.gif?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200816172001.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200816172010.gif?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200816172021.png?imageslim">
+<meta property="article:published_time" content="2020-08-16T09:15:44.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.869Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="H5">
+<meta property="article:tag" content="css">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20200816171610.png?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/css-transform-h5/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/css-transform-h5/","path":"post/css-transform-h5/","title":"transform相关H5案例"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>transform相关H5案例 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%81%95%E6%88%91%E7%9B%B4%E8%A8%80%E4%B8%80%E7%9C%8B%E5%B0%B1%E4%B8%8D%E6%98%AF%E4%BB%80%E4%B9%88%E6%AD%A3%E7%BB%8F%E7%8C%AB%E7%BD%91%E6%98%93"><span class="nav-number">2.</span> <span class="nav-text"> 恕我直言，一看就不是什么正经猫【网易】</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A8%E7%94%BB%E6%8B%86%E8%A7%A3"><span class="nav-number">2.1.</span> <span class="nav-text"> 动画拆解</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2014%E8%85%BE%E8%AE%AF%E4%BA%92%E5%8A%A8%E5%A8%B1%E4%B9%90%E5%B9%B4%E5%BA%A6%E5%8F%91%E5%B8%83%E4%BC%9A%E9%82%80%E8%AF%B7%E5%87%BD"><span class="nav-number">3.</span> <span class="nav-text"> 2014腾讯互动娱乐年度发布会邀请函</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%80%BC%E5%BE%97%E6%B3%A8%E6%84%8F%E7%9A%84%E5%9C%B0%E6%96%B9"><span class="nav-number">3.1.</span> <span class="nav-text"> 值得注意的地方</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E6%A1%A3"><span class="nav-number">4.</span> <span class="nav-text"> 相关文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/css-transform-h5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="transform相关H5案例 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          transform相关H5案例
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-08-16 17:15:44" itemprop="dateCreated datePublished" datetime="2020-08-16T17:15:44+08:00">2020-08-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A2%E7%B4%A2/" itemprop="url" rel="index"><span itemprop="name">探索</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p>现在<code>H5</code>中应用了大量的<code>CSS</code>动效，而这些动效很多都与<code>transform</code>属性相关（没办法，<code>transform</code>就是天生适合产生动效的），借助和分析比较典型的<code>H5</code>案例可以更好地应用<code>transform</code>属性；</p>
+<span id="more"></span>
+<h2 id="恕我直言一看就不是什么正经猫网易"><a class="markdownIt-Anchor" href="#恕我直言一看就不是什么正经猫网易"></a> 恕我直言，一看就不是什么正经猫【网易】</h2>
+<ul>
+<li><strong>活动地址</strong>：<a target="_blank" rel="noopener" href="http://gongyi.163.com/special/meowkingdom/">http://gongyi.163.com/special/meowkingdom/</a></li>
+<li><strong>活动类型</strong>：创意<code>H5</code>游戏</li>
+<li><strong>简介</strong>：这个活动的主体就是一个<strong>模拟俄罗斯方块</strong>的游戏，只不过把方块的形状用相应的不正经的猫姿势进行了替换；游戏使用的是<code>PIXI</code>库进行搭建的，其余状态都是都是普通的<code>H5</code>元素，有比较多的动画，动画基本上都是图片拆解，然后部分使用<code>transform</code>进行动态变化；</li>
+</ul>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200816171610.png?imageslim" alt="img" /></p>
+<p>上面这个是游戏部分，跟<code>transform</code>相关的部分是其他地方；</p>
+<h3 id="动画拆解"><a class="markdownIt-Anchor" href="#动画拆解"></a> 动画拆解</h3>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200816171625.gif?imageslim" alt="img" /></p>
+<p>从上图可以看出，游戏前画面是有多处<code>css</code>动画的，而这些动画大多和<code>transform</code>有关：</p>
+<ul>
+<li>
+<p>中心旋转：即变换中心为默认的<code>center center</code>；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200816171641.gif?imageslim" alt="img" /></p>
+</li>
+<li>
+<p>边缘旋转：此处变换中心是图片的右边缘中心，即<code>right center</code>；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200816171650.gif?imageslim" alt="img" /></p>
+</li>
+<li>
+<p>缩放 + <code>opacity</code>：放大 + 不透明度变低；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200816171658.gif?imageslim" alt="img" /></p>
+</li>
+<li>
+<p>帧图片播放动画：这个马赛克动画实际上就是只有两帧的动画图片，然后循环播放；这个抖动本来还以为也是<code>transform</code>模拟出来的，但看源码实际上就是一个四帧的动画图片进行的播放，毕竟仔细看这个动画有扭曲变化，这个<code>transform</code>目前真的无能无力……</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200816171710.gif?imageslim" alt="img" /><br />
+<img src="https://pic.xiexuefeng.cc/markdown/20200816171728.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200816171737.gif?imageslim" alt="img" /><br />
+<img src="https://pic.xiexuefeng.cc/markdown/20200816171749.png?imageslim" alt="img" /></p>
+</li>
+<li>
+<p><code>backgroud-position</code>：这个地方看似有点像缩放，但实际上就是图片在<code>y</code>方向变化而已；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200816171802.gif?imageslim" alt="img" /></p>
+</li>
+</ul>
+<h2 id="2014腾讯互动娱乐年度发布会邀请函"><a class="markdownIt-Anchor" href="#2014腾讯互动娱乐年度发布会邀请函"></a> 2014腾讯互动娱乐年度发布会邀请函</h2>
+<ul>
+<li><strong>活动地址</strong>：<a target="_blank" rel="noopener" href="http://up.qq.com/2014/invitation/main.html">http://up.qq.com/2014/invitation/main.html</a></li>
+<li><strong>活动类型</strong>：单屏滑动页面</li>
+<li><strong>简介</strong>：这是一个典型的单屏滑动活动页，基本上就是滑动切换上下屏，每屏有不同的内容；主要关注点就是切换上下屏之间的过渡动画效果，以及每屏出现时小物件的活动轨迹和动画；</li>
+</ul>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200816171816.gif?imageslim" alt="img" /></p>
+<p>从上面看出，这里面确实有大量的<code>CSS</code>动画，而且很多都是和<code>transform</code>相关的，所以还是重点关注一下比较有趣的地方；</p>
+<h3 id="值得注意的地方"><a class="markdownIt-Anchor" href="#值得注意的地方"></a> 值得注意的地方</h3>
+<blockquote>
+<p>注：下面的gif图所展现的不一定是原速，因为可能是通过chrome浏览器自带的animation面板进行手动录制的；</p>
+</blockquote>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200816171906.gif?imageslim" alt="img" /></p>
+<p>关注游戏机这个图标的动画，可以明显的看出这个动画是组合动画，分为几个阶段：</p>
+<ul>
+<li>
+<p>中心旋转 + 放大 + <code>opacity</code>变大</p>
+</li>
+<li>
+<p>旋转 + 平移：这个阶段动画看起来像是沿着边缘进行旋转，但实际上看源码是<font color=#39f>边平移边旋转</font>；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200816171925.png?imageslim" alt="img" /></p>
+</li>
+</ul>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200816171935.gif?imageslim" alt="img" /></p>
+<p>这个地方实际上是<font color=#39f>一组元素形成的扩散动画</font>，每个元素本身的动画都是一致的，就是平移 + 旋转 + 不透明度变化，只是每个元素平移的方向不同，形成了扩散效果；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200816171951.gif?imageslim" alt="img" /></p>
+<p>这个地方的三角形运动轨迹形似<code>S</code>，实际上动画就是利用<font color=#39f>连续两次的平移 + 旋转</font>，然后<strong>旋转方向有所不同</strong>，形成连续且丝滑的运动轨迹；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200816172001.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200816172010.gif?imageslim" alt="img" /></p>
+<p>这段开门的动画主要是利用透视投影，然后再进行绕<code>Y</code>轴向后旋转，形成立体的真实感；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200816172021.png?imageslim" alt="img" /></p>
+<h2 id="相关文档"><a class="markdownIt-Anchor" href="#相关文档"></a> 相关文档</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/33489738">有什么好的微信H5活动案例？ - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.faceh5.com/case?page=list">H5列表</a>：<code>H5</code>案例网站</li>
+<li><a target="_blank" rel="noopener" href="https://www.h5anli.com/">H5案例分享 - 创意H5案例，一搜即得</a>：<code>H5</code>案例网站</li>
+<li><a target="_blank" rel="noopener" href="https://www.uisdc.com/h5-play-way">H5玩法知多少？腾讯超多实战案例让你大开眼界！ | 优设网 - UISDC</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/css-transform-h5/" title="transform相关H5案例">https://note.xiexuefeng.cc/post/css-transform-h5/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/H5/" rel="tag"># H5</a>
+              <a href="/tags/css/" rel="tag"># css</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/css-transform-apply/" rel="prev" title="transform应用场景的探索">
+                  <i class="fa fa-chevron-left"></i> transform应用场景的探索
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/css-basic-shape/" rel="next" title="basic-shape 数据类型">
+                  basic-shape 数据类型 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/css-transform-h5/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/css-transform-h5/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

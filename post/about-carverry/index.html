@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="整体设计 这是一套比较激进的可视化搭建方案（激进体现在适用场景和技术栈的选择上），核心思想就是极致的内聚；因此可以看到除了必要的组件配置，其他所有相关的配置都砍掉了，理由就是这些配置完全可以通过内聚使其成为内部参数，而减少不必要的参数暴露（这一点可以参照现有的一些比较流行的可视化搭建方案，它们都尽可能实现对组件框架的所有语法的完全映射，以便达到最大的自由度）；从可视化搭建业务的角度来说，一般就是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于carverry">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/about-carverry/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="整体设计 这是一套比较激进的可视化搭建方案（激进体现在适用场景和技术栈的选择上），核心思想就是极致的内聚；因此可以看到除了必要的组件配置，其他所有相关的配置都砍掉了，理由就是这些配置完全可以通过内聚使其成为内部参数，而减少不必要的参数暴露（这一点可以参照现有的一些比较流行的可视化搭建方案，它们都尽可能实现对组件框架的所有语法的完全映射，以便达到最大的自由度）；从可视化搭建业务的角度来说，一般就是">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/image-20220217184413785.png">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/image-20220428151453354.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/image-20220428151736633.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/image-20220428152932460.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/image-20220428153950811.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/image-20220428154228024.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/image-20220428160201164.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/image-20220428160314884.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/image-20220505103801689.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/image-20220429153436462.png">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/image-20220501120033666.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/image-20220501122906554.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/image-20220501131703736.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/image-20220502121044079.png?imageslim">
+<meta property="article:published_time" content="2022-09-20T02:50:36.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.864Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="基建">
+<meta property="article:tag" content="可视化搭建">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/image-20220217184413785.png">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/about-carverry/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/about-carverry/","path":"post/about-carverry/","title":"关于carverry"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>关于carverry | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B4%E4%BD%93%E8%AE%BE%E8%AE%A1"><span class="nav-number">1.</span> <span class="nav-text"> 整体设计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A2%84%E6%9C%9F%E9%80%82%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.1.</span> <span class="nav-text"> 预期适用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.2.</span> <span class="nav-text"> 数据模型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E5%8F%98%E9%87%8F%E7%9A%84%E6%B3%A8%E5%85%A5"><span class="nav-number">1.2.1.</span> <span class="nav-text"> 关于变量的注入</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8A%80%E6%9C%AF%E6%A0%88%E7%9A%84%E9%80%89%E6%8B%A9"><span class="nav-number">1.3.</span> <span class="nav-text"> 技术栈的选择</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#carverrycore"><span class="nav-number">1.3.1.</span> <span class="nav-text"> @carverry&#x2F;core</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#carverryapp"><span class="nav-number">1.3.2.</span> <span class="nav-text"> @carverry&#x2F;app</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%84%E8%8C%83%E8%AE%BE%E8%AE%A1"><span class="nav-number">1.4.</span> <span class="nav-text"> 规范设计</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%89%A9%E6%96%99%E9%A1%B9%E7%9B%AE"><span class="nav-number">1.4.1.</span> <span class="nav-text"> 物料项目</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%AE%BE%E8%AE%A1"><span class="nav-number">1.4.2.</span> <span class="nav-text"> 命令行设计</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%86%E8%8A%82"><span class="nav-number">2.</span> <span class="nav-text"> 细节</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8Eworkspaces%E7%9A%84%E5%BC%80%E5%8F%91"><span class="nav-number">2.1.</span> <span class="nav-text"> 基于workspaces的开发</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8Ets-node%E7%9A%84%E5%BC%80%E5%8F%91"><span class="nav-number">2.2.</span> <span class="nav-text"> 基于ts-node的开发</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%AE%E5%89%8Desm%E7%9A%84%E9%99%90%E5%88%B6"><span class="nav-number">2.2.1.</span> <span class="nav-text"> 目前ESM的限制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#esm-shebang-%E6%89%A7%E8%A1%8C"><span class="nav-number">2.2.2.</span> <span class="nav-text"> ESM Shebang 执行</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E6%8B%96%E6%8B%BD%E7%9A%84%E4%BA%A4%E4%BA%92"><span class="nav-number">2.3.</span> <span class="nav-text"> 关于拖拽的交互</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E5%90%8C%E5%BA%94%E7%94%A8%E4%B8%8A%E4%B8%8B%E6%96%87%E4%B9%8B%E9%97%B4%E7%9A%84%E4%BA%8B%E4%BB%B6%E9%80%9A%E4%BF%A1"><span class="nav-number">2.4.</span> <span class="nav-text"> 不同应用上下文之间的事件通信</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6"><span class="nav-number">2.4.1.</span> <span class="nav-text"> 事件机制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BF%A1%E6%81%AF%E4%BC%A0%E9%80%92"><span class="nav-number">2.4.2.</span> <span class="nav-text"> 信息传递</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#hit-testing"><span class="nav-number">2.4.3.</span> <span class="nav-text"> Hit Testing</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%87%E7%A8%8B%E5%9B%BE%E8%A7%A3"><span class="nav-number">2.4.4.</span> <span class="nav-text"> 过程图解</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#iframe%E7%9A%84%E4%BA%8B%E4%BB%B6%E7%A9%BF%E9%80%8F"><span class="nav-number">2.4.5.</span> <span class="nav-text"> iframe的事件穿透</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dataset%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="nav-number">2.5.</span> <span class="nav-text"> dataset的使用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%A8-dom-tree-%E7%9A%84%E5%9F%BA%E7%A1%80%E4%B8%8A%E6%9E%84%E5%BB%BA%E9%85%8D%E7%BD%AE%E6%A0%91"><span class="nav-number">2.5.1.</span> <span class="nav-text"> 在 DOM tree 的基础上构建配置树</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%83%B6%E6%B0%B4%E4%BB%A3%E7%A0%81%E7%9A%84%E8%BE%93%E5%87%BA"><span class="nav-number">2.6.</span> <span class="nav-text"> 胶水代码的输出</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%96%B9-ui-%E5%BA%93%E5%85%83%E6%95%B0%E6%8D%AE%E7%9A%84%E8%BD%AC%E6%8D%A2"><span class="nav-number">2.7.</span> <span class="nav-text"> 第三方 UI 库元数据的转换</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#node-%E4%BB%A3%E7%A0%81%E8%B0%83%E8%AF%95"><span class="nav-number">2.8.</span> <span class="nav-text"> node 代码调试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0%E5%8C%85%E8%B0%83%E8%AF%95%E5%AD%98%E5%9C%A8%E7%9A%84%E5%9D%91"><span class="nav-number">2.9.</span> <span class="nav-text"> 本地包调试存在的坑</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%AD%E6%8A%98%E7%9A%84%E6%96%B9%E6%A1%88"><span class="nav-number">3.</span> <span class="nav-text"> 夭折的方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%82%E6%AD%A5%E6%B8%B2%E6%9F%93%E7%9A%84%E5%9D%91"><span class="nav-number">3.1.</span> <span class="nav-text"> 异步渲染的坑</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B4%E6%8E%A5%E8%BF%90%E8%A1%8Capp"><span class="nav-number">3.2.</span> <span class="nav-text"> 直接运行APP</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B9%E6%A1%88%E5%8F%AF%E8%83%BD%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">4.</span> <span class="nav-text"> 方案可能存在的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#roadmap"><span class="nav-number">5.</span> <span class="nav-text"> Roadmap</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B2%BE%E5%87%86%E7%B1%BB%E5%9E%8B%E6%8E%A8%E5%AF%BC%E4%B8%8E%E7%B1%BB%E5%9E%8B%E5%8C%B9%E9%85%8D"><span class="nav-number">5.1.</span> <span class="nav-text"> 精准类型推导与类型匹配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%BB%E8%BE%91%E5%A4%8D%E7%94%A8"><span class="nav-number">5.2.</span> <span class="nav-text"> 逻辑复用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%84%91%E6%B4%9E%E5%A4%A7%E5%BC%80"><span class="nav-number">6.</span> <span class="nav-text"> 脑洞大开</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%AF%E4%BA%91%E7%AB%AF%E6%90%AD%E5%BB%BA"><span class="nav-number">6.1.</span> <span class="nav-text"> 纯云端搭建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9D%A2%E5%90%91%E9%9D%9E%E7%BC%96%E7%A8%8B%E4%BA%BA%E5%91%98"><span class="nav-number">6.2.</span> <span class="nav-text"> 面向非编程人员</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E6%A1%A3"><span class="nav-number">7.</span> <span class="nav-text"> 相关文档</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%A9%E5%B1%95%E5%85%B3%E4%BA%8E%E5%89%8D%E7%AB%AF%E7%9A%84%E5%90%84%E7%A7%8D%E5%8F%AF%E8%A7%86%E5%8C%96"><span class="nav-number">8.</span> <span class="nav-text"> 扩展：关于前端的各种可视化</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/about-carverry/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="关于carverry | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          关于carverry
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-09-20 10:50:36" itemprop="dateCreated datePublished" datetime="2022-09-20T10:50:36+08:00">2022-09-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A2%E7%B4%A2/" itemprop="url" rel="index"><span itemprop="name">探索</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="整体设计"><a class="markdownIt-Anchor" href="#整体设计"></a> 整体设计</h2>
+<p>这是一套比较<font color=#f00>激进</font>的可视化搭建方案（激进体现在适用场景和技术栈的选择上），核心思想就是<font color=#f00>极致的内聚</font>；因此可以看到除了必要的组件配置，其他所有相关的配置都砍掉了，理由就是这些配置完全可以通过内聚使其成为内部参数，而减少不必要的<strong>参数暴露</strong>（这一点可以参照现有的一些比较流行的可视化搭建方案，它们都尽可能实现对组件框架的所有语法的完全映射，以便达到最大的自由度）；从可视化搭建业务的角度来说，一般就是封装的程度越高，其自由度越低，而搭建效率就越高<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>；而这套设计就是为了提高业务搭建效率，所以自然就倾向于内聚；</p>
+<h3 id="预期适用场景"><a class="markdownIt-Anchor" href="#预期适用场景"></a> 预期适用场景</h3>
+<ul>
+<li><strong>面向人群</strong>：前端编程人员；</li>
+<li><strong>预期解决的问题</strong>：减少花在拼接组件的过程中写胶水代码的时间，更加直接直观地去搭积木；</li>
+<li><strong>内聚</strong>：业务和组件/代码区块的内聚程度越高，复用和可视化搭建的效率也就越高；</li>
+<li><strong>面向项目</strong>：<code>Vue3</code>（<code>≥3.2</code>，用于支持<code>setup</code>模式） +  <code>TS</code>；</li>
+</ul>
+<span id="more"></span>
+<h3 id="数据模型"><a class="markdownIt-Anchor" href="#数据模型"></a> 数据模型</h3>
+<p><img src="https://pic.xiexuefeng.cc/markdown/image-20220217184413785.png" alt="image-20220217184413785" /></p>
+<p>从数据模型就不难发现所谓的激进之处在哪，差不多砍掉了大部分的语法映射，只保留组件最最核心的部分（即没法通过内聚合并参数来解决）；为何可以做到只保留这些属性就可以实现完全的映射？因为其他诸如生命周期，指令等在形成业务逻辑时，完全不必要暴露出来，直接在内部进行处理，而仅仅需要注入<font color=#f00>完全需要外部数据</font>的部分；</p>
+<h4 id="关于变量的注入"><a class="markdownIt-Anchor" href="#关于变量的注入"></a> 关于变量的注入</h4>
+<p>可以看到，变量的配置分为两个部分：</p>
+<ul>
+<li><strong>位置</strong>：这里的位置就是指文件的位置，可以是本地文件路径，也可以是其他位置（诸如仓库地址，包等等）；这样就可以不局限于从本地获取；</li>
+<li><strong>标识符</strong>：不管是何种类型的变量，始终都是通过标识符进行暴露和定位的；</li>
+</ul>
+<p>因此，通过这两部分信息理论上可以从任何地方获取变量（数据）；</p>
+<h3 id="技术栈的选择"><a class="markdownIt-Anchor" href="#技术栈的选择"></a> 技术栈的选择</h3>
+<p>技术栈的选择则又是激进的另一部分，很多都是全新的，不太考虑向下兼容性（因为不存在历史包袱）；</p>
+<h4 id="carverrycore"><a class="markdownIt-Anchor" href="#carverrycore"></a> @carverry/core</h4>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://typestrong.org/ts-node/">ts-node</a>：这是一个<code>node</code>端的<code>TS</code>执行器，可以达到用<code>TS</code>写<code>node</code>代码而不<strong>预先编译</strong>就执行的目的；</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/farrow-js/farrow">farrow</a>：这是一个基于<code>TS</code>编写、类型友好、开箱即用，轻量简单的<code>node</code>服务端框架；配合<code>ts-node/TS</code>使用良好；</li>
+<li>命令行相关工具：<code>inquirer</code>、<code>commander</code>、<code>chalk</code>；</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/typicode/lowdb">lowdb</a>：基于<code>JSON</code>文件做数据管理的轻量级数据库工具；</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/websockets/ws">ws</a>：简单轻便的<code>node</code>端<code>websocket</code>服务搭建工具；</li>
+</ul>
+<h4 id="carverryapp"><a class="markdownIt-Anchor" href="#carverryapp"></a> @carverry/app</h4>
+<p>可视化搭建应用的技术栈选择可以说是无关紧要了，毕竟只要最后的输出产物可以运行即可……所以采用了目前最顺手的一套：</p>
+<ul>
+<li><code>Vue3</code></li>
+<li><code>TS</code></li>
+<li><code>element-plus</code></li>
+<li><code>vite</code></li>
+</ul>
+<h3 id="规范设计"><a class="markdownIt-Anchor" href="#规范设计"></a> 规范设计</h3>
+<h4 id="物料项目"><a class="markdownIt-Anchor" href="#物料项目"></a> 物料项目</h4>
+<p>所谓的物料项目，实际上就是给可视化搭建平台提供组件原料的组件库；而为了快速生产满足可视化搭建使用要求的物料，则需要对物料设计一些规范：</p>
+<ul>
+<li><strong>项目无需编译打包</strong>：为了避免重复依赖引入，项目所有的<code>dependencies</code>都放到<code>peerDependencies</code>里面，并且<font color=#f00>指定包的版本兼容范围</font>；这样做的好处就是把依赖安装全部集中到使用项目本身，避免一些相同包的不同版本出现重复打包；虽说无需编译，但是一些额外的元数据还是需要进行预编译比较好，以便在使用这些物料时无需再额外生成元数据，而这个编译命令都集中在<code>@carverry/core</code>的<code>cli</code>里了，所以没啥负担；</li>
+</ul>
+<p><img src="https://pic.xiexuefeng.cc/markdown/image-20220428151453354.png?imageslim" alt="image-20220428151453354" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/image-20220428151736633.png?imageslim" alt="image-20220428151736633" /></p>
+<ul>
+<li><strong>项目结构</strong>：为了方便统一的编译和有明确模式的引入（即在对应项目按照某种模式自动化的引入物料），所以确定一个统一的项目结构是比较明智的；</li>
+</ul>
+<p><img src="https://pic.xiexuefeng.cc/markdown/image-20220428152932460.png?imageslim" alt="image-20220428152932460" /></p>
+<p>​	实际上就是限定了所有源码放在<code>src</code>，其中物料源码都放在<code>materials</code>里面，而<code>materials</code>里面的每个子目录都代表一个具体的组件，至于<code>src</code>里面其他的文件夹则完全不需要硬性的约束了。具体到单个物料的目录，也有一定的规范：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/image-20220428153950811.png?imageslim" alt="image-20220428153950811" /></p>
+<p>​	至于<code>carverry.material.json</code>文件的作用，其实就是补充物料的一些无法自动获取的元数据及一些配置，目前满足如下的<code>JSON schema</code>：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/image-20220428154228024.png?imageslim" alt="image-20220428154228024" /></p>
+<ul>
+<li><strong>单元测试</strong>：对于公共组件，自然少不了单测，否则无法维持一个可信任、可持续迭代、健壮的组件库；这里选用了<a target="_blank" rel="noopener" href="https://github.com/vitest-dev/vitest">vitest</a>作为单测框架，无他，<code>vite</code>生态的最佳选择；</li>
+<li><strong>组件文档</strong>：采用<code>storybook</code>，可以考虑直接部署文档；</li>
+</ul>
+<h4 id="命令行设计"><a class="markdownIt-Anchor" href="#命令行设计"></a> 命令行设计</h4>
+<p>为了提升物料相关的开发效率及启动可视化搭建等功能，<code>@carverry/core</code>提供了一系列<code>cli</code>命令：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/image-20220428160201164.png?imageslim" alt="image-20220428160201164" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/image-20220428160314884.png?imageslim" alt="image-20220428160314884" /></p>
+<h2 id="细节"><a class="markdownIt-Anchor" href="#细节"></a> 细节</h2>
+<h3 id="基于workspaces的开发"><a class="markdownIt-Anchor" href="#基于workspaces的开发"></a> 基于workspaces的开发</h3>
+<p>由于<code>carverry</code>相关的包有一定的关联性，所以一开始就打算放在一个项目里面进行开发，采用目前流行的分包开发模式，而分包开发目前主要有一种模式：</p>
+<ul>
+<li><strong>monorepo</strong>：“Monorepo 是管理项目代码的一个方式，指在一个项目仓库 (repo) 中管理多个模块/包 (package)，不同于常见的每个模块建一个 repo。”<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup></li>
+</ul>
+<p>而<code>yarn workspaces</code>本身提供了一种比较便捷的<code>monorepo</code>开发方式，仅需要增加一些<code>yarn</code>的配置即可；而其他的包管理器（<code>pnpm/npm</code>）本身也有类似的配置。</p>
+<p>不过由于一开始并不了解<code>monorepo</code>的管理机制，所以在<code>git</code>提交上面犯了错误，导致不同包之间的<code>git</code>提交混合在了一起，所以生成的<code>changelog</code>版本号十分奇怪……这里就推荐一个最佳实践<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup>；</p>
+<h3 id="基于ts-node的开发"><a class="markdownIt-Anchor" href="#基于ts-node的开发"></a> 基于ts-node的开发</h3>
+<p>其实一开始基于<code>ts-node/TS</code>开发倒也没发现太多的限制，但是由于项目中使用了<code>lowdb</code>这个较为特殊的库，这个库的最新版本（<code>3.0+</code>）全面采用<code>ESM</code>模块，不兼容<code>CommonJS</code>模块，导致使用该库的项目也必须采用<code>ESM</code>模块；而目前<code>node</code>的<code>LTS</code>版本（16）还不全面支持<code>ESM</code>模块，只是把这个功能放到实验特性里面（作为加载器使用，好在<code>ts-node</code>完全提供了<code>ESM</code>模块的加载器）；所以基于<code>TS</code>开发的<code>node</code>代码索性全部采用更为激进的<code>ESM</code>模块，不过不需要太担心，<code>ESM</code>是<code>node</code>的未来主流，且已知在下一个<code>LTS</code>版本（18）可以原生全面支持<code>ESM</code><sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup>；</p>
+<h4 id="目前esm的限制"><a class="markdownIt-Anchor" href="#目前esm的限制"></a> 目前ESM的限制</h4>
+<ul>
+<li>最明显的就是用<code>import</code>替代<code>require</code>；</li>
+<li>一些内置的系统变量不能直接使用，如：<code>__dirname</code>；</li>
+<li>无法再像之前的<code>CommonJS</code>模块一样，直接导入<code>json</code>文件；解决方法可以参考这个——<a target="_blank" rel="noopener" href="https://www.stefanjudis.com/snippets/how-to-import-json-files-in-es-modules-node-js/">How to import JSON files in ES modules (Node.js) | Stefan Judis Web Development</a>，而后续<code>LTS</code>版本应该会支持在<code>ESM</code>模块直接导入<code>json</code>文件；</li>
+</ul>
+<p>关于更多的写法不同，可以参考<code>ts-node</code>官方给出的指南——<a target="_blank" rel="noopener" href="https://github.com/TypeStrong/ts-node/issues/1007">ESM support: soliciting feedback · Issue #1007 · TypeStrong/ts-node</a>；</p>
+<h4 id="esm-shebang-执行"><a class="markdownIt-Anchor" href="#esm-shebang-执行"></a> ESM Shebang 执行</h4>
+<blockquote>
+<p>在计算领域中，Shebang（也称为Hashbang）是一个由井号和叹号构成的字符序列#!，其出现在文本文件的第一行的前两个字符。 在文件中存在Shebang的情况下，类Unix操作系统的程序加载器会分析Shebang后的内容，将这些内容作为解释器指令，并调用该指令，并将载有Shebang的文件路径作为该解释器的参数。<sup class="footnote-ref"><a href="#fn5" id="fnref5">[5]</a></sup></p>
+</blockquote>
+<p><code>Shebang</code>的作用实际上可以让<code>node</code>执行<code>bin</code>文件时，可以按照<code>Shebang</code>指令指定的解释器和参数运行命令，丰富了脚本的使用场景；而具体到<code>ts-node</code>，<code>ts-node</code>完全支持作为<code>Shebang</code>的解释器来执行<code>TS</code>文件作为脚本<sup class="footnote-ref"><a href="#fn6" id="fnref6">[6]</a></sup>；且<code>ts-node</code>也完全提供了<code>ESM</code>模块的解释器，因此也可以直接执行<code>ESM</code>模块的<code>TS</code>文件作为脚本：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/usr/bin/env ts-node-esm</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 剩下的就是正常的TS代码</span></span><br></pre></td></tr></table></figure>
+<p>不过有一点需要注意的是，如果要让这个<code>bin</code>文件可以在<strong>任意命令行</strong>都可以执行，那么就需要<font color=#f00>全局安装</font><code>ts-node</code>；</p>
+<h3 id="关于拖拽的交互"><a class="markdownIt-Anchor" href="#关于拖拽的交互"></a> 关于拖拽的交互</h3>
+<p>如果将一个组件拖拽放入可视化界面中，如何推测用户要插入的精准位置？这里有一个有意思的思路<sup class="footnote-ref"><a href="#fn7" id="fnref7">[7]</a></sup>，那就是根据用户插入组件时其鼠标位置命中的最近的一个物料组件（即对应一个配置节点），然后根据距离该组件<code>DOMRect</code>的边距来得到一个距离最近的边距，得出插入位置的推断：</p>
+<ul>
+<li><code>left/top</code>：插入该组件之前；</li>
+<li><code>right/bottom</code>：插入该组件之后；</li>
+</ul>
+<p><img src="https://pic.xiexuefeng.cc/markdown/image-20220505103801689.png?imageslim" alt="image-20220505103801689" /></p>
+<p>当然，得出这种推断的前提是该容器内布局为<strong>正常文档流</strong>（从左往右，从上至下）；</p>
+<h3 id="不同应用上下文之间的事件通信"><a class="markdownIt-Anchor" href="#不同应用上下文之间的事件通信"></a> 不同应用上下文之间的事件通信</h3>
+<p>由于直接使用了本地项目的上下文环境作为可视化预览页面（这样做的好处就是可以直接复用当前项目的<code>vite</code>配置，无需额外再配置），而可视化搭建应用属于另一个独立的应用，可视化搭建应用通过<code>iframe</code>来引入这个预览页面，因此势必造成了<code>iframe</code>跨域的问题；</p>
+<p>由于现代浏览器的同源策略，<code>iframe</code>的跨域会导致很多的限制，除了熟知的网络请求限制，更多的是控制的限制，父级文档无法控制子<code>iframe</code>文档<sup class="footnote-ref"><a href="#fn8" id="fnref8">[8]</a></sup>，导致很多交互（<code>DOM</code>层面）不能在两个上下文之间流通；比如从搭建应用拖拽一个组件原料放入到<code>iframe</code>中的页面时，正常情况下完全不可能<sup class="footnote-ref"><a href="#fn9" id="fnref9">[9]</a></sup>，因为跨域限制了父级事件流通到<code>iframe</code>的<code>DOM</code>里面，所以只能另找门路；</p>
+<h4 id="事件机制"><a class="markdownIt-Anchor" href="#事件机制"></a> 事件机制</h4>
+<p><code>DOM</code>的事件机制提供了一套可以主动触发事件及构造自定义/原生事件的<code>API</code>：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/EventTarget/dispatchEvent">EventTarget.dispatchEvent - Web API 接口参考 | MDN</a>：在指定<code>DOM</code>开始触发指定事件</li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent">CustomEvent() - Web APIs | MDN</a>：构造自定义事件</li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/API/DragEvent/DragEvent">DragEvent() - Web APIs | MDN</a>：可以构造拖拽相关事件，其他的原生事件只要找到相应的构造函数一样都可以进行构造</li>
+</ul>
+<p>因此，有了这套事件机制，只要事件触发端把相应的事件信息发送到要传递的浏览上下文，然后在接收端进行相应事件的构造并触发，就完全可以绕过<code>iframe</code>跨域的限制，完成事件通信/流转；</p>
+<p>那么剩下的就是如何完成两个跨域浏览上下文之间的信息传递了；</p>
+<h4 id="信息传递"><a class="markdownIt-Anchor" href="#信息传递"></a> 信息传递</h4>
+<p>其实完成不同浏览上下文之间的信息传递的方法不止一种：</p>
+<ul>
+<li><code>websocket</code>：在不同上下文之间建立<code>socket</code>连接，就可以很自然地进行双向通信了；所以一开始我很天真的想到了这种办法，而忽视了<code>DOM</code>本身的机制；</li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/Window/postMessage">window.postMessage()</a>：为不同上下文进行安全通信而生的<code>DOM API</code>，其实就是不二选择；</li>
+</ul>
+<h4 id="hit-testing"><a class="markdownIt-Anchor" href="#hit-testing"></a> Hit Testing</h4>
+<p><code>Hit Testing</code>，即<strong>命中测试</strong>，是图形学中的一个专业术语，一般用于描述用户鼠标位置击中当前图形交互界面（<code>GUI</code>）中的哪个图元（图形物体）；而具体到前端，可以理解为用户鼠标位置命中的是哪个<code>DOM</code>元素（<code>DOM</code>元素的图形本质就是一个矩形区域）；</p>
+<p>为啥要做命中测试？因为从父级上下文传递事件的时候，<strong>并不知道触发事件对应的是子级上下文的哪个元素</strong>，因此需要在子级上下文构造事件的同时对当前浏览上下文做一次命中测试，以便精准地从相应的<code>DOM</code>元素触发事件；巧的是<code>DOM</code>刚好提供了命中测试相关的<code>API</code>：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/API/Document/elementFromPoint">Document.elementFromPoint() - Web APIs | MDN</a></li>
+</ul>
+<p>在使用鼠标位置进行命中测试一定要确保这个鼠标位置是相对于当前<code>document</code>对象而言的，即确保坐标原点是当前<code>document</code>对象的左上角；</p>
+<h4 id="过程图解"><a class="markdownIt-Anchor" href="#过程图解"></a> 过程图解</h4>
+<p><img src="https://pic.xiexuefeng.cc/markdown/image-20220429153436462.png" alt="image-20220429153436462" /></p>
+<h4 id="iframe的事件穿透"><a class="markdownIt-Anchor" href="#iframe的事件穿透"></a> iframe的事件穿透</h4>
+<p>// TODO</p>
+<h3 id="dataset的使用"><a class="markdownIt-Anchor" href="#dataset的使用"></a> <code>dataset</code>的使用</h3>
+<p>为了更精准地进行事件交互，比如弄清组件插入位置所属的配置节点，那么最好给相应的<code>DOM</code>节点标注上所需的信息，以便更好的处理交互；而要给<code>DOM</code>标记自定义属性，那么<code>dataset</code>自然是最佳也是最符合规范的选择。</p>
+<h4 id="在-dom-tree-的基础上构建配置树"><a class="markdownIt-Anchor" href="#在-dom-tree-的基础上构建配置树"></a> 在 DOM tree 的基础上构建配置树</h4>
+<blockquote>
+<p><strong>注</strong>：在设计中，一个配置节点就等同于一个物料组件；</p>
+</blockquote>
+<p><img src="https://pic.xiexuefeng.cc/markdown/image-20220501120033666.png?imageslim" alt="image-20220501120033666" /></p>
+<h3 id="胶水代码的输出"><a class="markdownIt-Anchor" href="#胶水代码的输出"></a> 胶水代码的输出</h3>
+<p>在通过可视化搭建得到了相应配置树结构，以及通过填充数据补充变量等细节配置后，如何将配置树转化为对应的<code>Vue</code>代码？其实很简单，每个配置节点就是一个<code>Vue</code>组件，只需要将配置转为<code>Vue</code>组件源码，然后递归处理子级即可；</p>
+<p>那么，关键就在于如何将一个配置节点转化为等价的<code>Vue</code>组件；其实有了<code>setup</code>模式（需要<code>vue3.2+</code>）的加持，对组件数据的组装变得<font color=#39f>异常简单</font>了起来，因为<code>setup</code>模式的核心就是导入即可使用，无需像以前<code>option</code>模式或者早期<code>Vue3</code>的<code>composition API</code>那样需要专门分配到对应类型的选项里面，如需要分辨导入变量是方法、单纯的变量还是组件等；而<code>setup</code>模式只需要将变量导入，<code>Vue</code>框架会根据变量类型自动分配到对应的选项里去，所以说<code>setup</code>模式就是高级的语法糖，进一步减少了胶水代码，自动帮你进行<code>composition</code>的处理；</p>
+<p>可以说正是有了<code>setup</code>模式，我才会水到渠成地想到这整套数据模型；那么基于<code>setup</code>模式，将配置节点输出为<code>Vue</code>组件源码可以分为两个部分：</p>
+<ul>
+<li><code>script</code>部分：只需要将配置节点使用到的变量全部引入即可，然后判断是否有子配置节点，如有则<font color=#f00>递归处理</font>得到子配置节点的源码并引入；</li>
+<li><code>template</code>部分：负责将数据进行填充即可，包括使用子组件；</li>
+</ul>
+<p>将<code>script</code>部分和<code>template</code>部分进行合并就得到了配置节点对应的<code>Vue</code>组件源码了，那么最外层的组件自然就是整个配置树的入口了；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/image-20220501122906554.png?imageslim" alt="image-20220501122906554" /></p>
+<h3 id="第三方-ui-库元数据的转换"><a class="markdownIt-Anchor" href="#第三方-ui-库元数据的转换"></a> 第三方 UI 库元数据的转换</h3>
+<blockquote>
+<p><strong>注</strong>：我个人是<strong>很不赞成</strong>在需要高内聚的可视化搭建系统直接使用通用组件的，诚然，通用组件可以使得搭建更灵活，但往往只能支撑很简单的业务场景，在复杂业务场景下通用组件的使用效率就很低了；当然，抱着可行性的态度我还是去尝试了一下，毕竟至少可以作为某种回退操作（更广的兼容性）；</p>
+</blockquote>
+<p>虽说是第三方<code>UI</code>库，但跟上述提到的物料库项目一样，不过事实上我们并不需要构造源码文件，因为可以直接引入第三方库，所以针对第三方库，我们只需要提取其组件元数据即可，而在引入的时候做一个路径转换即可；</p>
+<p>一般来说，只要一个组件库的项目结构是规范的，那么其组件源码一定是按照某个固定结构进行排列的，因此只需要找到这个结构然后就可以批量进行元数据提取了；这里以<code>element-plus</code>为例，他们的组件源码放在<code>packages/components</code>里面，其中里面的每个文件夹都是一个相对独立的组件，而组件的入口文件通常为<code>[component-name]/src/[component-name].vue</code>：</p>
+<img src="https://pic.xiexuefeng.cc/markdown/image-20220501131703736.png?imageslim" alt="image-20220501131703736" style="zoom:67%;" />
+<p>因此根据这一特征就可以批量的从其源码文件提取对应组件的元数据，不过需要注意的是第三方库可能由于内部高度模块化，而导致一般的从<code>AST</code>（抽象语法树）解析得到的组件元数据并不完整（如<code>vue-docgen-api</code>这个插件），这时可以配合编译后的组件数据进行补充，一般来说组件库都会提供编译后的版本，即<code>ES</code>版本（通常是把组件源码同构地编译为<code>ES5/ES6</code>这种<code>js</code>代码），一般这种<code>js</code>代码就是导出了组件的构造方法，因此引入该构造方法即可完全得到相应的组件<strong>运行时</strong>数据，这里可以得到完整的组件元数据，只不过<font color=#f00>类型粒度很粗</font>；</p>
+<h3 id="node-代码调试"><a class="markdownIt-Anchor" href="#node-代码调试"></a> node 代码调试</h3>
+<p>如果想要调试<code>node</code>的代码，实际上<code>VSCode</code>直接提供了工具，可以参考——<a target="_blank" rel="noopener" href="https://code.visualstudio.com/docs/nodejs/nodejs-debugging">Debug Node.js Apps using Visual Studio Code</a>；</p>
+<h3 id="本地包调试存在的坑"><a class="markdownIt-Anchor" href="#本地包调试存在的坑"></a> <s>本地包调试存在的坑</s></h3>
+<p><s>想不起来了……</s></p>
+<h2 id="夭折的方案"><a class="markdownIt-Anchor" href="#夭折的方案"></a> 夭折的方案</h2>
+<h3 id="异步渲染的坑"><a class="markdownIt-Anchor" href="#异步渲染的坑"></a> 异步渲染的坑</h3>
+<p>在最初的时候，我曾想过直接使用<code>Vue</code>里面的异步组件<sup class="footnote-ref"><a href="#fn10" id="fnref10">[10]</a></sup>来进行预览，一个配置节点对应一个异步组件，而异步组件的内容则借由<code>vite</code>插件机制来完成；实际上就是用<code>vite plugin</code>作为<code>dev server</code>，根据不同的自定义后缀以及挂载参数来相应返回不同的文件源码，然后借由异步组件动态加载，其子配置节点也是递归处理的；</p>
+<img src="https://pic.xiexuefeng.cc/markdown/image-20220502121044079.png?imageslim" alt="image-20220502121044079" style="zoom: 50%;" />
+<p>这样做的好处就是可以不必自行搭建<code>dev server</code>，而是直接借助<code>vite plugin</code>来实现<code>dev server</code>的功能，且异步组件用于挂载节点组件的事件恰好不过，方便管理；但实际上这种方案有太多的问题：</p>
+<ul>
+<li>由于<code>vite</code>加载本地模块采用的是<code>get</code>请求，因此携带的参数长度受限，当页面模块较多时，配置<code>JSON</code>形成的参数很快就会超过最大长度，即便采用字符压缩也改善不了多少；</li>
+<li>异步组件层级过多，数量较多时性能极其差；</li>
+<li>异步组件跟<code>Promise</code>的机制类似，一旦判断为加载完成，本身加载状态无法再改变，即无法刷新自身状态，这样就无法充分利用热更新了，只能从父级容器进行控制；</li>
+<li>综上，一旦要刷新预览状态，这里的请求量和异步状态就会爆表，主线程阻塞过于显著；</li>
+</ul>
+<h3 id="直接运行app"><a class="markdownIt-Anchor" href="#直接运行app"></a> 直接运行APP</h3>
+<p>一开始还想着不打包可视化搭建应用，直接以开发模式运行应用来着，事实证明这是脑残操作😅；</p>
+<h2 id="方案可能存在的问题"><a class="markdownIt-Anchor" href="#方案可能存在的问题"></a> 方案可能存在的问题</h2>
+<p>假设这套方案可以完全达到预期设计目标的功能使用，那么会有什么问题？</p>
+<ul>
+<li>如果组件内聚不够，或粒度太细，导致暴露参数较多（或者说需要处理的参数过多），那么开发模式显然就变成了<font color=#f00>无尽地填充变量</font>，以及提供这些变量和变量之间副作用处理的逻辑；显然，这还是内聚的问题，如果没有一个<strong>足够内聚</strong>（高度模块化）的业务场景，使用这套方案带来的收益显然是不够的；</li>
+<li>如果业务自由度较大，经常变动，且变动的粒度很细，那么很显然<strong>没必要</strong>使用这个方案；</li>
+<li>一开始使用这种可视化搭建可能有些不适，因为这里把逻辑和视图完全分开了，视图的部分使用可视化搭建来拼接，逻辑则是采用配置进行注入的；但是如果真的熟悉<code>Vue</code>这种<strong>数据驱动</strong>渲染框架的话，那么就很快会适应的，尤其是<code>Vue3</code>推出的<code>composition</code>思想，<code>composition</code>本身就提倡<strong>逻辑与视图上下文解耦</strong>的，因此数据也好逻辑也罢，可以完全只考虑数据与数据之间的副作用关系即可，视图无非只是使用这些数据，至于怎么去使用这些注入的数据，那是组件内部的事情；</li>
+</ul>
+<h2 id="roadmap"><a class="markdownIt-Anchor" href="#roadmap"></a> Roadmap</h2>
+<p>现阶段这些功能对于整体使用来说可能够用，但是需要一些补充功能来优化使用体验；</p>
+<h3 id="精准类型推导与类型匹配"><a class="markdownIt-Anchor" href="#精准类型推导与类型匹配"></a> 精准类型推导与类型匹配</h3>
+<p>这里主要指的是在提取元数据的时候，可以得到组件和变量的精准类型，就像<code>language server</code>得到的类型一样；这样做的好处主要有：</p>
+<ul>
+<li>在使用变量的时候可以进行类型的精准匹配，即完全匹配变量和组件入参的类型；一个是可以<strong>减少非正确类型</strong>变量的干扰，另一个是提前进行<strong>严格的类型校验</strong>；</li>
+<li>在获取到精准类型后（主要是<strong>联合字面量类型</strong>这种，可以提供选项支持），可以提供相应<strong>字面量类型</strong>的直接数据支持；目前来说，如果是只想给定一个固定字面量作为参数，也需要手动暴露一个参数来注入，这样确实多有不便；</li>
+</ul>
+<h3 id="逻辑复用"><a class="markdownIt-Anchor" href="#逻辑复用"></a> 逻辑复用</h3>
+<p>如果逻辑本身也能通过可视化来进行复用，也是一样是有意思的事情，只不过类似的，我不看好实行完全语法映射的逻辑可视化（或者粒度很细的）；目前利用逻辑可视化进行逻辑的复用，实际上也早就有人进行尝试了<sup class="footnote-ref"><a href="#fn11" id="fnref11">[11]</a></sup><sup class="footnote-ref"><a href="#fn12" id="fnref12">[12]</a></sup>。</p>
+<h2 id="脑洞大开"><a class="markdownIt-Anchor" href="#脑洞大开"></a> 脑洞大开</h2>
+<p>这里不妨脑洞一下，如果扩展使用场景会怎样；</p>
+<h3 id="纯云端搭建"><a class="markdownIt-Anchor" href="#纯云端搭建"></a> 纯云端搭建</h3>
+<p>如果说把整个搭建应用全部放到云上，即没有本地项目的概念，把整个搭建应用作为一个<code>web</code>服务，那么这套系统应该怎么适配？</p>
+<ul>
+<li><strong>脑洞一</strong>：直接在云端主机（容器）运行本地项目即可，然后暴露端口访问；不过这种方案显然不适用于面向多个用户，不然一个用户就需要一个主机（容器）；</li>
+<li><strong>脑洞二</strong>：稍微整合一下<code>dev server</code>变成一个专门处理物料信息的服务端，那么基于此就可以提供异步渲染组件所需要的源码信息，然后也可直接编译产物成为单独的应用并开放访问（这也是目前云端编译的常见方案）；不过这么做也有些问题：
+<ul>
+<li>异步渲染组件进行预览的性能问题（上面提到过），不过目前没有证实直接在生产环境应用异步组件也是这么拉跨；</li>
+<li>异步渲染组件进行预览热更新的问题；</li>
+<li>如果页面复杂，可能同时进行请求的异步组件过多，请求阻塞；不过可以考虑在服务层<strong>合并异步组件粒度</strong>，控制请求数量，貌似<code>Tengine</code>可以合并请求<sup class="footnote-ref"><a href="#fn13" id="fnref13">[13]</a></sup>来着；</li>
+</ul>
+</li>
+</ul>
+<h3 id="面向非编程人员"><a class="markdownIt-Anchor" href="#面向非编程人员"></a> 面向非编程人员</h3>
+<p>进一步，如果要把搭建应用面向非编程人员使用（这也是可视化搭建最强烈的需求），那么目前这套配置对于他们还是有点难以理解（比如变量、<code>Vue</code>的语法啥的）；其实要做的工作也不多，无非就是合并所有配置，把配置变成只有一类，就跟填写表单一样，然后把对应的参数设计得不那么编程人员思维，加上足够详细的参数文档；</p>
+<h2 id="相关文档"><a class="markdownIt-Anchor" href="#相关文档"></a> 相关文档</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/990afa30b6fe">Yarn Workspace 使用指南 - 简书</a></li>
+<li><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000039157365">All in one：项目级 monorepo 策略最佳实践 - SegmentFault 思否</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/7011024137707585544">Monorepo最佳实践之Yarn Workspaces - 掘金</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/i10630226/article/details/99702447">lerna+yarn workspace+monorepo项目的最佳实践_小平果118的博客-CSDN博客_lerna yarn</a></li>
+</ul>
+<h2 id="扩展关于前端的各种可视化"><a class="markdownIt-Anchor" href="#扩展关于前端的各种可视化"></a> 扩展：关于前端的各种可视化</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/164558106">「可视化搭建系统」——从设计到架构，探索前端领域技术和业务价值 - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzI4NjY4MTU5Nw==&amp;action=getalbum&amp;album_id=1360113279133384705&amp;subscene=159&amp;subscene=&amp;scenenote=https%3A%2F%2Fmp.weixin.qq.com%2Fs%2F6gtVR0nVNcZvREjwftZgzA#wechat_redirect">悟空活动中台系列文章</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/137470317">淘宝前端在搭建服务上的探索 - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://aotu.io/notes/2020/12/31/deco/">凹凸技术揭秘 · Deco 智能代码 · 开启产研效率革命 | Aotu.io「凹凸实验室」</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/imgcook/imove">imgcook/imove: Move your mouse, generate code from flow chart</a>：（<code>ts/js</code>）逻辑可视化</li>
+<li><a target="_blank" rel="noopener" href="https://www.yuque.com/imove/docs/hvu0md">imove三分钟上手 · 语雀</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/2vl_7Jht6aETGintBIcLIg">狼叔：F2C 能否让前端像运营配置一样开发？</a>： flow 2 code，流程化逻辑</li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/tqZaZTTrjZlo9T7f9sLNIA">【第2192期】所见即所得! iMove 在线执行代码探索</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/ZVZ1skvmIWIjcSz9HhDU3Q">【第2226期】逻辑编排在优酷可视化搭建中的实践之上</a>：很不错的逻辑可视化/组件化的实践</li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/EpOO3ZwxIE2Q7eqUQHBLqg">【第2227期】逻辑编排在优酷可视化搭建中的实践之下</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/164558106">「可视化搭建系统」——从设计到架构，探索前端领域技术和业务价值 - Lucas HC的文章 - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/197291361">基于React+Koa实现一个h5页面可视化编辑器－Dooring - 徐小夕的文章 - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/48347377">厌倦了写活动页？快来撸一个页面生成器吧！ - 知乎</a>：移动端</li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/338418160">可视化拖拽组件库一些技术要点原理分析 - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/buqiyuan/vite-vue3-lowcode">buqiyuan/vite-vue3-lowcode: vue3.x vite2.x vant element-plus H5移动端低代码平台 lowcode 可视化拖拽 可视化编辑器 visual editor</a>：一种实践</li>
+<li><a target="_blank" rel="noopener" href="https://designable-antd.formilyjs.org/">Designable Playground</a>：基于formily的低代码可视化表单搭建工具</li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/396327885">开放与收敛 - 搭建系统的资产体系设计 - 知乎</a>：云凤蝶搭建架构设计</li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/407347096">描绘现实世界的桥梁–Formily - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/kn406dKwTIrFIkRJuSyIWQ">「全码」 通用搭建：现代 Web 研发体系中的新一代低/零码搭建</a>：很好地说明了目前大厂和常见lowcode、nocode等方案的不足地方，但是提出的新的搭建理念需要验证</li>
+<li><a target="_blank" rel="noopener" href="http://lowcode.dooring.cn/best-practice/detail?fid=RteMgsbesW">从零开发一款可视化搭建框架dooringx-lib - lowcode低代码可视化社区</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/470015215">低代码/无代码十日谈(一)——趋势背后的逻辑 - 知乎</a>：从当前行业发展角度解析低代码发展的前景及突破点，<font color=#f00>值得一读</font></li>
+<li><a target="_blank" rel="noopener" href="http://lowcode-engine.cn/">低代码引擎 | LowCodeEngine</a>：阿里的一个可视化搭建引擎，目前看起来还是走向通用，映射选项多；</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/CntChen/cntchen.github.io/issues/15">页面可视化搭建工具前生今世 · Issue #15 · CntChen/cntchen.github.io</a>：比较详尽地对可视化搭建的需求和作用进行了整理，从多个维度进行解析不同类型的可视化搭建工具，<font color=#f00>精品</font></li>
+</ul>
+<hr class="footnotes-sep" />
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://github.com/CntChen/cntchen.github.io/issues/15">https://github.com/CntChen/cntchen.github.io/issues/15</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000019309820">Monorepo——大型前端项目的代码管理方式 - SegmentFault 思否</a> <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/i10630226/article/details/99702447">lerna+yarn workspace+monorepo项目的最佳实践_小平果118的博客-CSDN博客_lerna yarn</a> <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/502951532">Node.js 18 新特性解读 - 知乎</a> <a href="#fnref4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/Shebang">Shebang - 维基百科，自由的百科全书</a> <a href="#fnref5" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn6" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://github.com/TypeStrong/ts-node#shebang">https://github.com/TypeStrong/ts-node#shebang</a> <a href="#fnref6" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn7" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://lowcode-engine.cn/demo/index.html">https://lowcode-engine.cn/demo/index.html</a> <a href="#fnref7" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn8" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/Security/Same-origin_policy#%E8%B7%A8%E6%BA%90%E8%84%9A%E6%9C%ACapi%E8%AE%BF%E9%97%AE">https://developer.mozilla.org/zh-CN/docs/Web/Security/Same-origin_policy#跨源脚本api访问</a> <a href="#fnref8" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn9" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://bugs.chromium.org/p/chromium/issues/detail?id=251718">251718 - HTML5 Drag and drop not working between iframe and parent when on a different domain - chromium</a> <a href="#fnref9" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn10" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://vuejs.org/guide/built-ins/suspense.html">Suspense | Vue.js</a> <a href="#fnref10" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn11" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/ZVZ1skvmIWIjcSz9HhDU3Q">【第2226期】逻辑编排在优酷可视化搭建中的实践之上</a> <a href="#fnref11" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn12" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/2vl_7Jht6aETGintBIcLIg">狼叔：F2C 能否让前端像运营配置一样开发？</a> <a href="#fnref12" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn13" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://tengine.taobao.org/document_cn/http_concat_cn.html">https://tengine.taobao.org/document_cn/http_concat_cn.html</a> <a href="#fnref13" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/about-carverry/" title="关于carverry">https://note.xiexuefeng.cc/post/about-carverry/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E5%9F%BA%E5%BB%BA/" rel="tag"># 基建</a>
+              <a href="/tags/%E5%8F%AF%E8%A7%86%E5%8C%96%E6%90%AD%E5%BB%BA/" rel="tag"># 可视化搭建</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/cloth-render-test/" rel="prev" title="布料渲染总结">
+                  <i class="fa fa-chevron-left"></i> 布料渲染总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/vite-vue3-storybook/" rel="next" title="vite、vue3和storybook">
+                  vite、vue3和storybook <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/about-carverry/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/about-carverry/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

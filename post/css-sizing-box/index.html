@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 尺寸盒子（呃，我也不知道准确定义是什么），顾名思义就是尺寸属性作用的对象。  从上图可以看出，尺寸盒子从内到外依次可以划分为content-box，padding-box，border-box，margin-box；其中margin-box在实际中没有啥用途。 而尺寸属性就是诸如width，height等直接规定元素尺寸的属性，以及定义width，height作用区域的box-sizing">
+<meta property="og:type" content="article">
+<meta property="og:title" content="css的尺寸盒子及相关属性">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/css-sizing-box/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 尺寸盒子（呃，我也不知道准确定义是什么），顾名思义就是尺寸属性作用的对象。  从上图可以看出，尺寸盒子从内到外依次可以划分为content-box，padding-box，border-box，margin-box；其中margin-box在实际中没有啥用途。 而尺寸属性就是诸如width，height等直接规定元素尺寸的属性，以及定义width，height作用区域的box-sizing">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/181124/k8EBBCJl0G.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/181124/k28IC2bdK1.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/181124/JjFA1BjJBG.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/181124/jFgGj23h2F.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/181124/fe41K2BldC.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/181124/eife9eElK8.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/181124/KFhBmkB0e7.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/181124/9e8fiHBg4C.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/181124/F9Gh3J2DDF.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/181124/mmCB56CfFe.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20181202165205.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20181202165614.png?imageslim">
+<meta property="article:published_time" content="2018-11-24T03:33:42.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.868Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="css">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/181124/k8EBBCJl0G.png?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/css-sizing-box/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/css-sizing-box/","path":"post/css-sizing-box/","title":"css的尺寸盒子及相关属性"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>css的尺寸盒子及相关属性 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#box-sizing"><span class="nav-number">2.</span> <span class="nav-text"> box-sizing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#background-origin"><span class="nav-number">3.</span> <span class="nav-text"> background-origin</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#background-clip"><span class="nav-number">4.</span> <span class="nav-text"> background-clip</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%97%E5%AD%90"><span class="nav-number">5.</span> <span class="nav-text"> 栗子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8Emargin-box"><span class="nav-number">6.</span> <span class="nav-text"> 关于margin-box</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#marginauto-%E7%9A%84%E4%BD%9C%E7%94%A8%E6%9C%BA%E5%88%B6"><span class="nav-number">6.1.</span> <span class="nav-text"> margin:auto 的作用机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#top-bottom-left-right"><span class="nav-number">6.2.</span> <span class="nav-text"> top, bottom, left, right</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3"><span class="nav-number">7.</span> <span class="nav-text"> 参考文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/css-sizing-box/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="css的尺寸盒子及相关属性 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          css的尺寸盒子及相关属性
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-11-24 11:33:42" itemprop="dateCreated datePublished" datetime="2018-11-24T11:33:42+08:00">2018-11-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A2%E7%B4%A2/" itemprop="url" rel="index"><span itemprop="name">探索</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p>尺寸盒子（呃，我也不知道准确定义是什么），顾名思义就是<font color=#39f><strong>尺寸属性</strong></font>作用的对象。</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/181124/k8EBBCJl0G.png?imageslim" alt="mark" /></p>
+<p>从上图可以看出，尺寸盒子从内到外依次可以划分为<code>content-box</code>，<code>padding-box</code>，<code>border-box</code>，<code>margin-box</code>；其中<code>margin-box</code>在实际中没有啥用途。</p>
+<p>而<font color=#39f><strong>尺寸属性</strong></font>就是诸如<code>width</code>，<code>height</code>等<strong>直接规定元素尺寸</strong>的属性，以及定义<code>width</code>，<code>height</code><font color=red><strong>作用区域</strong></font>的<code>box-sizing</code>属性，除此之外还有像<code>background-origin</code>和<code>background-clip</code><font color=red><strong>影响元素背景填充区域和显示区域</strong></font>的属性。</p>
+<span id="more"></span>
+<h2 id="box-sizing"><a class="markdownIt-Anchor" href="#box-sizing"></a> box-sizing</h2>
+<p><code>box-sizing</code>实际上决定了<code>width</code>和<code>height</code>作用的尺寸盒子，而其属性值有：</p>
+<ul>
+<li>
+<p><code>content-box</code>（默认值）：没错，指的就是<code>width</code>和<code>height</code>设置的值是针对于<code>content-box</code>这个盒子，即<code>content</code>区域；</p>
+</li>
+<li>
+<p><code>border-box</code>：同理，此时<code>width</code>和<code>height</code>设置的值是针对于<code>border-box</code>这个盒子，即<code>border</code>区域（=<code>content</code> + <code>padding</code> + <code>border</code>）；</p>
+</li>
+<li>
+<p><code>inherit</code>：继承父级属性值；</p>
+</li>
+</ul>
+<p><code>css</code>说的<strong>盒模型</strong>实际上就是指的<code>box-sizing</code>的属性值，而一般都说不同的盒模型的元素实际宽高有不同的计算方式，不过明白<code>box-sizing</code>的<strong>本质</strong>之后，就能理解元素的实际宽高<font color=red><strong>只有一种计算方式</strong></font>：<code>content</code> + <code>padding</code> + <code>border</code>；</p>
+<p>举个栗子：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;box1&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;box2&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">div</span>&#123;</span><br><span class="line">    <span class="attribute">width</span>: <span class="number">100px</span>;</span><br><span class="line">    <span class="attribute">height</span>: <span class="number">100px</span>;</span><br><span class="line">    <span class="attribute">padding</span>: <span class="number">20px</span>;</span><br><span class="line">    <span class="attribute">border</span>: <span class="number">10px</span> solid darkorchid;</span><br><span class="line">    <span class="attribute">background-color</span>: lightcoral;</span><br><span class="line">    <span class="attribute">margin-bottom</span>: <span class="number">50px</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-id">#box2</span>&#123;</span><br><span class="line">    <span class="attribute">box-sizing</span>: border-box;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/181124/k28IC2bdK1.png?imageslim" alt="mark" /></p>
+<p>尽管两个<code>div</code>的<strong>尺寸样式设置完全一样</strong>，但是可以看出不同的<code>box-sizing</code>确实得到的实际尺寸完全不一样：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/181124/JjFA1BjJBG.png?imageslim" alt="mark" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/181124/jFgGj23h2F.png?imageslim" alt="mark" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/181124/fe41K2BldC.png?imageslim" alt="mark" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/181124/eife9eElK8.png?imageslim" alt="mark" /></p>
+<p>根本原因就是不同的<code>box-sizing</code>使得<code>width</code>和<code>height</code>属性<strong>作用的尺寸盒子不同</strong>，然而元素的<font color=#39f><strong>实际尺寸计算方式是完全没有变</strong></font>滴……</p>
+<h2 id="background-origin"><a class="markdownIt-Anchor" href="#background-origin"></a> background-origin</h2>
+<p><code>background-origin</code>规定了指定<font color=red><strong>背景图片</strong></font>（<code>background-image</code>属性，<font color=red><strong>对普通的背景颜色区域不起作用</strong></font>，背景颜色区域一直是<font color=#39f><code>border-box</code></font>） 的<font color=red><strong>原点位置</strong></font>（<code>background-position</code>属性）相对区域。</p>
+<blockquote>
+<p><strong>注意</strong>：当使用 background-attachment 为fixed时，该属性将被忽略不起作用。——MDN</p>
+</blockquote>
+<p><code>background-origin</code>的属性值有：</p>
+<ul>
+<li><code>content-box</code></li>
+<li><code>padding-box</code>（默认值）</li>
+<li><code>border-box</code></li>
+<li><code>inherit</code>（继承父级元素属性值）</li>
+</ul>
+<p>没错，这几个属性值分别对应上述的几个尺寸盒子所在区域；</p>
+<h2 id="background-clip"><a class="markdownIt-Anchor" href="#background-clip"></a> background-clip</h2>
+<p><code>background-clip</code>属性规定了背景（包括<code>background-color</code>和<code>background-image</code>）的实际显示区域；相当于通过<code>background-origin</code>、<code>background-position</code>和<code>background-repeat</code>等属性<strong>绘制出背景或背景图</strong>，然后通过<code>background-clip</code>来<font color=red><strong>选取一个区域作为最终显示的区域</strong></font>。</p>
+<p><code>background-clip</code>的属性值有：</p>
+<ul>
+<li><code>content-box</code></li>
+<li><code>padding-box</code></li>
+<li><code>border-box</code>（默认值）</li>
+<li><code>text</code>（兼容性不好）</li>
+</ul>
+<h2 id="栗子"><a class="markdownIt-Anchor" href="#栗子"></a> 栗子</h2>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;b1&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;b2&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;b3&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">div</span>&#123;</span><br><span class="line">    <span class="attribute">width</span>: <span class="number">452px</span>;</span><br><span class="line">    <span class="attribute">height</span>: <span class="number">452px</span>;</span><br><span class="line">    <span class="attribute">padding</span>: <span class="number">20px</span>;</span><br><span class="line">    <span class="attribute">border</span>: <span class="number">10px</span> solid <span class="built_in">rgba</span>(<span class="number">70</span>, <span class="number">152</span>, <span class="number">199</span>, <span class="number">0.6</span>);</span><br><span class="line">    <span class="attribute">background-image</span>: <span class="built_in">url</span>(<span class="string">&#x27;lena.png&#x27;</span>);</span><br><span class="line">    <span class="attribute">margin-bottom</span>: <span class="number">20px</span>;</span><br><span class="line">    <span class="attribute">background-repeat</span>: no-repeat;</span><br><span class="line">    <span class="attribute">background-clip</span>: padding-box;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-id">#b2</span>&#123;</span><br><span class="line">    <span class="attribute">background-origin</span>: content-box;</span><br><span class="line">    <span class="attribute">background-clip</span>: content-box;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-id">#b3</span>&#123;</span><br><span class="line">    <span class="attribute">background-origin</span>: border-box;</span><br><span class="line">    <span class="attribute">background-clip</span>: border-box;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/181124/KFhBmkB0e7.png?imageslim" alt="mark" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/181124/9e8fiHBg4C.png?imageslim" alt="mark" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/181124/F9Gh3J2DDF.png?imageslim" alt="mark" /></p>
+<p><font color=red><strong>注</strong></font>：<code>background-image</code>的绘制区域是从<code>background-position</code>到<code>border-box</code>的右下角？而非<code>background-origin</code>指定的区域的右下角？<strong>比如</strong>：当<code>background-origin</code>为<code>content-box</code>，而<code>background-clip</code>为<code>border-box</code>时：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/181124/mmCB56CfFe.png?imageslim" alt="mark" /></p>
+<p>可以很明显看出，<code>background-image</code>的绘制区域的右下角并非<code>content-box</code>；</p>
+<h2 id="关于margin-box"><a class="markdownIt-Anchor" href="#关于margin-box"></a> 关于margin-box</h2>
+<p><font color=red><strong>注</strong></font>：这部分仅是自己的理解，还需要进一步验证。</p>
+<h3 id="marginauto-的作用机制"><a class="markdownIt-Anchor" href="#marginauto-的作用机制"></a> margin:auto 的作用机制</h3>
+<p><code>margin:auto</code>是用来给元素<font color=red><strong>自动计算分配</strong></font>『剩余可分配空间』的<code>margin</code>的，但是触发这个功能有一个前提条件：</p>
+<blockquote>
+<p>触发 margin:auto 计算有一个前提条件，就是 width 或 height 为 auto 时，<br />
+元素是具有对应方向的自动填充特性的。——《css世界》</p>
+</blockquote>
+<p>除了块级元素的流动性能够使元素在<strong>文档流的方向</strong>（文字排列方向）进行自动填充外，还有一种方法就是利用<code>top</code>等属性设置<code>margin-box</code>的边界，元素就会自动填充<code>margin-box</code>。</p>
+<blockquote>
+<p>margin:auto 的填充规则如下。<br><br />
+（1）如果一侧定值，一侧 auto，则 auto 为剩余空间大小。<br><br />
+（2）如果两侧均是 auto，则平分剩余空间。<br><br><br />
+——《css世界》</p>
+</blockquote>
+<h3 id="top-bottom-left-right"><a class="markdownIt-Anchor" href="#top-bottom-left-right"></a> top, bottom, left, right</h3>
+<p>当利用<code>top, bottom, left, right</code>这几个属性（当然前提是<code>absolute</code>或<code>fixed</code>布局）配合<code>margin:auto;</code>进行使用时，<code>top, bottom, left, right</code>的属性值相当于设定了该元素的<code>margin-box</code>的边界。此时，若<code>width</code>和<code>height</code>为<code>auto</code>时，就会自动填充整个<code>margin-box</code>；如果<code>width</code>和<code>height</code>设定了固定值，且固定值小于<code>margin-box</code>，那么『剩余可分配空间』就会被<code>margin</code>自动计算分配（上下左右四个边界）。</p>
+<p>最常用的就是利用<code>margin:auto</code>和<code>top, bottom, left, right</code>来使元素水平垂直居中：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-id">#test</span>&#123;</span><br><span class="line">    <span class="attribute">position</span>: relative;</span><br><span class="line">    <span class="attribute">height</span>: <span class="number">300px</span>;</span><br><span class="line">    <span class="attribute">border</span>: <span class="number">1px</span> dashed darkblue;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-id">#box</span>&#123;</span><br><span class="line">    <span class="attribute">position</span>: absolute;</span><br><span class="line">    <span class="attribute">top</span>: <span class="number">0</span>;</span><br><span class="line">    <span class="attribute">bottom</span>:<span class="number">0</span>;</span><br><span class="line">    <span class="attribute">left</span>: <span class="number">0</span>;</span><br><span class="line">    <span class="attribute">right</span>: <span class="number">0</span>;</span><br><span class="line">    <span class="attribute">width</span>: <span class="number">300px</span>;</span><br><span class="line">    <span class="attribute">height</span>: <span class="number">150px</span>;</span><br><span class="line">    <span class="attribute">background-color</span>: <span class="number">#39f</span>;</span><br><span class="line">    <span class="attribute">margin</span>: auto;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">section</span> <span class="attr">id</span>=<span class="string">&quot;test&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;box&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">section</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20181202165205.png?imageslim" alt="mark" /></p>
+<p>可以看出当<code>top, bottom, left, right</code>的值全为<code>0</code>时，相当于<code>margin-box</code>就是父级容器的大小，因此设置<code>margin:auto</code>时会自动计算<strong>剩余可分配空间</strong>（上下左右四个方向），由于四个方向都是<code>auto</code>，因此上下和左右<strong>各自平分</strong>竖直和水平方向的<strong>剩余可分配空间</strong>作为<code>margin</code>，因此也就形成了水平垂直居中。</p>
+<p>不过在查看<code>firefox</code>（<code>chrome</code>也一样）的计算后规则时，貌似四个方向的<code>margin</code>值都为<code>0</code>，而<code>left</code>等值反而进行了计算：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20181202165614.png?imageslim" alt="mark" /></p>
+<h2 id="参考文档"><a class="markdownIt-Anchor" href="#参考文档"></a> 参考文档</h2>
+<ol>
+<li>《css世界》—— 3.2 <code>width/height</code>作用的具体细节</li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/background-clip">background-clip - CSS：层叠样式表 | MDN</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/background-origin">background-origin - CSS：层叠样式表 | MDN</a></li>
+<li>《css世界》—— 4.3.4 深入理解 CSS 中的<code>margin:auto</code></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/css-sizing-box/" title="css的尺寸盒子及相关属性">https://note.xiexuefeng.cc/post/css-sizing-box/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/css/" rel="tag"># css</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/domain-parse/" rel="prev" title="域名解析二三事">
+                  <i class="fa fa-chevron-left"></i> 域名解析二三事
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/css-percentage-relative/" rel="next" title="论css属性中的百分比与相对单位">
+                  论css属性中的百分比与相对单位 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/css-sizing-box/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/css-sizing-box/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

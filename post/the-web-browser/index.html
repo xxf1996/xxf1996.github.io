@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 作为一个FE，每天都会和浏览器打交道，写的代码最终也会在各种各样的浏览器中进行呈现；那么浏览器到底是什么？它是如何理解我们的代码并渲染得到我们所看到的画面的？  “私、気になります”  浏览器，简单地来说就是一个应用程序，只不过这个应用程序比较特殊，是专门用于从万维网中获取资源的；而网页就是其中一种最常见的资源。  A web browser is a software applicati">
+<meta property="og:type" content="article">
+<meta property="og:title" content="了解浏览器的本质">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/the-web-browser/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 作为一个FE，每天都会和浏览器打交道，写的代码最终也会在各种各样的浏览器中进行呈现；那么浏览器到底是什么？它是如何理解我们的代码并渲染得到我们所看到的画面的？  “私、気になります”  浏览器，简单地来说就是一个应用程序，只不过这个应用程序比较特殊，是专门用于从万维网中获取资源的；而网页就是其中一种最常见的资源。  A web browser is a software applicati">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200912111636.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200912111700.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200912111723.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200912111748.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200912111803.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200912111826.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200912111851.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200912112127.gif?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200912112430.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200912112444.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200912112510.png?imageslim">
+<meta property="article:published_time" content="2020-09-12T03:14:04.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.883Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="DOM">
+<meta property="article:tag" content="浏览器">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20200912111636.png?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/the-web-browser/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/the-web-browser/","path":"post/the-web-browser/","title":"了解浏览器的本质"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>了解浏览器的本质 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E8%BF%90%E8%A1%8C%E5%8E%9F%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text"> 浏览器的运行原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E6%9E%B6%E6%9E%84"><span class="nav-number">3.</span> <span class="nav-text"> 浏览器的架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%B6%E6%9E%84%E6%96%B9%E5%BC%8F"><span class="nav-number">3.1.</span> <span class="nav-text"> 架构方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B%E7%BB%84%E6%88%90"><span class="nav-number">3.2.</span> <span class="nav-text"> 进程&#x2F;线程组成</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E6%98%AF%E5%A6%82%E4%BD%95%E7%90%86%E8%A7%A3%E5%89%8D%E7%AB%AF%E4%BB%A3%E7%A0%81%E7%9A%84"><span class="nav-number">4.</span> <span class="nav-text"> 浏览器是如何理解前端代码的？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BD%91%E9%A1%B5%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6"><span class="nav-number">4.1.</span> <span class="nav-text"> 浏览器网页渲染机制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#dom-tree"><span class="nav-number">4.1.1.</span> <span class="nav-text"> DOM Tree</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#computed-style"><span class="nav-number">4.1.2.</span> <span class="nav-text"> computed style</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#layout-tree"><span class="nav-number">4.1.3.</span> <span class="nav-text"> Layout Tree</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#paint-records"><span class="nav-number">4.1.4.</span> <span class="nav-text"> Paint Records</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#layer-tree"><span class="nav-number">4.1.5.</span> <span class="nav-text"> Layer Tree</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#tile"><span class="nav-number">4.1.6.</span> <span class="nav-text"> Tile</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#draw-quads"><span class="nav-number">4.1.7.</span> <span class="nav-text"> Draw quads</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#compositor-frame"><span class="nav-number">4.1.8.</span> <span class="nav-text"> Compositor frame</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BD%91%E9%A1%B5%E4%BA%8B%E4%BB%B6%E8%A7%A6%E5%8F%91%E6%9C%BA%E5%88%B6"><span class="nav-number">4.2.</span> <span class="nav-text"> 浏览器网页事件触发机制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%9D%9E%E5%BF%AB%E9%80%9F%E6%BB%9A%E5%8A%A8%E5%8C%BA%E5%9F%9F"><span class="nav-number">4.2.1.</span> <span class="nav-text"> 非快速滚动区域</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#passive%E4%BA%8B%E4%BB%B6%E7%9A%84%E6%9C%AC%E8%B4%A8"><span class="nav-number">4.2.2.</span> <span class="nav-text"> passive事件的本质</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BA%8B%E4%BB%B6%E5%A7%94%E6%89%98%E7%9A%84%E4%B8%80%E4%B8%AA%E7%BC%BA%E7%82%B9"><span class="nav-number">4.2.3.</span> <span class="nav-text"> 事件委托的一个缺点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%91%BD%E4%B8%AD%E6%B5%8B%E8%AF%95"><span class="nav-number">4.2.4.</span> <span class="nav-text"> 命中测试</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%90%88%E5%B9%B6%E4%BA%8B%E4%BB%B6"><span class="nav-number">4.2.5.</span> <span class="nav-text"> 合并事件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E6%A1%A3"><span class="nav-number">5.</span> <span class="nav-text"> 相关文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/the-web-browser/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="了解浏览器的本质 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          了解浏览器的本质
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-09-12 11:14:04" itemprop="dateCreated datePublished" datetime="2020-09-12T11:14:04+08:00">2020-09-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A2%E7%B4%A2/" itemprop="url" rel="index"><span itemprop="name">探索</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p>作为一个<code>FE</code>，每天都会和浏览器打交道，写的代码最终也会在各种各样的浏览器中进行呈现；那么浏览器到底是什么？它是如何理解我们的代码并渲染得到我们所看到的画面的？</p>
+<blockquote>
+<p>“私、気になります”</p>
+</blockquote>
+<p>浏览器，简单地来说就是一个应用程序，只不过这个应用程序比较特殊，是专门用于从万维网中获取资源的；而网页就是其中一种最常见的资源。</p>
+<blockquote>
+<p>A web browser is a software application for retrieving, presenting and traversing information resources on the World Wide Web. <sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup></p>
+</blockquote>
+<p><code>注</code>：以下探讨的是现代浏览器（<code>Modern Browser</code>），不包括<code>IE</code>这种；</p>
+<span id="more"></span>
+<h2 id="浏览器的运行原理"><a class="markdownIt-Anchor" href="#浏览器的运行原理"></a> 浏览器的运行原理</h2>
+<p>既然浏览器就是一种应用程序，那么其势必运行在操作系统上（当然，也有人提出直接将浏览器作为一种操作系统，比如：<code>Chrome OS</code>）；因此浏览器中执行的任务最终都要依靠操作系统提供的<code>API</code>，从而与相应的硬件进行交互；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200912111636.png?imageslim" alt="img" /></p>
+<h2 id="浏览器的架构"><a class="markdownIt-Anchor" href="#浏览器的架构"></a> 浏览器的架构</h2>
+<h3 id="架构方式"><a class="markdownIt-Anchor" href="#架构方式"></a> 架构方式</h3>
+<p>根据对进程的使用方式不同，浏览器的架构可以分为单进程和多进程，比如<code>Chrome</code>浏览器就是采用多进程架构；</p>
+<h3 id="进程线程组成"><a class="markdownIt-Anchor" href="#进程线程组成"></a> 进程/线程组成</h3>
+<p>浏览器算是一个比较庞大的应用程序，因此其内部实际上也会按功能拆分成很多个模块，每个模块专门负责一类特定的任务；在<code>Chrome</code>浏览器中，首先将主要的功能拆分成不同的进程，然后进程下面可能会有多个不同的线程来继续细分任务，主要的进程有：</p>
+<ul>
+<li>浏览器进程（<code>Browser Process</code>）：用于控制浏览器这个应用本身，包括浏览器的导航栏及书签等等；还用于<font color=#39f>承担调度各个其他进程之间的通信</font>；</li>
+<li>渲染进程（<code>Render Process</code>）：用于渲染一个标签内的网页内容；</li>
+<li><code>GPU</code>进程（<code>GPU Process</code>）：用于处理<code>GPU</code>相关任务；</li>
+<li>插件进程（<code>Plugin Process</code>）：控制网页内的插件；</li>
+</ul>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200912111700.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200912111723.png?imageslim" alt="img" /></p>
+<p>上面的图<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>是<code>google</code>官方博客给出的<code>Chrome</code>浏览器架构设计以及各进程作用的说明图；可以看到其中渲染进程可以存在多个，这是由于<code>Chrome</code>给<font color=#f00>每个标签页都单独开设了一个渲染进程</font>，但是由于内存有上限，因此开启的渲染进程数量会存在一个上限，这个上限取决于运行系统的硬件条件；</p>
+<p>使用多进程来进行渲染的好处就是当<font color=#39f>其中一个渲染进程崩溃后不会影响到其他进程</font>，但是相应的坏处就是很占内存……（这下终于明白<code>Chrome</code>占内存的原因了）</p>
+<p>除此之外，<code>Chrome</code>用了一种技术来动态改变架构以适应不同的硬件情况；当硬件比较好的时候，<code>Chrome</code>会尽可能地将很多线程独立出来作为进程，那么硬件比较差的时候则相反，会将一些进程合并到其他进程之中：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200912111748.png?imageslim" alt="img" /></p>
+<p>关于浏览器的架构大致就了解这么一些，关于更多的架构细节可以查看<code>Google</code>的系列博客文章：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://developers.google.com/web/updates/2018/09/inside-browser-part1">https://developers.google.com/web/updates/2018/09/inside-browser-part1</a></li>
+<li><a target="_blank" rel="noopener" href="https://developers.google.com/web/updates/2018/09/inside-browser-part2">https://developers.google.com/web/updates/2018/09/inside-browser-part2</a></li>
+<li><a target="_blank" rel="noopener" href="https://developers.google.com/web/updates/2018/09/inside-browser-part3">https://developers.google.com/web/updates/2018/09/inside-browser-part3</a></li>
+<li><a target="_blank" rel="noopener" href="https://developers.google.com/web/updates/2018/09/inside-browser-part4">https://developers.google.com/web/updates/2018/09/inside-browser-part4</a></li>
+</ul>
+<h2 id="浏览器是如何理解前端代码的"><a class="markdownIt-Anchor" href="#浏览器是如何理解前端代码的"></a> 浏览器是如何理解前端代码的？</h2>
+<p>众所周知，运行在浏览器中的前端代码只有三类：<code>html</code>，<code>css</code>和<code>js</code>；<code>html</code>用于定义网页结构，<code>css</code>用于设置样式和布局，而<code>js</code>则作为脚本用来动态改变<code>html</code>和<code>css</code>以及交互行为；虽然这三者分工不同，但最终输入浏览器后得到的输出大多是网页画面（还有可能是<code>I/O</code>，多媒体，网络等底层交互），即<font color=#f00>渲染</font>，因此理解这三种代码是如何影响浏览器渲染结果是十分必要的。</p>
+<h3 id="浏览器网页渲染机制"><a class="markdownIt-Anchor" href="#浏览器网页渲染机制"></a> 浏览器网页渲染机制</h3>
+<p>关于经典的<strong>从输入网址到网页渲染</strong>这一流程就不再赘述（上面提到的系列博客文章有比各网站流行的更详细的讲解，详细到线程级交互……），这里着重关注<font color=#39f>浏览器如何解析前端代码并输出像素到显存中</font>的；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200912111803.png?imageslim" alt="img" /></p>
+<p>上面就是<code>html + css</code>代码输出像素到屏幕的一个大致流程，可以看到代码在浏览器中从文本变成屏幕中的像素是一个十分复杂的流程，里面每个流程单独拿出来讲估计都是充满了很多复杂的处理细节；从这个层面上来讲基于<code>HTML</code>和<code>CSS</code>的渲染是一套高度抽象但又很成熟的流程。</p>
+<h4 id="dom-tree"><a class="markdownIt-Anchor" href="#dom-tree"></a> DOM Tree</h4>
+<p>这个术语大概都不会陌生，或多或少都有听说过；<code>DOM</code>是一个对<code>HTML/XML</code>文档的结构化描述及交互规范，因此它<font color=#f00>本身并不是与特定化编程语言强绑定</font>的，但是现实中很多人都将<code>DOM</code>视为<code>JS</code>中的一部分，这是一个<font color=#f00>很大的认知误区</font>；不过这也是无法避免的，因为目前浏览器使用的脚本语言就是<code>JS</code>，因此浏览器内置的<code>DOM</code>也就是基于<code>JS</code>的实现；</p>
+<p>理论上一个编程语言只要可以实现<code>OOP</code>，其也就具备实现<code>DOM</code>的能力，因此<code>DOM</code><font color=#39f>可以在多种编程语言中进行实现</font>，比如<code>MDN</code>上就举了<code>python</code>实现<code>DOM</code>的例子<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Python DOM example</span></span><br><span class="line"><span class="keyword">import</span> xml.dom.minidom <span class="keyword">as</span> m</span><br><span class="line">doc = m.parse(<span class="string">&quot;C:\\Projects\\Py\\chap1.xml&quot;</span>);</span><br><span class="line">doc.nodeName <span class="comment"># DOM property of document object;</span></span><br><span class="line">p_list = doc.getElementsByTagName(<span class="string">&quot;para&quot;</span>);</span><br></pre></td></tr></table></figure>
+<p><code>DOM</code>用于描述<code>HTML</code>中的结点，因此整个<code>HTML</code>解析得到的结构化描述就是一个<code>DOM</code>树；但是<code>DOM</code>树中会<font color=#f00>过滤</font>掉<strong>伪元素</strong>结点；</p>
+<h4 id="computed-style"><a class="markdownIt-Anchor" href="#computed-style"></a> computed style</h4>
+<p><code>computed style</code>即计算样式，所谓计算样式就是根据<code>DOM</code>结点本身以及<code>CSS</code>样式选择器匹配到的样式所得到的关于当前结点所有的<code>CSS</code>样式信息，即涵盖所有CSS样式属性，当前结点没有赋予相应的样式信息就会从浏览器中内置的默认样式进行获取；尽管<code>DOM</code>中不会包含伪元素的结点信息，但是<font color=#f00>伪元素仍然会有相应的计算样式</font>！</p>
+<p>通过<code>window.getComputedStyle</code>方法即可获取某一结点的计算样式：</p>
+<blockquote>
+<p>window.getComputedStyle(element, [pseudoElt])<sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup></p>
+</blockquote>
+<ul>
+<li><code>element</code>：<code>DOM</code>结点；</li>
+<li><code>pseudoElt</code>：伪元素匹配字符串，如：<code>&quot;::before&quot;</code>；</li>
+</ul>
+<h4 id="layout-tree"><a class="markdownIt-Anchor" href="#layout-tree"></a> Layout Tree</h4>
+<p><code>Layout tree</code>，顾名思义就是生成<code>DOM tree</code>对应的布局信息，因此绘制图形时需要知道图形的形状和位置信息才行；根据DOM tree和相应的计算样式就可以计算出相应结点的布局信息，布局信息主要包括：当前结点的<strong>盒模型尺寸</strong>，以及<strong>坐标位置</strong>；需要注意的是<code>display: none</code>的结点不会纳入到布局树当中，因为此时<font color=#39f>该结点并不会被渲染</font>，而<font color=#39f>伪元素结点则会被纳入到布局树</font>中，因此伪元素本质上还是一个渲染结点，只是<code>DOM</code>不包含而已；</p>
+<p>计算布局树是一个<font color=#f00>十分复杂</font>的过程，因为有太多因素可以影响到布局了，比如定位，尺寸，文字排版，浮动等等；因此要得到一个结点最终的布局信息要经过一系列的判断和计算。</p>
+<h4 id="paint-records"><a class="markdownIt-Anchor" href="#paint-records"></a> Paint Records</h4>
+<p>即便有了布局树和样式信息，仍然不足以绘制出最终的画面；熟悉图形渲染的人都应该知道，绘制的顺序很重要，如果绘制的顺序不对得到的结果可能就完全不同，因为<font color=#f00>不同的图形之间可能存在重叠的区域</font>；所以<code>Paint Records</code>就是用于存储各个图形之间的绘制顺序，保证绘制重叠不会阴差阳错。</p>
+<p>根据<code>Layout tree</code>的信息就可以自然的计算出相应的<code>Paint Records</code>，因为<code>Layout tree</code>的树状结构包含了相应的层级关系；</p>
+<h4 id="layer-tree"><a class="markdownIt-Anchor" href="#layer-tree"></a> Layer Tree</h4>
+<p>由于全量式刷新渲染很耗费时间，因此浏览器采用了对元素进行分层，这个就像是<code>PS</code>中分图层处理；然后单独对每个图层进行光栅化处理，然后拼接处于视口<code>（viewport</code>）内的图层光栅化数据，合成为当前的渲染帧，这个过程称之为：<strong><code>composition</code></strong>；</p>
+<p>而<code>Layer tree</code>则是根据<code>Layout tree</code>进行图层划分后得到图层层级信息，即哪些元素结点处于同一图层，图层间的关系如何；这样做的好处就是，在布局树没有发生改变时，滚动页面可以<font color=#39f>直接利用部分之前已经光栅化的图层</font>，然后继续合成新的渲染帧即可，加快了渲染效率；</p>
+<p>目前浏览器内部是按照什么规则进行图层的划分还不是很清楚，但是可以确定的是当一个属性设置了<code>will-change</code>属性后，<font color=#f00>该属性会被视为单独的一层</font>，以便更加高效地应对此元素结点的变化；但是过多地设置<code>will-change</code>属性会导致图层过多，<code>composition</code>的耗时就会更多，反而效率降低；</p>
+<p>此外，<code>Chrome</code>浏览器的开发者工具还提供了查看图层的功能：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200912111826.png?imageslim" alt="img" /></p>
+<p>点开这个面板我才发现这个面板的功能实在是太强大了，除了列出当前页面的所有图层，还可以查看图层的信息：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200912111851.png?imageslim" alt="img" /></p>
+<p>图层信息有：<font color=#39f>图层大小，位置，分层原因，占用内存</font>等等；从上图我们可以得知，该图层大小为<code>1425x152</code>，坐标位置是<code>（0，0）</code>，分层的原因是由于该元素是<code>fixed</code>或者<code>sticky</code>定位或者可能会覆盖其他的图层；不仅如此，还可以直接查看<font color=#f00>各个图层的位置和层叠关系</font>，而且还支持结合绘制结果一起，还能<code>3D</code>查看！</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200912112127.gif?imageslim" alt="img" /></p>
+<p>上图中黑色边框标注的就是一个图层，图层之间有叠层顺序，图层关系和渲染结果简直一目了然；这个工具大大加深了对<code>composition</code>的认识，果然浏览器内部实际上就是按照<code>3d</code>进行渲染的？</p>
+<h4 id="tile"><a class="markdownIt-Anchor" href="#tile"></a> Tile</h4>
+<p><code>Tile</code>，中文译为“<strong>瓷砖</strong>”；不过在光栅化过程中可以把它理解为一个<code>layer</code>（图层）的矩形小块，当一个图层尺寸过大时，可能会被切分成多个<code>tile</code>，然后光栅化的最小单位就是<code>tile</code><sup class="footnote-ref"><a href="#fn5" id="fnref5">[5]</a></sup>；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200912112430.png?imageslim" alt="img" /></p>
+<h4 id="draw-quads"><a class="markdownIt-Anchor" href="#draw-quads"></a> Draw quads</h4>
+<p><code>Draw quads</code>是<code>tile</code>光栅化后得到的结果，意为“<strong>绘制四边形</strong>”；它包含了该<code>tile</code>像素信息位于<font color=#f00>内存中的地址</font>已经对应在当前渲染帧（即当前页面）中的<font color=#39f>坐标位置</font>；这个有点类似于着色器中常见的片元，只不过这个绘制四边形对于片元来说还是太大了。</p>
+<h4 id="compositor-frame"><a class="markdownIt-Anchor" href="#compositor-frame"></a> Compositor frame</h4>
+<p>将当前视口内所有的图层光栅化后得到的所有<code>Draw quads</code>进行拼接，得到的帧信息就是<code>Compositor frame</code>，这个帧信息就是用于传送到<code>GPU</code>中，然后显示当前绘制画面，有点类似于帧缓冲；</p>
+<h3 id="浏览器网页事件触发机制"><a class="markdownIt-Anchor" href="#浏览器网页事件触发机制"></a> 浏览器网页事件触发机制</h3>
+<p>除了渲染，前端代码还可以用来处理各种各样的交互事件，以及修改<code>DOM/CSSOM</code>等操作，这些事情是<code>JS</code>来负责的；修改DOM这种操作无非就是借助浏览器暴露的接口进行底层控制而已，更重要的是理解浏览器中事件触发机制以及<code>JS</code>在其中的作用；</p>
+<blockquote>
+<p>严格意义上来说，事件注册机制不也是DOM的一部分吗？</p>
+</blockquote>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200912112444.png?imageslim" alt="img" /></p>
+<p>上图就是浏览器内部触发一个事件到执行的大致流程，其中确实有很多步骤和判断，有不少值得注意的细节；</p>
+<h4 id="非快速滚动区域"><a class="markdownIt-Anchor" href="#非快速滚动区域"></a> 非快速滚动区域</h4>
+<p>非快速滚动区域，即<code>non-fast scrollable region</code>；当<font color=#39f>一个元素被注册了事件</font>，其对应的渲染区域就会被识别成非快速滚动区域，然后只有非快速滚动区域才会去进一步识别事件处理，也就是说没有注册事件的区域即便发生了事件也会被<code>compositor</code>线程忽略，继续它的帧渲染工作；</p>
+<p>因此非快速滚动区域也是名副其实，因为这个区域在发生交互行为时<code>Compositor</code>线程<font color=#f00>需要等待渲染主线程的回应</font>才能进行下一步的渲染，所以中间会有一定耗时，导致诸如滚动页面的操作相应的渲染结果有所延后；不过这个也是有解决方法的。</p>
+<h4 id="passive事件的本质"><a class="markdownIt-Anchor" href="#passive事件的本质"></a> passive事件的本质</h4>
+<p><code>addEventListener</code>方法第三个参数原本是用于标识事件是否发生在捕获阶段的，但是后面又新增了一种用法<sup class="footnote-ref"><a href="#fn6" id="fnref6">[6]</a></sup>：</p>
+<blockquote>
+<p>target.addEventListener(type, listener, options);</p>
+</blockquote>
+<p>即第三个参数可以是一个配置对象（目前属性值都是布尔值）：</p>
+<ul>
+<li><code>capture</code>：表示是否在捕获阶段触发事件；</li>
+<li><code>once</code>：表示事件是否只触发一次；</li>
+<li><code>passive</code>：表示事件是否不会使用<code>preventDefault</code>方法，当为<code>true</code>时<font color=#f00>即便事件回调函数调用了<code>preventDefault</code>方法也会被忽略</font>；</li>
+</ul>
+<p>这里将选项设置为<code>passive:true</code>的事件称之为“<code>passive</code>事件”；显然，看了流程图就会知道，<code>passive</code>事件本质上是给<code>compositor</code>线程一个信号：即<font color=#39f>当前事件不会阻塞渲染</font>；也就是说注册了<code>passive</code>事件的元素区域即便被标识成了非快速滚动区域，但是仍然不会阻塞<code>compositor</code>线程的绘制工作，这样就既能触发事件又不会阻塞渲染工作；</p>
+<h4 id="事件委托的一个缺点"><a class="markdownIt-Anchor" href="#事件委托的一个缺点"></a> 事件委托的一个缺点</h4>
+<p>由于非快速滚动区域阻塞渲染的特点，当事件注册的区域过大时则会影响渲染效率；那么实践中被经常使用的事件委托技巧这个时候就会中枪了，因此事件委托正是将事件委托到触发元素的父级及以上层级的元素结点上，所以此时的<font color=#f00>非快速滚动区域不可避免的会变大</font>，而且事件触发的精准度明显降低，因此被委托的结点明显要接收更多不相关的事件（因为其内部往往需要进行一个判断才会执行真正的事件，这样导致阻塞渲染的情况变多，且不相关事件也变多）；</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">document</span>.<span class="property">body</span>.<span class="title function_">addEventListener</span>(<span class="string">&#x27;click&#x27;</span>, <span class="function"><span class="params">event</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (event.<span class="property">target</span> === a) &#123;</span><br><span class="line">        <span class="comment">// do something</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>解决办法也是有的，那就是把事件变成<code>passive</code>事件，这样做就不能阻止事件默认行为了；</p>
+<h4 id="命中测试"><a class="markdownIt-Anchor" href="#命中测试"></a> 命中测试</h4>
+<p>当<code>compositor</code>线程接收到主线程传来的事件触发坐标时，往往并不能直接确定这个事件具体触发的结点（即<code>event target</code>），因为<font color=#f00>这个坐标点可能存在多个元素结点</font>，因此存在层叠关系，所以此时需要结束<code>Paint Records</code>来确认最终触发事件的结点；</p>
+<h4 id="合并事件"><a class="markdownIt-Anchor" href="#合并事件"></a> 合并事件</h4>
+<p>当一个事件在一帧内连续触发多次，那么该事件则会被合并成一次事件交给下一帧；这个可能会出现在手势操作相关的连续事件中，比如<code>touchmove</code>；对于一些高精度要求的交互中，比如说手势绘制轨迹等，如果合并事件则会丢失一定的数据，因此后续规范中增加了对这类事件的完整事件的获取方法，如：<code>PointerEvent.getCoalescedEvents()</code>；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200912112510.png?imageslim" alt="img" /></p>
+<p>上面这个方法就是可以获取指针事件中当前帧内所有的连续触发事件，因此可以提高交互的精度；</p>
+<h2 id="相关文档"><a class="markdownIt-Anchor" href="#相关文档"></a> 相关文档</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/47407398">图解浏览器的基本工作原理 - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://web.archive.org/web/20140509053414/http://www.adminspoint.com/technology/3476-google-chromebooks-understanding-chrome-os.html">https://web.archive.org/web/20140509053414/http://www.adminspoint.com/technology/3476-google-chromebooks-understanding-chrome-os.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://css-tricks.com/an-introduction-and-guide-to-the-css-object-model-cssom/">An Introduction and Guide to the CSS Object Model (CSSOM) | CSS-Tricks  Flywheel logo</a></li>
+<li><a target="_blank" rel="noopener" href="https://developers.google.com/web/updates/2018/07/page-lifecycle-api">https://developers.google.com/web/updates/2018/07/page-lifecycle-api</a> ：关于网页生命周期的讲解</li>
+</ul>
+<hr class="footnotes-sep" />
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/History_of_the_web_browser">https://en.wikipedia.org/wiki/History_of_the_web_browser</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://developers.google.com/web/updates/2018/09/inside-browser-part1">https://developers.google.com/web/updates/2018/09/inside-browser-part1</a> <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/Document_Object_Model/Introduction">DOM概述 - Web API 接口参考 | MDN</a> <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/Window/getComputedStyle">Window.getComputedStyle() - Web API 接口参考 | MDN</a> <a href="#fnref4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://developers.google.com/web/updates/2018/09/inside-browser-part3#raster_and_composite_off_of_the_main_thread">https://developers.google.com/web/updates/2018/09/inside-browser-part3#raster_and_composite_off_of_the_main_thread</a> <a href="#fnref5" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn6" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/EventTarget/addEventListener">EventTarget.addEventListener() - Web API 接口参考 | MDN</a> <a href="#fnref6" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/the-web-browser/" title="了解浏览器的本质">https://note.xiexuefeng.cc/post/the-web-browser/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/DOM/" rel="tag"># DOM</a>
+              <a href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" rel="tag"># 浏览器</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/css-shape-outside/" rel="prev" title="shape-outside属性及其应用">
+                  <i class="fa fa-chevron-left"></i> shape-outside属性及其应用
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/the-nature-of-css/" rel="next" title="探索CSS的本质">
+                  探索CSS的本质 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/the-web-browser/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/the-web-browser/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

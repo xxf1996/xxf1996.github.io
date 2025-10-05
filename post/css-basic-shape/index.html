@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 &lt;basic-shape&gt;是一种特殊的CSS数据类型，用于表示使用基本形状函数，从而应用相应的形状或路径；目前支持&lt;basic-shape&gt;类型的属性有：  shape-outside：该属性用于指定周围内联元素环绕时所包围的形状； clip-path：该属性用于指定所属盒模型的裁剪形状； offset-path：该属性用于指定元素移动的路径，属于offset属性中">
+<meta property="og:type" content="article">
+<meta property="og:title" content="basic-shape 数据类型">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/css-basic-shape/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 &lt;basic-shape&gt;是一种特殊的CSS数据类型，用于表示使用基本形状函数，从而应用相应的形状或路径；目前支持&lt;basic-shape&gt;类型的属性有：  shape-outside：该属性用于指定周围内联元素环绕时所包围的形状； clip-path：该属性用于指定所属盒模型的裁剪形状； offset-path：该属性用于指定元素移动的路径，属于offset属性中">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200820185808.gif?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200820185817.gif?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200820185833.png?imageslim">
+<meta property="article:published_time" content="2020-08-20T10:56:42.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.866Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="css">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20200820185808.gif?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/css-basic-shape/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/css-basic-shape/","path":"post/css-basic-shape/","title":"basic-shape 数据类型"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>basic-shape 数据类型 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BD%A2%E7%8A%B6%E5%87%BD%E6%95%B0"><span class="nav-number">2.</span> <span class="nav-text"> 形状函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E5%8F%82%E8%80%83%E7%9B%92%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.1.</span> <span class="nav-text"> 关于参考盒模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#inset"><span class="nav-number">2.2.</span> <span class="nav-text"> inset</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#circle"><span class="nav-number">2.3.</span> <span class="nav-text"> circle</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ellipse"><span class="nav-number">2.4.</span> <span class="nav-text"> ellipse</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#polygon"><span class="nav-number">2.5.</span> <span class="nav-text"> polygon</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#path"><span class="nav-number">2.6.</span> <span class="nav-text"> path</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%92%E5%80%BC%E8%A7%84%E5%88%99"><span class="nav-number">3.</span> <span class="nav-text"> 插值规则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%89%A9%E5%B1%95"><span class="nav-number">4.</span> <span class="nav-text"> 相关扩展</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#position%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">4.1.</span> <span class="nav-text"> &lt;position&gt;数据类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#shape-radius%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">4.2.</span> <span class="nav-text"> &lt;shape-radius&gt;数据类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E6%A1%A3"><span class="nav-number">5.</span> <span class="nav-text"> 相关文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/css-basic-shape/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="basic-shape 数据类型 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          basic-shape 数据类型
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-08-20 18:56:42" itemprop="dateCreated datePublished" datetime="2020-08-20T18:56:42+08:00">2020-08-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p><code>&lt;basic-shape&gt;</code>是一种特殊的<code>CSS</code><font color=#f00>数据类型</font>，用于表示使用基本形状函数，从而应用相应的形状或路径；目前支持<code>&lt;basic-shape&gt;</code>类型的属性有：</p>
+<ul>
+<li><code>shape-outside</code>：该属性用于指定周围内联元素环绕时所<font color=#39f>包围的形状</font>；</li>
+<li><code>clip-path</code>：该属性用于指定所属盒模型的<font color=#39f>裁剪形状</font>；</li>
+<li><code>offset-path</code>：该属性用于指定<font color=#39f>元素移动的路径</font>，属于<code>offset</code>属性中的一个；</li>
+</ul>
+<span id="more"></span>
+<h2 id="形状函数"><a class="markdownIt-Anchor" href="#形状函数"></a> 形状函数</h2>
+<h3 id="关于参考盒模型"><a class="markdownIt-Anchor" href="#关于参考盒模型"></a> 关于参考盒模型</h3>
+<p>由于形状作用的盒模型<font color=#f00>根据具体的<code>CSS</code>属性有所不同</font>，它可以是<code>margin-box</code>、<code>padding-box</code>、<code>border-box</code>和<code>content-box</code>中的任何一个，因此用参考盒模型来指代这个具体的盒模型；</p>
+<blockquote>
+<p>When using this syntax to define shapes, the reference box is defined by each property that uses <basic-shape> values. <sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup></p>
+</blockquote>
+<h3 id="inset"><a class="markdownIt-Anchor" href="#inset"></a> inset</h3>
+<p><code>inset</code>函数定义了一个矩形形状，只不过这个矩形是由参考盒模型四个边框向内形成的内嵌矩形；语法如下：</p>
+<blockquote>
+<p>inset( &lt;length-percentage&gt;{1,4} [ round &lt;‘border-radius’&gt; ]? )<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup></p>
+</blockquote>
+<p>可以看出参数分为两个部分，前面是<code>1-4</code>个长度/百分比参数，用于设置矩形距离参考盒模型相应方向的边框距离；</p>
+<ul>
+<li><strong>1个值</strong>：所有方向的距离一致，百分比为对应方向上盒模型的长度；</li>
+<li><strong>2个值</strong>：第一个值代表上和下方向，第二个值代表左和右方向；</li>
+<li><strong>4个值</strong>：依次为上、右、下和左，顺时针方向；</li>
+</ul>
+<p>后面一组是可选参数，为<code>round</code>关键字加上<code>border-radius</code>的语法，用于<font color=#39f>设置内嵌矩阵的圆角效果</font>；如：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.demo</span> &#123;</span><br><span class="line">    <span class="attribute">clip-path</span>: <span class="built_in">inset</span>(<span class="number">20%</span> round <span class="number">45px</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="circle"><a class="markdownIt-Anchor" href="#circle"></a> circle</h3>
+<p>顾名思义，<code>circle</code>函数就是用于指定一个圆形形状，语法如下：</p>
+<blockquote>
+<p>circle( &lt;shape-radius&gt;? [ at &lt;position&gt; ]? )<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup></p>
+</blockquote>
+<p>参数依然是两个部分，第一个参数为半径，是<font color=#f00>可选的</font>，默认值<code>W3C</code>文档上没有说明，但是<font color=#39f>据观察为盒模型的最短边的一半</font>（<strong>注意</strong>：这可与<code>50%</code>的效果是不一样的！）；当使用百分比时，长度的参照值为：</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msqrt><mrow><mi>h</mi><mi>e</mi><mi>i</mi><mi>g</mi><mi>h</mi><msup><mi>t</mi><mn>2</mn></msup><mo>+</mo><mi>w</mi><mi>i</mi><mi>d</mi><mi>t</mi><msup><mi>h</mi><mn>2</mn></msup></mrow></msqrt><mi mathvariant="normal">/</mi><msqrt><mn>2</mn></msqrt></mrow><annotation encoding="application/x-tex">\sqrt{height^2 + width^2} / \sqrt{2}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.256709em;vertical-align:-0.25em;"></span><span class="mord sqrt"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.006709em;"><span class="svg-align" style="top:-3.2em;"><span class="pstrut" style="height:3.2em;"></span><span class="mord" style="padding-left:1em;"><span class="mord mathnormal">h</span><span class="mord mathnormal">e</span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">h</span><span class="mord"><span class="mord mathnormal">t</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.740108em;"><span style="top:-2.9890000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="mord mathnormal">i</span><span class="mord mathnormal">d</span><span class="mord mathnormal">t</span><span class="mord"><span class="mord mathnormal">h</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.740108em;"><span style="top:-2.9890000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span><span style="top:-2.9667090000000003em;"><span class="pstrut" style="height:3.2em;"></span><span class="hide-tail" style="min-width:1.02em;height:1.28em;"><svg width='400em' height='1.28em' viewBox='0 0 400000 1296' preserveAspectRatio='xMinYMin slice'><path d='M263,681c0.7,0,18,39.7,52,119
+c34,79.3,68.167,158.7,102.5,238c34.3,79.3,51.8,119.3,52.5,120
+c340,-704.7,510.7,-1060.3,512,-1067
+l0 -0
+c4.7,-7.3,11,-11,19,-11
+H40000v40H1012.3
+s-271.3,567,-271.3,567c-38.7,80.7,-84,175,-136,283c-52,108,-89.167,185.3,-111.5,232
+c-22.3,46.7,-33.8,70.3,-34.5,71c-4.7,4.7,-12.3,7,-23,7s-12,-1,-12,-1
+s-109,-253,-109,-253c-72.7,-168,-109.3,-252,-110,-252c-10.7,8,-22,16.7,-34,26
+c-22,17.3,-33.3,26,-34,26s-26,-26,-26,-26s76,-59,76,-59s76,-60,76,-60z
+M1001 80h400000v40h-400000z'/></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.23329099999999992em;"><span></span></span></span></span></span><span class="mord">/</span><span class="mord sqrt"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.956095em;"><span class="svg-align" style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord" style="padding-left:0.833em;"><span class="mord">2</span></span></span><span style="top:-2.916095em;"><span class="pstrut" style="height:3em;"></span><span class="hide-tail" style="min-width:0.853em;height:1.08em;"><svg width='400em' height='1.08em' viewBox='0 0 400000 1080' preserveAspectRatio='xMinYMin slice'><path d='M95,702
+c-2.7,0,-7.17,-2.7,-13.5,-8c-5.8,-5.3,-9.5,-10,-9.5,-14
+c0,-2,0.3,-3.3,1,-4c1.3,-2.7,23.83,-20.7,67.5,-54
+c44.2,-33.3,65.8,-50.3,66.5,-51c1.3,-1.3,3,-2,5,-2c4.7,0,8.7,3.3,12,10
+s173,378,173,378c0.7,0,35.3,-71,104,-213c68.7,-142,137.5,-285,206.5,-429
+c69,-144,104.5,-217.7,106.5,-221
+l0 -0
+c5.3,-9.3,12,-14,20,-14
+H400000v40H845.2724
+s-225.272,467,-225.272,467s-235,486,-235,486c-2.7,4.7,-9,7,-19,7
+c-6,0,-10,-1,-12,-3s-194,-422,-194,-422s-65,47,-65,47z
+M834 80h400000v40h-400000z'/></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.08390500000000001em;"><span></span></span></span></span></span></span></span></span></span></p>
+<p>这里的宽度和高度指的都是参考盒模型；后面一个参数也是可选的，为<code>at</code>关键字加上一组坐标位置，用于指定圆心坐标，坐标默认值为<code>center</code>；</p>
+<h3 id="ellipse"><a class="markdownIt-Anchor" href="#ellipse"></a> ellipse</h3>
+<p><code>ellipse</code>函数则是指定一个椭圆形状，语法如下：</p>
+<blockquote>
+<p>ellipse( [ &lt;shape-radius&gt;{2} ]? [ at &lt;position&gt; ]? )<sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup></p>
+</blockquote>
+<p>同样，这里参数也是两个部分，<font color=#f00>都是可选的</font>；第一部分为半径，两个参数（<strong>注意</strong>：这里要么完全省略，要么只能两个参数都写，一个参数是非法的！），第一个参数为<code>x</code>方向半径，第二个参数为<code>y</code>方向半径，默认值为<code>50% 50%</code>；第二部分与<code>circle</code>函数类似，用于指定椭圆中心位置，默认值为<code>center</code>；</p>
+<h3 id="polygon"><a class="markdownIt-Anchor" href="#polygon"></a> polygon</h3>
+<p><code>polygon</code>函数则是用来绘制任意多边形状的，语法如下：</p>
+<blockquote>
+<p>polygon( &lt;‘fill-rule’&gt;? , [&lt;length-percentage&gt; &lt;length-percentage&gt;]# )<sup class="footnote-ref"><a href="#fn5" id="fnref5">[5]</a></sup></p>
+</blockquote>
+<p>第一个参数<code>fill-rule</code>是可选的（需要注意的是<font color=#f00>第一个参数与后面的参数需要加上逗号分隔</font>），用于指定多边形内部区域识别的算法，有以下选项：</p>
+<ul>
+<li><code>nonzero</code>：默认值</li>
+<li><code>evenodd</code></li>
+</ul>
+<p>关于<code>nonzero</code>和<code>evenodd</code>算法之间的区别，可以参考：<a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/SVG/Attribute/fill-rule">fill-rule - SVG | MDN</a><br />
+;</p>
+<p>第二个参数则是一组坐标值，坐标值就是多边形的顶点位置，一个顶点坐标有两个值，用空格分隔，而不同顶点坐标之间则用逗号分隔；如：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.demo</span> &#123;</span><br><span class="line">    <span class="attribute">clip-path</span>: <span class="built_in">polygon</span>(<span class="number">50%</span> <span class="number">20%</span>, <span class="number">90%</span> <span class="number">80%</span>, <span class="number">10%</span> <span class="number">80%</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>坐标值的原点位置是参考盒模型的左上角；</p>
+<h3 id="path"><a class="markdownIt-Anchor" href="#path"></a> path</h3>
+<p><code>path</code>函数则是利用<code>SVG path</code>语法来绘制形状和路径，不过<font color=#f00>目前兼容性很受限</font>；语法如下：</p>
+<blockquote>
+<p>path( [&lt;‘fill-rule’&gt;,]? &lt;string&gt; )<sup class="footnote-ref"><a href="#fn6" id="fnref6">[6]</a></sup></p>
+</blockquote>
+<p>第一个参数为可选的，用于指定<code>fill-rule</code>；第二个参数为<code>SVG path</code>字符串，用于指定路径；<code>SVG path</code>语法可以参考：<a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/d">d - SVG: Scalable Vector Graphics | MDN</a></p>
+<h2 id="插值规则"><a class="markdownIt-Anchor" href="#插值规则"></a> 插值规则</h2>
+<p>由于<code>&lt;basic-shape&gt;</code>数据类型是支持插值的，这就意味着该属性可以被应用到<code>animation</code>和<code>transition</code>属性中；但是插值规则并非可以直接从一种形状到另一种形状，只是对形状函数的<font color=#39f>参数数值进行插值</font>而已；从<code>W3C</code>的文档<sup class="footnote-ref"><a href="#fn7" id="fnref7">[7]</a></sup>可知，<code>basic-shape</code>数据类型进行插值必须满足以下条件：</p>
+<ul>
+<li>参考盒模型<font color=#f00>必须一致</font>；</li>
+<li>形状类型<font color=#f00>必须一致</font>；</li>
+<li><code>ellipse</code>和<code>circle</code>的中心点位置<font color=#f00>不能</font>包含<code>closest-side</code>和<code>farthest-side</code>关键词；</li>
+<li><code>polygon</code>形状的<code>fill-rule</code><font color=#f00>必须一致</font>，且<font color=#f00>顶点数量要相同</font>；</li>
+</ul>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.box</span> &#123;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">200px</span>;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">80px</span>;</span><br><span class="line">  <span class="attribute">clip-path</span>: <span class="built_in">inset</span>(<span class="number">10px</span> round <span class="number">20px</span>);</span><br><span class="line">  <span class="attribute">background-color</span>: coral;</span><br><span class="line">  <span class="attribute">cursor</span>: pointer;</span><br><span class="line">  <span class="attribute">transition</span>: clip-path .<span class="number">5s</span> ease-in;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.box</span><span class="selector-pseudo">:hover</span> &#123;</span><br><span class="line">  <span class="attribute">clip-path</span>: <span class="built_in">ellipse</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200820185808.gif?imageslim" alt="img" /></p>
+<p>可以看到上面这种不同形状函数之间是不能进行插值的；</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.box</span> &#123;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">200px</span>;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">80px</span>;</span><br><span class="line">  <span class="attribute">clip-path</span>: <span class="built_in">inset</span>(<span class="number">10px</span> round <span class="number">20px</span>);</span><br><span class="line">  <span class="attribute">background-color</span>: coral;</span><br><span class="line">  <span class="attribute">cursor</span>: pointer;</span><br><span class="line">  <span class="attribute">transition</span>: clip-path .<span class="number">5s</span> ease-in;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.box</span><span class="selector-pseudo">:hover</span> &#123;</span><br><span class="line">  <span class="attribute">clip-path</span>: <span class="built_in">inset</span>(<span class="number">20px</span> round <span class="number">20px</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200820185817.gif?imageslim" alt="img" /></p>
+<p>而上面这种同类型形状函数之间就可以进行数值插值了；</p>
+<h2 id="相关扩展"><a class="markdownIt-Anchor" href="#相关扩展"></a> 相关扩展</h2>
+<h3 id="position数据类型"><a class="markdownIt-Anchor" href="#position数据类型"></a> &lt;position&gt;数据类型</h3>
+<p>顾名思义，这种类型的数据专门用来表示位置的；语法<sup class="footnote-ref"><a href="#fn8" id="fnref8">[8]</a></sup>如下：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200820185833.png?imageslim" alt="img" /></p>
+<p>可以是一个值，也可以是两个值；一个值表示<code>x</code>位置和<code>y</code>位置是一致的，两个值则分别表示<code>x</code>位置和<code>y</code>位置；</p>
+<ul>
+<li><code>x</code>位置：可以是<code>&lt;length-percentage&gt;</code>（即长度类型 + 百分比类型）类型数据，还可以是<code>left</code>（<code>0%</code>），<code>center</code>（<code>50%</code>），<code>right</code>（<code>100%</code>）等关键词；</li>
+<li><code>y</code>位置：可以是<code>&lt;length-percentage&gt;</code>，还可以是<code>top</code>（<code>0%</code>），<code>center</code>（<code>50%</code>），<code>bottom</code>（<code>100%</code>）等关键词·；</li>
+</ul>
+<h3 id="shape-radius数据类型"><a class="markdownIt-Anchor" href="#shape-radius数据类型"></a> &lt;shape-radius&gt;数据类型</h3>
+<p>同理，该类型用于表示形状的半径长度，语法如下：</p>
+<blockquote>
+<p>&lt;shape-radius&gt; = &lt;length-percentage&gt; | closest-side | farthest-side<sup class="footnote-ref"><a href="#fn9" id="fnref9">[9]</a></sup></p>
+</blockquote>
+<ul>
+<li><code>closest-side</code>：半径长度为中心点到盒模型边框<font color=#f00>最近的一边之间的距离</font>；</li>
+<li><code>farthest-side</code>：半径长度为中心点到盒模型边框<font color=#f00>最远的一边之间的距离</font>；</li>
+</ul>
+<h2 id="相关文档"><a class="markdownIt-Anchor" href="#相关文档"></a> 相关文档</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/basic-shape">&lt;basic-shape&gt; - CSS（层叠样式表） | MDN</a></li>
+<li><a target="_blank" rel="noopener" href="https://drafts.csswg.org/css-shapes/#basic-shape-functions">CSS Shapes Module Level 1</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/CSS/offset-path">offset-path - CSS: Cascading Style Sheets | MDN</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_Shapes/Overview_of_CSS_Shapes">CSS的图形（Shape）概览 - CSS（层叠样式表） | MDN</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/shape-outside">shape-outside - CSS（层叠样式表） | MDN</a></li>
+</ul>
+<hr class="footnotes-sep" />
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://drafts.csswg.org/css-shapes/#reference-box">https://drafts.csswg.org/css-shapes/#reference-box</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://drafts.csswg.org/css-shapes/#funcdef-inset">https://drafts.csswg.org/css-shapes/#funcdef-inset</a> <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://drafts.csswg.org/css-shapes/#funcdef-circle">https://drafts.csswg.org/css-shapes/#funcdef-circle</a> <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://drafts.csswg.org/css-shapes/#funcdef-ellipse">https://drafts.csswg.org/css-shapes/#funcdef-ellipse</a> <a href="#fnref4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://drafts.csswg.org/css-shapes/#funcdef-polygon">https://drafts.csswg.org/css-shapes/#funcdef-polygon</a> <a href="#fnref5" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn6" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://drafts.csswg.org/css-shapes/#funcdef-path">https://drafts.csswg.org/css-shapes/#funcdef-path</a> <a href="#fnref6" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn7" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://drafts.csswg.org/css-shapes/#basic-shape-interpolation">https://drafts.csswg.org/css-shapes/#basic-shape-interpolation</a> <a href="#fnref7" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn8" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://drafts.csswg.org/css-values-3/#position">https://drafts.csswg.org/css-values-3/#position</a> <a href="#fnref8" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn9" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://drafts.csswg.org/css-shapes/#typedef-shape-radius">https://drafts.csswg.org/css-shapes/#typedef-shape-radius</a> <a href="#fnref9" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/css-basic-shape/" title="basic-shape 数据类型">https://note.xiexuefeng.cc/post/css-basic-shape/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/css/" rel="tag"># css</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/css-transform-h5/" rel="prev" title="transform相关H5案例">
+                  <i class="fa fa-chevron-left"></i> transform相关H5案例
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/css-shape-outside/" rel="next" title="shape-outside属性及其应用">
+                  shape-outside属性及其应用 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/css-basic-shape/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/css-basic-shape/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 Web Vitals是谷歌针对网页加载速度和体验所提出的一套指标，这套指标用于测试网页的加载速度及用户体验等等；谷歌基于这套指标不仅设计了多套测试工具，还针对各种指标提出了相应的优化方法，具有很高的实用价值；  Web Vitals is an initiative by Google to provide unified guidance for quality signals that">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于Web Vitals指标">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/about-web-vitals/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 Web Vitals是谷歌针对网页加载速度和体验所提出的一套指标，这套指标用于测试网页的加载速度及用户体验等等；谷歌基于这套指标不仅设计了多套测试工具，还针对各种指标提出了相应的优化方法，具有很高的实用价值；  Web Vitals is an initiative by Google to provide unified guidance for quality signals that">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201018122415.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201018122433.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201018122458.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201018122514.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201018122536.png?imageslim">
+<meta property="article:published_time" content="2020-10-18T04:21:26.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.864Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="优化">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20201018122415.png?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/about-web-vitals/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/about-web-vitals/","path":"post/about-web-vitals/","title":"关于Web Vitals指标"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>关于Web Vitals指标 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#web-vitals-%E6%A0%B8%E5%BF%83%E6%8C%87%E6%A0%87"><span class="nav-number">2.</span> <span class="nav-text"> Web Vitals 核心指标</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#lcp"><span class="nav-number">2.1.</span> <span class="nav-text"> LCP</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5"><span class="nav-number">2.1.1.</span> <span class="nav-text"> 概念</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8C%87%E6%A0%87%E4%BD%9C%E7%94%A8"><span class="nav-number">2.1.2.</span> <span class="nav-text"> 指标作用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%AF%BB%E6%89%BE%E6%9C%80%E5%A4%A7%E7%9A%84%E5%85%83%E7%B4%A0"><span class="nav-number">2.1.3.</span> <span class="nav-text"> 如何寻找最大的元素？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fid"><span class="nav-number">2.2.</span> <span class="nav-text"> FID</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5-2"><span class="nav-number">2.2.1.</span> <span class="nav-text"> 概念</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8C%87%E6%A0%87%E4%BD%9C%E7%94%A8-2"><span class="nav-number">2.2.2.</span> <span class="nav-text"> 指标作用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cls"><span class="nav-number">2.3.</span> <span class="nav-text"> CLS</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5-3"><span class="nav-number">2.3.1.</span> <span class="nav-text"> 概念</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8C%87%E6%A0%87%E4%BD%9C%E7%94%A8-3"><span class="nav-number">2.3.2.</span> <span class="nav-text"> 指标作用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E8%AE%A1%E7%AE%97cls"><span class="nav-number">2.3.3.</span> <span class="nav-text"> 如何计算CLS？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E6%8F%90%E5%8D%87%E6%A0%B8%E5%BF%83%E6%8C%87%E6%A0%87"><span class="nav-number">2.4.</span> <span class="nav-text"> 如何提升核心指标？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#web-vitals-%E5%85%B6%E5%AE%83%E6%8C%87%E6%A0%87"><span class="nav-number">3.</span> <span class="nav-text"> Web Vitals 其它指标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#web-vitals-%E6%8C%87%E6%A0%87%E5%88%86%E6%9E%90"><span class="nav-number">4.</span> <span class="nav-text"> Web Vitals 指标分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%BD%E5%86%85%E7%BD%91%E7%AB%99%E6%B5%8B%E8%AF%95"><span class="nav-number">4.1.</span> <span class="nav-text"> 国内网站测试</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E6%A1%A3"><span class="nav-number">5.</span> <span class="nav-text"> 相关文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/about-web-vitals/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="关于Web Vitals指标 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          关于Web Vitals指标
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-10-18 12:21:26" itemprop="dateCreated datePublished" datetime="2020-10-18T12:21:26+08:00">2020-10-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p><code>Web Vitals</code>是谷歌针对网页加载速度和体验所提出的一套指标，这套指标用于测试网页的加载速度及用户体验等等；谷歌基于这套指标不仅设计了多套测试工具，还针对各种指标提出了相应的优化方法，具有很高的实用价值；</p>
+<blockquote>
+<p>Web Vitals is an initiative by Google to provide unified guidance for quality signals that are essential to delivering a great user experience on the web.<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup></p>
+</blockquote>
+<span id="more"></span>
+<h2 id="web-vitals-核心指标"><a class="markdownIt-Anchor" href="#web-vitals-核心指标"></a> Web Vitals 核心指标</h2>
+<p>所谓的核心指标就是<code>Web Vitals</code>中希望所有人都能够引起重视的三个指标，当然也是最重要的三个指标，因为对网页加载速度和用户体验感的影响很大；</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">指标</th>
+<th style="text-align:center">GOOD</th>
+<th style="text-align:center">待提升</th>
+<th style="text-align:center">POOR</th>
+<th style="text-align:center">期望覆盖率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">LCP</td>
+<td style="text-align:center">＜2.5s</td>
+<td style="text-align:center">＜4s</td>
+<td style="text-align:center">≥4s</td>
+<td style="text-align:center">75%</td>
+</tr>
+<tr>
+<td style="text-align:center">FID</td>
+<td style="text-align:center">＜100ms</td>
+<td style="text-align:center">＜300ms</td>
+<td style="text-align:center">≥300ms</td>
+<td style="text-align:center">95~99%</td>
+</tr>
+<tr>
+<td style="text-align:center">CLS</td>
+<td style="text-align:center">＜0.1</td>
+<td style="text-align:center">＜0.25</td>
+<td style="text-align:center">≥0.25</td>
+<td style="text-align:center">75%</td>
+</tr>
+</tbody>
+</table>
+<p>上面的表格就是各项指标的评判标准，其中<strong>期望覆盖率</strong>指的是<font color=#f00>至少有相应百分比的用户测试可以达到<code>GOOD</code>标准</font>；</p>
+<h3 id="lcp"><a class="markdownIt-Anchor" href="#lcp"></a> LCP</h3>
+<h4 id="概念"><a class="markdownIt-Anchor" href="#概念"></a> 概念</h4>
+<p><code>LCP</code>（<code>Largest Contentful Paint</code>），即<strong>最大内容渲染</strong>，指的是<font color=#f00>视窗（<code>viewport</code>）内所有可见元素中尺寸最大的文本块或图像所需的渲染时间</font>；</p>
+<p>与之相近的一个指标是<code>FCP</code>（<code>First Contentful Paint</code>），该指标是用于检测第一个文本块或者图像渲染完成的时间，侧重点不同；</p>
+<h4 id="指标作用"><a class="markdownIt-Anchor" href="#指标作用"></a> 指标作用</h4>
+<p>这个指标主要是<font color=#39f>用来弄清用户所看到的页面主体内容何时被渲染出来</font>，之前也有相应的指标用于相似的目的，但是实际上存在很多的不足<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>：</p>
+<ul>
+<li><code>load</code>和<code>DOMContentLoaded</code>事件只是反应了代码层面的加载时间结点，而非真实用户所关注的屏幕页面渲染效果，因此很不准确；</li>
+<li>而<code>FCP</code>指标也只是关注了最初始的渲染效果，和用户关心的页面整体效果也相差甚远；</li>
+<li>后面提出用于关注初始渲染状态之后的加载效果的指标——<code>FMP</code>（<code>First Meaningful Paint</code>）和<code>SI</code>（<code>Speed Index</code>），经实践证明效果不太行，经常出错，而且这两个指标计算很复杂也很难去解释；</li>
+</ul>
+<p>由于存在上述问题，<code>Web Vitals</code>基于<code>W3C</code>的相关讨论<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup>以及谷歌内部的一些研究得出了一个结论：</p>
+<blockquote>
+<p>we’ve found that a more accurate way to measure when the main content of a page is loaded is <strong>to look at when the largest element was rendered</strong>.<sup class="footnote-ref"><a href="#fn2" id="fnref2:1">[2:1]</a></sup></p>
+</blockquote>
+<h4 id="如何寻找最大的元素"><a class="markdownIt-Anchor" href="#如何寻找最大的元素"></a> 如何寻找最大的元素？</h4>
+<p>由于<code>LCP</code>关心的只是文本块及图像，因此寻找的元素结点限定为：</p>
+<ul>
+<li><code>img</code>元素</li>
+<li><code>svg</code>元素中的<code>image</code>元素</li>
+<li>带<code>poster</code>属性的<code>video</code>元素</li>
+<li>用<code>url()</code>方法加载<strong>背景图</strong>的元素</li>
+<li>包含文本节点或其它内联文本节点的<strong>块级</strong>元素</li>
+</ul>
+<p>限定了元素范围后，接下来就是从这些元素中找出尺寸最大的元素了，那么<strong>如何计算这些元素结点的大小</strong>？这里的尺寸大小计算遵循以下原则：</p>
+<ul>
+<li>尺寸大小实际上以<font color=#f00>渲染完成后</font>的大小为准</li>
+<li>尺寸<font color=#f00>不包括</font><code>padding</code>，<code>border</code>和<code>margin</code>，可以理解为<code>content-box</code>的大小</li>
+</ul>
+<p>由于图片资源需要异步加载完成后才会进行渲染以及<code>js</code>代码修改<code>DOM</code>结构和属性等因素的存在，因此<font color=#39f>这个最大渲染元素可能会发生改变</font>，所以最大渲染元素的检测需要首屏渲染完成后才能最终确认；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201018122415.png?imageslim" alt="img" /></p>
+<h3 id="fid"><a class="markdownIt-Anchor" href="#fid"></a> FID</h3>
+<h4 id="概念-2"><a class="markdownIt-Anchor" href="#概念-2"></a> 概念</h4>
+<p><code>FID</code>（<code>First Input Delay</code>），即<strong>第一次输入事件延迟</strong>，指的是<font color=#f00>用户第一次交互事件触发到主线程接收事件然后反应之间的时间</font>；</p>
+<h4 id="指标作用-2"><a class="markdownIt-Anchor" href="#指标作用-2"></a> 指标作用</h4>
+<p>这个指标主要是从交互响应层面来<strong>量化</strong>用户对<font color=#39f>页面的第一印象</font>；</p>
+<p>因为新用户对一个网页的第一印象好坏对用户忠诚度影响很大，而第一印象除了网页的加载速度，还与第一次交互时的响应速度有着很大的关系；</p>
+<p>这里的延迟指的就是<font color=#39f>用户交互触发的事件到主线程接收事件之间的延迟</font>，也就是用于判断对于第一次交互时主线程的阻塞程度，延迟越低说明主线程比较空闲，也就利于用户对页面的交互响应速度；</p>
+<p>至于为何只关注事件之间的延迟时间，而不是<code>延迟时间 + 事件执行耗时 + UI状态更新耗时</code>的方式，官方给出的解释是：</p>
+<blockquote>
+<p>Even though this time is important to the user and does affect the experience, it’s not included in this metric because doing so could incentivize developers to add workarounds that actually make the experience worse—that is, they could wrap their event handler logic in an asynchronous callback (via setTimeout() or requestAnimationFrame()) in order to separate it from the task associated with the event. The result would be an improvement in the metric score but a slower response as perceived by the user.<sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup></p>
+</blockquote>
+<p>因为开发者可能为了更好的测试分数而去<strong>强行拆分任务到其他线程</strong>，从而导致更糟的交互体验；</p>
+<h3 id="cls"><a class="markdownIt-Anchor" href="#cls"></a> CLS</h3>
+<h4 id="概念-3"><a class="markdownIt-Anchor" href="#概念-3"></a> 概念</h4>
+<p><code>CLS</code>（<code>Cumulative Layout Shift</code>），即<strong>累积布局偏移</strong>，指的是<font color=#f00>首屏页面渲染过程中所有元素结点相对原始位置所发生的位置偏移累积量</font>；</p>
+<h4 id="指标作用-3"><a class="markdownIt-Anchor" href="#指标作用-3"></a> 指标作用</h4>
+<p>该指标主要是为了量化渲染过程中的视觉稳定性（<code>visual stability</code>）；因为渲染过程或者交互过程中发生的非用户期待的视觉改变行为会影响用户的使用满意度，而布局偏移就是其中一种很常见的现象，经常出现在：</p>
+<ul>
+<li><code>img/video</code>等媒体元素未指定尺寸，当资源加载完成后渲染尺寸发生改变，通常表现为突然地闪变，以及影响周围元素的位置变化</li>
+<li>插入一些<code>DOM</code>结点，导致用户原本关注的区域突然偏移</li>
+</ul>
+<h4 id="如何计算cls"><a class="markdownIt-Anchor" href="#如何计算cls"></a> 如何计算CLS？</h4>
+<blockquote>
+<p>layout shift score = impact fraction * distance fraction<sup class="footnote-ref"><a href="#fn5" id="fnref5">[5]</a></sup></p>
+</blockquote>
+<p>可以看出影响<code>CLS</code>计算值有两个因素：</p>
+<ul>
+<li><code>impact fraction</code>：影响因子，这个参数主要是衡量<strong>相邻两个绘制帧</strong>之间不稳定元素（即位置发生改变的元素）所带来的影响；计算方法为所有不稳定元素在<strong>可视区域内</strong>的面积总和（<font color=#f00>扣除重叠的部分</font>）占视窗面积的比值；</li>
+</ul>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201018122433.png?imageslim" alt="img" /></p>
+<ul>
+<li><code>distance fraction</code>：距离因子，这个参数主要是衡量不稳定元素移动的距离；计算方法为取所有不稳定元素中偏移量（竖直及水平方向）最大的值除以视窗尺寸维度最大的值；根据上例，其距离因子就是<code>0.25</code>；</li>
+</ul>
+<p>根据影响因子和距离因子的概念及计算方法，结合上图示例可以得知，<font color=#39f>当前帧</font>的<font color=#f00>布局偏移分数</font>为<code>0.75 * 0.25 = 0.1875</code>；而最终的<code>CLS</code>值则是所有绘制帧得到的布局偏移分数之和，更复杂的计算场景可以查看<a target="_blank" rel="noopener" href="https://web.dev/cls/#distance-fraction">官方博客</a>；</p>
+<h3 id="如何提升核心指标"><a class="markdownIt-Anchor" href="#如何提升核心指标"></a> 如何提升核心指标？</h3>
+<p>上述的三个核心指标，官方都给出了详细的提升指导文档：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://web.dev/optimize-lcp/">Optimize Largest Contentful Paint</a></li>
+<li><a target="_blank" rel="noopener" href="https://web.dev/optimize-cls/">Optimize Cumulative Layout Shift</a></li>
+<li><a target="_blank" rel="noopener" href="https://web.dev/optimize-fid/">Optimize First Input Delay</a></li>
+</ul>
+<h2 id="web-vitals-其它指标"><a class="markdownIt-Anchor" href="#web-vitals-其它指标"></a> Web Vitals 其它指标</h2>
+<p>其它的一些指标可以作为核心指标的补充，以更加精准地去定位一些性能及体验问题；</p>
+<ul>
+<li><code>TTFB</code>（<code>Time to First Byte</code>）：用户浏览器从开始加载网页内容到接收到第一个字节的网页内容之间的耗时，该指标主要侧重于网页加载体验；</li>
+<li><code>FCP</code>（<code>First Contentful Paint</code>）：从开始加载网页内容到第一个文本块或者图像渲染完成之间的耗时，该指标主要侧重于网页加载体验；</li>
+<li><code>TTI</code>（<code>Time to Interactive</code>）：从开始加载网页内容到开始<font color=#f00>有足够快的用户交互反应速度</font>时之间的耗时，该指标主要侧重于网页加载体验；一般这个“有足够快的用户交互反应速度”指的就是<code>FCP</code>后长任务（<code>long task</code>，大于<code>50ms</code>的主线程任务）都执行完毕后，实际上就是主线程开始空闲，那自然就对用户交互就有很快的反应速度；可以看下官方文档的<code>TTI</code>计算步骤图<sup class="footnote-ref"><a href="#fn6" id="fnref6">[6]</a></sup>：</li>
+</ul>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201018122458.png?imageslim" alt="img" /></p>
+<ul>
+<li><code>TBT</code>（<code>Total Blocking Time</code>）：<code>FCP</code>到<code>TTI</code>之间阻塞主线程的总耗时，所谓的阻塞就是长任务，而单个长任务的阻塞时间就是<code>任务耗时 - 50ms</code>；该指标主要侧重于网页加载体验，用于<font color=#39f>量化主线程阻塞的严重程度</font>；</li>
+</ul>
+<h2 id="web-vitals-指标分析"><a class="markdownIt-Anchor" href="#web-vitals-指标分析"></a> Web Vitals 指标分析</h2>
+<p>光有有指标还不行，实际使用时还需要一个工具集成上述指标来对目标网页进行分析得到数据才行，值得庆幸的是谷歌官方已经给出了多个相应的测试分析工具，可以快速的上手：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">分析工具</th>
+<th style="text-align:center">LCP</th>
+<th style="text-align:center">FID</th>
+<th style="text-align:center">CLS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><a target="_blank" rel="noopener" href="https://developers.google.com/web/tools/chrome-user-experience-report">Chrome User Experience Report</a></td>
+<td style="text-align:center">✔️</td>
+<td style="text-align:center">✔️</td>
+<td style="text-align:center">✔️</td>
+</tr>
+<tr>
+<td style="text-align:center"><a target="_blank" rel="noopener" href="https://developers.google.com/speed/pagespeed/insights/">PageSpeed Insights</a> ☆</td>
+<td style="text-align:center">✔️</td>
+<td style="text-align:center">✔️</td>
+<td style="text-align:center">✔️</td>
+</tr>
+<tr>
+<td style="text-align:center"><a target="_blank" rel="noopener" href="https://support.google.com/webmasters/answer/9205520">Core Web Vitals report - Search Console</a></td>
+<td style="text-align:center">✔️</td>
+<td style="text-align:center">✔️</td>
+<td style="text-align:center">✔️</td>
+</tr>
+<tr>
+<td style="text-align:center"><a target="_blank" rel="noopener" href="https://github.com/GoogleChrome/web-vitals">web-vitals</a>：<code>js</code>包</td>
+<td style="text-align:center">✔️</td>
+<td style="text-align:center">✔️</td>
+<td style="text-align:center">✔️</td>
+</tr>
+<tr>
+<td style="text-align:center">Lighthouse ☆</td>
+<td style="text-align:center">✔️</td>
+<td style="text-align:center">❌ <br></td>
+<td style="text-align:center">✔️</td>
+</tr>
+</tbody>
+</table>
+<p>上面就是几种常用的<code>Web Vitals</code>指标分析工具，其中比较推荐的是<code>PageSpeed Insights</code>和<code>chrome</code>浏览器内置的<code>Lighthouse</code>，因为这两个工具打开即可使用，而且没有代码侵入性，并且会有相应指标的改进建议；</p>
+<p>但是<code>Lighthouse</code>没有<code>FID</code>指标的分析，不过可以使用相近的<code>TBT</code>进行替代；</p>
+<h3 id="国内网站测试"><a class="markdownIt-Anchor" href="#国内网站测试"></a> 国内网站测试</h3>
+<ul>
+<li>京东移动端网页（<a target="_blank" rel="noopener" href="https://m.jd.com/%EF%BC%89%EF%BC%9A">https://m.jd.com/）：</a></li>
+</ul>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201018122514.png?imageslim" alt="img" /></p>
+<ul>
+<li>淘宝桌面版网页（<a target="_blank" rel="noopener" href="https://world.taobao.com/%EF%BC%89%EF%BC%9A">https://world.taobao.com/）：</a></li>
+</ul>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201018122536.png?imageslim" alt="img" /></p>
+<h2 id="相关文档"><a class="markdownIt-Anchor" href="#相关文档"></a> 相关文档</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://web.dev/fcp/">First Contentful Paint (FCP)</a>：FCP指标解读</li>
+<li><a target="_blank" rel="noopener" href="https://web.dev/time-to-first-byte/">Reduce server response times (TTFB)</a>：TTFB指标解读</li>
+<li><a target="_blank" rel="noopener" href="https://web.dev/tbt/">Total Blocking Time (TBT)</a>：TBT指标解读</li>
+</ul>
+<hr class="footnotes-sep" />
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://web.dev/vitals/">Web Vitals</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://web.dev/lcp/#measure-lcp-in-javascript">Largest Contentful Paint (LCP)</a>：LCP指标解读 <a href="#fnref2" class="footnote-backref">↩︎</a> <a href="#fnref2:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://www.w3.org/webperf/">Web Performance Working Group</a>：W3C关于网页性能的工作小组 <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://web.dev/fid/">First Input Delay (FID)</a>：FID指标解读 <a href="#fnref4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://web.dev/cls/">Cumulative Layout Shift (CLS)</a>：CLS指标解读 <a href="#fnref5" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn6" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://web.dev/tti/">Time to Interactive (TTI)</a>：TTI指标解读 <a href="#fnref6" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/about-web-vitals/" title="关于Web Vitals指标">https://note.xiexuefeng.cc/post/about-web-vitals/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E4%BC%98%E5%8C%96/" rel="tag"># 优化</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/webgl-textcube-application/" rel="prev" title="立方体纹理的应用">
+                  <i class="fa fa-chevron-left"></i> 立方体纹理的应用
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/css-and-cg/" rel="next" title="CSS与CG原理">
+                  CSS与CG原理 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/about-web-vitals/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/about-web-vitals/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

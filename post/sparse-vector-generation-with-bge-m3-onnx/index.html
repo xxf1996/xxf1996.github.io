@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 bge-m3 是由 BAAI 在 2024 年推出的一个比较经典的 Embedding 模型，是一个支持多语言的 Embedding 模型，除此之外，它还支持输出稀疏向量和 ColBERT 向量，因此用途比较广泛。按照目前 AI 模型的发展速度（竞争很激烈），这个推出了一年多的模型理应算是个老古董了，实际上到目前为止（2025-9-20），该模型还能在 MTEB Leaderboard 榜">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于bge-m3 onnx模型获取稀疏向量">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/sparse-vector-generation-with-bge-m3-onnx/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 bge-m3 是由 BAAI 在 2024 年推出的一个比较经典的 Embedding 模型，是一个支持多语言的 Embedding 模型，除此之外，它还支持输出稀疏向量和 ColBERT 向量，因此用途比较广泛。按照目前 AI 模型的发展速度（竞争很激烈），这个推出了一年多的模型理应算是个老古董了，实际上到目前为止（2025-9-20），该模型还能在 MTEB Leaderboard 榜">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202509201703684.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202509201703779.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202509211050304.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202509211203972.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202509211221914.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202510041615944.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202509181018918.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202510041703815.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202506031624598.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202506031629640.png?imageslim">
+<meta property="og:image" content="https://assets.zilliz.com/Exploring_BGE_M3_and_Splade_Two_Machine_Learning_Models_for_Generating_Sparse_Embeddings_a3065f09cd.png">
+<meta property="og:image" content="https://zilliz.com/favicon.svg">
+<meta property="og:image" content="https://assets.zilliz.com/Enhancing_Information_Retrieval_with_Learned_Sparse_Embeddings_a89ddba8f8.png">
+<meta property="og:image" content="https://zilliz.com/favicon.svg">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202509181026829.png?imageslim">
+<meta property="article:published_time" content="2025-10-05T02:37:31.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:57:46.069Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="AI">
+<meta property="article:tag" content="RAG">
+<meta property="article:tag" content="Embedding">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/202509201703684.png?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/sparse-vector-generation-with-bge-m3-onnx/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/sparse-vector-generation-with-bge-m3-onnx/","path":"post/sparse-vector-generation-with-bge-m3-onnx/","title":"基于bge-m3 onnx模型获取稀疏向量"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>基于bge-m3 onnx模型获取稀疏向量 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+<style>
+.cardlink-wrapper {
+  margin: 1.5em 0;
+  overflow: hidden;
+}
+
+.cardlink {
+  display: flex;
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+  background: #fff;
+}
+
+.cardlink:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  border-color: #d1d5da;
+}
+
+.cardlink-image {
+  flex-shrink: 0;
+  width: 200px;
+  overflow: hidden;
+  background: #f6f8fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardlink-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+  margin-bottom: 0px;
+}
+
+.cardlink:hover .cardlink-image img {
+  transform: scale(1.05);
+}
+
+.cardlink-content {
+  flex: 1;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.cardlink-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #24292e;
+  margin-bottom: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.4;
+}
+
+.cardlink-description {
+  font-size: 14px;
+  color: #586069;
+  line-height: 1.5;
+  margin-bottom: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  flex: 1;
+}
+
+.cardlink-footer {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  color: #6a737d;
+}
+
+.cardlink-favicon {
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+  margin-bottom: 0px !important;
+  flex-shrink: 0;
+}
+
+.cardlink-host {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cardlink-error {
+  padding: 12px 16px;
+  border: 1px solid #f85149;
+  border-radius: 6px;
+  background: #fff1f0;
+  color: #d1242f;
+  margin: 1em 0;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .cardlink {
+    flex-direction: column;
+  }
+  
+  .cardlink-image {
+    width: 100%;
+  }
+  
+  .cardlink-content {
+    padding: 14px 16px;
+  }
+}
+
+/* 深色模式支持 */
+@media (prefers-color-scheme: dark) {
+  .cardlink {
+    background: #1e1e1e;
+    border-color: #30363d;
+  }
+  
+  .cardlink:hover {
+    border-color: #484f58;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+  
+  .cardlink-image {
+    background: #0d1117;
+  }
+  
+  .cardlink-title {
+    color: #c9d1d9;
+  }
+  
+  .cardlink-description {
+    color: #8b949e;
+  }
+  
+  .cardlink-footer {
+    color: #8b949e;
+  }
+  
+  .cardlink-error {
+    background: #2d1417;
+    border-color: #f85149;
+    color: #ff7b72;
+  }
+}
+</style>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-embedding-%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.1.</span> <span class="nav-text"> 什么是 Embedding 模型？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BD%BF%E7%94%A8-onnx-%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text"> 为什么要使用 onnx 模型？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A8%E7%90%86%E6%80%A7%E8%83%BD%E5%AF%B9%E6%AF%94"><span class="nav-number">2.1.</span> <span class="nav-text"> 推理性能对比</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E5%A7%8B%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%8E%A8%E7%90%86%E9%80%9F%E5%BA%A6"><span class="nav-number">2.1.1.</span> <span class="nav-text"> 原始模型的推理速度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#onnx-%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%8E%A8%E7%90%86%E9%80%9F%E5%BA%A6"><span class="nav-number">2.1.2.</span> <span class="nav-text"> onnx 模型的推理速度</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">2.2.</span> <span class="nav-text"> 总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#bge-m3-%E7%A8%80%E7%96%8F%E5%90%91%E9%87%8F%E7%9A%84%E8%AE%A1%E7%AE%97"><span class="nav-number">3.</span> <span class="nav-text"> bge-m3 稀疏向量的计算</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.1.</span> <span class="nav-text"> 代码实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sparse_linear-%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="nav-number">3.2.</span> <span class="nav-text"> sparse_linear 的作用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%B9%E6%AE%8A%E5%AD%97%E7%AC%A6%E7%9A%84%E5%A4%84%E7%90%86"><span class="nav-number">3.3.</span> <span class="nav-text"> 特殊字符的处理</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%89%A9%E5%B1%95%E9%98%85%E8%AF%BBlearned-sparse-embedding"><span class="nav-number">4.</span> <span class="nav-text"> 扩展阅读：Learned Sparse Embedding</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#spade"><span class="nav-number">4.1.</span> <span class="nav-text"> spade</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/sparse-vector-generation-with-bge-m3-onnx/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="基于bge-m3 onnx模型获取稀疏向量 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          基于bge-m3 onnx模型获取稀疏向量
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-10-05 10:37:31" itemprop="dateCreated datePublished" datetime="2025-10-05T10:37:31+08:00">2025-10-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B8%9A%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">业务</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h1>
+<p>bge-m3 是由 BAAI 在 2024 年推出的一个比较经典的 Embedding 模型，是一个支持多语言的 Embedding 模型，除此之外，它还支持输出稀疏向量和 ColBERT 向量，因此用途比较广泛。按照目前 AI 模型的发展速度（竞争很激烈），这个推出了一年多的模型理应算是个老古董了，实际上到目前为止（2025-9-20），该模型还能在 <a target="_blank" rel="noopener" href="https://huggingface.co/spaces/mteb/leaderboard">MTEB Leaderboard</a> 榜单上保持在第 23 位的位置，且在 hugging face 上的月下载量保持在五六百万之多：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202509201703684.png?imageslim" alt="局部截取_20250920_170259.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202509201703779.png?imageslim" alt="局部截取_20250920_170323.png" /></p>
+<p>不过话又说回来，这大概率是因为 Embedding 模型还没有隔壁 LLM 那么卷，2025 截至目前也就阿里推出的 Qwen3-Embedding 模型很有竞争力；</p>
+<span id="more"></span>
+<h2 id="什么是-embedding-模型"><a class="markdownIt-Anchor" href="#什么是-embedding-模型"></a> 什么是 Embedding 模型？</h2>
+<p>简单地来说，就是把一个输入（比如文本，图像等）转为一个高维向量的模型，这个向量就代表了该文本的特征向量；具体到文本的 Embedding，这些特征大多与语义和上下文相关：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202509211050304.png?imageslim" alt="image.png" /></p>
+<p>图源 <sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup></p>
+<p>而在一篇文章中 <sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>，里面提及到了 Embedding 模型的两个性质，我觉得挺合适：</p>
+<blockquote>
+<p><strong>性质一：每一个词具有唯一量化值，不同词需要具有不同的量化值</strong><br />
+<strong>性质二：词义相近词需要有“相近”的量化值；词义不相近的词量化值需要尽量“远离”</strong></p>
+</blockquote>
+<p>其实我一直挺好奇为啥要叫 Embedding（中文叫嵌入，其实挺迷惑的，一听压根不知道指的是啥，就跟鲁棒性一样 😅），然后在维基上看到一个数学用语，我觉得大概就是借鉴这个吧：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202509211203972.png?imageslim" alt="局部截取_20250921_120336.png" /></p>
+<p>看了这个数学中关于嵌入的定义后，就能明白其实 Embedding 模型干的就是这个映射的工作，即把输入映射到一个多维向量空间中。</p>
+<p>关于 Embedding 的具体原理其实我也有很多不懂的地方，所以这里就不再过多赘述了，不过下面这篇文章我推荐可以阅读一下：</p>
+<div class="cardlink-wrapper"><a href="https://zhuanlan.zhihu.com/p/643560252" class="cardlink" target="_blank" rel="noopener noreferrer"><div class="cardlink-content"><div class="cardlink-title">没有思考过 Embedding，不足以谈 AI</div><div class="cardlink-description">和大部分人一样，我对自然语言处理和语言模型的了解从ChatGPT开始。 和大部分人一样，第一次接触就被ChatGPT的能力所震惊 —— 计算机确实做到了理解人类的语言。 我也产生了几乎人人都会有的疑问：怎么做到的？ …</div><div class="cardlink-footer"><span class="cardlink-host">知乎专栏</span></div></div></a></div>
+<h1 id="为什么要使用-onnx-模型"><a class="markdownIt-Anchor" href="#为什么要使用-onnx-模型"></a> 为什么要使用 onnx 模型？</h1>
+<blockquote>
+<p>ONNX（Open Neural Network Exchange，开放神经网络交换格式）是一种<strong>跨平台、开源的神经网络模型标准格式</strong>，由微软、亚马逊、Facebook 等企业联合发起。它定义了统一的计算图结构和张量数据格式，能将不同深度学习框架（如 PyTorch、TensorFlow、PaddlePaddle 等）训练的模型 “翻译” 成统一格式，实现模型在不同框架、硬件设备间的无缝迁移与部署。</p>
+</blockquote>
+<p>很简单，由于硬件受限，我需要支持在某些没有 GPU 资源（即纯 CPU 环境）的机器中运行基于 bge-m3 模型的向量化服务；虽然像 PyTorch/TensorFlow 这类模型文件也可以在 CPU 环境进行推理运行，但是相比 onnx 模型（onnxruntime）专门对推理进行了通用的优化，只要把这些模型转为 onnx 模型就可以获得开箱即用的推理加速（相比原生模型，根据具体硬件架构的不同，可以提升 10 倍甚至上百倍），而恰好 bge-m3 官方就在模型仓库中提供了非量化版本的 onnx 模型文件：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202509211221914.png?imageslim" alt="局部截取_20250921_122123.png" /></p>
+<h2 id="推理性能对比"><a class="markdownIt-Anchor" href="#推理性能对比"></a> 推理性能对比</h2>
+<p>我让 AI 写了一段测试代码，用于测试基于原始模型和 onnx 模型对同样 Embedding 任务的推理速度，结果很出乎我的意料，没想到性能提升百倍以上😀：</p>
+<ul>
+<li>原始模型：基于官方的 FlagEmbedding 库进行推理</li>
+<li>onnx 模型：基于 onnxruntime 库进行推理</li>
+<li>CPU：Intel® Xeon® E-2224G CPU @ 3.50GHz （4 核）</li>
+<li>python 版本：3.11</li>
+</ul>
+<h3 id="原始模型的推理速度"><a class="markdownIt-Anchor" href="#原始模型的推理速度"></a> 原始模型的推理速度</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">开始性能测试 - 嵌入类型: hybrid, 每个测试运行 5 次</span><br><span class="line">==================================================</span><br><span class="line">文本长度: 13 字符, 约 19 tokens</span><br><span class="line">平均处理时间: 7.0167 秒</span><br><span class="line">处理速度: 2.71 tokens/秒</span><br><span class="line">--------------------------------------------------</span><br><span class="line">文本长度: 43 字符, 约 61 tokens</span><br><span class="line">平均处理时间: 20.2228 秒</span><br><span class="line">处理速度: 3.02 tokens/秒</span><br><span class="line">--------------------------------------------------</span><br><span class="line">文本长度: 100 字符, 约 136 tokens</span><br><span class="line">平均处理时间: 33.7305 秒</span><br><span class="line">处理速度: 4.03 tokens/秒</span><br><span class="line">--------------------------------------------------</span><br><span class="line">文本长度: 390 字符, 约 541 tokens</span><br><span class="line">平均处理时间: 163.0791 秒</span><br><span class="line">处理速度: 3.32 tokens/秒</span><br><span class="line">--------------------------------------------------</span><br><span class="line"></span><br><span class="line">总体性能:</span><br><span class="line">总处理token数: 757</span><br><span class="line">总处理时间: 224.0491 秒</span><br><span class="line">平均处理速度: 3.27 tokens/秒</span><br></pre></td></tr></table></figure>
+<h3 id="onnx-模型的推理速度"><a class="markdownIt-Anchor" href="#onnx-模型的推理速度"></a> onnx 模型的推理速度</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">开始性能测试 - 嵌入类型: hybrid, 每个测试运行 5 次</span><br><span class="line">==================================================</span><br><span class="line">文本长度: 13 字符, 约 19 tokens</span><br><span class="line">平均处理时间: 0.0583 秒</span><br><span class="line">处理速度: 325.99 tokens/秒</span><br><span class="line">--------------------------------------------------</span><br><span class="line">文本长度: 43 字符, 约 61 tokens</span><br><span class="line">平均处理时间: 0.0981 秒</span><br><span class="line">处理速度: 621.76 tokens/秒</span><br><span class="line">--------------------------------------------------</span><br><span class="line">文本长度: 100 字符, 约 136 tokens</span><br><span class="line">平均处理时间: 0.1095 秒</span><br><span class="line">处理速度: 1242.13 tokens/秒</span><br><span class="line">--------------------------------------------------</span><br><span class="line">文本长度: 390 字符, 约 541 tokens</span><br><span class="line">平均处理时间: 0.3337 秒</span><br><span class="line">处理速度: 1621.42 tokens/秒</span><br><span class="line">--------------------------------------------------</span><br><span class="line"></span><br><span class="line">总体性能:</span><br><span class="line">总处理token数: 757</span><br><span class="line">总处理时间: 0.5995 秒</span><br><span class="line">平均处理速度: 952.83 tokens/秒</span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a class="markdownIt-Anchor" href="#总结"></a> 总结</h2>
+<p>不难看出在使用原始模型在纯 CPU 环境下进行推理的速度实在是很慢（这也是为啥要进行优化的原因，这种推理速度实在无法在实际业务场景中进行使用），而仅仅只是把模型切换为 onnx 就能得到上百倍的性能提升，只能说 onnx 模型自带的推理优化很惊人。</p>
+<p>不过实际上在另一种 CPU 规格（海光的某款 8 核 CPU）上进行同样的测试时，发现性能提升并没有上面的那么显著，大概是缺少了某些底层矩阵加速库和指令集的支持。</p>
+<h1 id="bge-m3-稀疏向量的计算"><a class="markdownIt-Anchor" href="#bge-m3-稀疏向量的计算"></a> bge-m3 稀疏向量的计算</h1>
+<p>使用 bge-m3 的 onnx 模型唯一的问题就是，无法直接获取到其稀疏向量和 colbert 向量的输出了，因为 bge 官方提供的推理库——FlagEmbedding 可以直接通过 return_dense、return_sparse 和 return_colbert_vecs 这三个参数来控制输出的向量类型，而 onnxruntime 得到的结果只是稠密向量。因此使用 onnx 模型时想要得到 bge-m3 的稀疏向量，就得自行按照该模型在论文中提出的稀疏向量计算公式进行实现 <sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup>：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202510041615944.png?imageslim" alt="局部截取_20251004_161514.png" /></p>
+<p>在一开始我并不知道 bge-m3 有自己的稀疏向量计算公式，于是让 AI 随便写了一个稀疏向量计算的算法实现，然后输出的结果看起来也想那么回事，结果后面一对比之前的输出发现权重结果完全对不上，只能说有点太艺高人胆大了（一个敢写，一个敢信，这就是为啥碰到不懂的领域时会出现被 AI 蒙住的情况😂）</p>
+<h2 id="代码实现"><a class="markdownIt-Anchor" href="#代码实现"></a> 代码实现</h2>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">_compute_lexical_weights_v2</span>(<span class="params"></span></span><br><span class="line"><span class="params">        self,</span></span><br><span class="line"><span class="params">        hidden_state: np.ndarray,</span></span><br><span class="line"><span class="params">        input_ids: <span class="built_in">list</span>[<span class="built_in">int</span>],</span></span><br><span class="line"><span class="params">        return_embedding: <span class="built_in">bool</span> = <span class="literal">True</span>,</span></span><br><span class="line"><span class="params">    </span>) -&gt; <span class="type">Dict</span>[<span class="built_in">str</span>, <span class="built_in">float</span>]:</span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        source: https://zhuanlan.zhihu.com/p/1889076509584638806</span></span><br><span class="line"><span class="string">        基于BGE-M3原始算法计算词汇权重</span></span><br><span class="line"><span class="string">        实现公式: w_qt = ReLU(W_lex * H_q[i])</span></span><br><span class="line"><span class="string">      </span></span><br><span class="line"><span class="string">        Args:</span></span><br><span class="line"><span class="string">            hidden_state: token embeddings, shape (seq_len, hidden_size)</span></span><br><span class="line"><span class="string">            input_ids: token ID列表</span></span><br><span class="line"><span class="string">            return_embedding: 是否返回完整的sparse embedding（当前总是返回字典）</span></span><br><span class="line"><span class="string">          </span></span><br><span class="line"><span class="string">        Returns:</span></span><br><span class="line"><span class="string">            词汇权重字典，键为字符串形式的token ID，值为权重</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        <span class="comment"># 将numpy数组转换为torch tensor</span></span><br><span class="line">        hidden_state_tensor = torch.from_numpy(hidden_state).<span class="built_in">float</span>()</span><br><span class="line">        input_ids_tensor = torch.tensor(input_ids, dtype=torch.long)</span><br><span class="line">      </span><br><span class="line">        <span class="comment"># 计算token权重：ReLU(sparse_linear(hidden_state))</span></span><br><span class="line">        token_weights = torch.relu(<span class="variable language_">self</span>.sparse_linear(hidden_state_tensor))</span><br><span class="line">        token_weights = token_weights.squeeze(-<span class="number">1</span>)  <span class="comment"># 去除最后一个维度 (seq_len, 1) -&gt; (seq_len,)</span></span><br><span class="line">      </span><br><span class="line">        <span class="comment"># 创建稀疏嵌入矩阵</span></span><br><span class="line">        sparse_embedding = torch.zeros(</span><br><span class="line">            <span class="variable language_">self</span>.vocab_size,</span><br><span class="line">            dtype=token_weights.dtype,</span><br><span class="line">            device=token_weights.device</span><br><span class="line">        )</span><br><span class="line">      </span><br><span class="line">        <span class="comment"># 使用scatter操作将token权重分配到对应的token ID位置</span></span><br><span class="line">        sparse_embedding = sparse_embedding.scatter(<span class="number">0</span>, input_ids_tensor, token_weights)</span><br><span class="line">      </span><br><span class="line">        <span class="comment"># 转换为字典格式，只保留非零权重</span></span><br><span class="line">        result = defaultdict(<span class="built_in">float</span>)</span><br><span class="line">        <span class="keyword">for</span> token_id <span class="keyword">in</span> input_ids:</span><br><span class="line">            weight = sparse_embedding[token_id].item()</span><br><span class="line">            <span class="keyword">if</span> weight &gt; <span class="number">0</span> <span class="keyword">and</span> token_id <span class="keyword">not</span> <span class="keyword">in</span> <span class="variable language_">self</span>.special_tokens:</span><br><span class="line">                result[<span class="built_in">str</span>(token_id)] = <span class="built_in">max</span>(result[<span class="built_in">str</span>(token_id)], weight)</span><br><span class="line">      </span><br><span class="line">        <span class="keyword">return</span> result</span><br></pre></td></tr></table></figure>
+<p>其中 hidden_state 就是 token 级别的稠密向量：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 分词</span></span><br><span class="line">inputs = <span class="variable language_">self</span>.tokenizer(</span><br><span class="line">	texts,</span><br><span class="line">	padding=<span class="string">&quot;longest&quot;</span>,</span><br><span class="line">	truncation=<span class="literal">True</span>,</span><br><span class="line">	max_length=max_length,</span><br><span class="line">	return_tensors=<span class="string">&quot;np&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 转换为ONNX输入格式</span></span><br><span class="line">inputs_onnx = &#123;k: ort.OrtValue.ortvalue_from_numpy(v) <span class="keyword">for</span> k, v <span class="keyword">in</span> inputs.items()&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 推理</span></span><br><span class="line">outputs = <span class="variable language_">self</span>.ort_session.run(<span class="literal">None</span>, inputs_onnx)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取token级别的embeddings和句子级别的embedding</span></span><br><span class="line">token_embeddings = outputs[<span class="number">0</span>]  <span class="comment"># shape: (batch_size, seq_len, hidden_size)</span></span><br><span class="line">sentence_embeddings = outputs[<span class="number">1</span>]  <span class="comment"># shape: (batch_size, hidden_size)</span></span><br></pre></td></tr></table></figure>
+<h2 id="sparse_linear-的作用"><a class="markdownIt-Anchor" href="#sparse_linear-的作用"></a> sparse_linear 的作用</h2>
+<p>实际上对应的就是公式中的 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>W</mi><mrow><mi>l</mi><mi>e</mi><mi>x</mi></mrow></msub></mrow><annotation encoding="application/x-tex">W_{lex}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">W</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.01968em;">l</span><span class="mord mathnormal mtight">e</span><span class="mord mathnormal mtight">x</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>，即一个特殊的线性层 <sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup>：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202509181018918.png?imageslim" alt="image.png" /></p>
+<blockquote>
+<p>线性变换：在编码器栈的输出上添加了一个额外的线性层。通过此层计算每个 Token 的重要性权重，BGE-M3 得到了一组权重（<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>W</mi><mrow><mi>l</mi><mi>e</mi><mi>x</mi></mrow></msub></mrow><annotation encoding="application/x-tex">W_{lex}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">W</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.01968em;">l</span><span class="mord mathnormal mtight">e</span><span class="mord mathnormal mtight">x</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>）。</p>
+</blockquote>
+<p>实际上这个特殊的线性层就是把每个 token 的 hidden state 转为一个一维的权重值，线性层是预训练得到到每个 token 在上下文中的重要性，因此基于线性层的转换可以得到该 token 在上下文中的权重。如果把这个线性层替换成<strong>自定义的权重</strong>，则可以得到自定义的稀疏向量（即可以自定义具体分词的重要性）。</p>
+<p>该权重文件在 bge-m3 仓库的顶层目录中：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202510041703815.png?imageslim" alt="局部截取_20251004_170242.png" /></p>
+<p>可以使用 pytorch 直接读取：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">self</span>.sparse_linear = torch.nn.Linear(</span><br><span class="line">	in_features=<span class="variable language_">self</span>.hidden_size,  <span class="comment"># 使用正确的hidden_size</span></span><br><span class="line">	out_features=<span class="number">1</span></span><br><span class="line">)</span><br><span class="line">sparse_linear_path = os.path.join(model_path, <span class="string">&quot;sparse_linear.pt&quot;</span>)</span><br><span class="line"><span class="keyword">if</span> os.path.exists(sparse_linear_path):</span><br><span class="line">	<span class="variable language_">self</span>.sparse_linear.load_state_dict(torch.load(sparse_linear_path, map_location=<span class="string">&#x27;cpu&#x27;</span>, weights_only=<span class="literal">True</span>))</span><br><span class="line">	logger.info(<span class="string">f&quot;成功加载sparse_linear权重: <span class="subst">&#123;sparse_linear_path&#125;</span>&quot;</span>)</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">	logger.info(<span class="string">f&quot;sparse_linear.pt not found, using default weights&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>从打印结果来看，sparse_linear 权重文件的维度跟稠密向量输出的维度一致，即 1024：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">embedding_models/bge-m3/sparse_linear.pt, torch.Size([1, 1024])</span><br></pre></td></tr></table></figure>
+<h2 id="特殊字符的处理"><a class="markdownIt-Anchor" href="#特殊字符的处理"></a> 特殊字符的处理</h2>
+<p>在基于上述公式计算得到输入文本的稀疏向量时，我发现有一个特定维度的权重值异常的高，且每个输入文本该维度都存在，因此会导致基于稀疏向量的搜索相似度过高，从而匹配结果不准确的问题。后面经过排查，发现原来是有一个特殊字符并没有包含到 <code>special_tokens_map.json</code> 所导致的，这个特殊字符就是 SentencePiece（词汇分界标记），在 bge-m3 模型中的 token id 为 6：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202506031624598.png?imageslim" alt="局部截取_20250603_162419.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202506031629640.png?imageslim" alt="局部截取_20250603_162907.png" /></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// bge-m3模型的special_tokens_map.json文件</span></span><br><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;bos_token&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;content&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&lt;s&gt;&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;lstrip&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;normalized&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;rstrip&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;single_word&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;cls_token&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;content&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&lt;s&gt;&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;lstrip&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;normalized&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;rstrip&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;single_word&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;eos_token&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;content&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&lt;/s&gt;&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;lstrip&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;normalized&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;rstrip&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;single_word&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;mask_token&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;content&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&lt;mask&gt;&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;lstrip&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;normalized&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;rstrip&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;single_word&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;pad_token&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;content&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&lt;pad&gt;&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;lstrip&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;normalized&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;rstrip&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;single_word&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;sep_token&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;content&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&lt;/s&gt;&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;lstrip&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;normalized&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;rstrip&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;single_word&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;unk_token&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;content&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&lt;unk&gt;&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;lstrip&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;normalized&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;rstrip&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;single_word&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>因此需要在加载模型的阶段，手动把 SentencePiece 字符加入到特殊字符列表中，然后在计算稀疏向量时就可以跳过该 token 的权重：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 缓存特殊token ID，参考bge-m3的special_tokens_map.json</span></span><br><span class="line"><span class="variable language_">self</span>.special_tokens = <span class="built_in">set</span>([</span><br><span class="line">	<span class="variable language_">self</span>.tokenizer.cls_token_id,</span><br><span class="line">	<span class="variable language_">self</span>.tokenizer.sep_token_id,</span><br><span class="line">	<span class="variable language_">self</span>.tokenizer.pad_token_id,</span><br><span class="line">	<span class="variable language_">self</span>.tokenizer.mask_token_id,</span><br><span class="line">	<span class="variable language_">self</span>.tokenizer.unk_token_id,</span><br><span class="line">	<span class="variable language_">self</span>.tokenizer.bos_token_id,</span><br><span class="line">	<span class="variable language_">self</span>.tokenizer.eos_token_id,</span><br><span class="line">])</span><br><span class="line">logger.info(<span class="string">f&quot;特殊token集合: <span class="subst">&#123;self.special_tokens&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加SentencePiece边界标记token</span></span><br><span class="line"><span class="comment"># 检查常见的SentencePiece边界标记</span></span><br><span class="line">boundary_tokens = [<span class="string">&#x27; &#x27;</span>, <span class="string">&#x27;_&#x27;</span>, <span class="string">&#x27;】&#x27;</span>, <span class="string">&#x27;[UNK]&#x27;</span>]</span><br><span class="line"><span class="keyword">for</span> token <span class="keyword">in</span> boundary_tokens:</span><br><span class="line">	<span class="keyword">try</span>:</span><br><span class="line">		token_id = <span class="variable language_">self</span>.tokenizer.convert_tokens_to_ids(token)</span><br><span class="line">		<span class="keyword">if</span> token_id <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span> <span class="keyword">and</span> token_id != <span class="variable language_">self</span>.tokenizer.unk_token_id:</span><br><span class="line">			<span class="variable language_">self</span>.special_tokens.add(token_id)</span><br><span class="line">			logger.info(<span class="string">f&quot;添加SentencePiece边界token &#x27;<span class="subst">&#123;token&#125;</span>&#x27; (ID: <span class="subst">&#123;token_id&#125;</span>) 到特殊token集合&quot;</span>)</span><br><span class="line">	<span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">		logger.error(<span class="string">f&quot;添加SentencePiece边界token &#x27;<span class="subst">&#123;token&#125;</span>&#x27; 失败: <span class="subst">&#123;e&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 特别处理：如果token ID 6对应 字符，确保将其添加为特殊token</span></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">	token_6_str = <span class="variable language_">self</span>.tokenizer.convert_ids_to_tokens([<span class="number">6</span>])[<span class="number">0</span>]</span><br><span class="line">	<span class="keyword">if</span> token_6_str <span class="keyword">in</span> [<span class="string">&#x27;▁&#x27;</span>, <span class="string">&#x27;_&#x27;</span>]:</span><br><span class="line">		<span class="variable language_">self</span>.special_tokens.add(<span class="number">6</span>)</span><br><span class="line">		logger.info(<span class="string">f&quot;确认添加边界token ID 6 (&#x27;<span class="subst">&#123;token_6_str&#125;</span>&#x27;) 为特殊token&quot;</span>)</span><br><span class="line"><span class="keyword">except</span>:</span><br><span class="line">	<span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
+<h1 id="扩展阅读learned-sparse-embedding"><a class="markdownIt-Anchor" href="#扩展阅读learned-sparse-embedding"></a> 扩展阅读：Learned Sparse Embedding</h1>
+<p>由于 bge-m3 模型中 sparse_linear 的存在，因此其计算得到的稀疏向量已经不是传统意义上基于统计方法（如 BM25）得到的分词权重了，这类基于机器学习方法计算得到的稀疏 Embedding 被称为 Learned Sparse Embedding；详细内容推荐阅读下面的文章：</p>
+<div class="cardlink-wrapper"><a href="https://zilliz.com/learn/bge-m3-and-splade-two-machine-learning-models-for-generating-sparse-embeddings" class="cardlink" target="_blank" rel="noopener noreferrer"><div class="cardlink-image"><img src="https://assets.zilliz.com/Exploring_BGE_M3_and_Splade_Two_Machine_Learning_Models_for_Generating_Sparse_Embeddings_a3065f09cd.png" alt="BGE-M3 and Splade: Two Popular Sparse Embedding Models - Zilliz Learn" loading="lazy"></div><div class="cardlink-content"><div class="cardlink-title">BGE-M3 and Splade: Two Popular Sparse Embedding Models - Zilliz Learn</div><div class="cardlink-description">In this blog, we’ve journeyed through the intricate world of vector embeddings and explored how BGE-M3 and Splade generate learned sparse embeddings.</div><div class="cardlink-footer"><img src="https://zilliz.com/favicon.svg" class="cardlink-favicon" alt=""><span class="cardlink-host">zilliz.com</span></div></div></a></div>
+<div class="cardlink-wrapper"><a href="https://zilliz.com/learn/enhancing-information-retrieval-learned-sparse-embeddings" class="cardlink" target="_blank" rel="noopener noreferrer"><div class="cardlink-image"><img src="https://assets.zilliz.com/Enhancing_Information_Retrieval_with_Learned_Sparse_Embeddings_a89ddba8f8.png" alt="Enhancing Information Retrieval with Sparse Embeddings | Zilliz Learn - Zilliz Learn" loading="lazy"></div><div class="cardlink-content"><div class="cardlink-title">Enhancing Information Retrieval with Sparse Embeddings | Zilliz Learn - Zilliz Learn</div><div class="cardlink-description">Explore the inner workings, advantages, and practical applications of learned sparse embeddings with the Milvus vector database</div><div class="cardlink-footer"><img src="https://zilliz.com/favicon.svg" class="cardlink-favicon" alt=""><span class="cardlink-host">zilliz.com</span></div></div></a></div>
+<h2 id="spade"><a class="markdownIt-Anchor" href="#spade"></a> spade</h2>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202509181026829.png?imageslim" alt="image.png" /></p>
+<p>这是另一种不同于 bge-m3 模型计算稀疏向量的 Learned Sparse Embedding 方法，该方法不仅可以得到当前输入的 token 的权重值，还可以得到相同语义（同一上下文中）的没有出现的 token 的权重值。</p>
+<p>该方法最后通过统计每个 token 在其位置上<strong>所有</strong>token 出现的概率得到稀疏向量权重。</p>
+<hr class="footnotes-sep" />
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_53269650/article/details/147872394">深入理解Embedding Models（嵌入模型）：从原理到实战（下）</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/643560252">没有思考过 Embedding，不足以谈 AI</a> <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://bge-model.com/bge/bge_m3.html">https://bge-model.com/bge/bge_m3.html</a> <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://zilliz.com/learn/bge-m3-and-splade-two-machine-learning-models-for-generating-sparse-embeddings">https://zilliz.com/learn/bge-m3-and-splade-two-machine-learning-models-for-generating-sparse-embeddings</a> <a href="#fnref4" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/sparse-vector-generation-with-bge-m3-onnx/" title="基于bge-m3 onnx模型获取稀疏向量">https://note.xiexuefeng.cc/post/sparse-vector-generation-with-bge-m3-onnx/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/AI/" rel="tag"># AI</a>
+              <a href="/tags/RAG/" rel="tag"># RAG</a>
+              <a href="/tags/Embedding/" rel="tag"># Embedding</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/modded-pbr-rendering-multi-light-optimization/" rel="prev" title="魔改PBR渲染管线支持大量灯光场景">
+                  <i class="fa fa-chevron-left"></i> 魔改PBR渲染管线支持大量灯光场景
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/sparse-vector-generation-with-bge-m3-onnx/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/sparse-vector-generation-with-bge-m3-onnx/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="业务背景 在前端对透视表数据导出为excel进行下载，透视表数据最高可到百万个单元格以上，因此在主线程内对大量数据进行excel导出时不可避免的会对主线程进行阻塞，而主线程阻塞对于用户感知来说就是页面卡顿； 显然，这种业务是一种典型的CPU密集型任务，如果可以放在主线程以外的线程进行执行那么就可以有效的避免对主线程的阻塞了；Worker 正是为此而生，通过创建worker来新建线程，就可以有效的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于worker实现excel报表导出下载">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/worker-and-excel-export/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="业务背景 在前端对透视表数据导出为excel进行下载，透视表数据最高可到百万个单元格以上，因此在主线程内对大量数据进行excel导出时不可避免的会对主线程进行阻塞，而主线程阻塞对于用户感知来说就是页面卡顿； 显然，这种业务是一种典型的CPU密集型任务，如果可以放在主线程以外的线程进行执行那么就可以有效的避免对主线程的阻塞了；Worker 正是为此而生，通过创建worker来新建线程，就可以有效的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/image-20220806133601806.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/image-20220806140802237.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/image-20220806143254336.png">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/image-20220806143536641.png?imageslim">
+<meta property="og:image" content="http://pic.xiexuefeng.cc/markdown/image-20220806145214965.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/image-20220806161633512.png?imageslim">
+<meta property="article:published_time" content="2022-09-20T03:00:00.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.889Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="worker">
+<meta property="article:tag" content="excel">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://pic.xiexuefeng.cc/markdown/image-20220806133601806.png?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/worker-and-excel-export/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/worker-and-excel-export/","path":"post/worker-and-excel-export/","title":"基于worker实现excel报表导出下载"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>基于worker实现excel报表导出下载 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%9A%E5%8A%A1%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text"> 业务背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E-worker"><span class="nav-number">2.</span> <span class="nav-text"> 关于 Worker</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#worker-%E7%9A%84%E9%80%9A%E4%BF%A1"><span class="nav-number">2.1.</span> <span class="nav-text"> Worker 的通信</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%9C%A8-worker-%E4%B8%AD%E5%AE%9E%E7%8E%B0-excel-%E7%9A%84%E5%AF%BC%E5%87%BA"><span class="nav-number">3.</span> <span class="nav-text"> 如何在 Worker 中实现 excel 的导出</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%9D%E8%B7%AF%E4%B8%80%E4%BC%A0%E9%80%81-workbook-%E5%AF%B9%E8%B1%A1"><span class="nav-number">3.1.</span> <span class="nav-text"> 思路一：传送 WorkBook 对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%9D%E8%B7%AF%E4%BA%8C%E4%BC%A0%E9%80%81-blob-url"><span class="nav-number">3.2.</span> <span class="nav-text"> 思路二：传送 Blob URL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%B0%86%E9%80%8F%E8%A7%86%E8%A1%A8%E6%95%B0%E6%8D%AE%E8%BD%AC%E6%8D%A2%E4%B8%BA%E5%8D%95%E5%85%83%E6%A0%BC%E4%BA%8C%E7%BB%B4%E6%95%B0%E7%BB%84"><span class="nav-number">3.3.</span> <span class="nav-text"> 如何将透视表数据转换为单元格二维数组</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E6%A1%A3"><span class="nav-number">4.</span> <span class="nav-text"> 相关文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/worker-and-excel-export/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="基于worker实现excel报表导出下载 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          基于worker实现excel报表导出下载
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-09-20 11:00:00" itemprop="dateCreated datePublished" datetime="2022-09-20T11:00:00+08:00">2022-09-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B8%9A%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">业务</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="业务背景"><a class="markdownIt-Anchor" href="#业务背景"></a> 业务背景</h2>
+<p>在前端对透视表数据导出为<code>excel</code>进行下载，透视表数据最高可到百万个单元格以上，因此在主线程内对大量数据进行<code>excel</code>导出时不可避免的会对主线程进行阻塞，而主线程阻塞对于用户感知来说就是<strong>页面卡顿</strong>；</p>
+<p>显然，这种业务是一种典型的<code>CPU</code>密集型任务，如果可以放在主线程以外的线程进行执行那么就可以有效的避免对主线程的阻塞了；<a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/Worker">Worker</a> 正是为此而生，通过创建<code>worker</code>来新建线程，就可以有效的分担主线程的压力；</p>
+<span id="more"></span>
+<h2 id="关于-worker"><a class="markdownIt-Anchor" href="#关于-worker"></a> 关于 Worker</h2>
+<p>至于<code>worker</code>的使用，可以参考这个——<a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Workers_API/Using_web_workers">使用 Web Workers - Web API 接口参考 | MDN</a>，其实还挺简单的；更不用说像<code>vite</code>这种<code>dev server</code>还内置了<a target="_blank" rel="noopener" href="https://cn.vitejs.dev/guide/features.html#import-with-query-suffixes"><code>worker-loader</code></a>，开箱即用（顺便说一句，<code>vite</code>也对<code>WASM</code>提供了开箱即用的加载，心动😁）。</p>
+<p><code>worker</code>虽好，但是其运行上下文跟主线程还是不一样的，实际上是一个子集语法，因此<code>DOM</code>对象和很大一部分的<code>BOM</code>对象都不能访问和使用；具体限制可以参考——<a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Workers_API/Functions_and_classes_available_to_workers">Web Workers 可以使用的函数和类 - Web API 接口参考 | MDN</a>。</p>
+<h3 id="worker-的通信"><a class="markdownIt-Anchor" href="#worker-的通信"></a> Worker 的通信</h3>
+<img src="https://pic.xiexuefeng.cc/markdown/image-20220806133601806.png?imageslim" alt="image-20220806133601806" style="zoom:50%;" />
+<p>主线程和<code>Worker</code>实例之间都是通过<code>postMessage</code>方法来向对方发送消息，而又通过<code>onmessage</code>方法来注册各自的消息接收处理事件。</p>
+<h2 id="如何在-worker-中实现-excel-的导出"><a class="markdownIt-Anchor" href="#如何在-worker-中实现-excel-的导出"></a> 如何在 Worker 中实现 excel 的导出</h2>
+<p>前端有个著名的<code>excel</code>导出库——<code>sheetjs</code>，幸运的是这个库的<strong>大部分</strong>方法都能在<code>worker</code>中直接进行使用，因此基本上可以参照正常的导出逻辑搬到<code>worker</code>文件中即可。这里不会探讨<code>sheetjs</code>的具体使用细节（因为这种<code>API</code>使用文档网上太多了，就不赘述了），假设此时可以获取到对透视表表格本身的单元格二维数组（即以行为主导，每行里面的元素就是列），那么根据二维数组就能生成一个<code>WorkBook</code>对象。</p>
+<img src="https://pic.xiexuefeng.cc/markdown/image-20220806140802237.png?imageslim" alt="image-20220806140802237" style="zoom:50%;" />
+<p>而有了<code>WorkBook</code>对象，正常来说基于<code>XLSX.writeFile()</code>等方法就能直接进行<code>excel</code>下载操作了；一般现在的文件下载操作都是通过<code>a</code>标签来实现的，而<code>worker</code>本身是限制<code>DOM</code>访问的，因此不能通过上述方法在<code>worker</code>内实现下载操作，所以应该将下载操作放在主线程，而将必要的数据传送到主线程。</p>
+<p>那么问题来了，应该选择传送什么样的数据到主线程？</p>
+<h3 id="思路一传送-workbook-对象"><a class="markdownIt-Anchor" href="#思路一传送-workbook-对象"></a> 思路一：传送 WorkBook 对象</h3>
+<p>从直觉上来说直接把<code>WorkBook</code>对象传送到主线程，然后让主线程继续接着<code>XLSX.writeFile()</code>方法的路子不就好了。但事实证明，这种思路有<strong>两个弊端</strong>：</p>
+<ol>
+<li><strong>线程间的通信成本</strong>：<code>WorkBook</code>对象本质上是一个包含大量数据的对象结构（包含单元格数据和单元格设置等），而线程间的通信成本会随着数据量加大而陡增（结构化克隆，序列化，反序列化等等）；当数据量较大时，主线程在接收来自<code>Worker</code>的消息依然会造成明显的阻塞。</li>
+<li>从<code>WorkBook</code>对象到下载的成本：由于<code>WorkBook</code>对象本身不能直接进行下载，因此<code>XLSX.writeFile()</code>这类方法内部都需要先将<code>WorkBook</code>对象转为<code>Blob/File</code>对象，然后通过<code>URL.createObjectURL()</code>来创建一个可访问的<code>Blob URL</code>；但实际上将<code>WorkBook</code>对象转为<code>Blob/File</code>对象也是一个挺耗时的过程。</li>
+</ol>
+<p>这里可以看一个具体导出过程的用时统计即可看出上述弊端：</p>
+<img src="https://pic.xiexuefeng.cc/markdown/image-20220806143254336.png" alt="image-20220806143254336" style="zoom:50%;" />
+<p>综上，如果采用该方案，那么<code>worker</code>的使用效果就很尴尬😅了。</p>
+<h3 id="思路二传送-blob-url"><a class="markdownIt-Anchor" href="#思路二传送-blob-url"></a> 思路二：传送 Blob URL</h3>
+<p>幸运的是，<code>worker</code>内可以使用<code>URL.createObjectURL()</code>方法<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>，且创建的<code>Blob URL</code>可以被主线程访问<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>！</p>
+<img src="https://pic.xiexuefeng.cc/markdown/image-20220806143536641.png?imageslim" alt="image-20220806143536641" style="zoom:50%;" />
+<p>到此，剩下的问题就只有一个了——那就是如何将<code>WorkBook</code>对象转为<code>Blob</code>对象；事实上，<code>sheetjs</code>本身就提供了将<code>WorkBook</code>对象转为二进制数据（<code>Uint8Array</code>）的<code>API</code>——<a target="_blank" rel="noopener" href="https://ame.cool/pages/44759a/#%E5%86%99%E5%85%A5%E5%87%BD%E6%95%B0">XLSX.write()</a>，所以这事就很简单了。</p>
+<img src="https://pic.xiexuefeng.cc/markdown/image-20220806145214965.png?imageslim" alt="image-20220806145214965" style="zoom:50%;" />
+<p>至此，只需要将<code>Blob URL</code>传送到主线程即可完成最后的下载步骤；显然，传送一个<code>URL</code>字符串的通信成本几乎为0，这样就可以把<code>excel</code>导出下载任务的绝大多数运算控制在<code>worker</code>内部了，最小可能的对主线程进行占用。</p>
+<h3 id="如何将透视表数据转换为单元格二维数组"><a class="markdownIt-Anchor" href="#如何将透视表数据转换为单元格二维数组"></a> 如何将透视表数据转换为单元格二维数组</h3>
+<p>这里渲染透视表采用的是<a target="_blank" rel="noopener" href="https://github.com/antvis/S2">S2</a>这个库，这个库其实提供了一个将当前表格数据导出为<code>csv</code>字符串的<code>API</code><sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup>（基于此字符串可以分割得到单元格二维数组）；而这个方法运行也是很耗时的，因此需要转移到<code>worker</code>内部进行执行。不过不幸的是这个实例方法本身并不能直接移植到<code>worker</code>（因为其依赖违反了限制），因此需要自行在<code>worker</code>实现一个将透视表数据转为单元格二维数组的方法。</p>
+<p>这里已知的信息有：</p>
+<ul>
+<li>行维度信息</li>
+<li>列维度信息</li>
+<li>指标维度信息</li>
+<li>按照行、列、指标维度拼接的对象数组（即数组元素里面是一个对象，该对象的<code>key</code>为行、列、指标维度，<code>value</code>就是该维度的值）</li>
+</ul>
+<p>根据上述信息可以构建出一个<strong>行头树结构</strong>和一个<strong>列头树结构</strong>：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/image-20220806161633512.png?imageslim" alt="image-20220806161633512" /></p>
+<p>然后根据指标分布在行或列的不同，在行头或列头树结构中的叶结点再添加相应的<strong>指标结点</strong>作为真实的叶结点，最终构成一个完整的行头结构。而根据行头路径（路径指的是自顶向下到一个<strong>叶结点</strong>所经过的结点）、列头路径再加上对应的指标<code>key</code>就可以确定一个单元格的位置，所以基于此就可以构建出具体指标数据对应的单元格<strong>唯一</strong><code>key</code>；既然都知道每个单元格的数据分布在哪了，那么只需要根据行头和列头叶结点做**两层遍历（二维）**即可将所有数据单元格进行填充了。</p>
+<h2 id="相关文档"><a class="markdownIt-Anchor" href="#相关文档"></a> 相关文档</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000041061339">纯前端生成Excel文件骚操作——WebAssembly &amp; web workers - SegmentFault 思否</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.cqhpoldi.com/?p=650">SheetJs + xlsx-style 导出附带样式的excel – cqh</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/gitbrent/xlsx-js-style">gitbrent/xlsx-js-style: SheetJS Community Edition + Basic Cell Styles</a>：可以设置一些单元格样式</li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_42204238/article/details/104731632">数字转换成26进制字母EXCEL列号（js实现）_const菜鸡的博客-CSDN博客</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.liyangzone.com/article/2020-02-27-export-multi-level-excel-with-js-xlsx/">使用js-xlsx插件导出多级表头excel | liyang’s blog</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6989437152341786655">https://juejin.cn/post/6989437152341786655</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/141328581">SheetJS（js-xlsx、XLSX）横向纵向合并单元格 - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/yangzhou33/p/12484271.html">前端 sheetjs 导出 excel 设置百分比格式</a></li>
+<li><a target="_blank" rel="noopener" href="https://ame.cool/pages/44759a/#%E6%B5%8F%E8%A7%88%E5%99%A8%E4%BF%9D%E5%AD%98%E6%96%87%E4%BB%B6-%E5%85%BC%E5%AE%B9%E6%80%A7">SheetJS js-xlsx文档 | Ame’s blog</a></li>
+<li><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/280389/how-do-you-find-out-the-caller-function-in-javascript%EF%BC%9A%E4%BD%BF%E7%94%A8%60console.trace()%60%E6%96%B9%E6%B3%95%E5%8F%AF%E4%BB%A5%E5%BE%88%E5%A5%BD%E7%9A%84%E6%89%93%E5%8D%B0%E5%87%BA%E5%BD%93%E5%89%8D%E8%B0%83%E7%94%A8%E6%A0%88%EF%BC%8C%E6%AF%94%60caller%60%E5%A5%BD%E7%94%A8">https://stackoverflow.com/questions/280389/how-do-you-find-out-the-caller-function-in-javascript：使用`console.trace()`方法可以很好的打印出当前调用栈，比`caller`好用</a></li>
+<li><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/67687036/sheetjs-convert-workbook-back-to-arraybuffer">javascript - SheetJs Convert workbook back to arraybuffer - Stack Overflow</a></li>
+<li><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/34993292/how-to-save-xlsx-data-to-file-as-a-blob">javascript - How to save .xlsx data to file as a blob - Stack Overflow</a></li>
+<li>js有办法可以catch stack overflow（cpu 100%占用）吗？</li>
+</ul>
+<hr class="footnotes-sep" />
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Workers_API/Functions_and_classes_available_to_workers">https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Workers_API/Functions_and_classes_available_to_workers</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/36436075/is-it-possible-to-save-a-file-directly-from-a-web-worker">https://stackoverflow.com/questions/36436075/is-it-possible-to-save-a-file-directly-from-a-web-worker</a> <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://s2.antv.vision/zh/docs/common/export/#copydata">https://s2.antv.vision/zh/docs/common/export/#copydata</a> <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/worker-and-excel-export/" title="基于worker实现excel报表导出下载">https://note.xiexuefeng.cc/post/worker-and-excel-export/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/worker/" rel="tag"># worker</a>
+              <a href="/tags/excel/" rel="tag"># excel</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/vite-vue3-storybook/" rel="prev" title="vite、vue3和storybook">
+                  <i class="fa fa-chevron-left"></i> vite、vue3和storybook
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/ts-morph-and-complier-context/" rel="next" title="基于ts-morph构建统一编译上下文">
+                  基于ts-morph构建统一编译上下文 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/worker-and-excel-export/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/worker-and-excel-export/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

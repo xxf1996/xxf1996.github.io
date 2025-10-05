@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="transform是css3新增的功能，可以用来改变元素的形状和位置，分为2D和3D两种，实际上2D变换可以看做是3D变换的一种特殊形式。  原理 可以联想到计算机图形中的摄像机与物体的空间关系，以及透视投影原理，就能理解3D transform的基本原理了。  透视投影原理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="css3 3D transform">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/css3-transform-3d/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="transform是css3新增的功能，可以用来改变元素的形状和位置，分为2D和3D两种，实际上2D变换可以看做是3D变换的一种特殊形式。  原理 可以联想到计算机图形中的摄像机与物体的空间关系，以及透视投影原理，就能理解3D transform的基本原理了。  透视投影原理">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/180511/9Bbb78kjL3.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/180511/gJKkEFECgI.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/180511/d897ICl1Ha.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/180511/lAgic2hci2.gif">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/180511/Dj7a6mimGe.gif">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/180511/CgeDKIg9JK.gif">
+<meta property="article:published_time" content="2018-05-11T12:31:06.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.870Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="css3">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/180511/9Bbb78kjL3.png?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/css3-transform-3d/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/css3-transform-3d/","path":"post/css3-transform-3d/","title":"css3 3D transform"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>css3 3D transform | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text"> 原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3d%E5%9D%90%E6%A0%87%E7%B3%BB"><span class="nav-number">1.1.</span> <span class="nav-text"> 3D坐标系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#perspective%E5%B1%9E%E6%80%A7"><span class="nav-number">1.2.</span> <span class="nav-text"> perspective属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#perspective-origin%E5%B1%9E%E6%80%A7"><span class="nav-number">1.3.</span> <span class="nav-text"> perspective-origin属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#transform-style%E5%B1%9E%E6%80%A7"><span class="nav-number">1.4.</span> <span class="nav-text"> transform-style属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#transform-origin"><span class="nav-number">1.5.</span> <span class="nav-text"> transform-origin</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#backface-visibility%E5%B1%9E%E6%80%A7"><span class="nav-number">1.6.</span> <span class="nav-text"> backface-visibility属性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E5%8F%98%E6%8D%A2%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text"> 基本变换类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#translate"><span class="nav-number">2.1.</span> <span class="nav-text"> translate</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#rotate"><span class="nav-number">2.2.</span> <span class="nav-text"> rotate</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#scale"><span class="nav-number">2.3.</span> <span class="nav-text"> scale</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#skew"><span class="nav-number">2.4.</span> <span class="nav-text"> skew</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#matrix"><span class="nav-number">2.5.</span> <span class="nav-text"> matrix</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3"><span class="nav-number">3.</span> <span class="nav-text"> 参考文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/css3-transform-3d/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="css3 3D transform | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          css3 3D transform
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-05-11 20:31:06" itemprop="dateCreated datePublished" datetime="2018-05-11T20:31:06+08:00">2018-05-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">技术</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p><code>transform</code>是<code>css3</code>新增的功能，可以用来改变元素的形状和位置，分为<code>2D</code>和<code>3D</code>两种，实际上<code>2D</code>变换可以看做是<code>3D</code>变换的一种特殊形式。</p>
+<h2 id="原理"><a class="markdownIt-Anchor" href="#原理"></a> 原理</h2>
+<p>可以联想到计算机图形中的摄像机与物体的空间关系，以及透视投影原理，就能理解<code>3D transform</code>的基本原理了。</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/180511/9Bbb78kjL3.png?imageslim" alt="mark" /></p>
+<center>透视投影原理</center>
+<span id="more"></span>
+<br>
+<p><img src="https://pic.xiexuefeng.cc/markdown/180511/gJKkEFECgI.png?imageslim" alt="mark" /></p>
+<center>透视投影的标准模型</center>
+<h3 id="3d坐标系"><a class="markdownIt-Anchor" href="#3d坐标系"></a> 3D坐标系</h3>
+<p>在浏览器中，一般二维坐标系的原点为左上角，而三维坐标系<code>z</code>轴的方向是由屏幕向外增大的，除此之外<code>x</code>轴和<code>y</code>轴的方向与二维坐标系无异。所以屏幕所在平面就相当于<code>z=0</code>平面。</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/180511/d897ICl1Ha.png?imageslim" alt="mark" /></p>
+<h3 id="perspective属性"><a class="markdownIt-Anchor" href="#perspective属性"></a> perspective属性</h3>
+<p><code>perspective</code>属性的值相当于视点（应该是投影平面）离屏幕（<code>z=0</code>平面）的距离，距离越远则成像的效果越接近于平行投影，也就是越没有立体效果，反之则更具有立体效果；需要注意的是<font color=red><strong>该属性作用于其子元素</strong></font>，因此常放置在容器元素中！</p>
+<p>一般要体现出立体效果，还需要结合<code>translateZ</code>来对元素的<code>z</code>坐标进行控制；</p>
+<h3 id="perspective-origin属性"><a class="markdownIt-Anchor" href="#perspective-origin属性"></a> perspective-origin属性</h3>
+<p><code>perspective-origin</code>属性表示视点在成像平面（即屏幕）所在的位置，默认为<code>center center</code>，即平面的正中心位置。参数值选项与<code>transform-origin</code>一样，只不过没有<code>z</code>轴的参数（？）。</p>
+<h3 id="transform-style属性"><a class="markdownIt-Anchor" href="#transform-style属性"></a> transform-style属性</h3>
+<p>通过设置<code>transform-style</code>的属性，可以控制其<strong>子元素</strong>的呈现方式，也就是投影方式。当属性为<code>flat</code>（默认值）时，其子元素为<code>2D</code>呈现，即平行投影；当属性为<code>preserve-3d</code>时，为<code>3D</code>呈现，即透视投影。<font color=red><strong>由于其作用在其子元素上，所以一般用来当做立体容器来使用</strong></font>。</p>
+<h3 id="transform-origin"><a class="markdownIt-Anchor" href="#transform-origin"></a> transform-origin</h3>
+<p>顾名思义，<code>transform-origin</code>属性就是用来设置元素的<strong>坐标原点</strong>位置，而<code>transform</code>的变换需要依靠坐标原点。其默认值为<code>center center</code>，即元素的正中心；而在三维变换中，还有另一个<code>transform-origin-z</code>属性用来设置原点的<code>z</code>轴坐标，其默认值为<code>0</code>，即屏幕平面；<code>transform-origin-z</code>属性目前只有谷歌浏览器支持，所以需要加<code>-webkit-</code>前缀。不过，<code>transform-origin</code>是<strong>可以接受第三个参数</strong>的，其默认值也是<code>0</code>！</p>
+<p>参数值：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">值</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">x-axis</td>
+<td style="text-align:center">定义视图被置于 X 轴的何处。可能的值： 	 	left 	center 	right 	<em>length</em> 	<em>%</em></td>
+</tr>
+<tr>
+<td style="text-align:center">y-axis</td>
+<td style="text-align:center">定义视图被置于 Y 轴的何处。可能的值： 	 	top 	center 	bottom 	<em>length</em> 	<em>%</em></td>
+</tr>
+<tr>
+<td style="text-align:center">z-axis</td>
+<td style="text-align:center">定义视图被置于 Z 轴的何处。可能的值： 	 	<em>length</em></td>
+</tr>
+</tbody>
+</table>
+<h3 id="backface-visibility属性"><a class="markdownIt-Anchor" href="#backface-visibility属性"></a> backface-visibility属性</h3>
+<p><code>backface-visibility</code>属性决定元素旋转后背面是否可见，默认值为<code>visible</code>（可见），设置为<code>hidden</code>后背面不可见。</p>
+<h2 id="基本变换类型"><a class="markdownIt-Anchor" href="#基本变换类型"></a> 基本变换类型</h2>
+<p>其实学过计算机图形就差不多知道，在三维空间中，物体自身的所有变换都可以通过一个<code>4x4</code>的变换矩阵来表示：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/180511/lAgic2hci2.gif" alt="mark" /></p>
+<p>二维的变换可以用一个<code>3x3</code>矩阵来表示：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/180511/Dj7a6mimGe.gif" alt="mark" /></p>
+<p>计算方式就是将变换矩阵与元素的二维或三维坐标进行相乘，就能得到变换后的新坐标：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/180511/CgeDKIg9JK.gif" alt="mark" /></p>
+<p>所有的变换都是以<code>transform-origin</code>属性值作为<font color=red><strong>坐标原点</strong></font>，然后计算的。</p>
+<h3 id="translate"><a class="markdownIt-Anchor" href="#translate"></a> translate</h3>
+<p>即平移，平移就是相对于目前位置发生偏移；有<code>translate()</code>，<code>translateX()</code>，<code>translateY()</code>，<code>translateZ()</code>，<code>translate3d()</code>这几种可供选择。</p>
+<h3 id="rotate"><a class="markdownIt-Anchor" href="#rotate"></a> rotate</h3>
+<p>即旋转，依照旋转轴（如<code>X</code>轴）对元素进行旋转；变换函数名字与上面类似。</p>
+<h3 id="scale"><a class="markdownIt-Anchor" href="#scale"></a> scale</h3>
+<p>即缩放，相对于目前的坐标对点的坐标进行相应的放大或缩小；变换函数与上面类似。</p>
+<h3 id="skew"><a class="markdownIt-Anchor" href="#skew"></a> skew</h3>
+<p>即错切，通过在<code>X</code>轴方向（水平方向）上平移<code>x</code>坐标或在<code>Y</code>轴方向（垂直方向）上平移<code>y</code>坐标形成倾斜；只有二维的变换函数<code>skew()</code>，<code>skewX()</code>和<code>skewY()</code>；</p>
+<h3 id="matrix"><a class="markdownIt-Anchor" href="#matrix"></a> matrix</h3>
+<p>定义变换矩阵，分为<code>matrix()</code>（即二维的，<code>3x3</code>矩阵）和<code>matrix3d()</code>（即三维的，<code>4x4</code>矩阵）。可以说矩阵变换是上述所有变换的基础，即上述所有变换都可以通过矩阵变换实现！</p>
+<h2 id="参考文档"><a class="markdownIt-Anchor" href="#参考文档"></a> 参考文档</h2>
+<ol>
+<li><a target="_blank" rel="noopener" href="http://www.w3school.com.cn/cssref/pr_transform-origin.asp">CSS3 transform-origin 属性</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.w3ctech.com/topic/833">CSS3 Transform-3D空间变换成像原理浅析 - w3ctech</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/gloriazhang2013/article/details/69400152">透视投影的原理和实现 - CSDN博客</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/ruangong1203/article/details/54586051">css3 transform matrix 深入理解 - CSDN博客</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/css3-transform-3d/" title="css3 3D transform">https://note.xiexuefeng.cc/post/css3-transform-3d/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/css3/" rel="tag"># css3</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/js-drag-move/" rel="prev" title="js拖拽移动效果">
+                  <i class="fa fa-chevron-left"></i> js拖拽移动效果
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/svg-pattern/" rel="next" title="svg之图案填充">
+                  svg之图案填充 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/css3-transform-3d/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/css3-transform-3d/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 记录npm使用的一些注意事项，以及收集一些npm错误的解决办法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用npm的注意事项及错误收集">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/npm-use-and-error/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 记录npm使用的一些注意事项，以及收集一些npm错误的解决办法。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200315155726.jpg?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200315155801.jpg?imageslim">
+<meta property="article:published_time" content="2020-03-15T07:58:14.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.878Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="npm">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20200315155726.jpg?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/npm-use-and-error/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/npm-use-and-error/","path":"post/npm-use-and-error/","title":"使用npm的注意事项及错误收集"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>使用npm的注意事项及错误收集 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B4%E6%96%B0node%E5%92%8Cnpm"><span class="nav-number">2.</span> <span class="nav-text"> 更新node和npm</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B4%E6%96%B0node"><span class="nav-number">2.1.</span> <span class="nav-text"> 更新node</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B4%E6%96%B0npm"><span class="nav-number">2.2.</span> <span class="nav-text"> 更新npm</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%9A%E8%BF%87nvm%E6%9B%B4%E6%96%B0node%E5%92%8Cnpm"><span class="nav-number">3.</span> <span class="nav-text"> 通过nvm更新node和npm</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#npm%E9%94%99%E8%AF%AF%E6%94%B6%E9%9B%86"><span class="nav-number">4.</span> <span class="nav-text"> NPM错误收集</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#err-4048-unlink"><span class="nav-number">4.1.</span> <span class="nav-text"> ERR 4048 unlink</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#eperm-operation-not-permitted"><span class="nav-number">4.2.</span> <span class="nav-text"> EPERM: operation not permitted</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#unexpected-end-of-json-input-while-parsing-near"><span class="nav-number">4.3.</span> <span class="nav-text"> Unexpected end of JSON input while parsing near</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#node-sass%E5%AE%89%E8%A3%85%E5%A4%B1%E8%B4%A5"><span class="nav-number">4.4.</span> <span class="nav-text"> node-sass安装失败</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8F%90%E7%A4%BA%E5%8C%85%E4%B8%8D%E5%AD%98%E5%9C%A8code-etarget"><span class="nav-number">4.5.</span> <span class="nav-text"> 提示包不存在：code ETARGET</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3"><span class="nav-number">5.</span> <span class="nav-text"> 参考文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/npm-use-and-error/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="使用npm的注意事项及错误收集 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用npm的注意事项及错误收集
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-03-15 15:58:14" itemprop="dateCreated datePublished" datetime="2020-03-15T15:58:14+08:00">2020-03-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">工具</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p>记录<code>npm</code>使用的一些注意事项，以及收集一些<code>npm</code>错误的<strong>解决</strong>办法。</p>
+<span id="more"></span>
+<h2 id="更新node和npm"><a class="markdownIt-Anchor" href="#更新node和npm"></a> 更新node和npm</h2>
+<h3 id="更新node"><a class="markdownIt-Anchor" href="#更新node"></a> 更新node</h3>
+<ol>
+<li>安装<code>n</code>模块：</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> npm i -g n</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>安装最新稳定版node：</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> n stable</span><br></pre></td></tr></table></figure>
+<h3 id="更新npm"><a class="markdownIt-Anchor" href="#更新npm"></a> 更新npm</h3>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> npm i -g npm</span><br></pre></td></tr></table></figure>
+<p>注意：更新完node和npm后，可能当前环境并没有刷新，需要手动更新命令行工具或重新进入；</p>
+<p>手动更新：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> ~.zshrc</span><br></pre></td></tr></table></figure>
+<h2 id="通过nvm更新node和npm"><a class="markdownIt-Anchor" href="#通过nvm更新node和npm"></a> 通过nvm更新node和npm</h2>
+<p><code>nvm</code>即<code>Node version manager</code>，是专门用来管理<code>node</code>版本切换的工具；</p>
+<ol>
+<li>安装相应版本的<code>node</code>：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nvm install v10.8.0</span><br></pre></td></tr></table></figure>
+<p>执行上述命令会自动安装<code>v10.8.0</code>的<code>node</code>及其对应的<code>npm</code>；安装完后会自动切换到安装完后的<code>node</code>版本，需要注意的是这只是<strong>临时切换</strong>。</p>
+<ol start="2">
+<li>永久切换<code>node</code>版本：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nvm <span class="built_in">alias</span> default v10.8.0</span><br></pre></td></tr></table></figure>
+<p>这样关闭终端后，打开的默认<code>node</code>版本就是上述设置的版本。</p>
+<ol start="3">
+<li>临时切换<code>node</code>版本：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nvm use vxx.x.x</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>查看已安装的<code>node</code>版本：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nvm list</span><br></pre></td></tr></table></figure>
+<h2 id="npm错误收集"><a class="markdownIt-Anchor" href="#npm错误收集"></a> NPM错误收集</h2>
+<h3 id="err-4048-unlink"><a class="markdownIt-Anchor" href="#err-4048-unlink"></a> ERR 4048 unlink</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">npm ERR!   errno: -4048,</span><br><span class="line">npm ERR!   code: &#x27;EPERM&#x27;,</span><br><span class="line">npm ERR!   syscall: &#x27;unlink&#x27;</span><br></pre></td></tr></table></figure>
+<p><strong>导致问题的原因</strong>：项目中文件夹或某个文件被其他程序占用（很可能就是vscode的锅），导致文件没有权限被读写；</p>
+<p><strong>解决办法</strong>：使用杀毒软件对文件夹进行占用解锁；如腾讯管家：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200315155726.jpg?imageslim" alt="img" /></p>
+<p><strong>相关参考链接</strong>：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/30860795/fail-to-install-npm-package-npm-err-errno-4048">node.js - Fail to install npm package “npm ERR! errno -4048” - Stack Overflow</a></li>
+<li><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/27845251/npm-install-give-error-eperm-unlink">node.js - npm install give Error: EPERM, unlink - Stack Overflow</a></li>
+</ol>
+<h3 id="eperm-operation-not-permitted"><a class="markdownIt-Anchor" href="#eperm-operation-not-permitted"></a> EPERM: operation not permitted</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">npm ERR! code EPERM</span><br><span class="line">npm ERR! errno -4048</span><br><span class="line">npm ERR! syscall lstat</span><br><span class="line">npm ERR! Error: EPERM: operation not permitted</span><br></pre></td></tr></table></figure>
+<p>该类错误通常是项目文件夹的权限不够（<code>win10</code>中可能出现），在文件夹右击，然后选择『管理员取得所有权』即可。（很纳闷，明明是管理员账户为啥还有这情况出现？）</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200315155801.jpg?imageslim" alt="img" /></p>
+<p>如果是解锁文件和赋予管理员权限还是提示<code>-4048</code>的错误时，可以考虑在<code>npm</code>命令后面加上<code>--no-bin-links</code>参数；如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i xxx --no-bin-links</span><br></pre></td></tr></table></figure>
+<p><strong>参考文档</strong>：<a target="_blank" rel="noopener" href="https://github.com/phoenixframework/phoenix/issues/2464#issuecomment-328853460">Error: EPERM: operation not permitted, unlink · Issue #2464 · phoenixframework/phoenix</a></p>
+<h3 id="unexpected-end-of-json-input-while-parsing-near"><a class="markdownIt-Anchor" href="#unexpected-end-of-json-input-while-parsing-near"></a> Unexpected end of JSON input while parsing near</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Unexpected end of JSON input while parsing near xxx</span><br></pre></td></tr></table></figure>
+<p><strong>导致问题的原因</strong>：可能是之前安装的时候出现错误导致安装中断，因此<code>npm</code>缓存中含有不正确的安装包；</p>
+<p><strong>解决办法</strong>：使用<code>npm cache clean -f</code>清除缓存，然后再次安装即可；</p>
+<p><strong>相关参考链接</strong>：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://github.com/LLK/scratch-gui/issues/4328#issuecomment-465612534">npm install error unexpected end of JSON input while parsing near ‘…omment:http://open’ · Issue #4328 · LLK/scratch-gui</a></li>
+</ol>
+<h3 id="node-sass安装失败"><a class="markdownIt-Anchor" href="#node-sass安装失败"></a> node-sass安装失败</h3>
+<p><strong>解决办法</strong>：直接单独设置淘宝源镜像进行安装；</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm config set sass_binary_site https://npm.taobao.org/mirrors/node-sass/</span><br></pre></td></tr></table></figure>
+<p><strong>参考链接</strong>：<a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000010984731">整理 node-sass 安装失败的原因及解决办法 - 个人文章 - SegmentFault 思否</a></p>
+<h3 id="提示包不存在code-etarget"><a class="markdownIt-Anchor" href="#提示包不存在code-etarget"></a> 提示包不存在：code ETARGET</h3>
+<p>如这样的错误：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">npm ERR! code ETARGET</span><br><span class="line">npm ERR! notarget No matching version found for es-abstract@1.14.0</span><br><span class="line">npm ERR! notarget In most cases you or one of your dependencies are requesting</span><br><span class="line">npm ERR! notarget a package version that doesn&#x27;t exist.</span><br><span class="line">npm ERR! notarget</span><br><span class="line">npm ERR! notarget It was specified as a dependency of &#x27;xxx&#x27;</span><br><span class="line">npm ERR! notarget</span><br></pre></td></tr></table></figure>
+<p>查找原因是<code>package-lock.json</code>当中的这个包确实没有这个版本；</p>
+<p><strong>解决办法</strong>：直接把<code>package-lock.json</code>这个包的信息去掉，然后重新安装即可；千万不要尝试直接在里面改变包的版本号，那样校验不会通过！</p>
+<h2 id="参考文档"><a class="markdownIt-Anchor" href="#参考文档"></a> 参考文档</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/luntan6788/article/details/79093494">通过NVM安装Node.js - CSDN博客</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/npm-use-and-error/" title="使用npm的注意事项及错误收集">https://note.xiexuefeng.cc/post/npm-use-and-error/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/npm/" rel="tag"># npm</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/webgl-texture-input/" rel="prev" title="输入纹理资源">
+                  <i class="fa fa-chevron-left"></i> 输入纹理资源
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/valueof-tostring-toprimitive/" rel="next" title="关于valueOf、toString和[Symbol.toPrimitive]方法">
+                  关于valueOf、toString和[Symbol.toPrimitive]方法 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/npm-use-and-error/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/npm-use-and-error/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

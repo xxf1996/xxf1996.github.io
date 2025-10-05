@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 其实本来只打算写一下我是如何通过自定义材质来实现特定场景下突破 UBO 数量限制的，但是写着写着发现很有必要捋清楚 Babylonjs 内部着色器预编译的机制，不然连我自己都不清楚我为啥要这么做🙈。 虽然我之前确实对 Babylonjs 的源码做过一些分析记录，但总体比较零散，完全无法在脑海中形成一个系统性的、清晰的流程。所以这次我就把 Babylonjs 的仓库 clone 到本地，使">
+<meta property="og:type" content="article">
+<meta property="og:title" content="魔改PBR渲染管线支持大量灯光场景">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/modded-pbr-rendering-multi-light-optimization/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 其实本来只打算写一下我是如何通过自定义材质来实现特定场景下突破 UBO 数量限制的，但是写着写着发现很有必要捋清楚 Babylonjs 内部着色器预编译的机制，不然连我自己都不清楚我为啥要这么做🙈。 虽然我之前确实对 Babylonjs 的源码做过一些分析记录，但总体比较零散，完全无法在脑海中形成一个系统性的、清晰的流程。所以这次我就把 Babylonjs 的仓库 clone 到本地，使">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240307104509.png?imageView2/2/w/400">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202504141620849.png?imageView2/2/w/800">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240716162834.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202504161606335.png?imageView2/2/w/400">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202407221146538.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202504201239659.png?imageView2/2/w/400">
+<meta property="article:published_time" content="2025-04-20T08:03:57.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.877Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="PBR">
+<meta property="article:tag" content="优化">
+<meta property="article:tag" content="计算机图形">
+<meta property="article:tag" content="Cursor">
+<meta property="article:tag" content="AI-IDE">
+<meta property="article:tag" content="Babylonjs">
+<meta property="article:tag" content="WebGL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20240307104509.png?imageView2/2/w/400">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/modded-pbr-rendering-multi-light-optimization/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/modded-pbr-rendering-multi-light-optimization/","path":"post/modded-pbr-rendering-multi-light-optimization/","title":"魔改PBR渲染管线支持大量灯光场景"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>魔改PBR渲染管线支持大量灯光场景 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9C%80%E6%B1%82%E8%83%8C%E6%99%AF"><span class="nav-number">2.</span> <span class="nav-text"> 需求背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E9%AD%94%E6%94%B9%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF"><span class="nav-number">3.</span> <span class="nav-text"> 为什么要魔改渲染管线？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%83%8C%E6%99%AF%E7%9F%A5%E8%AF%86ubo"><span class="nav-number">3.1.</span> <span class="nav-text"> 背景知识：UBO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BD%9C%E5%9C%A8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">3.2.</span> <span class="nav-text"> 潜在解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93deferred-rendering"><span class="nav-number">3.2.1.</span> <span class="nav-text"> 延迟渲染（Deferred Rendering）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%81%AF%E5%85%89%E7%83%98%E7%84%99"><span class="nav-number">3.2.2.</span> <span class="nav-text"> 灯光烘焙</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A9%E7%94%A8%E6%B8%B2%E6%9F%93%E7%9B%AE%E6%A0%87%E7%BA%B9%E7%90%86%E5%88%86%E6%89%B9%E5%A4%84%E7%90%86%E7%81%AF%E5%85%89"><span class="nav-number">3.2.3.</span> <span class="nav-text"> 利用渲染目标纹理分批处理灯光</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-number">3.2.3.1.</span> <span class="nav-text"> 原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E6%AD%A5%E9%AA%A4"><span class="nav-number">3.2.3.2.</span> <span class="nav-text"> 实现步骤</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BC%98%E5%8A%BF"><span class="nav-number">3.2.3.3.</span> <span class="nav-text"> 优势</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B1%80%E9%99%90%E6%80%A7"><span class="nav-number">3.2.3.4.</span> <span class="nav-text"> 局限性</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E6%9D%90%E8%B4%A8%E7%9D%80%E8%89%B2%E5%99%A8"><span class="nav-number">3.2.4.</span> <span class="nav-text"> 自定义材质&#x2F;着色器</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#babylonjs-pbr-%E6%9D%90%E8%B4%A8%E7%9A%84%E7%9D%80%E8%89%B2%E5%99%A8%E6%BA%90%E7%A0%81%E9%A2%84%E7%BC%96%E8%AF%91%E6%B5%81%E7%A8%8B"><span class="nav-number">4.</span> <span class="nav-text"> Babylonjs PBR 材质的着色器源码预编译流程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%81%AF%E5%85%89%E4%BF%A1%E6%81%AF%E7%9A%84%E9%A2%84%E7%BC%96%E8%AF%91"><span class="nav-number">4.1.</span> <span class="nav-text"> 灯光信息的预编译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%81%AF%E5%85%89%E5%9C%A8%E7%9D%80%E8%89%B2%E5%99%A8%E5%86%85%E7%9A%84%E8%87%AA%E5%AE%9A%E4%B9%89-ubo-%E7%BB%93%E6%9E%84"><span class="nav-number">4.1.1.</span> <span class="nav-text"> 灯光在着色器内的自定义 UBO 结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#uniform-buffer-%E7%BB%91%E5%AE%9A%E4%BC%A0%E8%BE%93%E6%9C%BA%E5%88%B6"><span class="nav-number">4.1.2.</span> <span class="nav-text"> Uniform Buffer 绑定传输机制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#babylonjs-%E7%9D%80%E8%89%B2%E5%99%A8%E9%A2%84%E7%BC%96%E8%AF%91%E5%86%85%E9%83%A8%E6%9C%BA%E5%88%B6"><span class="nav-number">4.2.</span> <span class="nav-text"> Babylonjs 着色器预编译内部机制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#include-%E6%8C%87%E4%BB%A4"><span class="nav-number">4.2.1.</span> <span class="nav-text"> #include&lt;...&gt; 指令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%AD%E4%BB%A3%E8%AF%AD%E6%B3%95%E5%86%85%E9%83%A8%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6"><span class="nav-number">4.2.1.1.</span> <span class="nav-text"> 迭代语法内部处理机制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#__decl__-%E6%96%87%E4%BB%B6%E5%90%8D%E5%89%8D%E7%BC%80"><span class="nav-number">4.2.1.2.</span> <span class="nav-text"> __decl__ 文件名前缀</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%82%E6%95%B0%E6%9B%BF%E6%8D%A2"><span class="nav-number">4.2.1.3.</span> <span class="nav-text"> 参数替换</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#shadersstore-%E4%B8%8E-includesshadersstore"><span class="nav-number">4.2.2.</span> <span class="nav-text"> ShadersStore 与 IncludesShadersStore</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%AD%94%E6%94%B9%E6%96%B9%E6%A1%88"><span class="nav-number">5.</span> <span class="nav-text"> 魔改方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">5.1.</span> <span class="nav-text"> 简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E5%8A%9F%E8%83%BD%E4%B8%8E%E7%9B%AE%E7%9A%84"><span class="nav-number">5.2.</span> <span class="nav-text"> 核心功能与目的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B8%B2%E6%9F%93%E6%B5%81%E7%A8%8B"><span class="nav-number">5.3.</span> <span class="nav-text"> 渲染流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90"><span class="nav-number">5.4.</span> <span class="nav-text"> 实现分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%81%AF%E5%85%89%E7%AE%A1%E7%90%86%E6%9C%BA%E5%88%B6"><span class="nav-number">5.4.1.</span> <span class="nav-text"> 1. 灯光管理机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%87%AA%E5%AE%9A%E4%B9%89%E7%9D%80%E8%89%B2%E5%99%A8%E6%9C%BA%E5%88%B6"><span class="nav-number">5.4.2.</span> <span class="nav-text"> 2. 自定义着色器机制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#21-%E8%87%AA%E5%AE%9A%E4%B9%89%E7%9D%80%E8%89%B2%E5%99%A8%E5%90%8D%E7%A7%B0%E8%A7%A3%E6%9E%90"><span class="nav-number">5.4.2.1.</span> <span class="nav-text"> 2.1 自定义着色器名称解析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#22-%E8%87%AA%E5%AE%9A%E4%B9%89%E7%9D%80%E8%89%B2%E5%99%A8%E4%BB%A3%E7%A0%81"><span class="nav-number">5.4.2.2.</span> <span class="nav-text"> 2.2 自定义着色器代码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%9D%90%E8%B4%A8%E8%BD%AC%E6%8D%A2%E4%B8%8E%E5%A4%8D%E7%94%A8%E6%9C%BA%E5%88%B6"><span class="nav-number">5.4.3.</span> <span class="nav-text"> 3. 材质转换与复用机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E4%BC%98%E5%8C%96-ubo-%E6%95%B0%E9%87%8F%E9%99%90%E5%88%B6%E7%9A%84%E8%BE%85%E5%8A%A9%E5%87%BD%E6%95%B0"><span class="nav-number">5.4.4.</span> <span class="nav-text"> 4. 优化 UBO 数量限制的辅助函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%80%E6%9C%AF%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82"><span class="nav-number">5.5.</span> <span class="nav-text"> 技术实现细节</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%B1%BB%E5%90%8D%E9%87%8D%E5%86%99"><span class="nav-number">5.5.1.</span> <span class="nav-text"> 1. 类名重写</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86"><span class="nav-number">5.5.2.</span> <span class="nav-text"> 2. 错误处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%9B%BA%E5%AE%9A%E7%81%AF%E5%85%89%E7%A1%AC%E7%BC%96%E7%A0%81%E6%9C%BA%E5%88%B6"><span class="nav-number">5.5.3.</span> <span class="nav-text"> 3. 固定灯光硬编码机制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#31-setfixedlight-%E5%87%BD%E6%95%B0"><span class="nav-number">5.5.3.1.</span> <span class="nav-text"> 3.1 setFixedLight 函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#32-getfixedlightinfo-%E5%87%BD%E6%95%B0"><span class="nav-number">5.5.3.2.</span> <span class="nav-text"> 3.2 getFixedLightInfo 函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#33-%E7%81%AF%E5%85%89%E4%BF%A1%E6%81%AF%E7%94%9F%E6%88%90%E5%87%BD%E6%95%B0"><span class="nav-number">5.5.3.3.</span> <span class="nav-text"> 3.3 灯光信息生成函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#34-%E9%80%9A%E7%94%A8%E7%81%AF%E5%85%89%E4%BF%A1%E6%81%AF%E6%8F%90%E5%8F%96"><span class="nav-number">5.5.3.4.</span> <span class="nav-text"> 3.4 通用灯光信息提取</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#35-glsl-%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90"><span class="nav-number">5.5.3.5.</span> <span class="nav-text"> 3.5 GLSL 代码生成</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#36-%E4%B8%8E%E7%9D%80%E8%89%B2%E5%99%A8%E7%B3%BB%E7%BB%9F%E7%9A%84%E9%9B%86%E6%88%90"><span class="nav-number">5.5.3.6.</span> <span class="nav-text"> 3.6 与着色器系统的集成</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%9F%BA%E4%BA%8E-babylonjs-%E5%86%85%E9%83%A8%E6%9C%BA%E5%88%B6%E7%9A%84%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90"><span class="nav-number">5.5.4.</span> <span class="nav-text"> 4. 基于 Babylon.js 内部机制的深入分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#41-%E7%9D%80%E8%89%B2%E5%99%A8%E5%AE%9A%E4%B9%89%E7%B3%BB%E7%BB%9Fmaterialdefines"><span class="nav-number">5.5.4.1.</span> <span class="nav-text"> 4.1 着色器定义系统（MaterialDefines）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#42-%E7%9D%80%E8%89%B2%E5%99%A8%E8%87%AA%E5%AE%9A%E4%B9%89%E9%92%A9%E5%AD%90customshadernameresolve"><span class="nav-number">5.5.4.2.</span> <span class="nav-text"> 4.2 着色器自定义钩子（customShaderNameResolve）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#43-effectshadersstore-%E7%B3%BB%E7%BB%9F"><span class="nav-number">5.5.4.3.</span> <span class="nav-text"> 4.3 Effect.ShadersStore 系统</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#44-%E6%9D%90%E8%B4%A8%E7%BB%A7%E6%89%BF%E7%B3%BB%E7%BB%9F"><span class="nav-number">5.5.4.4.</span> <span class="nav-text"> 4.4 材质继承系统</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8E-babylonjs-pbr-%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">5.6.</span> <span class="nav-text"> 与 Babylon.js PBR 渲染管线的关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BA%E5%AE%9A%E7%81%AF%E5%85%89%E7%9D%80%E8%89%B2%E5%99%A8%E6%95%B4%E5%90%88"><span class="nav-number">5.7.</span> <span class="nav-text"> 固定灯光着色器整合</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9D%80%E8%89%B2%E5%99%A8%E5%8C%85%E5%90%AB%E7%B3%BB%E7%BB%9F%E5%88%A9%E7%94%A8"><span class="nav-number">5.7.1.</span> <span class="nav-text"> 着色器包含系统利用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A2%84%E5%A4%84%E7%90%86%E6%9D%A1%E4%BB%B6%E6%8E%A7%E5%88%B6"><span class="nav-number">5.7.2.</span> <span class="nav-text"> 预处理条件控制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ubo-%E4%B8%8E%E7%A1%AC%E7%BC%96%E7%A0%81%E7%9A%84%E6%97%A0%E7%BC%9D%E5%88%87%E6%8D%A2"><span class="nav-number">5.7.3.</span> <span class="nav-text"> UBO 与硬编码的无缝切换</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%81%AF%E5%85%89%E6%95%B0%E6%8D%AE%E6%A0%BC%E5%BC%8F%E5%8C%96"><span class="nav-number">5.7.4.</span> <span class="nav-text"> 灯光数据格式化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E5%AF%B9%E6%AF%94"><span class="nav-number">5.8.</span> <span class="nav-text"> 性能优化对比</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ubo-%E6%95%B0%E9%87%8F%E9%99%90%E5%88%B6%E9%97%AE%E9%A2%98"><span class="nav-number">5.8.1.</span> <span class="nav-text"> UBO 数量限制问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%A4%E7%A7%8D%E6%96%B9%E6%A1%88%E7%9A%84%E6%80%A7%E8%83%BD%E5%AF%B9%E6%AF%94"><span class="nav-number">5.8.2.</span> <span class="nav-text"> 两种方案的性能对比</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%82%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">5.8.3.</span> <span class="nav-text"> 适用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%99%85%E6%80%A7%E8%83%BD%E6%8F%90%E5%8D%87"><span class="nav-number">5.8.4.</span> <span class="nav-text"> 实际性能提升</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-number">5.9.</span> <span class="nav-text"> 结论</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%A5%E6%96%B9%E6%A1%88%E7%9A%84%E9%97%AE%E9%A2%98%E6%89%80%E5%9C%A8"><span class="nav-number">6.</span> <span class="nav-text"> 该方案的问题所在</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/modded-pbr-rendering-multi-light-optimization/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="魔改PBR渲染管线支持大量灯光场景 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          魔改PBR渲染管线支持大量灯光场景
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-04-20 16:03:57" itemprop="dateCreated datePublished" datetime="2025-04-20T16:03:57+08:00">2025-04-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A2%E7%B4%A2/" itemprop="url" rel="index"><span itemprop="name">探索</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h1>
+<p>其实本来只打算写一下我是如何通过自定义材质来实现特定场景下突破 UBO 数量限制的，但是写着写着发现很有必要捋清楚 Babylonjs 内部着色器预编译的机制，不然连我自己都不清楚我为啥要这么做🙈。</p>
+<p>虽然我之前确实对 Babylonjs 的源码做过一些分析记录，但总体比较零散，完全无法在脑海中形成一个系统性的、清晰的流程。所以这次我就把 Babylonjs 的仓库 clone 到本地，使用 Cursor 将其作为<strong>本地知识库</strong>进行详细的源码分析，得到了多份分析报告文档，基于这些文档我才对 Babylonjs 内部一些机制有了更详细和全面的了解。</p>
+<p>而这些报告文档我都放到了 <a target="_blank" rel="noopener" href="https://github.com/xxf1996/babylonjs-research/tree/main/docs">Github</a> 上，感兴趣的可以去看一看，我觉得从里面确实可以学到不少关于 Babylonjs 源码的思路。</p>
+<h1 id="需求背景"><a class="markdownIt-Anchor" href="#需求背景"></a> 需求背景</h1>
+<p>我前不久独自开发了一个 <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/paxySM-ZtVwm3VL2WXfSLA">在线3D展览</a> 的项目，该项目的主要需求就是渲染展厅模型及展厅中的大量展品，也包含<strong>大量</strong>用来给展品打光的聚光灯。</p>
+<span id="more"></span>
+<h1 id="为什么要魔改渲染管线"><a class="markdownIt-Anchor" href="#为什么要魔改渲染管线"></a> 为什么要魔改渲染管线？</h1>
+<p>因为在 Babylonjs 中，对材质产生影响的每个灯光信息都会单独被封装成一个 UBO（Uniform Buffer Object），这种做法可以高效地<strong>实时</strong>传送灯光信息；但由于 UBO 所占用的 GPU 缓冲内存是很宝贵的，因此 WebGL/WebGPU 等规范都对<strong>每个着色器</strong>所使用的 UBO 最大数量进行了限制，且根据操作系统和显卡的不同，该最大数量也有不同。具体来说，WebGL 和 WebGPU 都提供了 API 来获取当前运行环境下的 UBO 最大数量；WebGL 可以通过 <code>MAX_VERTEX_UNIFORM_BLOCKS</code> 参数来获取：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> glContext = canvas.<span class="property">value</span>.<span class="title function_">getContext</span>(<span class="string">&#x27;webgl2&#x27;</span>)!</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> maxUniforms = glContext.<span class="title function_">getParameter</span>(glContext.<span class="property">MAX_VERTEX_UNIFORM_BLOCKS</span>)</span><br></pre></td></tr></table></figure>
+<p>而 WebGPU 则可以通过 adapter 实例来获取 <sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> adapter = <span class="keyword">await</span> navigator.<span class="property">gpu</span>.<span class="title function_">requestAdapter</span>()</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (adapter) &#123;</span><br><span class="line">  <span class="keyword">const</span> maxUniforms = adapter.<span class="property">limits</span>.<span class="property">maxUniformBuffersPerShaderStage</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>不过比较奇怪的是，按理说显卡的显存越多可以分配的 UBO 数量会越多？但在 WebGL2 中，我用的 Windows10 + 3070Ti（12 个）居然还比不上 mbp2020 的核显（15 个）多😅：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240307104509.png?imageView2/2/w/400" alt="image.png" /><br />
+顺便一提，WebGL/WebGPU 规范对于不同平台下 UBO 最大数量的<strong>最低值</strong>为 12；基于该限制，结合上面提到的需求背景就不难发现该需求在 Babylonjs 的默认渲染管线下，很容易超出 UBO 的数量限制，从而导致运行时报错无法正常渲染；不同的规范报错信息略有不同：</p>
+<ul>
+<li>WebGL：<code>Error: VERTEX shader uniform block count exceeds GL_MAX_VERTEX_UNIFORM_BUFFERS (12)</code></li>
+<li>WebGPU：<code>The number of uniform buffers (13) in the Vertex stage exceeds the maximum per-stage limit (12).</code></li>
+</ul>
+<p>所以为了能够实现上述需求，我不得不去寻求一个可以不触发 UBO 最大数量限制且同时能够渲染大量灯光的渲染方案。</p>
+<h2 id="背景知识ubo"><a class="markdownIt-Anchor" href="#背景知识ubo"></a> 背景知识：UBO</h2>
+<blockquote>
+<p>A Buffer Object that is used to store uniform data for a shader program is called a Uniform Buffer Object. They can be used to share uniforms between different programs, as well as quickly change between sets of uniforms for the same program object.<br />
+用于存储着色器程序统一数据的缓冲对象称为统一缓冲对象。它们可以用于在不同程序之间共享统一变量，以及快速切换同一程序对象的统一变量集。</p>
+<p>The term “Uniform Buffer Object” refers to the OpenGL buffer object that is used to provide storage for uniforms. The term “uniform blocks” refer to the GLSL language grouping of uniforms whose storage come from buffer objects.<br />
+“统一缓冲对象”一词指的是 OpenGL 缓冲对象，用于提供统一变量的存储。而“统一块”一词则指的是来自缓冲对象的统一变量的 GLSL 语言分组。<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup></p>
+</blockquote>
+<h2 id="潜在解决方案"><a class="markdownIt-Anchor" href="#潜在解决方案"></a> 潜在解决方案</h2>
+<p>对于上面的提到的问题，存在一些潜在的解决方案 <sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup>，比如：</p>
+<ul>
+<li>延迟渲染/延迟着色</li>
+<li>灯光烘焙</li>
+<li>自定义材质/着色器</li>
+<li>利用渲染目标纹理分批处理灯光</li>
+</ul>
+<h3 id="延迟渲染deferred-rendering"><a class="markdownIt-Anchor" href="#延迟渲染deferred-rendering"></a> 延迟渲染（Deferred Rendering）</h3>
+<p>实际上在计算机图形业界，延迟渲染是一个很不错的解决方案。但是目前主流的 Web 3D 渲染框架（three.js 和 Babylonjs）都没有支持延迟渲染管线，不过 Babylonjs 社区有一个小组倒是一直在推进延迟渲染的探索 <sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup>（P.s: 这个小组的讨论帖很有意思，虽然进度有点慢，但到 2025-04 为止已经持续讨论了近三年）：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202504141620849.png?imageView2/2/w/800" alt="image.png" /></p>
+<p>图中上面那位就是 Babylonjs 的核心开发者之一，而下面那位就是凭借自己的兴趣爱好一直在 Babylonjs 基础上持续开发延迟渲染管线的老哥 (?)。至于延迟渲染是什么，推荐一篇文章（作者已故，悲）——<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/28489928">【《Real-Time Rendering 3rd》 提炼总结】(七) 第七章续 · 延迟渲染(Deferred Rendering)的前生今世 - 知乎</a>。</p>
+<blockquote>
+<p>在计算机图形学中，延迟渲染 ( Deferred Rendering) ，即延迟着色（Deferred Shading），是将着色计算延迟到深度测试之后进行处理的一种渲染方法。延迟着色技术的最大的优势就是<strong>将光源的数目和场景中物体的数目在复杂度层面上完全分开</strong>，能够在渲染拥有<strong>成百上千光源</strong>的场景的同时依然保持很高的帧率，给我们渲染拥有大量光源的场景提供了很多可能性。</p>
+</blockquote>
+<p>如果我要自行在 Babylonjs 中实现延迟渲染管线，那就不是魔改了，几乎是再造一个渲染引擎了😂。所以基于现状，我放弃了延迟渲染方案。</p>
+<h3 id="灯光烘焙"><a class="markdownIt-Anchor" href="#灯光烘焙"></a> 灯光烘焙</h3>
+<p>灯光烘焙技术简单地来说就是提前把物体表面的<strong>每个像素点上的光照信息</strong>预渲染到一个贴图中，称之为光照贴图（Lightning Map）；得到预渲染的光照贴图，实际渲染这些物体时就不用在着色器内部计算实时的光照了（也就不需要通过 UBO 传输灯光信息了），直接从贴图中获取光照颜色值即可。</p>
+<p>因此灯光烘焙对于纯静态场景来说，是一种不错的选择，而我所做的展馆项目恰好就是一个纯静态的渲染场景——即场景内的灯光和物体在创建后就不会发生任何改变。然而，从我基于 Blender 对相对复杂的展厅模型进行灯光烘焙的实际体验来看，光照贴图也是有一些缺点的，比如：</p>
+<p>模型比较大时（主要就是展厅模型本身），导致三角面数量很多，同时物体的<strong>表面积</strong>也会很大；这样在展开<strong>UV</strong>时，UV 与物体表面的映射就会密度特别大，很挤，从而导致贴图的精度大大降低，因此物体基于光照贴图渲染时会出现很明显的<strong>明暗交界线</strong>以及暗纹等现象：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240716162834.png?imageslim" alt="image.png" /></p>
+<p>上图就是对某个展厅模型进行了光照贴图为 2k（即 2048 x 2048）大小 + 最大采样数为 1024 的光线追踪灯光烘焙结果；哪怕把光照贴图改成 4k 这些现象依然很明显，但是 2k 大小的光照贴图的文件大小就已经来到 20M 左右了。</p>
+<p>当然，针对这种问题，也不是没有改进方法；比如把大的物体模型<strong>拆分</strong>成多个很小的物体，这样就可以确保很小的一个表面就能单独使用一块 2k~4k 大小的高精度光照贴图了，但这样带来的贴图内存占用就会变得特别大了😂，而且建模和烘焙相关的工作量也会变多。</p>
+<h3 id="利用渲染目标纹理分批处理灯光"><a class="markdownIt-Anchor" href="#利用渲染目标纹理分批处理灯光"></a> 利用渲染目标纹理分批处理灯光</h3>
+<p>这种方案实际上在一开始我并没有想到，只是最近我在 Cursor 中让 Agent 帮我基于 Babylonjs 仓库中的源码进行“大量聚光灯场景下 UBO 数量限制突破方案”的可行性研究时，它所提到的一种方案，我看了之后理论上确实可以算是一种方案。</p>
+<blockquote>
+<p>[!quote]- Cursor Agent 总结的方案</p>
+<h4 id="原理"><a class="markdownIt-Anchor" href="#原理"></a> 原理</h4>
+<p>将灯光分成多个批次，每个批次渲染到一个渲染目标纹理中，然后在最终组合阶段合并所有批次的结果。</p>
+<h4 id="实现步骤"><a class="markdownIt-Anchor" href="#实现步骤"></a> 实现步骤</h4>
+<ol>
+<li><strong>创建多个渲染目标</strong>：为每批灯光创建一个渲染目标纹理</li>
+<li><strong>分批渲染</strong>：对每批灯光进行独立渲染</li>
+<li><strong>合并结果</strong>：使用后处理效果合并所有批次的结果</li>
+</ol>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建多个渲染目标</span></span><br><span class="line"><span class="keyword">const</span> lightBatchCount = <span class="title class_">Math</span>.<span class="title function_">ceil</span>(spotLights.<span class="property">length</span> / maxLightsPerBatch);</span><br><span class="line"><span class="keyword">const</span> lightBatchTextures = [];</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; lightBatchCount; i++) &#123;</span><br><span class="line">    <span class="keyword">const</span> rtt = <span class="keyword">new</span> <span class="variable constant_">BABYLON</span>.<span class="title class_">RenderTargetTexture</span>(</span><br><span class="line">        <span class="string">&quot;lightBatch&quot;</span> + i,</span><br><span class="line">        &#123;<span class="attr">width</span>: <span class="number">1024</span>, <span class="attr">height</span>: <span class="number">1024</span>&#125;,</span><br><span class="line">        scene,</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="attr">generateMipMaps</span>: <span class="literal">false</span>,</span><br><span class="line">            <span class="attr">generateDepthBuffer</span>: <span class="literal">true</span>,</span><br><span class="line">            <span class="attr">generateStencilBuffer</span>: <span class="literal">false</span></span><br><span class="line">        &#125;</span><br><span class="line">    );</span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 设置该批次使用的灯光</span></span><br><span class="line">    <span class="keyword">const</span> batchStart = i * maxLightsPerBatch;</span><br><span class="line">    <span class="keyword">const</span> batchEnd = <span class="title class_">Math</span>.<span class="title function_">min</span>((i + <span class="number">1</span>) * maxLightsPerBatch, spotLights.<span class="property">length</span>);</span><br><span class="line">    <span class="keyword">const</span> batchLights = spotLights.<span class="title function_">slice</span>(batchStart, batchEnd);</span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 配置RTT</span></span><br><span class="line">    rtt.<span class="property">onBeforeRender</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="comment">// 暂时隐藏不在此批次的灯光</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">let</span> j = <span class="number">0</span>; j &lt; spotLights.<span class="property">length</span>; j++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (j &lt; batchStart || j &gt;= batchEnd) &#123;</span><br><span class="line">                spotLights[j].<span class="title function_">setEnabled</span>(<span class="literal">false</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                spotLights[j].<span class="title function_">setEnabled</span>(<span class="literal">true</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">  </span><br><span class="line">    rtt.<span class="property">onAfterRender</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="comment">// 恢复所有灯光状态</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">let</span> j = <span class="number">0</span>; j &lt; spotLights.<span class="property">length</span>; j++) &#123;</span><br><span class="line">            spotLights[j].<span class="title function_">setEnabled</span>(<span class="literal">true</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">  </span><br><span class="line">    lightBatchTextures.<span class="title function_">push</span>(rtt);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 创建后处理效果合并所有批次结果</span></span><br><span class="line"><span class="keyword">const</span> postProcess = <span class="keyword">new</span> <span class="variable constant_">BABYLON</span>.<span class="title class_">PostProcess</span>(</span><br><span class="line">    <span class="string">&quot;lightBatchCombiner&quot;</span>,</span><br><span class="line">    <span class="string">&quot;lightBatchCombiner&quot;</span>,</span><br><span class="line">    [<span class="string">&quot;lightBatchCount&quot;</span>],</span><br><span class="line">    lightBatchTextures.<span class="title function_">map</span>(<span class="function">(<span class="params">_, idx</span>) =&gt;</span> <span class="string">&quot;lightBatch&quot;</span> + idx),</span><br><span class="line">    <span class="number">1.0</span>,</span><br><span class="line">    camera</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">postProcess.<span class="property">onApply</span> = <span class="keyword">function</span>(<span class="params">effect</span>) &#123;</span><br><span class="line">    effect.<span class="title function_">setInt</span>(<span class="string">&quot;lightBatchCount&quot;</span>, lightBatchCount);</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; lightBatchCount; i++) &#123;</span><br><span class="line">        effect.<span class="title function_">setTexture</span>(<span class="string">&quot;lightBatch&quot;</span> + i, lightBatchTextures[i]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>后处理着色器：</p>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">varying</span> <span class="type">vec2</span> vUV;</span><br><span class="line"><span class="keyword">uniform</span> <span class="type">sampler2D</span> lightBatch0;</span><br><span class="line"><span class="keyword">uniform</span> <span class="type">sampler2D</span> lightBatch1;</span><br><span class="line"><span class="comment">// ... 更多批次</span></span><br><span class="line"><span class="keyword">uniform</span> <span class="type">int</span> lightBatchCount;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> main(<span class="type">void</span>) &#123;</span><br><span class="line">    <span class="type">vec4</span> finalColor = <span class="type">vec4</span>(<span class="number">0.</span>, <span class="number">0.</span>, <span class="number">0.</span>, <span class="number">1.</span>);</span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 合并所有批次的结果</span></span><br><span class="line">    <span class="keyword">if</span> (lightBatchCount &gt; <span class="number">0</span>) finalColor += <span class="built_in">texture2D</span>(lightBatch0, vUV);</span><br><span class="line">    <span class="keyword">if</span> (lightBatchCount &gt; <span class="number">1</span>) finalColor += <span class="built_in">texture2D</span>(lightBatch1, vUV);</span><br><span class="line">    <span class="comment">// ... 更多批次</span></span><br><span class="line">  </span><br><span class="line">    <span class="built_in">gl_FragColor</span> = finalColor;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="优势"><a class="markdownIt-Anchor" href="#优势"></a> 优势</h4>
+<ul>
+<li>适用于大量灯光场景</li>
+<li>不需要修改材质或着色器</li>
+<li>实现相对简单</li>
+</ul>
+<h4 id="局限性"><a class="markdownIt-Anchor" href="#局限性"></a> 局限性</h4>
+<ul>
+<li>每批次渲染会导致场景被多次绘制，影响性能</li>
+<li>需要管理多个渲染目标</li>
+<li>可能导致某些复杂效果（如反射）的计算不准确</li>
+</ul>
+</blockquote>
+<p>正如 Agent 在报告中所说的，该方案最大的问题就是一帧内要渲染多个 Render Target，这会导致比较<strong>严重的性能问题</strong>，尤其是 Web 环境中的图形 API 相比操作系统底层的图形 API 来说增加了一层转换的损耗。</p>
+<h3 id="自定义材质着色器"><a class="markdownIt-Anchor" href="#自定义材质着色器"></a> 自定义材质/着色器</h3>
+<p>没错，我最终选择的方案就是自定义了一个 PBR 材质，在着色器源码中<strong>硬编码</strong>当前材质需要的所有灯光信息，而且这种修改是完全基于 Babylonjs 内部的渲染管线流程和着色器预编译机制的，因此总体修改量并不算特别多。</p>
+<p>听着好像挺轻松的，不过这一切都需要建立在掌握 Babylonjs<strong>内部</strong>渲染管线和着色器预编译流程之上，因此当初我花了不少的时间去研究源码才找到上述的方法。</p>
+<p>然而，最近我试着把 Babylonjs 仓库 clone 下来作为一个本地仓库让 Cursor 基于源码进行各种分析（这样 Cursor 就可以把 Babylonjs 的源码作为本地知识库进行索引了），效果确实出乎我的意料，几分钟就能根据源码整理出一个系统性的研究报告；当初要是有 Cursor，我就用不着花那么多时间研究源码了😂。</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202504161606335.png?imageView2/2/w/400" alt="image.png" /></p>
+<h1 id="babylonjs-pbr-材质的着色器源码预编译流程"><a class="markdownIt-Anchor" href="#babylonjs-pbr-材质的着色器源码预编译流程"></a> Babylonjs PBR 材质的着色器源码预编译流程</h1>
+<p>需要注意的是，这里的预编译指的是通过材质的各种参数来控制拼接<strong>生成</strong>不同的着色器<strong>源码</strong>，需要跟 GLSL/HLSL 这类着色器语言内的<strong>预处理</strong>进行区分，预处理则是着色器语言进行<strong>元编程</strong>的一个语法。</p>
+<p>简单的来说，Babylonjs 内部通过把 PBR 材质本身需要用到的参数通过 <code>#define</code> 指令转为宏，然后通过 <code>#ifdef/#ifndef</code> 等指令判断宏的值来<strong>启用</strong>不同的计算代码，这样就可以确保最终的着色器代码不会有冗余的部分。</p>
+<pre class="mermaid">flowchart TD
+    A[材质参数设置] --> B[材质准备过程]
+    B --> C[定义预处理]
+    C --> D[着色器代码组装]
+    D --> E[着色器编译]
+    E --> F[着色器绑定和参数传递]
+  
+    subgraph 材质预处理
+    B
+    end
+  
+    subgraph 着色器定义生成
+    C --> C1[纹理定义生成]
+    C --> C2[灯光定义生成]
+    C --> C3[环境定义生成]
+    C2 --> C2A[处理每个光源]
+    C2A --> C2B[生成光照类型定义]
+    C2A --> C2C[生成阴影定义]
+    end
+  
+    subgraph 着色器构建
+    D
+    E
+    end
+  
+    subgraph 渲染阶段
+    F --> F1[绑定材质参数]
+    F --> F2[绑定灯光参数]
+    F --> F3[绑定环境参数]
+    end</pre>
+<h2 id="灯光信息的预编译"><a class="markdownIt-Anchor" href="#灯光信息的预编译"></a> 灯光信息的预编译</h2>
+<p>由于我要把所有的灯光信息硬编码到着色器源码中，因此我需要知道 PBR 材质中是如何传入灯光相关的信息，以及如何控制 UBO 数据传入着色器中（因为硬编码之后就需要移除着色器内的 UBO 相关定义，如果没有定义但渲染时还在 Program 中绑定 Uniform Buffer 就会导致着色器编译失败）。</p>
+<p>在 Babylonjs 内部编译着色器源码之前，都会提前把每个灯光对哪些网格（Mesh）进行影响计算出来，这样这些网格的 <code>lightSources</code> 属性中就会记录对它有影响的灯光列表；Babylonjs 中创建的灯光默认对当前场景中的<strong>所有网格</strong>都是有影响的（这里的影响只是代表在网格材质着色器中需要对该灯光进行计算，不代表该灯光会一定照射到当前网格的表面上），但是也可以通过设置灯光的 <code>includedOnlyMeshes/excludedMeshes/includeOnlyWithLayerMaskexcludeWithLayerMask</code> 等属性来手动控制灯光影响范围，从而提高渲染性能；关于 Babylonjs 内部详细的灯光剔除流程，可以参考 <a target="_blank" rel="noopener" href="https://github.com/xxf1996/babylonjs-research/blob/main/docs/Babylon.js%E7%81%AF%E5%85%89%E5%89%94%E9%99%A4%E6%9C%BA%E5%88%B6%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90.md">Babylon.js灯光剔除机制源码分析.md</a>。</p>
+<p>基于当前网格的 <code>lightSources</code> 属性记录的灯光列表，在预编译着色器时就会把这些灯光信息转换为对应类型的自定义结构、宏变量和 Uniform Buffer。</p>
+<h3 id="灯光在着色器内的自定义-ubo-结构"><a class="markdownIt-Anchor" href="#灯光在着色器内的自定义-ubo-结构"></a> 灯光在着色器内的自定义 UBO 结构</h3>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// packages/dev/core/src/Shaders/ShadersInclude/lightUboDeclaration.fx</span></span><br><span class="line"><span class="meta">#ifdef LIGHT&#123;X&#125;</span></span><br><span class="line">	<span class="keyword">uniform</span> Light&#123;X&#125;</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="type">vec4</span> vLightData;</span><br><span class="line"></span><br><span class="line">		<span class="type">vec4</span> vLightDiffuse;</span><br><span class="line">		<span class="type">vec4</span> vLightSpecular;</span><br><span class="line">		<span class="meta">#ifdef SPOTLIGHT&#123;X&#125;</span></span><br><span class="line">			<span class="type">vec4</span> vLightDirection;</span><br><span class="line">			<span class="type">vec4</span> vLightFalloff;</span><br><span class="line">		<span class="meta">#elif defined(POINTLIGHT&#123;X&#125;)</span></span><br><span class="line">			<span class="type">vec4</span> vLightFalloff;</span><br><span class="line">		<span class="meta">#elif defined(HEMILIGHT&#123;X&#125;)</span></span><br><span class="line">			<span class="type">vec3</span> vLightGround;</span><br><span class="line">		<span class="meta">#endif</span></span><br><span class="line">		<span class="type">vec4</span> shadowsInfo;</span><br><span class="line">		<span class="type">vec2</span> depthValues;</span><br><span class="line">	&#125; light&#123;X&#125;;</span><br></pre></td></tr></table></figure>
+<p>从上述源码不难看出，Babylonjs 通过灯光的编号 <code>&#123;X&#125;</code> 来定义该灯光的 UBO 结构，同时根据具体灯光类型如 <code>SPOTLIGHT&#123;X&#125;</code>、<code>POINTLIGHT&#123;X&#125;</code> 和 <code>HEMILIGHT&#123;X&#125;</code> 等来添加该类型灯光<strong>特有</strong>的属性，最后就得到了一个类型为 <code>Light&#123;X&#125;</code> 的 <code>light&#123;X&#125;</code> 变量。</p>
+<h3 id="uniform-buffer-绑定传输机制"><a class="markdownIt-Anchor" href="#uniform-buffer-绑定传输机制"></a> Uniform Buffer 绑定传输机制</h3>
+<p>Babylonjs 内部有一个 <code>UniformBuffer</code> 类，该类是专门用来管理 UBO 数据的绑定、传输和更新相关的逻辑；而每个灯光内部正好都有一个 UniformBuffer 的实例用于管理灯光 UBO 的数据，通过内部的 _bindLight 方法绑定到着色器程序中（Babylonjs 内部是 Effect 类的实例）：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">_bindLight</span>(<span class="attr">lightIndex</span>: <span class="built_in">number</span>, <span class="attr">scene</span>: <span class="title class_">Scene</span>, <span class="attr">effect</span>: <span class="title class_">Effect</span>, <span class="attr">useSpecular</span>: <span class="built_in">boolean</span>, receiveShadows = <span class="literal">true</span>): <span class="built_in">void</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> iAsString = lightIndex.<span class="title function_">toString</span>();</span><br><span class="line">    <span class="keyword">let</span> needUpdate = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">_uniformBuffer</span>.<span class="title function_">bindToEffect</span>(effect, <span class="string">&quot;Light&quot;</span> + iAsString);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (<span class="variable language_">this</span>.<span class="property">_renderId</span> !== scene.<span class="title function_">getRenderId</span>() || <span class="variable language_">this</span>.<span class="property">_lastUseSpecular</span> !== useSpecular || !<span class="variable language_">this</span>.<span class="property">_uniformBuffer</span>.<span class="property">useUbo</span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">_renderId</span> = scene.<span class="title function_">getRenderId</span>();</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">_lastUseSpecular</span> = useSpecular;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">const</span> scaledIntensity = <span class="variable language_">this</span>.<span class="title function_">getScaledIntensity</span>();</span><br><span class="line"></span><br><span class="line">        <span class="variable language_">this</span>.<span class="title function_">transferToEffect</span>(effect, iAsString);</span><br><span class="line"></span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">diffuse</span>.<span class="title function_">scaleToRef</span>(scaledIntensity, <span class="title class_">TmpColors</span>.<span class="property">Color3</span>[<span class="number">0</span>]);</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">_uniformBuffer</span>.<span class="title function_">updateColor4</span>(<span class="string">&quot;vLightDiffuse&quot;</span>, <span class="title class_">TmpColors</span>.<span class="property">Color3</span>[<span class="number">0</span>], <span class="variable language_">this</span>.<span class="property">range</span>, iAsString);</span><br><span class="line">        <span class="keyword">if</span> (useSpecular) &#123;</span><br><span class="line">            <span class="variable language_">this</span>.<span class="property">specular</span>.<span class="title function_">scaleToRef</span>(scaledIntensity, <span class="title class_">TmpColors</span>.<span class="property">Color3</span>[<span class="number">1</span>]);</span><br><span class="line">            <span class="variable language_">this</span>.<span class="property">_uniformBuffer</span>.<span class="title function_">updateColor4</span>(<span class="string">&quot;vLightSpecular&quot;</span>, <span class="title class_">TmpColors</span>.<span class="property">Color3</span>[<span class="number">1</span>], <span class="variable language_">this</span>.<span class="property">radius</span>, iAsString);</span><br><span class="line">        &#125;</span><br><span class="line">        needUpdate = <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Textures might still need to be rebound.</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="title function_">transferTexturesToEffect</span>(effect, iAsString);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Shadows</span></span><br><span class="line">    <span class="keyword">if</span> (scene.<span class="property">shadowsEnabled</span> &amp;&amp; <span class="variable language_">this</span>.<span class="property">shadowEnabled</span> &amp;&amp; receiveShadows) &#123;</span><br><span class="line">        <span class="keyword">const</span> shadowGenerator = <span class="variable language_">this</span>.<span class="title function_">getShadowGenerator</span>(scene.<span class="property">activeCamera</span>) ?? <span class="variable language_">this</span>.<span class="title function_">getShadowGenerator</span>();</span><br><span class="line">        <span class="keyword">if</span> (shadowGenerator) &#123;</span><br><span class="line">            shadowGenerator.<span class="title function_">bindShadowLight</span>(iAsString, effect);</span><br><span class="line">            needUpdate = <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (needUpdate) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">_uniformBuffer</span>.<span class="title function_">update</span>();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">_uniformBuffer</span>.<span class="title function_">bindUniformBuffer</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到上述代码直接绑定了着色器源码中的 <code>Light&#123;X&#125;</code>，而这个 <code>Light&#123;X&#125;</code> 就是 WebGL2 着色器语法中 Uniform Block 的名称，而 Uniform Block 的具体语法如下 <sup class="footnote-ref"><a href="#fn5" id="fnref5">[5]</a></sup>：</p>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">uniform</span> &lt;BlockName&gt; &#123;</span><br><span class="line">  &lt;BlockBody&gt;</span><br><span class="line">&#125; ?&lt;instanceName&gt;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 举例：具名定义</span></span><br><span class="line"><span class="keyword">uniform</span> Model &#123;</span><br><span class="line">  <span class="type">mat4</span> world;</span><br><span class="line">  <span class="type">mat4</span> worldInverseTranspose;</span><br><span class="line">&#125; model;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 举例：不具名定义</span></span><br><span class="line"><span class="keyword">uniform</span> Light &#123;</span><br><span class="line">  <span class="keyword">highp</span> <span class="type">vec3</span> lightWorldPos;</span><br><span class="line">  <span class="keyword">mediump</span> <span class="type">vec4</span> lightColor;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>因此着色器源码中的 <code>light&#123;X&#125;</code> 就是 Uniform Block 的实例名称，当定义了实例名称之后就可以用实例名称来访问 Uniform Block 中的具体数据了。</p>
+<p>值得注意的是，Babylonjs 内部在绑定 UBO 数据时会<strong>检查着色器源码</strong>中对应的 Uniform Block 声明是否存在，不存在就不会进行后续的绑定和传输，不然会引起着色器编译失败。</p>
+<h2 id="babylonjs-着色器预编译内部机制"><a class="markdownIt-Anchor" href="#babylonjs-着色器预编译内部机制"></a> Babylonjs 着色器预编译内部机制</h2>
+<p>在分析源码时，我发现 Babylonjs 在进行着色器预编译的过程中，设计了一些独特的机制来提高着色器预编译的效率，比如：</p>
+<ul>
+<li>着色器编程语言中的自定义语法：<code>#include&lt;...&gt;</code> 指令</li>
+<li>IncludesShadersStore、ShadersStore</li>
+</ul>
+<h3 id="include-指令"><a class="markdownIt-Anchor" href="#include-指令"></a> <code>#include&lt;...&gt;</code> 指令</h3>
+<p>Babylonjs 实际上通过 <code>#include&lt;...&gt;</code> 指令给着色器编程语言加上了一套简单的<strong>模块系统</strong>（因为 GLSL 这类着色器编程语言没有设计模块相关的语法），而这个指令又有一些变体，详细的语法如下 <sup class="footnote-ref"><a href="#fn6" id="fnref6">[6]</a></sup>：</p>
+<ol>
+<li>基本包含语法：<code>#include&lt;文件名&gt;</code>，文件名不需要带文件后缀</li>
+<li>带参数<strong>替换</strong>的包含语法：<code>#include&lt;文件名&gt;(参数1,替换值1,参数2,替换值2,...)</code></li>
+<li><strong>迭代式</strong>包含语法：<code>#include&lt;文件名&gt;[起始索引..结束索引]</code></li>
+</ol>
+<h4 id="迭代语法内部处理机制"><a class="markdownIt-Anchor" href="#迭代语法内部处理机制"></a> 迭代语法内部处理机制</h4>
+<p>以 <code>#include&lt;__decl__lightFragment&gt;[0..maxSimultaneousLights]</code> 为例，处理流程如下：</p>
+<ol>
+<li>识别出包含文件名为 <code>__decl__lightFragment</code></li>
+<li>处理 <code>__decl__</code> 前缀，根据是否支持 Uniform Buffer Objects(UBO) 决定使用哪个版本的声明文件</li>
+<li>解析迭代范围 <code>[0..maxSimultaneousLights]</code>，从配置参数中获取 <code>maxSimultaneousLights</code> 的实际值</li>
+<li>加载对应的着色器包含文件</li>
+<li>对该文件进行迭代处理，为每个索引值 (从 0 到 maxSimultaneousLights-1) 生成一个副本</li>
+<li>在每个迭代副本中，替换所有的 <code>&#123;X&#125;</code> 占位符为当前索引值</li>
+<li>将所有生成的代码片段连接起来，替换原始的包含指令</li>
+</ol>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 迭代式包含指令处理的关键代码片段</span></span><br><span class="line"><span class="keyword">if</span> (match[<span class="number">4</span>]) &#123;  <span class="comment">// 存在方括号部分 [...]</span></span><br><span class="line">    <span class="keyword">const</span> indexString = match[<span class="number">5</span>];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (indexString.indexOf(&quot;..&quot;) !== <span class="number">-1</span>) &#123;  <span class="comment">// 范围语法 [min..max]</span></span><br><span class="line">        <span class="keyword">const</span> indexSplits = indexString.split(&quot;..&quot;);</span><br><span class="line">        <span class="keyword">const</span> minIndex = parseInt(indexSplits[<span class="number">0</span>]);</span><br><span class="line">        let maxIndex = parseInt(indexSplits[<span class="number">1</span>]);</span><br><span class="line">        let sourceIncludeContent = includeContent.slice(<span class="number">0</span>);</span><br><span class="line">        includeContent = &quot;&quot;;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (isNaN(maxIndex)) &#123;</span><br><span class="line">            <span class="comment">// 如果max不是数字，则从indexParameters中获取值</span></span><br><span class="line">            <span class="comment">// 例如 maxSimultaneousLights</span></span><br><span class="line">            maxIndex = options.indexParameters[indexSplits[<span class="number">1</span>]];</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 为每个索引生成一个代码副本</span></span><br><span class="line">        <span class="keyword">for</span> (let i = minIndex; i &lt; maxIndex; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (!options.supportsUniformBuffers) &#123;</span><br><span class="line">                <span class="comment">// UBO替换处理</span></span><br><span class="line">                sourceIncludeContent = sourceIncludeContent.replace(regexLightX, </span><br><span class="line">                    (str: string, p1: string) =&gt; &#123;</span><br><span class="line">                    <span class="keyword">return</span> p1 + &quot;&#123;X&#125;&quot;;</span><br><span class="line">                &#125;);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 替换&#123;X&#125;为当前索引值</span></span><br><span class="line">            includeContent += sourceIncludeContent.replace(regexX, i.toString()) + &quot;\n&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="__decl__-文件名前缀"><a class="markdownIt-Anchor" href="#__decl__-文件名前缀"></a> __decl__ 文件名前缀</h4>
+<p><code>__decl__</code> 是 Babylonjs 内部的一个特殊的文件名前缀，当识别到这个前缀时，其内部会把文件名（<code>__decl__XXX</code>）自动替换为：</p>
+<ul>
+<li><code>XXXDeclaration</code></li>
+<li><code>XXXUboDeclaration</code>：当 XXX 为 XXXFragment 或为 XXXVertex 时</li>
+</ul>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202407221146538.png?imageslim" alt="image.png" /></p>
+<h4 id="参数替换"><a class="markdownIt-Anchor" href="#参数替换"></a> 参数替换</h4>
+<p>除了迭代处理，Babylonjs 的包含指令系统还支持参数替换，这对于生成通用着色器代码模板非常有用：</p>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 示例：带参数替换的包含指令</span></span><br><span class="line"><span class="meta">#include&lt;samplerVertexDeclaration&gt;(_DEFINENAME_,ALBEDO,_VARYINGNAME_,Albedo)</span></span><br></pre></td></tr></table></figure>
+<p>这会将包含文件中的 <code>_DEFINENAME_</code> 替换为 <code>ALBEDO</code>，将 <code>_VARYINGNAME_</code> 替换为 <code>Albedo</code>，从而为特定纹理类型生成专用代码。</p>
+<p>结合迭代和参数替换功能，Babylonjs 能够高效地生成复杂但高度优化的着色器代码，这是其 PBR 渲染系统性能和灵活性的关键因素。</p>
+<h3 id="shadersstore-与-includesshadersstore"><a class="markdownIt-Anchor" href="#shadersstore-与-includesshadersstore"></a> ShadersStore 与 IncludesShadersStore</h3>
+<p>这两个是挂载在 <code>Effect</code> 类上的静态属性，用于注册着色器文件，其值为一个普通对象，key 为着色器文件名，value 就是着色器源码文本：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Effect类中的定义（简化）</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">class</span> <span class="title class_">Effect</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="title class_">ShadersStore</span>: &#123; [<span class="attr">key</span>: <span class="built_in">string</span>]: <span class="built_in">string</span> &#125; = &#123;&#125;;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="title class_">IncludesShadersStore</span>: &#123; [<span class="attr">key</span>: <span class="built_in">string</span>]: <span class="built_in">string</span> &#125; = &#123;&#125;;</span><br><span class="line">  </span><br><span class="line">    <span class="comment">// ... 其他方法和属性</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>他们两者的区别就是，IncludesShadersStore 中注册的着色器源码内<strong>不能</strong>使用 <code>#include&lt;...&gt;</code> 指令，大概是被设计专门存放那些可以被用于导入的着色器文件吧（无副作用）；而 ShadersStore 中注册的着色器源码中则可以使用 <code>#include&lt;...&gt;</code> 指令来导入那些在 IncludesShadersStore 注册过的着色器文件。</p>
+<h1 id="魔改方案"><a class="markdownIt-Anchor" href="#魔改方案"></a> 魔改方案</h1>
+<p>为什么我要花那么大的篇幅去讲 Babylonjs 内部的着色器源码预编译流程呢？因为只有熟悉了这些流程，就知道我这种魔改方案背后的原理了。</p>
+<p>我的核心思路就是直接继承 Babylonjs 内的 PBR 材质类，实现一个自定义的 PBR 材质类，然后把场景中需要使用硬编码灯光的材质全部替换成自定义的 PBR 材质；听起来很简单是不是？实际上这些工作花了我很多的时间才打通整个流程😂……</p>
+<p>主要的工作就是重写了两个跟<strong>灯光 UBO</strong>声明相关的着色器源码以及自定义 PBR 材质的顶点着色器和片元着色器（也是在原有的 PBR 材质着色器源码上进行了略微的修改），然后在 IncludesShadersStore 和 ShadersStore 中进行覆盖和注册。</p>
+<p>整个的魔改方案涉及到的细节还是很多的，以至于我自己在过了几个月后再看之前自己写的代码也有点迷糊，于是乎我让 Cursor 帮我进行了分析总结：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202504201239659.png?imageView2/2/w/400" alt="image.png" /></p>
+<p>得到了一篇质量很不错的分析报告，所以下面我就把这篇报告的内容直接放进来（偷个懒🙈）：</p>
+<hr />
+<h2 id="简介"><a class="markdownIt-Anchor" href="#简介"></a> 简介</h2>
+<p>本文档对 CustomPBRMaterial 进行详细分析，探讨其对 Babylon.js 默认 PBR 渲染管线所做的调整，这些调整所使用的 Babylon.js 内部机制，以及这些调整的目的和实现方式。</p>
+<h2 id="核心功能与目的"><a class="markdownIt-Anchor" href="#核心功能与目的"></a> 核心功能与目的</h2>
+<p>CustomPBRMaterial 是一个继承自 PBRMaterial 的自定义材质类，其主要目的是解决在大量灯光（特别是聚光灯）场景下的渲染问题，具体包括：</p>
+<ol>
+<li><strong>灯光筛选</strong>：允许材质选择性地响应场景中的灯光，而不是默认响应所有灯光</li>
+<li><strong>自定义着色器</strong>：使用自定义的顶点着色器和片段着色器，以适应特定的渲染需求</li>
+<li><strong>材质复用</strong>：提供从现有 PBRMaterial 创建 CustomPBRMaterial 的机制，保留原有材质的属性</li>
+<li><strong>灯光硬编码</strong>：通过将灯光信息直接硬编码到着色器中，避免通过 UBO 传输，解决大量灯光场景的 UBO 数量限制问题</li>
+</ol>
+<p>这些调整主要针对 3D 展览类场景，通常这类场景包含大量固定聚光灯，容易超出 WebGL/WebGPU 的 UBO（Uniform Buffer Objects）数量限制。</p>
+<h2 id="渲染流程"><a class="markdownIt-Anchor" href="#渲染流程"></a> 渲染流程</h2>
+<pre class="mermaid">flowchart TD
+    A[场景中的PBRMaterial] --> B[转换为CustomPBRMaterial]
+    B --> C[设置有效光源]
+    C --> D[准备渲染]
+    D --> E[customShaderNameResolve]
+    E --> F[筛选光源]
+    F --> G[应用自定义着色器]
+    G --> H[材质渲染]
+  
+    L[场景中的灯光] --> L1[setFixedLight]
+    L1 --> L2[修改prepareLightSpecificDefines]
+    L2 --> L3[生成固定灯光信息]
+    L3 --> L4[存储到Effect.IncludesShadersStore]
+    L4 --> L5[修改灯光Define标志]
+    L5 --> E
+  
+    subgraph 材质转换与复用
+    A --> A1[检查材质Map]
+    A1 -->|找到已存在| A2[复用已有材质]
+    A1 -->|不存在| A3[创建新材质]
+    A3 --> A4[复制可写属性]
+    A4 --> A5[添加到材质Map]
+    end
+  
+    subgraph 光源管理
+    C --> C1[静态导入灯光]
+    C --> C2[动态创建灯光]
+    C --> C3[validLights集合]
+    end
+  
+    subgraph 固定灯光硬编码
+    L3 --> LS1[getFixedLightInfo]
+    LS1 -->|点光源| LS2[getFixedPointLightInfo]
+    LS1 -->|聚光灯| LS3[getFixedSpotLightInfo]
+    LS2 --> LS4[getLightCommonInfo]
+    LS3 --> LS4
+    LS4 --> LS5[getFixedLightSourceCode]
+    LS5 --> L4
+    end
+  
+    subgraph 着色器处理
+    E --> E1[处理defines]
+    E1 --> E2[禁用非有效灯光]
+    E2 --> E3[加载自定义着色器]
+    end</pre>
+<h2 id="实现分析"><a class="markdownIt-Anchor" href="#实现分析"></a> 实现分析</h2>
+<h3 id="1-灯光管理机制"><a class="markdownIt-Anchor" href="#1-灯光管理机制"></a> 1. 灯光管理机制</h3>
+<p>CustomPBRMaterial 实现了一套灯光筛选机制，通过静态属性和实例方法共同管理：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** key为灯光name，value为define name */</span></span><br><span class="line"><span class="keyword">static</span> <span class="attr">lightMap</span>: <span class="title class_">Record</span>&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt; = &#123;&#125;</span><br><span class="line"><span class="comment">/** 导入的场景模型中自带的灯光 */</span></span><br><span class="line"><span class="keyword">static</span> <span class="attr">importLights</span>: <span class="built_in">string</span>[] = []</span><br><span class="line"><span class="comment">/** 展览中手动布置创建的灯光 */</span></span><br><span class="line"><span class="keyword">static</span> <span class="attr">autoCreateLights</span>: <span class="built_in">string</span>[] = []</span><br><span class="line"><span class="keyword">private</span> validLights = <span class="keyword">new</span> <span class="title class_">Set</span>&lt;<span class="built_in">string</span>&gt;()</span><br></pre></td></tr></table></figure>
+<p>每个材质实例维护自己的 <code>validLights</code> 集合，用于记录哪些灯光会影响该材质：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">addValidLight</span>(<span class="params"><span class="attr">name</span>: <span class="built_in">string</span></span>) &#123;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">validLights</span>.<span class="title function_">add</span>(name)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="title function_">addValidLights</span>(<span class="params"><span class="attr">lights</span>: <span class="built_in">string</span>[]</span>) &#123;</span><br><span class="line">  lights.<span class="title function_">forEach</span>(<span class="function"><span class="params">name</span> =&gt;</span> <span class="variable language_">this</span>.<span class="property">validLights</span>.<span class="title function_">add</span>(name))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** 同步CustomPBRMaterial.autoCreateLights为当前材质的有效光源 */</span></span><br><span class="line"><span class="keyword">public</span> <span class="title function_">updateAutoLights</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="title function_">addValidLights</span>(<span class="title class_">CustomPBRMaterial</span>.<span class="property">autoCreateLights</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这种设计允许：</p>
+<ol>
+<li>区分导入模型自带的灯光和手动添加的灯光</li>
+<li>每个材质可以独立控制哪些灯光会影响它</li>
+<li>通过静态映射表关联灯光名称和着色器定义</li>
+</ol>
+<h3 id="2-自定义着色器机制"><a class="markdownIt-Anchor" href="#2-自定义着色器机制"></a> 2. 自定义着色器机制</h3>
+<p>CustomPBRMaterial 利用 Babylon.js 的着色器自定义机制，通过以下方式实现：</p>
+<h4 id="21-自定义着色器名称解析"><a class="markdownIt-Anchor" href="#21-自定义着色器名称解析"></a> 2.1 自定义着色器名称解析</h4>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> customShaderNameResolve = <span class="function">(<span class="params"></span></span></span><br><span class="line"><span class="params"><span class="function">  <span class="attr">shaderName</span>: <span class="built_in">string</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">  <span class="attr">uniforms</span>: <span class="built_in">string</span>[],</span></span></span><br><span class="line"><span class="params"><span class="function">  <span class="attr">uniformBuffers</span>: <span class="built_in">string</span>[],</span></span></span><br><span class="line"><span class="params"><span class="function">  <span class="attr">samplers</span>: <span class="built_in">string</span>[],</span></span></span><br><span class="line"><span class="params"><span class="function">  <span class="attr">defines</span>: <span class="title class_">MaterialDefines</span> | <span class="built_in">string</span>[],</span></span></span><br><span class="line"><span class="params"><span class="function">  <span class="attr">attributes</span>?: <span class="built_in">string</span>[],</span></span></span><br><span class="line"><span class="params"><span class="function">  <span class="attr">options</span>?: <span class="title class_">ICustomShaderNameResolveOptions</span></span></span></span><br><span class="line"><span class="params"><span class="function"></span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (defines <span class="keyword">instanceof</span> <span class="title class_">MaterialDefines</span>) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">const</span> key <span class="keyword">in</span> defines) &#123;</span><br><span class="line">      <span class="keyword">if</span> (!key.<span class="title function_">startsWith</span>(<span class="string">&#x27;LIGHT&#x27;</span>)) &#123;</span><br><span class="line">        <span class="keyword">continue</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">const</span> lightName = <span class="title class_">CustomPBRMaterial</span>.<span class="property">lightMap</span>[key]</span><br><span class="line">      <span class="keyword">if</span> (!lightName) &#123;</span><br><span class="line">        <span class="keyword">continue</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (!<span class="variable language_">this</span>.<span class="property">validLights</span>.<span class="title function_">has</span>(lightName)) &#123;</span><br><span class="line">        defines[key] = <span class="literal">false</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="title class_">Effect</span>.<span class="property">ShadersStore</span>[<span class="string">&#x27;customPBRVertexShader&#x27;</span>] = customePBRVertexShader</span><br><span class="line">  <span class="title class_">Effect</span>.<span class="property">ShadersStore</span>[<span class="string">&#x27;customPBRFragmentShader&#x27;</span>] = customePBRFragmentShader</span><br><span class="line">  <span class="keyword">return</span> <span class="string">&#x27;customPBR&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个方法是 Babylon.js 材质系统的钩子函数，在着色器编译前被调用，用于：</p>
+<ol>
+<li><strong>筛选定义</strong>：检查所有与灯光相关的定义（如 <code>LIGHT0</code>、<code>SPOTLIGHT1</code> 等），并禁用那些不在 <code>validLights</code> 集合中灯光对应的定义</li>
+<li><strong>注册着色器</strong>：将自定义的顶点和片段着色器代码注册到 Babylon.js 的着色器存储中</li>
+<li><strong>返回着色器名称</strong>：返回一个自定义的着色器名称，告诉 Babylon.js 使用这个着色器</li>
+</ol>
+<h4 id="22-自定义着色器代码"><a class="markdownIt-Anchor" href="#22-自定义着色器代码"></a> 2.2 自定义着色器代码</h4>
+<p>CustomPBRMaterial 使用了外部导入的自定义着色器代码：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> customePBRVertexShader <span class="keyword">from</span> <span class="string">&#x27;@/render/shader/pbr.vertex.fx?raw&#x27;</span></span><br><span class="line"><span class="keyword">import</span> customePBRFragmentShader <span class="keyword">from</span> <span class="string">&#x27;@/render/shader/pbr.fragment.fx?raw&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>这些着色器文件基于 Babylon.js 的标准 PBR 着色器，但可能包含针对特定渲染需求的自定义修改，如片段着色器中包含了 <code>FixedLightInfo</code> 的引用：</p>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// light declaration</span></span><br><span class="line"><span class="meta">#include&lt;FixedLightInfo&gt;</span></span><br><span class="line"><span class="meta">#include&lt;__decl__lightFragment&gt;[0..maxSimultaneousLights]</span></span><br><span class="line"><span class="comment">// light declaration end</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-材质转换与复用机制"><a class="markdownIt-Anchor" href="#3-材质转换与复用机制"></a> 3. 材质转换与复用机制</h3>
+<p>CustomPBRMaterial 提供了从现有 PBRMaterial 创建新实例的静态方法：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="title function_">fromPBR</span>(<span class="attr">pbr</span>: <span class="title class_">PBRMaterial</span>, addAutoCreateLights = <span class="literal">false</span>): <span class="title class_">CustomPBRMaterial</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> customPBRMaterial = <span class="title class_">CustomPBRMaterial</span>.<span class="property">MATERIAL_MAP</span>.<span class="title function_">get</span>(pbr.<span class="property">uniqueId</span>)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (customPBRMaterial) &#123;</span><br><span class="line">    <span class="keyword">return</span> customPBRMaterial <span class="comment">// 根据uniqueId复用已经创建的材质</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> material = <span class="keyword">new</span> <span class="title class_">CustomPBRMaterial</span>(pbr.<span class="property">name</span>, pbr.<span class="title function_">getScene</span>())</span><br><span class="line">  <span class="title class_">CustomPBRMaterial</span>.<span class="property">MATERIAL_MAP</span>.<span class="title function_">set</span>(pbr.<span class="property">uniqueId</span>, material)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 复制材质（可写）属性</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">const</span> key <span class="keyword">in</span> pbr) &#123;</span><br><span class="line">    <span class="keyword">const</span> descriptor = <span class="title class_">Object</span>.<span class="title function_">getOwnPropertyDescriptor</span>(pbr, key)</span><br><span class="line">    <span class="keyword">if</span> (!descriptor) &#123;</span><br><span class="line">      <span class="keyword">continue</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!descriptor.<span class="property">writable</span>) &#123;</span><br><span class="line">      <span class="keyword">continue</span></span><br><span class="line">    &#125;</span><br><span class="line">    material[key <span class="keyword">as</span> keyof <span class="title class_">PBRMaterial</span>] = pbr[key <span class="keyword">as</span> keyof <span class="title class_">PBRMaterial</span>]</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (addAutoCreateLights) &#123;</span><br><span class="line">    material.<span class="title function_">addValidLights</span>(<span class="title class_">CustomPBRMaterial</span>.<span class="property">autoCreateLights</span>)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> material</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个方法实现了：</p>
+<ol>
+<li><strong>材质缓存</strong>：通过静态 Map 实现材质复用，避免重复创建</li>
+<li><strong>属性复制</strong>：复制原 PBR 材质中的可写属性到新材质</li>
+<li><strong>光源管理</strong>：可选择性地添加自动创建的灯光到新材质的有效灯光集合</li>
+</ol>
+<h3 id="4-优化-ubo-数量限制的辅助函数"><a class="markdownIt-Anchor" href="#4-优化-ubo-数量限制的辅助函数"></a> 4. 优化 UBO 数量限制的辅助函数</h3>
+<p>文件开头的 <code>removeLightBuffers</code> 函数是一个辅助函数，用于从 uniformBuffers 数组中移除所有与灯光相关的 uniformBuffer：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">removeLightBuffers</span>(<span class="params"><span class="attr">uniformBuffers</span>: <span class="built_in">string</span>[]</span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> <span class="attr">lightIndices</span>: <span class="built_in">number</span>[] = []</span><br><span class="line">  uniformBuffers.<span class="title function_">forEach</span>(<span class="function">(<span class="params">uniformBuffer, idx</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (uniformBuffer.<span class="title function_">startsWith</span>(<span class="string">&#x27;Light&#x27;</span>)) &#123;</span><br><span class="line">      lightIndices.<span class="title function_">push</span>(idx)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">  lightIndices.<span class="title function_">reverse</span>().<span class="title function_">forEach</span>(<span class="function">(<span class="params">idx</span>) =&gt;</span> &#123;</span><br><span class="line">    uniformBuffers.<span class="title function_">splice</span>(idx, <span class="number">1</span>)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>虽然该函数在当前代码中未被直接调用，但其目的是帮助减少 UBO 的使用，这与材质的整体设计目标一致。</p>
+<h2 id="技术实现细节"><a class="markdownIt-Anchor" href="#技术实现细节"></a> 技术实现细节</h2>
+<h3 id="1-类名重写"><a class="markdownIt-Anchor" href="#1-类名重写"></a> 1. 类名重写</h3>
+<p>自定义材质重写了 <code>getClassName</code> 方法，返回“PBRMaterial”而非“CustomPBRMaterial”：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">getClassName</span>(): <span class="built_in">string</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="string">&#x27;PBRMaterial&#x27;</span> <span class="comment">// PBRMaterial可以在debugger中进行材质参数调整</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这是为了保持与 Babylon.js 调试系统的兼容性，允许在调试器中像调整普通 PBR 材质一样调整自定义材质。</p>
+<h3 id="2-错误处理"><a class="markdownIt-Anchor" href="#2-错误处理"></a> 2. 错误处理</h3>
+<p>材质包含基本的错误处理机制：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">this</span>.<span class="property">onError</span> = <span class="function">(<span class="params">effect, errors</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;onError&#x27;</span>, effect, errors)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这有助于诊断着色器编译过程中的问题。</p>
+<h3 id="3-固定灯光硬编码机制"><a class="markdownIt-Anchor" href="#3-固定灯光硬编码机制"></a> 3. 固定灯光硬编码机制</h3>
+<p>CustomPBRMaterial 系统中最关键的性能优化之一是将灯光信息直接硬编码到着色器中，而不是通过 UBO 动态传递。这种方法在 <code>light.ts</code> 中实现，主要包括以下几个关键函数：</p>
+<h4 id="31-setfixedlight-函数"><a class="markdownIt-Anchor" href="#31-setfixedlight-函数"></a> 3.1 setFixedLight 函数</h4>
+<p><code>setFixedLight</code> 函数是整个固定灯光机制的入口点，它修改了灯光实例的 <code>prepareLightSpecificDefines</code> 方法：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">setFixedLight</span>(<span class="params"><span class="attr">light</span>: <span class="title class_">Light</span></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> originDefineFn = light.<span class="property">prepareLightSpecificDefines</span>.<span class="title function_">bind</span>(light)</span><br><span class="line"></span><br><span class="line">  light.<span class="property">prepareLightSpecificDefines</span> = <span class="function">(<span class="params"><span class="attr">defines</span>: <span class="title class_">MaterialDefines</span>, <span class="attr">lightIndex</span>: <span class="built_in">number</span></span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">originDefineFn</span>(defines, lightIndex)</span><br><span class="line">    <span class="keyword">const</span> defineName = <span class="string">`LIGHT_FIXED<span class="subst">$&#123;lightIndex&#125;</span>`</span></span><br><span class="line">    <span class="title class_">CustomPBRMaterial</span>.<span class="property">lightMap</span>[<span class="string">`LIGHT<span class="subst">$&#123;lightIndex&#125;</span>`</span>] = light.<span class="property">name</span></span><br><span class="line">    defines[defineName] = <span class="literal">true</span></span><br><span class="line">    <span class="comment">// NOTICE: 已经初始化过的灯光结构信息可以不用重复写入了，但是define设置需要每次都写入</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="title class_">Effect</span>.<span class="property">IncludesShadersStore</span>[<span class="string">&#x27;FixedLightInfo&#x27;</span>].<span class="title function_">includes</span>(defineName)) &#123;</span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// <span class="doctag">FIXME:</span> 在基于forceCompilationAsync进行预编译时，会出现同一个index的灯光数据有细微差异的情况，因此基于固定灯光信息整体字符串判定是否已经初始化就不准确了</span></span><br><span class="line">    <span class="keyword">const</span> fixedLightInfo = <span class="title function_">getFixedLightInfo</span>(light, lightIndex)</span><br><span class="line">    <span class="title class_">Effect</span>.<span class="property">IncludesShadersStore</span>[<span class="string">&#x27;FixedLightInfo&#x27;</span>] += <span class="string">`\n<span class="subst">$&#123;fixedLightInfo&#125;</span>`</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>关键步骤解析：</p>
+<ol>
+<li><strong>保存原始方法</strong>：首先保存灯光原始的 <code>prepareLightSpecificDefines</code> 方法</li>
+<li><strong>重写方法</strong>：用新的实现替换原方法，新方法会先调用原方法，然后执行自定义逻辑</li>
+<li><strong>记录灯光映射</strong>：将灯光索引和名称的映射关系记录到 <code>CustomPBRMaterial.lightMap</code> 中</li>
+<li><strong>设置固定灯光标志</strong>：在 defines 中设置 <code>LIGHT_FIXED$&#123;lightIndex&#125;</code> 标志</li>
+<li><strong>避免重复添加</strong>：检查是否已经添加过该灯光的信息，避免重复</li>
+<li><strong>生成灯光信息</strong>：调用 <code>getFixedLightInfo</code> 生成灯光的 GLSL 代码</li>
+<li><strong>添加到着色器包含文件</strong>：将生成的代码添加到 <code>Effect.IncludesShadersStore['FixedLightInfo']</code> 中</li>
+</ol>
+<p>这个函数的核心作用是将灯光的参数（位置、方向、强度等）在编译时直接嵌入到着色器代码中，而不是在运行时通过 uniform 传递。</p>
+<h4 id="32-getfixedlightinfo-函数"><a class="markdownIt-Anchor" href="#32-getfixedlightinfo-函数"></a> 3.2 getFixedLightInfo 函数</h4>
+<p>这个函数根据灯光类型选择正确的灯光信息生成函数：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">getFixedLightInfo</span>(<span class="params"><span class="attr">light</span>: <span class="title class_">Light</span>, <span class="attr">no</span>: <span class="built_in">number</span></span>) &#123;</span><br><span class="line">  <span class="keyword">if</span> (light <span class="keyword">instanceof</span> <span class="title class_">PointLight</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">getFixedPointLightInfo</span>(light, no)</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (light <span class="keyword">instanceof</span> <span class="title class_">SpotLight</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">getFixedSpotLightInfo</span>(light, no)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>它支持两种常见的灯光类型：点光源（PointLight）和聚光灯（SpotLight）。</p>
+<h4 id="33-灯光信息生成函数"><a class="markdownIt-Anchor" href="#33-灯光信息生成函数"></a> 3.3 灯光信息生成函数</h4>
+<p>针对不同类型的灯光，系统实现了专门的信息生成函数：</p>
+<p><strong>点光源处理 - getFixedPointLightInfo：</strong></p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">getFixedPointLightInfo</span>(<span class="params"><span class="attr">light</span>: <span class="title class_">PointLight</span>, <span class="attr">no</span>: <span class="built_in">number</span></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> &#123; range, vLightDiffuse, vLightSpecular &#125; = <span class="title function_">getLightCommonInfo</span>(light)</span><br><span class="line">  <span class="keyword">const</span> vLightData = light.<span class="title function_">computeTransformedInformation</span>()</span><br><span class="line">    ? [light.<span class="property">transformedPosition</span>.<span class="property">x</span>, light.<span class="property">transformedPosition</span>.<span class="property">y</span>, light.<span class="property">transformedPosition</span>.<span class="property">z</span>, <span class="number">0.0</span>]</span><br><span class="line">    : [light.<span class="property">position</span>.<span class="property">x</span>, light.<span class="property">position</span>.<span class="property">y</span>, light.<span class="property">position</span>.<span class="property">z</span>, <span class="number">0.0</span>]</span><br><span class="line">  <span class="keyword">const</span> vLightFalloff = [range, <span class="number">1</span> / (range * range), <span class="number">0.0</span>, <span class="number">0.0</span>]</span><br><span class="line">  <span class="keyword">const</span> shadowsInfo = [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line">  <span class="keyword">const</span> depthValues = [<span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="title function_">getFixedLightSourceCode</span>(&#123;</span><br><span class="line">    vLightData,</span><br><span class="line">    vLightFalloff,</span><br><span class="line">    vLightDiffuse,</span><br><span class="line">    vLightSpecular,</span><br><span class="line">    shadowsInfo,</span><br><span class="line">    depthValues</span><br><span class="line">  &#125;, no)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>聚光灯处理 - getFixedSpotLightInfo：</strong></p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">getFixedSpotLightInfo</span>(<span class="params"><span class="attr">light</span>: <span class="title class_">SpotLight</span>, <span class="attr">no</span>: <span class="built_in">number</span></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> &#123; range, vLightDiffuse, vLightSpecular &#125; = <span class="title function_">getLightCommonInfo</span>(light)</span><br><span class="line">  <span class="keyword">const</span> transformed = light.<span class="title function_">computeTransformedInformation</span>()</span><br><span class="line">  <span class="keyword">const</span> vLightData = transformed</span><br><span class="line">    ? [light.<span class="property">transformedPosition</span>.<span class="property">x</span>, light.<span class="property">transformedPosition</span>.<span class="property">y</span>, light.<span class="property">transformedPosition</span>.<span class="property">z</span>, light.<span class="property">exponent</span>]</span><br><span class="line">    : [light.<span class="property">position</span>.<span class="property">x</span>, light.<span class="property">position</span>.<span class="property">y</span>, light.<span class="property">position</span>.<span class="property">z</span>, light.<span class="property">exponent</span>]</span><br><span class="line">  <span class="keyword">const</span> normalizedDirection = <span class="title class_">Vector3</span>.<span class="title class_">Normalize</span>(transformed ? light.<span class="property">transformedDirection</span> : light.<span class="property">direction</span>)</span><br><span class="line">  <span class="keyword">const</span> cosHalfAngle = <span class="title class_">Math</span>.<span class="title function_">cos</span>(light.<span class="property">angle</span> * <span class="number">0.5</span>)</span><br><span class="line">  <span class="keyword">const</span> vLightDirection = [normalizedDirection.<span class="property">x</span>, normalizedDirection.<span class="property">y</span>, normalizedDirection.<span class="property">z</span>, cosHalfAngle]</span><br><span class="line">  <span class="keyword">const</span> lightAngleScale = <span class="number">1.0</span> / <span class="title class_">Math</span>.<span class="title function_">max</span>(<span class="number">0.001</span>, <span class="title class_">Math</span>.<span class="title function_">cos</span>(light.<span class="property">innerAngle</span> * <span class="number">0.5</span>) - cosHalfAngle)</span><br><span class="line">  <span class="keyword">const</span> lightAngleOffset = cosHalfAngle * lightAngleScale</span><br><span class="line">  <span class="keyword">const</span> vLightFalloff = [range, <span class="number">1</span> / (range * range), lightAngleScale, lightAngleOffset]</span><br><span class="line">  <span class="keyword">const</span> shadowsInfo = [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line">  <span class="keyword">const</span> activedCamera = light.<span class="title function_">getScene</span>().<span class="property">activeCamera</span>!</span><br><span class="line">  <span class="keyword">const</span> depthValues = [light.<span class="title function_">getDepthMinZ</span>(activedCamera), light.<span class="title function_">getDepthMaxZ</span>(activedCamera)]</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="title function_">getFixedLightSourceCode</span>(&#123;</span><br><span class="line">    vLightDiffuse,</span><br><span class="line">    vLightSpecular,</span><br><span class="line">    vLightData,</span><br><span class="line">    vLightDirection,</span><br><span class="line">    vLightFalloff,</span><br><span class="line">    shadowsInfo,</span><br><span class="line">    depthValues</span><br><span class="line">  &#125;, no)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这两个函数分别处理点光源和聚光灯的特定参数，它们都依赖于 <code>getLightCommonInfo</code> 提取通用的灯光信息，并最终调用 <code>getFixedLightSourceCode</code> 生成 GLSL 代码。</p>
+<h4 id="34-通用灯光信息提取"><a class="markdownIt-Anchor" href="#34-通用灯光信息提取"></a> 3.4 通用灯光信息提取</h4>
+<p><code>getLightCommonInfo</code> 函数提取了所有灯光类型共有的参数：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">getLightCommonInfo</span>(<span class="params"><span class="attr">light</span>: <span class="title class_">Light</span></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> range = light.<span class="property">range</span> &gt; <span class="number">1e10</span> ? <span class="number">1e10</span> : light.<span class="property">range</span> <span class="comment">// <span class="doctag">FIXME:</span> 这里range的默认值应该是无穷大？</span></span><br><span class="line">  <span class="comment">// NOTICE: 这里灯光和高光的颜色都乘了intensity -&gt; https://github.com/BabylonJS/Babylon.js/blob/3056ba55467b3c1590526cb8899b8c66a4c8f26e/packages/dev/core/src/Lights/light.ts#L428</span></span><br><span class="line">  <span class="keyword">const</span> vLightDiffuse = [...light.<span class="property">diffuse</span>.<span class="title function_">scale</span>(light.<span class="property">intensity</span>).<span class="title function_">asArray</span>(), range]</span><br><span class="line">  <span class="keyword">const</span> vLightSpecular = [...light.<span class="property">specular</span>.<span class="title function_">scale</span>(light.<span class="property">intensity</span>).<span class="title function_">asArray</span>(), light.<span class="property">radius</span>]</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    vLightDiffuse,</span><br><span class="line">    vLightSpecular,</span><br><span class="line">    range</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个函数处理灯光的基本属性，并执行必要的缩放和范围限制。</p>
+<h4 id="35-glsl-代码生成"><a class="markdownIt-Anchor" href="#35-glsl-代码生成"></a> 3.5 GLSL 代码生成</h4>
+<p>整个系统的核心是 <code>getFixedLightSourceCode</code> 函数，它实际生成了要嵌入到着色器中的 GLSL 代码：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">getFixedLightSourceCode</span>(<span class="params"><span class="attr">variables</span>: <span class="title class_">Record</span>&lt;<span class="built_in">string</span>, <span class="built_in">number</span>[]&gt;, <span class="attr">no</span>: <span class="built_in">number</span></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> lightVar = <span class="string">`light<span class="subst">$&#123;no&#125;</span>`</span></span><br><span class="line">  <span class="keyword">const</span> structVar = <span class="string">`FIXEDLIGHT<span class="subst">$&#123;no&#125;</span>`</span></span><br><span class="line">  <span class="keyword">const</span> data = <span class="string">`</span></span><br><span class="line"><span class="string"><span class="subst">$&#123;structVar&#125;</span> <span class="subst">$&#123;lightVar&#125;</span> = <span class="subst">$&#123;structVar&#125;</span>(</span></span><br><span class="line"><span class="string"><span class="subst">$&#123;<span class="built_in">Object</span>.entries(variables).map(([_, value]) =&gt; <span class="string">`  vec<span class="subst">$&#123;value.length&#125;</span>(<span class="subst">$&#123;value.map(val =&gt; val.toFixed(<span class="number">8</span>)).join(<span class="string">&#x27;, &#x27;</span>)&#125;</span>)`</span>).join(<span class="string">&#x27;,\n&#x27;</span>)&#125;</span></span></span><br><span class="line"><span class="string">);</span></span><br><span class="line"><span class="string">`</span></span><br><span class="line">  <span class="keyword">const</span> struct = <span class="string">`</span></span><br><span class="line"><span class="string">struct <span class="subst">$&#123;structVar&#125;</span> &#123;</span></span><br><span class="line"><span class="string"><span class="subst">$&#123;<span class="built_in">Object</span>.entries(variables).map(([key, value]) =&gt; <span class="string">`  vec<span class="subst">$&#123;value.length&#125;</span> <span class="subst">$&#123;key&#125;</span>;`</span>).join(<span class="string">&#x27;\n&#x27;</span>)&#125;</span></span></span><br><span class="line"><span class="string">&#125;;</span></span><br><span class="line"><span class="string">`</span></span><br><span class="line">  <span class="comment">// 整体加上LIGHT defined判断，减少着色器代码量</span></span><br><span class="line">  <span class="keyword">const</span> code = <span class="string">`</span></span><br><span class="line"><span class="string">#ifdef LIGHT<span class="subst">$&#123;no&#125;</span></span></span><br><span class="line"><span class="string">  #ifdef LIGHT_FIXED<span class="subst">$&#123;no&#125;</span></span></span><br><span class="line"><span class="string">    <span class="subst">$&#123;struct&#125;</span></span></span><br><span class="line"><span class="string">    <span class="subst">$&#123;data&#125;</span></span></span><br><span class="line"><span class="string">  #endif</span></span><br><span class="line"><span class="string">#endif</span></span><br><span class="line"><span class="string">`</span></span><br><span class="line">  <span class="keyword">return</span> code</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个函数完成了几个关键任务：</p>
+<ol>
+<li><strong>创建结构体定义</strong>：根据传入的变量创建 GLSL 结构体定义</li>
+<li><strong>创建结构体实例</strong>：用计算好的灯光参数创建结构体实例</li>
+<li><strong>添加预处理条件</strong>：用 <code>#ifdef</code> 条件包裹代码，确保仅在需要时编译</li>
+<li><strong>格式化浮点数</strong>：将所有数值格式化为固定精度的浮点数字符串</li>
+</ol>
+<h4 id="36-与着色器系统的集成"><a class="markdownIt-Anchor" href="#36-与着色器系统的集成"></a> 3.6 与着色器系统的集成</h4>
+<p>生成的固定灯光代码通过 Babylon.js 的着色器包含系统集成到渲染管线中：</p>
+<ol>
+<li>
+<p>代码被添加到 <code>Effect.IncludesShadersStore['FixedLightInfo']</code> 中</p>
+</li>
+<li>
+<p>在自定义片段着色器中，通过 <code>#include&lt;FixedLightInfo&gt;</code> 指令引入这些代码：</p>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// light declaration</span></span><br><span class="line"><span class="meta">#include&lt;FixedLightInfo&gt;</span></span><br><span class="line"><span class="meta">#include&lt;__decl__lightFragment&gt;[0..maxSimultaneousLights]</span></span><br><span class="line"><span class="comment">// light declaration end</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>着色器编译时，预处理器会根据定义的 <code>LIGHT$&#123;no&#125;</code> 和 <code>LIGHT_FIXED$&#123;no&#125;</code> 条件决定是否包含特定灯光的代码</p>
+</li>
+</ol>
+<h3 id="4-基于-babylonjs-内部机制的深入分析"><a class="markdownIt-Anchor" href="#4-基于-babylonjs-内部机制的深入分析"></a> 4. 基于 Babylon.js 内部机制的深入分析</h3>
+<p>CustomPBRMaterial 充分利用了 Babylon.js 的多个核心内部机制。以下是对这些机制的详细解析：</p>
+<h4 id="41-着色器定义系统materialdefines"><a class="markdownIt-Anchor" href="#41-着色器定义系统materialdefines"></a> 4.1 着色器定义系统（MaterialDefines）</h4>
+<p>Babylon.js 的着色器定义系统是通过 MaterialDefines 类实现的，它是着色器条件编译的核心机制：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Babylon.js中MaterialDefines的简化结构</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">class</span> <span class="title class_">MaterialDefines</span> &#123;</span><br><span class="line">    [<span class="attr">key</span>: <span class="built_in">string</span>]: <span class="built_in">any</span>;</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">public</span> isDirty = <span class="literal">false</span>;</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">markAsUnprocessed</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">isDirty</span> = <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">markAsProcessed</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">isDirty</span> = <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">cloneTo</span>(<span class="params"><span class="attr">other</span>: <span class="title class_">MaterialDefines</span></span>) &#123;...&#125;</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">reset</span>(<span class="params"></span>) &#123;...&#125;</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">toString</span>(): <span class="built_in">string</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> result = <span class="string">&quot;&quot;</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">const</span> name <span class="keyword">in</span> <span class="variable language_">this</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="variable language_">this</span>[name] === <span class="literal">true</span>) &#123;</span><br><span class="line">                result += <span class="string">&quot;#define &quot;</span> + name + <span class="string">&quot;\n&quot;</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">typeof</span> <span class="variable language_">this</span>[name] === <span class="string">&quot;number&quot;</span>) &#123;</span><br><span class="line">                result += <span class="string">&quot;#define &quot;</span> + name + <span class="string">&quot; &quot;</span> + <span class="variable language_">this</span>[name] + <span class="string">&quot;\n&quot;</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>工作原理</strong>：</p>
+<ol>
+<li>MaterialDefines 是一个动态对象，可以添加任意定义作为属性</li>
+<li>每个定义可以是布尔值（表示开启/关闭）或数字值（如 LIGHT 数量）</li>
+<li>当定义发生变化时，<code>isDirty</code> 标志将设为 true，触发着色器重新编译</li>
+<li><code>toString</code> 方法将所有开启的定义转换为 GLSL 预处理指令（如 <code>#define SPOTLIGHT0</code>）</li>
+</ol>
+<p><strong>CustomPBRMaterial 的利用</strong>：<br />
+在 <code>customShaderNameResolve</code> 函数中，CustomPBRMaterial 根据 <code>validLights</code> 集合选择性地关闭某些灯光定义：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (defines <span class="keyword">instanceof</span> <span class="title class_">MaterialDefines</span>) &#123;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">const</span> key <span class="keyword">in</span> defines) &#123;</span><br><span class="line">    <span class="keyword">if</span> (!key.<span class="title function_">startsWith</span>(<span class="string">&#x27;LIGHT&#x27;</span>)) &#123;</span><br><span class="line">      <span class="keyword">continue</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 如果灯光不在validLights集合中，禁用对应的define</span></span><br><span class="line">    <span class="keyword">if</span> (!<span class="variable language_">this</span>.<span class="property">validLights</span>.<span class="title function_">has</span>(lightName)) &#123;</span><br><span class="line">      defines[key] = <span class="literal">false</span>;  <span class="comment">// 关闭这个灯光定义</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这种修改直接影响生成的着色器代码，使得 GLSL 条件编译跳过不需要的灯光计算部分，从而避免超出 UBO 限制。</p>
+<h4 id="42-着色器自定义钩子customshadernameresolve"><a class="markdownIt-Anchor" href="#42-着色器自定义钩子customshadernameresolve"></a> 4.2 着色器自定义钩子（customShaderNameResolve）</h4>
+<p>Babylon.js 允许材质定义 <code>customShaderNameResolve</code> 函数，这是一个强大的钩子，允许在着色器编译管线中进行干预：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Material类中的接口定义（简化）</span></span><br><span class="line"><span class="keyword">interface</span> <span class="title class_">IMaterial</span> &#123;</span><br><span class="line">    <span class="attr">customShaderNameResolve</span>?: <span class="function">(<span class="params"></span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="attr">shaderName</span>: <span class="built_in">string</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="attr">uniforms</span>: <span class="built_in">string</span>[],</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="attr">uniformBuffers</span>: <span class="built_in">string</span>[],</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="attr">samplers</span>: <span class="built_in">string</span>[],</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="attr">defines</span>: <span class="title class_">MaterialDefines</span> | <span class="built_in">string</span>[],</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="attr">attributes</span>?: <span class="built_in">string</span>[],</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="attr">options</span>?: <span class="title class_">ICustomShaderNameResolveOptions</span></span></span></span><br><span class="line"><span class="params"><span class="function">    </span>) =&gt;</span> <span class="built_in">string</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>工作原理</strong>：</p>
+<ol>
+<li>当材质需要编译着色器时，引擎会检查是否存在 <code>customShaderNameResolve</code></li>
+<li>如果存在，引擎会调用该函数，传入着色器编译所需的关键信息</li>
+<li>该函数可以修改这些参数（如 uniforms、defines 等）</li>
+<li>该函数返回的字符串将被用作着色器名称，告诉引擎使用哪个着色器</li>
+</ol>
+<p><strong>引擎处理流程</strong>：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Babylon.js内部处理着色器名称的简化逻辑</span></span><br><span class="line"><span class="keyword">private</span> <span class="title function_">_processMaterial</span>(<span class="params"><span class="attr">material</span>: <span class="title class_">Material</span></span>) &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">let</span> shaderName = baseName;</span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 如果材质定义了customShaderNameResolve，则调用它</span></span><br><span class="line">    <span class="keyword">if</span> (material.<span class="property">customShaderNameResolve</span>) &#123;</span><br><span class="line">        shaderName = material.<span class="title function_">customShaderNameResolve</span>(</span><br><span class="line">            baseName,</span><br><span class="line">            uniforms,</span><br><span class="line">            uniformBuffers,</span><br><span class="line">            samplers,</span><br><span class="line">            defines,</span><br><span class="line">            attributes,</span><br><span class="line">            options</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 使用返回的shaderName创建Effect</span></span><br><span class="line">    <span class="keyword">const</span> effect = engine.<span class="title function_">createEffect</span>(shaderName, &#123;</span><br><span class="line">        attributes,</span><br><span class="line">        uniforms, </span><br><span class="line">        uniformBuffers,</span><br><span class="line">        samplers,</span><br><span class="line">        <span class="attr">defines</span>: defines.<span class="title function_">toString</span>(),</span><br><span class="line">        <span class="comment">// ...其他参数</span></span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>CustomPBRMaterial 的利用</strong>：<br />
+CustomPBRMaterial 利用此钩子实现了两个核心功能：</p>
+<ol>
+<li>灯光筛选：修改 defines，禁用不需要的灯光</li>
+<li>注册自定义着色器：将自定义着色器代码添加到 ShadersStore 并返回自定义着色器名称</li>
+</ol>
+<p>这使得引擎在编译材质时使用开发者提供的着色器代码，而不是 Babylon.js 默认生成的 PBR 着色器。</p>
+<h4 id="43-effectshadersstore-系统"><a class="markdownIt-Anchor" href="#43-effectshadersstore-系统"></a> 4.3 Effect.ShadersStore 系统</h4>
+<p>Babylon.js 使用 <code>Effect.ShadersStore</code> 作为着色器代码的全局存储库，它是一个静态字典：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Effect类中的定义（简化）</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">class</span> <span class="title class_">Effect</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="title class_">ShadersStore</span>: &#123; [<span class="attr">key</span>: <span class="built_in">string</span>]: <span class="built_in">string</span> &#125; = &#123;&#125;;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="title class_">IncludesShadersStore</span>: &#123; [<span class="attr">key</span>: <span class="built_in">string</span>]: <span class="built_in">string</span> &#125; = &#123;&#125;;</span><br><span class="line">  </span><br><span class="line">    <span class="comment">// ... 其他方法和属性</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>工作原理</strong>：</p>
+<ol>
+<li><code>ShadersStore</code> 是一个键值对集合，键是着色器名称，值是着色器代码</li>
+<li>创建 Effect 时，引擎会查找对应名称的着色器代码</li>
+<li>开发者可以在运行时向这个存储库添加或修改着色器</li>
+<li>每个着色器以“xxxShader”命名，如“customPBRVertexShader”</li>
+</ol>
+<p><strong>着色器编译流程</strong>：</p>
+<ol>
+<li>当引擎需要编译着色器时，它首先查找 ShadersStore</li>
+<li>获取着色器代码后，处理所有#include 指令</li>
+<li>应用所有 define 预处理指令</li>
+<li>编译处理后的 GLSL 代码</li>
+</ol>
+<p><strong>CustomPBRMaterial 的利用</strong>：<br />
+CustomPBRMaterial 直接向 ShadersStore 注册自定义着色器：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Effect</span>.<span class="property">ShadersStore</span>[<span class="string">&#x27;customPBRVertexShader&#x27;</span>] = customePBRVertexShader</span><br><span class="line"><span class="title class_">Effect</span>.<span class="property">ShadersStore</span>[<span class="string">&#x27;customPBRFragmentShader&#x27;</span>] = customePBRFragmentShader</span><br><span class="line"><span class="keyword">return</span> <span class="string">&#x27;customPBR&#x27;</span>  <span class="comment">// 返回的名称告诉引擎使用&quot;customPBRVertexShader&quot;和&quot;customPBRFragmentShader&quot;</span></span><br></pre></td></tr></table></figure>
+<p>这确保了引擎使用自定义着色器，而不是动态生成的着色器。值得注意的是，自定义着色器仍然使用 Babylon.js 的包含系统（<code>#include&lt;...&gt;</code> 指令），因此可以复用大部分标准 PBR 着色器功能。</p>
+<h4 id="44-材质继承系统"><a class="markdownIt-Anchor" href="#44-材质继承系统"></a> 4.4 材质继承系统</h4>
+<p>Babylon.js 的材质系统采用了面向对象的继承架构，允许开发者扩展现有材质：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 材质继承链（简化）</span></span><br><span class="line"><span class="title class_">Material</span> (基类)</span><br><span class="line">  ↓</span><br><span class="line"><span class="title class_">PushMaterial</span></span><br><span class="line">  ↓</span><br><span class="line"><span class="title class_">PBRBaseMaterial</span></span><br><span class="line">  ↓</span><br><span class="line"><span class="title class_">PBRMaterial</span></span><br><span class="line">  ↓</span><br><span class="line"><span class="title class_">CustomPBRMaterial</span></span><br></pre></td></tr></table></figure>
+<p><strong>工作原理</strong>：</p>
+<ol>
+<li>每个材质类继承基类的功能，同时添加特定特性</li>
+<li>材质派生类可以覆盖父类方法以自定义行为</li>
+<li>基类提供核心接口和通用功能，如绑定、更新等</li>
+</ol>
+<p><strong>关键方法覆盖</strong>：<br />
+材质类中有几个关键方法可以被覆盖以影响渲染行为：</p>
+<ul>
+<li><code>isReadyForSubMesh</code>：检查材质是否准备好被特定子网格渲染</li>
+<li><code>bindForSubMesh</code>：绑定材质参数到着色器</li>
+<li><code>getEffect</code>：获取或创建材质的 Effect 实例</li>
+<li><code>prepareDefines</code>：准备着色器定义</li>
+</ul>
+<p><strong>CustomPBRMaterial 的利用</strong>：<br />
+CustomPBRMaterial 充分利用了继承系统：</p>
+<ol>
+<li>继承 PBRMaterial 保留所有 PBR 功能</li>
+<li>添加自定义的灯光管理功能</li>
+<li>覆盖 <code>getClassName</code> 方法以保持调试兼容性</li>
+<li>添加 <code>customShaderNameResolve</code> 实现自定义着色器逻辑</li>
+</ol>
+<p>这种继承方式使得 CustomPBRMaterial 能够在保留原有 PBR 渲染能力的同时，添加灯光筛选功能，是一种巧妙的扩展方式。</p>
+<h2 id="与-babylonjs-pbr-渲染管线的关系"><a class="markdownIt-Anchor" href="#与-babylonjs-pbr-渲染管线的关系"></a> 与 Babylon.js PBR 渲染管线的关系</h2>
+<p>相较于标准 PBR 渲染管线，CustomPBRMaterial 做了以下关键调整：</p>
+<ol>
+<li><strong>选择性灯光处理</strong>：标准管线处理所有影响网格的灯光，而 CustomPBRMaterial 只处理 validLights 集合中的灯光</li>
+<li><strong>自定义着色器</strong>：使用完全自定义的着色器代码，而非动态生成</li>
+<li><strong>保留材质接口</strong>：通过 getClassName 返回“PBRMaterial”保持与标准材质相同的界面</li>
+<li><strong>灯光硬编码</strong>：将灯光信息直接编译到着色器中，而非通过 UBO 传输</li>
+</ol>
+<h2 id="固定灯光着色器整合"><a class="markdownIt-Anchor" href="#固定灯光着色器整合"></a> 固定灯光着色器整合</h2>
+<p>固定灯光硬编码方案是 CustomPBRMaterial 性能优化的核心。通过分析代码，我们可以详细了解该方案的工作原理：</p>
+<h3 id="着色器包含系统利用"><a class="markdownIt-Anchor" href="#着色器包含系统利用"></a> 着色器包含系统利用</h3>
+<p>系统巧妙地利用了 Babylon.js 的着色器包含系统（Shader Include System）来实现灯光硬编码：</p>
+<ol>
+<li>
+<p><strong>动态创建包含文件</strong>：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Effect</span>.<span class="property">IncludesShadersStore</span>[<span class="string">&#x27;FixedLightInfo&#x27;</span>] += <span class="string">`\n<span class="subst">$&#123;fixedLightInfo&#125;</span>`</span></span><br></pre></td></tr></table></figure>
+<p>系统动态向 <code>Effect.IncludesShadersStore</code> 添加名为 ‘FixedLightInfo’ 的包含文件内容，这个文件包含所有固定灯光的 GLSL 代码。</p>
+</li>
+<li>
+<p><strong>在自定义着色器中引用</strong>：</p>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// light declaration</span></span><br><span class="line"><span class="meta">#include&lt;FixedLightInfo&gt;</span></span><br><span class="line"><span class="meta">#include&lt;__decl__lightFragment&gt;[0..maxSimultaneousLights]</span></span><br><span class="line"><span class="comment">// light declaration end</span></span><br></pre></td></tr></table></figure>
+<p>自定义片段着色器通过 <code>#include&lt;FixedLightInfo&gt;</code> 指令引入这些代码，确保所有固定灯光的定义和实例在着色器编译时可用。</p>
+</li>
+</ol>
+<h3 id="预处理条件控制"><a class="markdownIt-Anchor" href="#预处理条件控制"></a> 预处理条件控制</h3>
+<p>系统使用 GLSL 预处理指令来控制哪些灯光代码需要包含在编译后的着色器中：</p>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#ifdef LIGHT$&#123;no&#125;</span></span><br><span class="line">  <span class="meta">#ifdef LIGHT_FIXED$&#123;no&#125;</span></span><br><span class="line">    $&#123;struct&#125;</span><br><span class="line">    $&#123;data&#125;</span><br><span class="line">  <span class="meta">#endif</span></span><br><span class="line"><span class="meta">#endif</span></span><br></pre></td></tr></table></figure>
+<p>这种双重条件检查确保：</p>
+<ol>
+<li>只有当材质需要处理该灯光时（<code>LIGHT$&#123;no&#125;</code> 被定义），才会包含该灯光的代码</li>
+<li>只有当该灯光被标记为固定灯光时（<code>LIGHT_FIXED$&#123;no&#125;</code> 被定义），才会使用硬编码方式</li>
+</ol>
+<h3 id="ubo-与硬编码的无缝切换"><a class="markdownIt-Anchor" href="#ubo-与硬编码的无缝切换"></a> UBO 与硬编码的无缝切换</h3>
+<p>系统实现了 UBO 传输和硬编码方式的无缝切换机制：</p>
+<ol>
+<li>对于未标记为固定灯光的灯光，系统仍然使用标准的 UBO 传输机制</li>
+<li>对于标记为固定灯光的灯光，系统使用硬编码的结构体实例</li>
+<li>两种方式产生的变量名和数据结构保持一致，确保着色器代码的兼容性</li>
+</ol>
+<h3 id="灯光数据格式化"><a class="markdownIt-Anchor" href="#灯光数据格式化"></a> 灯光数据格式化</h3>
+<p><code>getFixedLightSourceCode</code> 函数负责将 JavaScript 中的灯光数据格式化为 GLSL 代码：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Object</span>.<span class="title function_">entries</span>(variables).<span class="title function_">map</span>(<span class="function">(<span class="params">[key, value]</span>) =&gt;</span> <span class="string">`  vec<span class="subst">$&#123;value.length&#125;</span>(<span class="subst">$&#123;value.map(val =&gt; val.toFixed(<span class="number">8</span>)).join(<span class="string">&#x27;, &#x27;</span>)&#125;</span>)`</span>).<span class="title function_">join</span>(<span class="string">&#x27;,\n&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p>这段代码实现了几个关键功能：</p>
+<ol>
+<li>根据数组长度决定 GLSL 向量类型（vec2、vec3、vec4）</li>
+<li>格式化浮点数精度（使用 toFixed(8) 确保一致性）</li>
+<li>生成符合 GLSL 语法的向量构造函数调用</li>
+</ol>
+<h2 id="性能优化对比"><a class="markdownIt-Anchor" href="#性能优化对比"></a> 性能优化对比</h2>
+<p>固定灯光硬编码机制相对于标准 UBO 方式有显著的性能优势：</p>
+<h3 id="ubo-数量限制问题"><a class="markdownIt-Anchor" href="#ubo-数量限制问题"></a> UBO 数量限制问题</h3>
+<p>WebGL 和 WebGPU 对 Uniform Buffer Objects (UBO) 的数量和大小有严格限制：</p>
+<ol>
+<li><strong>WebGL 1.0</strong>：没有原生 UBO 支持，通过单独的 uniform 变量模拟，数量严格受限</li>
+<li><strong>WebGL 2.0</strong>：支持 UBO，但数量通常限制在 8-32 个左右（取决于硬件）</li>
+<li><strong>WebGPU</strong>：虽然限制更宽松，但仍有约束</li>
+</ol>
+<p>在大量灯光场景下（特别是展览类应用），很容易超出这些限制，导致渲染错误或性能下降。</p>
+<h3 id="两种方案的性能对比"><a class="markdownIt-Anchor" href="#两种方案的性能对比"></a> 两种方案的性能对比</h3>
+<table>
+<thead>
+<tr>
+<th>性能指标</th>
+<th>标准 UBO 方式</th>
+<th>固定灯光硬编码</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GPU 内存使用</td>
+<td>每帧传输全部灯光数据</td>
+<td>编译时确定，运行时不占用 UBO 空间</td>
+</tr>
+<tr>
+<td>CPU→GPU 传输</td>
+<td>每帧需要更新 UBO</td>
+<td>无需每帧更新固定灯光数据</td>
+</tr>
+<tr>
+<td>着色器复杂度</td>
+<td>动态生成，包含所有可能的灯光代码</td>
+<td>编译时优化，只包含必要的灯光代码</td>
+</tr>
+<tr>
+<td>灯光数量上限</td>
+<td>受 UBO 数量限制，典型值为 8-32 个</td>
+<td>理论上无限制，实际取决于着色器长度限制</td>
+</tr>
+<tr>
+<td>灯光变换支持</td>
+<td>完全支持动态变换</td>
+<td>仅支持编译时确定的固定灯光属性</td>
+</tr>
+</tbody>
+</table>
+<h3 id="适用场景"><a class="markdownIt-Anchor" href="#适用场景"></a> 适用场景</h3>
+<p>固定灯光硬编码机制特别适合：</p>
+<ol>
+<li><strong>展览类应用</strong>：大量固定位置的聚光灯</li>
+<li><strong>建筑可视化</strong>：固定的室内外照明</li>
+<li><strong>大型静态场景</strong>：如虚拟博物馆、艺术展</li>
+</ol>
+<p>而标准 UBO 方式更适合：</p>
+<ol>
+<li><strong>动态场景</strong>：灯光频繁移动、添加或删除</li>
+<li><strong>游戏应用</strong>：需要实时响应的灯光效果</li>
+<li><strong>小型场景</strong>：灯光数量不会超出 UBO 限制</li>
+</ol>
+<h3 id="实际性能提升"><a class="markdownIt-Anchor" href="#实际性能提升"></a> 实际性能提升</h3>
+<p>在实际应用中，固定灯光硬编码方案可以带来显著的性能提升：</p>
+<ol>
+<li><strong>渲染时间</strong>：减少 30%-50% 的 GPU 渲染时间（在灯光密集场景）</li>
+<li><strong>内存占用</strong>：减少 UBO 相关的 GPU 内存使用</li>
+<li><strong>编译优化</strong>：着色器编译器可以针对硬编码常量进行额外优化</li>
+</ol>
+<h2 id="结论"><a class="markdownIt-Anchor" href="#结论"></a> 结论</h2>
+<p>CustomPBRMaterial 是一个针对特定渲染需求（大量灯光场景）的优化解决方案，它通过灯光筛选、自定义着色器和材质复用等机制，解决了 Babylon.js 在 UBO 数量限制下的渲染问题。特别是通过将固定灯光信息硬编码到着色器中，巧妙地绕过了 WebGL/WebGPU 的 UBO 数量限制，使得在大量灯光的场景下仍能保持良好的性能。</p>
+<p>这个实现展示了如何扩展 Babylon.js 的材质系统，在保持核心 PBR 渲染能力的同时，针对特定项目需求进行优化。其设计思路和实现方法对于其他面临类似 UBO 限制问题的 3D 应用具有很好的参考价值。</p>
+<h1 id="该方案的问题所在"><a class="markdownIt-Anchor" href="#该方案的问题所在"></a> 该方案的问题所在</h1>
+<p>这里真的要感谢 Cursor 这种利器，这篇文章其实早就打算写了，但是由于涉及到的流程和细节实在是太多了，以至于我每次不知道从何下手很头疼，不然连我自己都不知道原来之前做了那么多的细节工作🙈；当然，上面 Cursor 总结的文档里提到的优化指标数字图一乐就行，因为我压根没测过😂。</p>
+<p>虽然这种魔改方案虽然实现了我的需求，但是也存在一定的问题：</p>
+<ul>
+<li>对 Babylonjs 内部机制<strong>依赖过深</strong>：因为改动的着色器源码都是基于 Babylonjs 内的 PBR 材质已有的源码进行修改的，且依赖了内部的一些自定义 API，所以一旦 Babylonjs 内部实现有一些变动就可能导致现有的代码失效（实际上因为中途升级过几次 Babylonjs 相关包的版本，已经碰到这个问题），因此目前只能把 Babylonjs 的版本<strong>固定</strong>，一旦涉及到版本升级就要做好大改的准备😅</li>
+<li><strong>材质替换成本</strong>：由于展厅模型都是基于 GLTF 文件进行导入的，因此默认在加载资源时创建的网格材质都是 PBR 材质，尽管可以在加载完成后马上对这些网格材质进行替换，但是会造成一定的性能损耗（需要对旧材质进行<strong>注销</strong>和新材质的预编译）</li>
+</ul>
+<hr class="footnotes-sep" />
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/653912602">1.10 webgpu optional features and limits - 知乎</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://www.khronos.org/opengl/wiki/Uniform_Buffer_Object">https://www.khronos.org/opengl/wiki/Uniform_Buffer_Object</a> <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://github.com/xxf1996/babylonjs-research/blob/main/docs/%E5%A4%A7%E9%87%8F%E8%81%9A%E5%85%89%E7%81%AF%E5%9C%BA%E6%99%AF%E4%B8%8BUBO%E6%95%B0%E9%87%8F%E9%99%90%E5%88%B6%E7%AA%81%E7%A0%B4%E6%96%B9%E6%A1%88.md">https://github.com/xxf1996/babylonjs-research/blob/main/docs/大量聚光灯场景下UBO数量限制突破方案.md</a> <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://forum.babylonjs.com/t/very-very-much-want-to-add-deferred-rendering-global-illumination/29611/80">Babylon.js — Very, very much want to add deferred rendering, global illumination - Feature requests - Babylon.js</a> <a href="#fnref4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/79241410">OpenGL-Uniform Block - 知乎</a> <a href="#fnref5" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn6" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://github.com/xxf1996/babylonjs-research/blob/main/docs/PBR%E6%9D%90%E8%B4%A8%E7%9D%80%E8%89%B2%E5%99%A8%E7%BC%96%E8%AF%91%E6%B5%81%E7%A8%8B.md#5-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%8C%85%E5%90%AB%E6%8C%87%E4%BB%A4%E8%AF%AD%E6%B3%95">https://github.com/xxf1996/babylonjs-research/blob/main/docs/PBR材质着色器编译流程.md#5-自定义包含指令语法</a> <a href="#fnref6" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/modded-pbr-rendering-multi-light-optimization/" title="魔改PBR渲染管线支持大量灯光场景">https://note.xiexuefeng.cc/post/modded-pbr-rendering-multi-light-optimization/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/PBR/" rel="tag"># PBR</a>
+              <a href="/tags/%E4%BC%98%E5%8C%96/" rel="tag"># 优化</a>
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2/" rel="tag"># 计算机图形</a>
+              <a href="/tags/Cursor/" rel="tag"># Cursor</a>
+              <a href="/tags/AI-IDE/" rel="tag"># AI-IDE</a>
+              <a href="/tags/Babylonjs/" rel="tag"># Babylonjs</a>
+              <a href="/tags/WebGL/" rel="tag"># WebGL</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/vibe-coding-harmonyos-wearable-app/" rel="prev" title="当Vibe Coding遇上鸿蒙穿戴应用开发">
+                  <i class="fa fa-chevron-left"></i> 当Vibe Coding遇上鸿蒙穿戴应用开发
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/sparse-vector-generation-with-bge-m3-onnx/" rel="next" title="基于bge-m3 onnx模型获取稀疏向量">
+                  基于bge-m3 onnx模型获取稀疏向量 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/modded-pbr-rendering-multi-light-optimization/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/modded-pbr-rendering-multi-light-optimization/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

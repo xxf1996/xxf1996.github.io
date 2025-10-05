@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 立方体纹理是webGL纹理中的一种，实际上可以看做是六个2D纹理组成的，分别对应立方体的六个面；由于六个纹理图片组成了立方体，因此立方体纹理的取样和2D纹理的取样有点区别，因此作用也更加丰富；">
+<meta property="og:type" content="article">
+<meta property="og:title" content="立方体纹理的应用">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/webgl-textcube-application/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 立方体纹理是webGL纹理中的一种，实际上可以看做是六个2D纹理组成的，分别对应立方体的六个面；由于六个纹理图片组成了立方体，因此立方体纹理的取样和2D纹理的取样有点区别，因此作用也更加丰富；">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201007125627.gif?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201007125747.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20201007125822.gif?imageslim">
+<meta property="article:published_time" content="2020-10-07T04:55:59.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.888Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="webGL">
+<meta property="article:tag" content="纹理">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20201007125627.gif?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/webgl-textcube-application/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/webgl-textcube-application/","path":"post/webgl-textcube-application/","title":"立方体纹理的应用"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>立方体纹理的应用 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AB%8B%E6%96%B9%E4%BD%93%E7%BA%B9%E7%90%86%E7%9A%84%E5%8F%96%E6%A0%B7"><span class="nav-number">2.</span> <span class="nav-text"> 立方体纹理的取样</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AB%8B%E6%96%B9%E4%BD%93%E7%BA%B9%E7%90%86%E7%9A%84%E5%BA%94%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text"> 立方体纹理的应用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AB%8B%E6%96%B9%E4%BD%93%E8%B4%B4%E5%9B%BE"><span class="nav-number">3.1.</span> <span class="nav-text"> 立方体贴图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AB%8B%E6%96%B9%E4%BD%93%E7%8E%AF%E5%A2%83%E8%B4%B4%E5%9B%BE"><span class="nav-number">3.2.</span> <span class="nav-text"> 立方体环境贴图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%A9%E7%A9%BA%E7%9B%92"><span class="nav-number">3.3.</span> <span class="nav-text"> 天空盒</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E6%A1%A3"><span class="nav-number">4.</span> <span class="nav-text"> 相关文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/webgl-textcube-application/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="立方体纹理的应用 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          立方体纹理的应用
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-10-07 12:55:59" itemprop="dateCreated datePublished" datetime="2020-10-07T12:55:59+08:00">2020-10-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p>立方体纹理是<code>webGL</code>纹理中的一种，实际上可以看做是六个<code>2D</code>纹理组成的，分别对应立方体的六个面；由于六个纹理图片组成了立方体，因此立方体纹理的取样和<code>2D</code>纹理的取样有点区别，因此作用也更加丰富；</p>
+<span id="more"></span>
+<h2 id="立方体纹理的取样"><a class="markdownIt-Anchor" href="#立方体纹理的取样"></a> 立方体纹理的取样</h2>
+<p>由于立方体有六个纹理，因此不能像2D纹理那样只要指定一个二维纹理坐标就可以进行取样；</p>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">vec4</span> <span class="built_in">textureCube</span>(<span class="type">samplerCube</span> sampler, <span class="type">vec3</span> coord)</span><br></pre></td></tr></table></figure>
+<p>上面就是<code>GLSL</code>中对立方体纹理进行取样的函数，其中第二个参数就是用于进行取样的坐标；可以看到这个坐标是三维的，有的地方<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>说这个坐标是<strong>纹理的法向量</strong>；不过我觉得这里坐标<font color=#39f>更像是一个方向向量</font>，即从立方体中心位置朝这个方向发射射线，射线与立方体相交的位置就是取样点；</p>
+<h2 id="立方体纹理的应用"><a class="markdownIt-Anchor" href="#立方体纹理的应用"></a> 立方体纹理的应用</h2>
+<p>以我目前的了解，立方体纹理大致有以下几种应用：</p>
+<ul>
+<li>正方体表面贴图</li>
+<li>用于环境贴图（反射贴图），模拟镜面反射结果</li>
+<li>天空盒</li>
+</ul>
+<h3 id="立方体贴图"><a class="markdownIt-Anchor" href="#立方体贴图"></a> 立方体贴图</h3>
+<p>这个应用就很好理解了，借助立方体纹理可以分别给立方体每个面贴上对应面的纹理图片，这样就省去一个一个声明<code>6</code>个不同的<code>2D</code>纹理然后去分别贴图了；而且这样还可以直接利用立方体的顶点坐标来获取每个片元上面的取样方向向量了，因为立方体物体的中心就是几何中心；</p>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 顶点着色器</span></span><br><span class="line"><span class="keyword">attribute</span> <span class="type">vec4</span> a_Pos;</span><br><span class="line"><span class="keyword">varying</span> <span class="type">vec4</span> v_Pos;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> main() &#123;</span><br><span class="line">    <span class="built_in">gl_Position</span> = a_Pos;</span><br><span class="line">    v_Pos = a_Pos;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 片元着色器</span></span><br><span class="line"><span class="keyword">varying</span> <span class="type">vec4</span> v_Pos; <span class="comment">// 立方体各点的插值坐标</span></span><br><span class="line"><span class="keyword">uniform</span> <span class="type">samplerCube</span> u_Texture; <span class="comment">// 立方体纹理</span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> main() &#123;</span><br><span class="line">    <span class="built_in">gl_FragColor</span> = <span class="built_in">textureCube</span>(u_Texture, <span class="built_in">normalize</span>(v_Pos);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>事实上不用立方体纹理也可以很方便地进行立方体贴图，做法就是将六张纹理图片拼接成一张纹理图片，然后每个面对应的纹理区域可以利用公式计算得到；这种做法就跟前端使用的精灵图原理是一样的，不过专业术语叫做<font color=#f00><strong>纹理图集</strong></font><sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>；</p>
+<h3 id="立方体环境贴图"><a class="markdownIt-Anchor" href="#立方体环境贴图"></a> 立方体环境贴图</h3>
+<p>环境贴图，也叫<strong>反射贴图</strong>：</p>
+<blockquote>
+<p>反射映射（Reflection mapping）在计算机图形学领域是用预先计算的纹理图像模拟复杂镜面的一种高效方法。纹理用来储存被渲染物体周围环境的图像。<br><br><br />
+这种实现方法比传统的光线跟踪（光线跟踪通过射出一束光线并且跟踪光线的传输路径来计算反射）算法效率更高，但是需要注意的是这种方法是实际反射的一种近似，有时甚至是非常粗糙的近似。<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup></p>
+</blockquote>
+<p>从上面这段描述可以看出，环境贴图就是对物体环境的一种近似模拟，<font color=#f00>目的就是想要高效地计算得到对于环境的镜面反射</font>；</p>
+<p>立方体环境贴图就是其中的一种，其原理就是将环境映射到一个立方体纹理上，然后通过<font color=#39f>物体表面法向量以及视线方向向量得到反射方向向量</font>，然后取样得到对应的纹理像素；</p>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 顶点着色器</span></span><br><span class="line"><span class="keyword">precision</span> <span class="keyword">mediump</span> <span class="type">float</span>; <span class="comment">// 中等精度</span></span><br><span class="line"><span class="keyword">attribute</span> <span class="type">vec3</span> a_Pos;</span><br><span class="line"><span class="keyword">attribute</span> <span class="type">vec3</span> a_Normal;</span><br><span class="line"><span class="keyword">varying</span> <span class="type">vec3</span> v_Normal;</span><br><span class="line"><span class="keyword">varying</span> <span class="type">vec3</span> v_Pos;</span><br><span class="line"><span class="keyword">uniform</span> <span class="type">mat4</span> u_Projection;</span><br><span class="line"><span class="keyword">uniform</span> <span class="type">mat4</span> u_View;</span><br><span class="line"><span class="keyword">uniform</span> <span class="type">mat4</span> u_Model;</span><br><span class="line"><span class="type">void</span> main() &#123;</span><br><span class="line">  <span class="built_in">gl_Position</span> = u_Projection * u_View * u_Model * <span class="type">vec4</span>(a_Pos, <span class="number">1.0</span>);</span><br><span class="line">  v_Normal = <span class="type">mat3</span>(u_Model) * a_Normal;</span><br><span class="line">  v_Pos = <span class="type">mat3</span>(u_Model) * a_Pos;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 片元着色器</span></span><br><span class="line"><span class="keyword">precision</span> <span class="keyword">mediump</span> <span class="type">float</span>; <span class="comment">// 中等精度</span></span><br><span class="line"><span class="keyword">varying</span> <span class="type">vec3</span> v_Normal;</span><br><span class="line"><span class="keyword">varying</span> <span class="type">vec3</span> v_Pos;</span><br><span class="line"><span class="keyword">uniform</span> <span class="type">samplerCube</span> u_Texture;</span><br><span class="line"><span class="keyword">uniform</span> <span class="type">vec3</span> u_EyePos;</span><br><span class="line"><span class="type">void</span> main() &#123;</span><br><span class="line">  <span class="type">vec3</span> normal = <span class="built_in">normalize</span>(v_Normal); <span class="comment">// 法向量</span></span><br><span class="line">  <span class="type">vec3</span> eyeToPos = <span class="built_in">normalize</span>(v_Pos - u_EyePos); <span class="comment">// 视线方向</span></span><br><span class="line">  <span class="type">vec3</span> reflectDirection = <span class="built_in">reflect</span>(eyeToPos, normal); <span class="comment">// 计算反射方向</span></span><br><span class="line">  <span class="built_in">gl_FragColor</span> = <span class="built_in">textureCube</span>(u_Texture, reflectDirection);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201007125627.gif?imageslim" alt="img" /></p>
+<h3 id="天空盒"><a class="markdownIt-Anchor" href="#天空盒"></a> 天空盒</h3>
+<blockquote>
+<p>天空盒是应用于场景的背景以显示天空、空间或封闭结构的纹理。天空盒可以是环绕到球体上的单个纹理，或环绕到立方体上的六个纹理。<sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup></p>
+</blockquote>
+<p>天空盒通常<strong>充当着背景的角色</strong>，因此其一定是位于渲染区域的最底层；如果仅仅只是将立方体天空盒当做一个巨大的容器，其他所有的物体都位于这个容器内来渲染天空盒的话，就需要<font color=#f00>保证渲染物体不会超过容器的范围</font>，否则就会被天空盒遮住<sup class="footnote-ref"><a href="#fn5" id="fnref5">[5]</a></sup>！</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201007125747.png?imageslim" alt="img" /></p>
+<p>所以另一个常用的做法就是通过屏幕坐标（<code>NDC</code>）然后反推出该点的<font color=#f00><strong>世界坐标</strong></font>，于是根据该点的世界坐标与相机坐标就得到了该点对于天空盒的方向向量；</p>
+<p>那么如何根据屏幕坐标然后反推得到该点的世界坐标呢？已知屏幕坐标计算过程为：</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>P</mi><mrow><mi>N</mi><mi>D</mi><mi>C</mi></mrow></msub><mo>=</mo><msub><mi>M</mi><mrow><mi>p</mi><mi>r</mi><mi>o</mi><mi>j</mi><mi>e</mi><mi>c</mi><mi>t</mi><mi>i</mi><mi>o</mi><mi>n</mi></mrow></msub><mo>∗</mo><msub><mi>M</mi><mrow><mi>v</mi><mi>i</mi><mi>e</mi><mi>w</mi></mrow></msub><mo>∗</mo><msub><mi>M</mi><mrow><mi>m</mi><mi>o</mi><mi>d</mi><mi>e</mi><mi>l</mi></mrow></msub><mo>∗</mo><mi>P</mi></mrow><annotation encoding="application/x-tex">P_{NDC} = M_{projection} * M_{view} * M_{model} * P
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span><span class="mord mathnormal mtight" style="margin-right:0.02778em;">D</span><span class="mord mathnormal mtight" style="margin-right:0.07153em;">C</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.311664em;"><span style="top:-2.5500000000000003em;margin-left:-0.10903em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">p</span><span class="mord mathnormal mtight" style="margin-right:0.02778em;">r</span><span class="mord mathnormal mtight">o</span><span class="mord mathnormal mtight" style="margin-right:0.05724em;">j</span><span class="mord mathnormal mtight">e</span><span class="mord mathnormal mtight">c</span><span class="mord mathnormal mtight">t</span><span class="mord mathnormal mtight">i</span><span class="mord mathnormal mtight">o</span><span class="mord mathnormal mtight">n</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.10903em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03588em;">v</span><span class="mord mathnormal mtight">i</span><span class="mord mathnormal mtight">e</span><span class="mord mathnormal mtight" style="margin-right:0.02691em;">w</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:-0.10903em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">m</span><span class="mord mathnormal mtight">o</span><span class="mord mathnormal mtight">d</span><span class="mord mathnormal mtight">e</span><span class="mord mathnormal mtight" style="margin-right:0.01968em;">l</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">P</span></span></span></span></span></p>
+<p>根据矩阵变换的特点可知，<font color=#39f>逆矩阵即为矩阵变换的逆变换</font>，因此屏幕坐标对应的世界坐标为：</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>P</mi><mrow><mi>w</mi><mi>o</mi><mi>r</mi><mi>l</mi><mi>d</mi></mrow></msub><mo>=</mo><mo stretchy="false">(</mo><msub><mi>M</mi><mrow><mi>p</mi><mi>r</mi><mi>o</mi><mi>j</mi><mi>e</mi><mi>c</mi><mi>t</mi><mi>i</mi><mi>o</mi><mi>n</mi></mrow></msub><mo>∗</mo><msub><mi>M</mi><mrow><mi>v</mi><mi>i</mi><mi>e</mi><mi>w</mi></mrow></msub><msup><mo stretchy="false">)</mo><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo>∗</mo><msub><mi>P</mi><mrow><mi>N</mi><mi>D</mi><mi>C</mi></mrow></msub></mrow><annotation encoding="application/x-tex">P_{world} = (M_{projection} * M_{view})^{-1} * P_{NDC}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.02691em;">w</span><span class="mord mathnormal mtight">o</span><span class="mord mathnormal mtight" style="margin-right:0.02778em;">r</span><span class="mord mathnormal mtight" style="margin-right:0.01968em;">l</span><span class="mord mathnormal mtight">d</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.036108em;vertical-align:-0.286108em;"></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.311664em;"><span style="top:-2.5500000000000003em;margin-left:-0.10903em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">p</span><span class="mord mathnormal mtight" style="margin-right:0.02778em;">r</span><span class="mord mathnormal mtight">o</span><span class="mord mathnormal mtight" style="margin-right:0.05724em;">j</span><span class="mord mathnormal mtight">e</span><span class="mord mathnormal mtight">c</span><span class="mord mathnormal mtight">t</span><span class="mord mathnormal mtight">i</span><span class="mord mathnormal mtight">o</span><span class="mord mathnormal mtight">n</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.1141079999999999em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.10903em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03588em;">v</span><span class="mord mathnormal mtight">i</span><span class="mord mathnormal mtight">e</span><span class="mord mathnormal mtight" style="margin-right:0.02691em;">w</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.864108em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span><span class="mord mathnormal mtight" style="margin-right:0.02778em;">D</span><span class="mord mathnormal mtight" style="margin-right:0.07153em;">C</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></span></p>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 顶点着色器</span></span><br><span class="line"><span class="keyword">precision</span> <span class="keyword">highp</span> <span class="type">float</span>;</span><br><span class="line"><span class="keyword">attribute</span> <span class="type">vec2</span> a_Pos;</span><br><span class="line"><span class="keyword">varying</span> <span class="type">vec4</span> v_Pos;</span><br><span class="line"><span class="type">void</span> main() &#123;</span><br><span class="line">  <span class="built_in">gl_Position</span> = <span class="type">vec4</span>(a_Pos, <span class="number">1.0</span>, <span class="number">1.0</span>); <span class="comment">// 绘制一个能够填满屏幕的矩形</span></span><br><span class="line">  v_Pos = <span class="built_in">gl_Position</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 片元着色器</span></span><br><span class="line"><span class="keyword">precision</span> <span class="keyword">highp</span> <span class="type">float</span>;</span><br><span class="line"><span class="keyword">varying</span> <span class="type">vec4</span> v_Pos;</span><br><span class="line"><span class="keyword">uniform</span> <span class="type">samplerCube</span> u_Texture;</span><br><span class="line"><span class="keyword">uniform</span> <span class="type">mat4</span> u_VPInverse; <span class="comment">// 视图投影矩阵的逆矩阵</span></span><br><span class="line"><span class="type">void</span> main() &#123;</span><br><span class="line">  <span class="comment">// 获取屏幕坐标的世界坐标，这里相机坐标为原点，因此视线方向可以简化</span></span><br><span class="line">  <span class="type">vec4</span> direction = u_VPInverse * v_Pos;</span><br><span class="line">  <span class="built_in">gl_FragColor</span> = <span class="built_in">textureCube</span>(u_Texture, <span class="built_in">normalize</span>(direction.xyz / direction.w));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20201007125822.gif?imageslim" alt="img" /></p>
+<p>这种渲染看起来跟<code>VR</code>的感觉很相似，不知道<code>VR</code>渲染原理是不是就是天空盒呢？</p>
+<h2 id="相关文档"><a class="markdownIt-Anchor" href="#相关文档"></a> 相关文档</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://webglfundamentals.org/webgl/lessons/zh_cn/webgl-environment-maps.html">WebGL 环境贴图 (反射)</a></li>
+</ul>
+<hr class="footnotes-sep" />
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://webglfundamentals.org/webgl/lessons/zh_cn/webgl-cube-maps.html">WebGL 立方体贴图</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://webglfundamentals.org/webgl/lessons/zh_cn/webgl-3d-textures.html">WebGL 三维纹理</a> <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E5%8F%8D%E5%B0%84%E8%B4%B4%E5%9B%BE">https://zh.wikipedia.org/wiki/反射贴图</a> <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://docs.aws.amazon.com/zh_cn/sumerian/latest/userguide/assets-skybox.html">天空盒 - Amazon Sumerian天空盒 - Amazon Sumerian</a> <a href="#fnref4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://webglfundamentals.org/webgl/lessons/zh_cn/webgl-skybox.html">WebGL 天空盒</a> <a href="#fnref5" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/webgl-textcube-application/" title="立方体纹理的应用">https://note.xiexuefeng.cc/post/webgl-textcube-application/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/webGL/" rel="tag"># webGL</a>
+              <a href="/tags/%E7%BA%B9%E7%90%86/" rel="tag"># 纹理</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/frontend-load-third-party-res/" rel="prev" title="前端加载非公开第三方文件及接口数据">
+                  <i class="fa fa-chevron-left"></i> 前端加载非公开第三方文件及接口数据
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/about-web-vitals/" rel="next" title="关于Web Vitals指标">
+                  关于Web Vitals指标 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/webgl-textcube-application/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/webgl-textcube-application/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

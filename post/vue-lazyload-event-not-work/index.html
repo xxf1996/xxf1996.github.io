@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 使用vue-lazyload的lazy-component组件对某个组件进行包裹，然后对组件整体设置懒加载效果时，存在一个坑：该组件内部的自定义组件（即非原生html标签）所有的自定义事件都会失效，且可能视图渲染不完全（多层组件嵌套时）；">
+<meta property="og:type" content="article">
+<meta property="og:title" content="vue-lazyload的一个坑：事件失效">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/vue-lazyload-event-not-work/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 使用vue-lazyload的lazy-component组件对某个组件进行包裹，然后对组件整体设置懒加载效果时，存在一个坑：该组件内部的自定义组件（即非原生html标签）所有的自定义事件都会失效，且可能视图渲染不完全（多层组件嵌套时）；">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200704125530.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200704125548.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200704125602.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200704125617.png?imageslim">
+<meta property="article:published_time" content="2020-07-04T04:49:54.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.886Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="vue-lazyload">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20200704125530.png?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/vue-lazyload-event-not-work/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/vue-lazyload-event-not-work/","path":"post/vue-lazyload-event-not-work/","title":"vue-lazyload的一个坑：事件失效"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>vue-lazyload的一个坑：事件失效 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E8%83%BD%E7%9A%84%E5%8E%9F%E5%9B%A0"><span class="nav-number">2.</span> <span class="nav-text"> 可能的原因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text"> 解决办法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E5%B0%8F%E6%8A%80%E5%B7%A7%E9%80%8F%E4%BC%A0"><span class="nav-number">4.</span> <span class="nav-text"> 一个小技巧：透传</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E6%A1%A3"><span class="nav-number">5.</span> <span class="nav-text"> 相关文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/vue-lazyload-event-not-work/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="vue-lazyload的一个坑：事件失效 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          vue-lazyload的一个坑：事件失效
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-07-04 12:49:54" itemprop="dateCreated datePublished" datetime="2020-07-04T12:49:54+08:00">2020-07-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%B8%A9%E5%9D%91/" itemprop="url" rel="index"><span itemprop="name">踩坑</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p>使用<code>vue-lazyload</code>的<code>lazy-component</code>组件对某个组件进行包裹，然后对组件整体设置懒加载效果时，存在一个坑：该组件内部的自定义组件（即非原生<code>html</code>标签）<font color=red><strong>所有的自定义事件都会失效</strong></font>，且可能<strong>视图渲染不完全</strong>（多层组件嵌套时）；</p>
+<span id="more"></span>
+<h2 id="可能的原因"><a class="markdownIt-Anchor" href="#可能的原因"></a> 可能的原因</h2>
+<p>初步猜测是<code>lazy-component</code>渲染函数的问题，因为渲染函数可以控制内部子元素的事件和属性等配置的挂载；然后一看该组件<a target="_blank" rel="noopener" href="https://github.com/hilongjw/vue-lazyload/blob/8647831c1422ee0bb32d5839c7250a7a3dba7563/src/lazy-component.js#L12">源码</a>，其内部渲染函数为：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200704125530.png?imageslim" alt="img" /></p>
+<p>不知道是不是跟渲染函数的第二个参数为<code>null</code>有关，渲染函数的第二个参数是用来设置<code>attribute</code>相关的参数（即包括指令，自定义事件<code>v-on</code>及<code>props</code>等相关的属性）；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200704125548.png?imageslim" alt="img" /></p>
+<h2 id="解决办法"><a class="markdownIt-Anchor" href="#解决办法"></a> 解决办法</h2>
+<p>首先本能地使用<code>Vue</code>实例自带的<code>$foreUpdate()</code>对组件内部进行强制重新渲染，但是重新渲染后还是存在上述问题；毕竟<code>$foreUpdate()</code>方法本质上就是再次调用组件的渲染函数进行渲染，如果渲染函数本身就存在问题，重新渲染多少次都没用。</p>
+<p>直接修改源码也是一种办法，不过发现直接改源码并没有用，因为<code>vue-lazyload</code>包主文件是一个编译后压缩的<code>js</code>文件（大多数包都是编译后的），也就是说如果要通过改源码这一途径来解决就需要对这个包进行编译……这个还是有点麻烦的，毕竟看了一下里面的依赖挺多的；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200704125602.png?imageslim" alt="img" /></p>
+<p>不过好在发现这个<code>lazy-component</code>有个<a target="_blank" rel="noopener" href="https://github.com/hilongjw/vue-lazyload/blob/8647831c1422ee0bb32d5839c7250a7a3dba7563/src/lazy-component.js#L45">自定义事件<code>show</code></a>，看源码应该是在懒加载组件从不可见区域进入可见区域时触发的，有了这个时间点就好办了；只需要利用这个时间点，用<code>lazy-component</code>进行占位，然后列表项进入可见区域后马上隐藏<code>lazy-component</code>且显示真正的列表项组件，因为此时<code>lazy-component</code>组件和要进行懒加载的列表项组件是平级的（即兄弟关系），所以就避免了<code>lazy-component</code>组件渲染的坑，还可以直接利用其懒加载功能；</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200704125617.png?imageslim" alt="img" /></p>
+<p>可以写成一个新的懒加载组件：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- lazy-item组件 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">template</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;item&quot;</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 通过lazy-component组件的show事件来切换真正的内容 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">lazy-component</span> <span class="attr">v-if</span>=<span class="string">&quot;showLazy&quot;</span> <span class="attr">class</span>=<span class="string">&quot;item-lazy&quot;</span> @<span class="attr">show</span>=<span class="string">&quot;load&quot;</span> /&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 直接透传prop和自定义事件 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">list-item</span> <span class="attr">v-else</span> <span class="attr">v-on</span>=<span class="string">&quot;$listeners&quot;</span> <span class="attr">v-bind</span>=<span class="string">&quot;$attrs&quot;</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">class</span> <span class="title class_">LayzItem</span> <span class="keyword">extends</span> <span class="title class_ inherited__">Vue</span> &#123;</span><br><span class="line">  name = <span class="string">&#x27;LayzItem&#x27;</span></span><br><span class="line"></span><br><span class="line">  private showLazy = <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">  private <span class="title function_">load</span> () &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;懒加载load&#x27;</span>)</span><br><span class="line">    <span class="variable language_">this</span>.$nextTick(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">      <span class="variable language_">this</span>.<span class="property">showLazy</span> = <span class="literal">false</span></span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="一个小技巧透传"><a class="markdownIt-Anchor" href="#一个小技巧透传"></a> 一个小技巧：透传</h2>
+<p>所谓的透传就是将<strong>父组件的属性直接传给子组件</strong>，而不是通过在父组件定义相关的<code>props</code>和事件，然后再传入到子组件上；如：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">list-item</span> <span class="attr">v-else</span> <span class="attr">v-on</span>=<span class="string">&quot;$listeners&quot;</span> <span class="attr">v-bind</span>=<span class="string">&quot;$attrs&quot;</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+<p>通过<code>v-on</code>直接绑定父组件的<code>$listeners</code>属性，可以将父组件上绑定的所有事件直接绑定到子组件上；同理，<code>$attrs</code>包含组件的所有<code>attribute</code>属性，通过<code>v-bind</code>则可以直接绑定到子组件上；</p>
+<p>透传的好处就是不需要在父组件中重新定义相关属性再中转给子组件，适用于<font color=#39f><strong>希望将父组件上的相关属性直接传递给子组件</strong></font>的情况；上面这种包装列表项为懒加载组件的情况就很适用，因为直接在懒加载组件（父组件）上绑定的属性和事件就可以原封不动地传给真正的列表项了。</p>
+<h2 id="相关文档"><a class="markdownIt-Anchor" href="#相关文档"></a> 相关文档</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/302249432/answer/530484251">修改nodejs项目中node_modules的代码，不能生效吗？ - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://cn.vuejs.org/v2/guide/render-function.html#%E5%90%91%E5%AD%90%E5%85%83%E7%B4%A0%E6%88%96%E5%AD%90%E7%BB%84%E4%BB%B6%E4%BC%A0%E9%80%92-attribute-%E5%92%8C%E4%BA%8B%E4%BB%B6">渲染函数 &amp; JSX — Vue.js</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/vue-lazyload-event-not-work/" title="vue-lazyload的一个坑：事件失效">https://note.xiexuefeng.cc/post/vue-lazyload-event-not-work/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/vue-lazyload/" rel="tag"># vue-lazyload</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/multi-branch-common-file/" rel="prev" title="解决多分支并行开发公共文件维护的几种方案">
+                  <i class="fa fa-chevron-left"></i> 解决多分支并行开发公共文件维护的几种方案
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/first-test-css-houdini/" rel="next" title="浅尝 CSS Houdini">
+                  浅尝 CSS Houdini <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/vue-lazyload-event-not-work/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/vue-lazyload-event-not-work/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

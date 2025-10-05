@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 很多时候TS这门语言只被人看作是ES的类型增强版，然而在我看来TS作为ES的超集，ES语法可以看作是一个维度，而多出的类型系统则可以看作是另一个维度；也就是说如果把ES看作是一个一维编程语言，那么TS就是一个二维编程语言； 这篇文章尝试从多出来的一个维度来描述TS类型编程的独特性和一般性；所以，涉及各种类型的定义和用法不再过多阐述。 跟大多数编程语言一样，TS类型编程也遵循程序语言设计的一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从类型系统的角度看TS">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/ts-in-type-system/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 很多时候TS这门语言只被人看作是ES的类型增强版，然而在我看来TS作为ES的超集，ES语法可以看作是一个维度，而多出的类型系统则可以看作是另一个维度；也就是说如果把ES看作是一个一维编程语言，那么TS就是一个二维编程语言； 这篇文章尝试从多出来的一个维度来描述TS类型编程的独特性和一般性；所以，涉及各种类型的定义和用法不再过多阐述。 跟大多数编程语言一样，TS类型编程也遵循程序语言设计的一">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200614170456.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200614170522.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200614170549.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200614170617.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200614170635.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200614170656.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200614170722.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20210209233411.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20210209233426.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20210209233446.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20210209233501.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200624175618.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200624175635.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200624175652.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200624175708.png?imageslim">
+<meta property="article:published_time" content="2020-06-14T09:01:46.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.884Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="TS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20200614170456.png?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/ts-in-type-system/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/ts-in-type-system/","path":"post/ts-in-type-system/","title":"从类型系统的角度看TS"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>从类型系统的角度看TS | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE"><span class="nav-number">2.</span> <span class="nav-text"> 数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%87%E8%AF%86%E7%AC%A6"><span class="nav-number">2.1.</span> <span class="nav-text"> 标识符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%80%BC"><span class="nav-number">2.2.</span> <span class="nav-text"> 值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%80%BC%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.3.</span> <span class="nav-text"> 值类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.4.</span> <span class="nav-text"> 数据结构类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%90%E7%AE%97"><span class="nav-number">3.</span> <span class="nav-text"> 运算</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E5%85%83%E8%BF%90%E7%AE%97"><span class="nav-number">3.1.</span> <span class="nav-text"> 二元运算</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E5%85%83%E8%BF%90%E7%AE%97"><span class="nav-number">3.2.</span> <span class="nav-text"> 三元运算</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9B%86%E5%90%88"><span class="nav-number">4.</span> <span class="nav-text"> 集合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%83%E7%BB%84"><span class="nav-number">5.</span> <span class="nav-text"> 元组</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C"><span class="nav-number">5.1.</span> <span class="nav-text"> 基本操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A9%E5%B1%95%E6%93%8D%E4%BD%9C"><span class="nav-number">5.2.</span> <span class="nav-text"> 扩展操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1"><span class="nav-number">6.</span> <span class="nav-text"> 对象</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E8%AE%BF%E9%97%AE"><span class="nav-number">6.1.</span> <span class="nav-text"> 索引访问</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0"><span class="nav-number">7.</span> <span class="nav-text"> 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%92%E5%BD%92"><span class="nav-number">7.1.</span> <span class="nav-text"> 递归</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A7%E5%88%B6%E8%AF%AD%E5%8F%A5"><span class="nav-number">8.</span> <span class="nav-text"> 控制语句</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9D%A1%E4%BB%B6%E8%AF%AD%E5%8F%A5"><span class="nav-number">8.1.</span> <span class="nav-text"> 条件语句</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BE%AA%E7%8E%AF%E8%AF%AD%E5%8F%A5"><span class="nav-number">8.2.</span> <span class="nav-text"> 循环语句</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E6%A1%A3"><span class="nav-number">9.</span> <span class="nav-text"> 相关文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/ts-in-type-system/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="从类型系统的角度看TS | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          从类型系统的角度看TS
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-06-14 17:01:46" itemprop="dateCreated datePublished" datetime="2020-06-14T17:01:46+08:00">2020-06-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p>很多时候<code>TS</code>这门语言只被人看作是<code>ES</code>的类型增强版，然而在我看来<code>TS</code>作为<code>ES</code>的超集，<code>ES</code>语法可以看作是一个维度，而多出的类型系统则可以看作是另一个维度；也就是说如果把<code>ES</code>看作是一个一维编程语言，那么<code>TS</code>就是一个二维编程语言；</p>
+<p>这篇文章尝试从多出来的一个维度来描述<font color=#39f><code>TS</code>类型编程的独特性和一般性</font>；所以，涉及各种类型的定义和用法不再过多阐述。</p>
+<p>跟大多数编程语言一样，<code>TS</code>类型编程也遵循程序语言设计的一些原则。</p>
+<blockquote>
+<p>程序设计语言的基本成分包括数据、运算、控制和传输等。</p>
+</blockquote>
+<span id="more"></span>
+<h2 id="数据"><a class="markdownIt-Anchor" href="#数据"></a> 数据</h2>
+<blockquote>
+<p>数据是程序操作的对象，具有类型、名称、作用域、存储类别和生存期等属性，在程序运行过程中要为它分配内存空间。</p>
+</blockquote>
+<p>本来习惯性地想把<code>TS</code>中所有用来存储类型的数据称之为“变量”，但是变量在<font color=#39f><strong>严格意义上是可以在运行时改变值</strong></font>的，但是据观察，<code>TS</code>中的数据不允许多次赋值，所以也就不能称之为“变量”了，实际上所有的类型数据都是常量，不过声明合并那又是另一回事了；</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="title class_">Test</span> = &#123;</span><br><span class="line">  <span class="attr">name</span>: <span class="built_in">string</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title class_">Test</span> = &#123;</span><br><span class="line">  <span class="attr">age</span>: <span class="built_in">number</span>;</span><br><span class="line">&#125; <span class="comment">// 这样的重新赋值，TS是不允许的，因为此时该标识符被认为是ES中的变量了</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> <span class="title class_">Test</span> = &#123;</span><br><span class="line">  <span class="attr">age</span>: <span class="built_in">string</span>; <span class="comment">// 事实上同类型的标识符也不能重复声明</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200614170456.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200614170522.png?imageslim" alt="img" /></p>
+<h3 id="标识符"><a class="markdownIt-Anchor" href="#标识符"></a> 标识符</h3>
+<p><code>TS</code>中的标识符就是用来命名<font color=#39f>类型，泛型，命名空间，模块</font>等事物的特定字符串；经实验，标识符的命名规则如下：</p>
+<ul>
+<li>
+<p>不允许数字开头；</p>
+  <figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ❌</span></span><br><span class="line"><span class="keyword">type</span> 3d = &#123;</span><br><span class="line">  <span class="attr">a</span>: <span class="built_in">string</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>不允许使用标点符号，下划线<code>_</code>和美元符号 $ 除外；</p>
+  <figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ❌</span></span><br><span class="line"><span class="keyword">type</span> d+ = &#123;</span><br><span class="line">  <span class="attr">a</span>: <span class="built_in">string</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ✅</span></span><br><span class="line"><span class="keyword">type</span> d_ = &#123;</span><br><span class="line">  <span class="attr">a</span>: <span class="built_in">string</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ✅</span></span><br><span class="line"><span class="keyword">type</span> $c$ = &#123;</span><br><span class="line">  <span class="attr">name</span>: <span class="built_in">string</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>可以使用大小写英文字符，且<font color=red><strong>区分大小写</strong></font>；</p>
+  <figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ✅</span></span><br><span class="line"><span class="keyword">type</span> SOME_test = &#123;</span><br><span class="line">  <span class="attr">a</span>: <span class="built_in">string</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 区分大小写</span></span><br><span class="line"><span class="keyword">type</span> some_test = &#123;</span><br><span class="line">  <span class="attr">name</span>: <span class="built_in">string</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>中文字符也是可以的；</p>
+  <figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ✅</span></span><br><span class="line"><span class="keyword">type</span> 中文 = &#123;</span><br><span class="line">  <span class="attr">name</span>: <span class="built_in">string</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="attr">a</span>: 中文 = &#123;</span><br><span class="line">  <span class="attr">name</span>: <span class="string">&#x27;ssss&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="值"><a class="markdownIt-Anchor" href="#值"></a> 值</h3>
+<p><code>TS</code>类型系统的值有点特殊，因为其值对于<code>ES</code>而言是“类型”，也就是说<font color=#39f><strong>类型系统中的值就是类型</strong></font>；正是由于值的特殊性，容易让人忘记实际上用来约束<code>ES</code>代码的类型只不过是类型系统中普普通通的值；</p>
+<h3 id="值类型"><a class="markdownIt-Anchor" href="#值类型"></a> 值类型</h3>
+<blockquote>
+<p>注：这里的值类型对于ES来说就是“类型的类型”了。</p>
+</blockquote>
+<ul>
+<li><strong>原始类型</strong>：<code>string</code>，<code>number</code>，<code>boolean</code>，<code>null</code>，<code>undefined</code>，<code>symbol</code>，<code>bigint</code>，<code>void</code>；（本来理解原始类型应该类似于原子类型，应该是相互互斥的，但是<code>null</code>和<code>undefined</code>的存在打破了互斥关系……）</li>
+<li><strong>顶部类型</strong>：类型系统中的根节点，即其他所有非顶部类型都是其子类型；如<code>any</code>  和<code>unknown</code>；</li>
+<li><strong>底部类型</strong>：不存在对应值的一种类型，即不能兼容所有类型，包括自身；如<code>never</code>；</li>
+<li><strong>复合类型</strong>：复合类型则是对原始类型，顶部类型和底部类型的一种组合；比如对象类型（<code>object</code>及由<code>interface</code>和<code>type</code>构建的对象类型），数组，元祖，枚举（<code>enum</code>关键字声明的类型），类（<code>class</code>关键字声明的类型）等；</li>
+<li><strong>函数类型</strong>：<code>function</code>关键字声明的类型（<code>interface</code>也能声明出函数的结构）；</li>
+<li><strong>字面量类型</strong>：这里的字面量就是指可以在<code>ES</code>中作为字面量使用的值；</li>
+</ul>
+<h3 id="数据结构类型"><a class="markdownIt-Anchor" href="#数据结构类型"></a> 数据结构类型</h3>
+<p>根据<code>TS</code>类型声明关键字的不同，可以把存储的数据结构分为以下几种：</p>
+<ul>
+<li><code>interface</code></li>
+<li><code>class</code></li>
+<li><code>function</code></li>
+<li><code>enum</code></li>
+<li><code>type</code></li>
+<li><code>namespace</code> / <code>moudle</code></li>
+</ul>
+<h2 id="运算"><a class="markdownIt-Anchor" href="#运算"></a> 运算</h2>
+<p>类比于一般编程语言中的数据基本运算，实际上<code>TS</code>类型系统也是有值运算的，只不过运算比较特别；</p>
+<h3 id="二元运算"><a class="markdownIt-Anchor" href="#二元运算"></a> 二元运算</h3>
+<ul>
+<li>联合类型：使用<code>|</code>符号对两个值进行联合，得到的效果跟数组相似；</li>
+<li>交叉类型：使用<code>&amp;</code>符号对两个值进行交叉；</li>
+</ul>
+<h3 id="三元运算"><a class="markdownIt-Anchor" href="#三元运算"></a> 三元运算</h3>
+<ul>
+<li>条件运算：跟其他编程语言中一样，使用三元运算符<code>?:</code>来进行条件运算；</li>
+</ul>
+<h2 id="集合"><a class="markdownIt-Anchor" href="#集合"></a> 集合</h2>
+<blockquote>
+<p>注：本来是想把联合类型当作是类型系统中的数组结构的，但是仔细一想好像不严谨，因为联合类型自带去重，因此更像是集合结构；</p>
+</blockquote>
+<p>在类型系统中，并没有显式的集合数据结构，但是可以把联合类型当作是类型系统中的集合，因为很多时候联合类型的表现跟其他编程语言中的集合是相似的；比如：</p>
+<ul>
+<li>
+<p>组成联合类型的其中每个值可以看作是一个元素；</p>
+</li>
+<li>
+<p>可后续<font color=#39f><strong>添加新元素和移除</strong></font>（移除指定元素需要函数来支持）；</p>
+  <figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> A = <span class="built_in">number</span> | <span class="built_in">string</span></span><br><span class="line"><span class="keyword">type</span> B = A | <span class="built_in">boolean</span> <span class="comment">// 后续可以利用 | 符号继续添加</span></span><br><span class="line"><span class="keyword">type</span> C = <span class="title class_">Exclude</span>&lt;A, <span class="built_in">number</span>&gt; <span class="comment">// 可以利用Exclude函数进行去除指定元素</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200614170549.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200614170617.png?imageslim" alt="img" /></p>
+</li>
+<li>
+<p>添加元素时会<font color=#39f><strong>自动去重</strong></font>；</p>
+  <figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> a = <span class="built_in">number</span> | <span class="built_in">string</span> | <span class="built_in">boolean</span></span><br><span class="line"><span class="keyword">type</span> b = a | <span class="built_in">number</span> <span class="comment">// 由于联合类型a已经包含number，所以再次添加时会去重</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200614170635.png?imageslim" alt="img" /></p>
+</li>
+<li>
+<p>可进行<font color=#39f><strong>遍历</strong></font>，使用关键字<code>in</code>来对象类型中展开；</p>
+  <figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> keys = <span class="string">&#x27;name&#x27;</span> | <span class="string">&#x27;age&#x27;</span> | <span class="string">&#x27;other&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> <span class="title class_">ForStep</span>&lt;T <span class="keyword">extends</span> keyof <span class="built_in">any</span>&gt; = &#123;</span><br><span class="line">  [P <span class="keyword">in</span> T]: P | <span class="string">&#x27;value&#x27;</span>; <span class="comment">// 利用in对集合进行遍历，然后可以对元素进行一些操作</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> test = <span class="title class_">ForStep</span>&lt;keys&gt;</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200614170656.png?imageslim" alt="img" /></p>
+</li>
+<li>
+<p>可进行<font color=#39f>映射</font>，利用<font color=#39f><strong>分布式条件类型</strong></font>可对集合进行映射处理；</p>
+  <figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> a = <span class="built_in">number</span> | <span class="built_in">string</span> | <span class="built_in">boolean</span></span><br><span class="line"><span class="keyword">type</span> b&lt;T&gt; = T <span class="keyword">extends</span> <span class="built_in">string</span> ? <span class="string">&#x27;test&#x27;</span> : T <span class="comment">// 将元素string替换成字符串test</span></span><br><span class="line"><span class="keyword">type</span> c = b&lt;a&gt; <span class="comment">// 进行映射处理</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200614170722.png?imageslim" alt="img" /></p>
+</li>
+</ul>
+<h2 id="元组"><a class="markdownIt-Anchor" href="#元组"></a> 元组</h2>
+<p>元组实际上就是一组元素类型固定以及长度固定的数组类型，因此其很多操作都可以类比于<code>JS</code>中的数组来使用；</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="variable constant_">T1</span> = [<span class="built_in">number</span>, <span class="built_in">string</span>, <span class="built_in">boolean</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> <span class="variable constant_">T5</span> = <span class="variable constant_">T1</span> <span class="keyword">extends</span> &#123;</span><br><span class="line">  <span class="number">0</span>: <span class="built_in">number</span>,</span><br><span class="line">  <span class="number">1</span>: <span class="built_in">string</span>,</span><br><span class="line">  <span class="number">2</span>: <span class="built_in">boolean</span>,</span><br><span class="line">  <span class="attr">length</span>: <span class="number">3</span></span><br><span class="line">&#125; ? <span class="literal">true</span> : <span class="literal">false</span> <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+<p>如上所示，在<code>TS</code>内部，可以<strong>近似地</strong>把一个元组类型当做是一个拥有<code>length</code>属性的对象类型（这种处理很自然，因为在<code>JS</code>中数组无非就是一种特殊的对象，其键名为数字），之所以说是近似，是因为在获取元组类型的key时，可以看到除了索引和<code>length</code>属性，<font color=#f00>还多了<code>JS</code>数组原型上的属性</font>；</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="variable constant_">T1</span> = [<span class="built_in">number</span>, <span class="built_in">string</span>, <span class="built_in">boolean</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> <span class="variable constant_">T6</span> = keyof <span class="variable constant_">T1</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20210209233411.png?imageslim" alt="img" /></p>
+<p>不过也有一些技巧可以<strong>只获取到元组类型的数字索引</strong>：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 获取元组类型的数字索引；</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@template</span> Tuple 元组类型</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">type</span> <span class="title class_">GetTupleKeys</span>&lt;<span class="title class_">Tuple</span> <span class="keyword">extends</span> <span class="built_in">unknown</span>[]&gt; = <span class="title class_">Exclude</span>&lt;keyof <span class="title class_">Tuple</span>, keyof []&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="variable constant_">T1</span> = [<span class="built_in">number</span>, <span class="built_in">string</span>, <span class="built_in">boolean</span>]</span><br><span class="line"><span class="keyword">type</span> <span class="variable constant_">T7</span> = <span class="title class_">GetTupleKeys</span>&lt;<span class="variable constant_">T1</span>&gt; <span class="comment">// &quot;0&quot; | &quot;1&quot; | &quot;2&quot;</span></span><br></pre></td></tr></table></figure>
+<h3 id="基本操作"><a class="markdownIt-Anchor" href="#基本操作"></a> 基本操作</h3>
+<ul>
+<li>
+<p><strong>索引访问</strong>：元组类型也能像一般对象那样的索引访问，当然也包含联合索引；</p>
+  <figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="variable constant_">T1</span> = [<span class="built_in">number</span>, <span class="built_in">string</span>, <span class="built_in">boolean</span>]</span><br><span class="line"><span class="keyword">type</span> <span class="variable constant_">T2</span> = <span class="variable constant_">T1</span>[<span class="number">2</span>] <span class="comment">// boolean</span></span><br><span class="line"><span class="keyword">type</span> <span class="variable constant_">T22</span> = <span class="variable constant_">T1</span>[<span class="number">2</span> | <span class="number">0</span>] <span class="comment">// number | boolean</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p><strong>后置插入元素</strong>：使用的是<code>TS</code>里面的扩展运算符特性；</p>
+  <figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="title class_">Push</span>&lt;<span class="title class_">Tuple</span> <span class="keyword">extends</span> <span class="built_in">unknown</span>[], <span class="title class_">Element</span>&gt; = [...<span class="title class_">Tuple</span>, <span class="title class_">Element</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> <span class="variable constant_">T1</span> = [<span class="built_in">number</span>, <span class="built_in">string</span>, <span class="built_in">boolean</span>]</span><br><span class="line"><span class="keyword">type</span> <span class="variable constant_">T3</span> = <span class="title class_">Push</span>&lt;<span class="variable constant_">T1</span>, <span class="built_in">string</span>[]&gt; <span class="comment">// [number, string, boolean, string]</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p><strong>前置插入元素</strong>：原理跟后置插入同理；</p>
+  <figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="title class_">Prepend</span>&lt;<span class="title class_">Tuple</span> <span class="keyword">extends</span> <span class="built_in">unknown</span>[], <span class="title class_">Element</span>&gt; = [<span class="title class_">Element</span>, ...<span class="title class_">Tuple</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> <span class="variable constant_">T1</span> = [<span class="built_in">number</span>, <span class="built_in">string</span>, <span class="built_in">boolean</span>]</span><br><span class="line"><span class="keyword">type</span> <span class="variable constant_">T4</span> = <span class="title class_">Prepend</span>&lt;<span class="variable constant_">T1</span>, <span class="built_in">number</span>[]&gt; <span class="comment">// [number[], number, string, boolean]</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p><strong>合并两个元组</strong>：</p>
+  <figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="title class_">Concat</span>&lt;<span class="variable constant_">T1</span> <span class="keyword">extends</span> <span class="built_in">unknown</span>[], <span class="variable constant_">T2</span> <span class="keyword">extends</span> <span class="built_in">unknown</span>[]&gt; = [...<span class="variable constant_">T1</span>, ...<span class="variable constant_">T2</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> <span class="variable constant_">T1</span> = [<span class="built_in">number</span>, <span class="built_in">string</span>, <span class="built_in">boolean</span>]</span><br><span class="line"><span class="keyword">type</span> <span class="variable constant_">T12</span> = <span class="title class_">Concat</span>&lt;<span class="variable constant_">T1</span>, [<span class="built_in">string</span>[], <span class="built_in">boolean</span>[]]&gt; <span class="comment">// [number, string, boolean, string[], boolean[]]</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p><strong>遍历操作</strong>：原理实际上跟遍历对象类型一样；</p>
+  <figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="variable constant_">T1</span> = [<span class="built_in">number</span>, <span class="built_in">string</span>, <span class="built_in">boolean</span>]</span><br><span class="line"><span class="keyword">type</span> <span class="variable constant_">T13</span> = &#123;</span><br><span class="line">  [K <span class="keyword">in</span> <span class="title class_">GetTupleKeys</span>&lt;<span class="variable constant_">T1</span>&gt;]: <span class="function">(<span class="params"><span class="attr">params</span>: T1[K]</span>) =&gt;</span> <span class="built_in">void</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20210209233426.png?imageslim" alt="img" /></p>
+</li>
+</ul>
+<h3 id="扩展操作"><a class="markdownIt-Anchor" href="#扩展操作"></a> 扩展操作</h3>
+<p>所谓的扩展操作就是指需要一些技巧来中转达到目的，而没有快捷的语法支持，且在类型系统中使用场景可能比较有限；</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 将联合类型转为对应的交叉函数类型</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@template</span> U 联合类型</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">type</span> <span class="title class_">UnionToInterFunction</span>&lt;U&gt; =</span><br><span class="line">  (U <span class="keyword">extends</span> <span class="built_in">any</span> ? <span class="function">(<span class="params"><span class="attr">k</span>: () =&gt; U</span>) =&gt;</span> <span class="built_in">void</span> : <span class="built_in">never</span>) <span class="title function_">extends</span></span><br><span class="line">  (<span class="function">(<span class="params"><span class="attr">k</span>: infer I</span>) =&gt;</span> <span class="built_in">void</span>) ? I : <span class="built_in">never</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 获取联合类型中的最后一个类型</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@template</span> U 联合类型</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">type</span> <span class="title class_">GetUnionLast</span>&lt;U&gt; = <span class="title class_">UnionToInterFunction</span>&lt;U&gt; <span class="keyword">extends</span> &#123; (): infer A; &#125; ? A : <span class="built_in">never</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>
+<p><strong>删除最后一个元素</strong>：</p>
+  <figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="title class_">Pop</span>&lt;<span class="title class_">Tuple</span> <span class="keyword">extends</span> <span class="built_in">unknown</span>[], <span class="title class_">Index</span> = <span class="title class_">GetTupleKeys</span>&lt;<span class="title class_">Tuple</span>&gt;, <span class="title class_">RemoveKey</span> = <span class="title class_">GetUnionLast</span>&lt;<span class="title class_">Index</span>&gt;&gt; = &#123;</span><br><span class="line">  [I <span class="keyword">in</span> <span class="title class_">Exclude</span>&lt;<span class="title class_">Index</span>, <span class="title class_">RemoveKey</span>&gt;]: <span class="title class_">Tuple</span>[I];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  <figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="variable constant_">T1</span> = [<span class="built_in">number</span>, <span class="built_in">string</span>, <span class="built_in">boolean</span>]</span><br><span class="line"><span class="keyword">type</span> <span class="variable constant_">T8</span> = <span class="title class_">Pop</span>&lt;<span class="variable constant_">T1</span>&gt;</span><br><span class="line"><span class="keyword">type</span> <span class="variable constant_">T9</span> = <span class="variable constant_">T8</span>[<span class="number">2</span>] <span class="comment">// Property &#x27;2&#x27; does not exist on type &#x27;Pop&lt;T1, &quot;0&quot; | &quot;1&quot; | &quot;2&quot;, &quot;2&quot;&gt;&#x27;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20210209233446.png?imageslim" alt="img" /></p>
+</li>
+<li>
+<p><strong>删除指定位置元素</strong>：这种方式实际上仅仅是把指定索引位置的元素去除，而其他位置的元素依然保持在原索引位置，因此并非真正意义上像<code>JS</code>数组中的删除一样；</p>
+  <figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="title class_">RemoveElementFromIndex</span>&lt;<span class="title class_">Tuple</span> <span class="keyword">extends</span> <span class="built_in">unknown</span>[], <span class="title class_">Pos</span> <span class="keyword">extends</span> <span class="built_in">string</span> = <span class="string">&#x27;0&#x27;</span>, <span class="title class_">Index</span> = <span class="title class_">GetTupleKeys</span>&lt;<span class="title class_">Tuple</span>&gt;&gt; = &#123;</span><br><span class="line">  [I <span class="keyword">in</span> <span class="title class_">Exclude</span>&lt;<span class="title class_">Index</span>, <span class="title class_">Pos</span>&gt;]: <span class="title class_">Tuple</span>[I];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  <figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="variable constant_">T1</span> = [<span class="built_in">number</span>, <span class="built_in">string</span>, <span class="built_in">boolean</span>]</span><br><span class="line"><span class="keyword">type</span> <span class="variable constant_">T10</span> = <span class="title class_">RemoveElementFromIndex</span>&lt;<span class="variable constant_">T1</span>, <span class="string">&#x27;1&#x27;</span>&gt;</span><br><span class="line"><span class="keyword">type</span> <span class="variable constant_">T11</span> = <span class="variable constant_">T10</span>[<span class="number">1</span>] <span class="comment">// Property &#x27;1&#x27; does not exist on type &#x27;RemoveElementFromIndex&lt;T1, &quot;1&quot;, &quot;0&quot; | &quot;1&quot; | &quot;2&quot;&gt;&#x27;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20210209233501.png?imageslim" alt="img" /></p>
+</li>
+</ul>
+<h2 id="对象"><a class="markdownIt-Anchor" href="#对象"></a> 对象</h2>
+<p>类型系统中的对象就是对象类型（可以由<code>interface</code>，<code>type</code>甚至是<code>class</code>创建得到），对象类型具有跟<code>ES</code>中对象相似的结构，只不过键值是类型而已；</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> A &#123;</span><br><span class="line">  <span class="attr">name</span>: <span class="built_in">string</span>;</span><br><span class="line">  <span class="attr">age</span>: <span class="built_in">number</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> B = &#123;</span><br><span class="line">  <span class="keyword">readonly</span> <span class="attr">ok</span>: <span class="built_in">boolean</span>;</span><br><span class="line">  <span class="attr">size</span>: <span class="built_in">number</span>;</span><br><span class="line">  <span class="attr">other</span>?: <span class="built_in">string</span>[];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">declare</span> <span class="keyword">class</span> <span class="title class_">AAA</span> &#123;</span><br><span class="line">  <span class="attr">name</span>: <span class="built_in">string</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> <span class="title function_">some</span> (<span class="attr">word</span>: <span class="built_in">string</span>): <span class="title class_">Promise</span>&lt;<span class="built_in">boolean</span>&gt;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="索引访问"><a class="markdownIt-Anchor" href="#索引访问"></a> 索引访问</h3>
+<p>类型系统中的对象也是支持通过索引来访问相应属性的值，只不过<font color=#f00>只能通过<code>[key]</code>（中括号）的方式</font>进行访问，不能像<code>ES</code>中那样通过<code>.</code>（点符号）来访问！</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> C = A[<span class="string">&#x27;age&#x27;</span>] | B[<span class="string">&#x27;ok&#x27;</span>] | <span class="variable constant_">AAA</span>[<span class="string">&#x27;some&#x27;</span>] <span class="comment">// 没错，class也能当做对象进行访问</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200624175618.png?imageslim" alt="img" /></p>
+<p>对象中属性的修饰符（或者类成员的修饰符）则不会被带入到键值，也就是通过索引访问访问只能得到属性值；不过如果是可选属性，那么属性值默认会与<code>undefined</code>进行联合；</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> D = &#123;</span><br><span class="line">  <span class="attr">extra</span>: B[<span class="string">&#x27;other&#x27;</span>]; <span class="comment">// 访问可选属性</span></span><br><span class="line">  <span class="attr">some</span>: B[<span class="string">&#x27;ok&#x27;</span>]; <span class="comment">// 访问readonly属性</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200624175635.png?imageslim" alt="img" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200624175652.png?imageslim" alt="img" /></p>
+<p>不仅如此，索引访问<font color=#39f>还支持使用集合（也就是联合类型）来进行一次访问多个属性值</font>，且将多个属性值进行联合，最后得到一个集合；</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> E = B[<span class="string">&#x27;ok&#x27;</span> | <span class="string">&#x27;other&#x27;</span>] <span class="comment">// 还可以用联合类型来访问多个属性值</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200624175708.png?imageslim" alt="img" /></p>
+<h2 id="函数"><a class="markdownIt-Anchor" href="#函数"></a> 函数</h2>
+<blockquote>
+<p>注：泛型类型（<code>generic type</code>）指的就是<code>TS</code>中带泛型的类型。</p>
+</blockquote>
+<p>同样地，类型系统中并没有显式声明函数的语法；但是<font color=#39f>泛型类型</font>完全可以当作是类型系统中的函数，因为泛型类型可以接受参数并返回不同的值，也就是说泛型类型具备入参（输入）和出参（输出）的形式。如常用的官方内置泛型类型<code>Pick</code>：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="title class_">Pick</span>&lt;T, U <span class="keyword">extends</span> keyof T&gt; = &#123;</span><br><span class="line">  [K <span class="keyword">in</span> U]: T[K];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面这段代码就可以理解为一个定了两个参数的函数，这个函数会对第二个参数进行遍历，然后构成一个新的对象类型，并返回这个值；</p>
+<h3 id="递归"><a class="markdownIt-Anchor" href="#递归"></a> 递归</h3>
+<p>没错，类型系统中的“函数”也能够<font color=#39f>调用自身</font>，如：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="title class_">DeepReadonly</span>&lt;T&gt; = &#123; <span class="keyword">readonly</span> [P <span class="keyword">in</span> keyof T]: <span class="title class_">DeepReadonly</span>&lt;T[P]&gt; &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="控制语句"><a class="markdownIt-Anchor" href="#控制语句"></a> 控制语句</h2>
+<p>类型系统中并没有其他编程语言那种使用独立的关键字和语法结构显式的控制语句，但是也有某些关键字能够起到类似的作用。这个局面个人猜测可能与<code>TS</code>本身就包含了<code>ES</code>的全部语法，导致使用独立关键字和语法结构来定义控制语句会出现冲突（除非定义一套互斥的语法）；</p>
+<h3 id="条件语句"><a class="markdownIt-Anchor" href="#条件语句"></a> 条件语句</h3>
+<blockquote>
+<p>T extends U ? True分支 : False分支</p>
+</blockquote>
+<p>使用<code>extends</code>关键字来获取条件结果，三元运算符<code>?:</code>来控制条件分支，这就是类型系统中特有的条件语句，当然，条件语句也是可以嵌套的。</p>
+<h3 id="循环语句"><a class="markdownIt-Anchor" href="#循环语句"></a> 循环语句</h3>
+<blockquote>
+<p>[K in Union Type]</p>
+</blockquote>
+<p>使用关键字<code>in</code>可以在对象类型索引签名中遍历集合（也就是联合类型），并<strong>能够得到集合中的每个元素</strong>，进行下一步控制；</p>
+<h2 id="相关文档"><a class="markdownIt-Anchor" href="#相关文档"></a> 相关文档</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/136254808">【万字长文】深入理解 Typescript 高级用法 - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E9%A1%9E%E5%9E%8B%E7%B3%BB%E7%B5%B1">类型系统 - 维基百科，自由的百科全书</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/64446259">浅谈 TypeScript 类型系统 - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.tup.com.cn/upload/books/yz/075519-01.pdf">附件：程序设计语言基础知识.pdf</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/ts-in-type-system/" title="从类型系统的角度看TS">https://note.xiexuefeng.cc/post/ts-in-type-system/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/TS/" rel="tag"># TS</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/weixin-miniprogram-project/" rel="prev" title="小程序原生语法工程化">
+                  <i class="fa fa-chevron-left"></i> 小程序原生语法工程化
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/husky-and-git-hooks/" rel="next" title="husky钩子的一些用法">
+                  husky钩子的一些用法 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/ts-in-type-system/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/ts-in-type-system/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

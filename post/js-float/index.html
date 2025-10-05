@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 总所周知，在JS中进行某些浮点数的计算时会得到意想不到的结果，诸如0.1 + 0.2和1 - 0.9这种，得到的结果都不是我们预期的那样；这种现象实际上是由于浮点数存储时精度丢失时所导致的，但这并不是JS独有的锅，而是采用IEEE 754标准存储浮点数都会有的问题；">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JS浮点数及精度问题">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/js-float/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 总所周知，在JS中进行某些浮点数的计算时会得到意想不到的结果，诸如0.1 + 0.2和1 - 0.9这种，得到的结果都不是我们预期的那样；这种现象实际上是由于浮点数存储时精度丢失时所导致的，但这并不是JS独有的锅，而是采用IEEE 754标准存储浮点数都会有的问题；">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200503093245.jpg?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200503093310.jpg?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20200503093335.jpg?imageslim">
+<meta property="article:published_time" content="2020-05-03T01:32:09.000Z">
+<meta property="article:modified_time" content="2025-10-05T02:33:05.874Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="js">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20200503093245.jpg?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/js-float/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/js-float/","path":"post/js-float/","title":"JS浮点数及精度问题"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>JS浮点数及精度问题 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E-ieee-754-%E6%A0%87%E5%87%86"><span class="nav-number">2.</span> <span class="nav-text"> 关于 IEEE 754 标准</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E4%BA%8C%E8%BF%9B%E5%88%B6%E7%A7%91%E5%AD%A6%E8%AE%B0%E6%95%B0%E6%B3%95"><span class="nav-number">2.1.</span> <span class="nav-text"> 关于二进制科学记数法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BD%95%E5%8F%AA%E8%AE%B0%E5%BD%95%E6%9C%89%E6%95%88%E6%95%B0%E5%AD%97%E4%B8%AD%E7%9A%84%E5%B0%8F%E6%95%B0%E9%83%A8%E5%88%86"><span class="nav-number">2.2.</span> <span class="nav-text"> 为何只记录有效数字中的小数部分？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%87%E6%95%B0%E9%83%A8%E5%88%86%E4%B8%BA%E4%BD%95%E5%87%8F%E5%8E%BB1023"><span class="nav-number">2.3.</span> <span class="nav-text"> 指数部分为何减去1023？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E6%95%B0%E9%83%A8%E5%88%86%E4%BA%8C%E8%BF%9B%E5%88%B6%E7%9A%84%E8%BD%AC%E6%8D%A2"><span class="nav-number">3.</span> <span class="nav-text"> 小数部分二进制的转换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%B0%86%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%B0%8F%E6%95%B0%E8%BD%AC%E4%B8%BA%E5%8D%81%E8%BF%9B%E5%88%B6%E5%B0%8F%E6%95%B0"><span class="nav-number">3.1.</span> <span class="nav-text"> 如何将二进制小数转为十进制小数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B2%BE%E5%BA%A6%E4%B8%A2%E5%A4%B1%E4%BA%A7%E7%94%9F%E7%9A%84%E5%8E%9F%E5%9B%A0"><span class="nav-number">4.</span> <span class="nav-text"> 精度丢失产生的原因</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E6%9E%90-01-02-%E7%9A%84%E7%BB%93%E6%9E%9C"><span class="nav-number">4.1.</span> <span class="nav-text"> 分析 0.1 + 0.2 的结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%A9%E5%B1%95%E5%A6%82%E4%BD%95%E4%BF%AE%E5%A4%8D%E7%B2%BE%E5%BA%A6%E4%B8%A2%E5%A4%B1%E5%AF%BC%E8%87%B4%E7%9A%84%E8%AE%A1%E7%AE%97%E9%97%AE%E9%A2%98"><span class="nav-number">5.</span> <span class="nav-text"> 扩展：如何修复精度丢失导致的计算问题？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E6%A1%A3"><span class="nav-number">6.</span> <span class="nav-text"> 相关文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/js-float/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="JS浮点数及精度问题 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JS浮点数及精度问题
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-05-03 09:32:09" itemprop="dateCreated datePublished" datetime="2020-05-03T09:32:09+08:00">2020-05-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A2%E7%B4%A2/" itemprop="url" rel="index"><span itemprop="name">探索</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p>总所周知，在<code>JS</code>中进行某些浮点数的计算时会得到意想不到的结果，诸如<code>0.1 + 0.2</code>和<code>1 - 0.9</code>这种，得到的结果都不是我们预期的那样；这种现象实际上是由于浮点数存储时精度丢失时所导致的，但这并不是<code>JS</code>独有的锅，而是采用<code>IEEE 754</code>标准存储浮点数都会有的问题；</p>
+<span id="more"></span>
+<h2 id="关于-ieee-754-标准"><a class="markdownIt-Anchor" href="#关于-ieee-754-标准"></a> 关于 IEEE 754 标准</h2>
+<blockquote>
+<p>IEEE 754规定了四种表示浮点数值的方式：单精确度（32位元）、双精确度（64位元）、延伸单精确度（43位元以上，很少使用）与延伸双精确度（79位元以上，通常以80位元实做）。<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup></p>
+</blockquote>
+<p>在<code>JS</code>中采用的是<code>IEEE 754</code>中双精度（<code>64</code>位）格式来存储浮点数，即每个数字类型的变量存储大小为<code>64</code>位；而这<code>64</code>位存储空间按照功能分成了<code>3</code>个部分<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200503093245.jpg?imageslim" alt="img" /></p>
+<ul>
+<li>符号位（<code>sign bit</code>）：包含<code>1</code>位，用来表示数值的符号；<code>0</code>表示为正，<code>1</code>表示为负；记为<code>S</code>。</li>
+<li>指数位（<code>exponent</code>）：包含<code>11</code>位，用来表示<strong>二进制科学计数法</strong>中的指数；记为<code>E</code>。</li>
+<li>尾数位（<code>mantissa</code>）：包含<code>52</code>位，用来表示<strong>二进制科学计数法</strong>的有效数字中的<strong>小数部分</strong>；记为<code>M</code>。</li>
+</ul>
+<p>因此，可以得出浮点数在双精度存储的二进制数值为：</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>V</mi><mo>=</mo><mo stretchy="false">(</mo><mo>−</mo><mn>1</mn><msup><mo stretchy="false">)</mo><mi>S</mi></msup><mo>∗</mo><msup><mn>2</mn><mrow><mi>E</mi><mo>−</mo><mn>1023</mn></mrow></msup><mo>∗</mo><mo stretchy="false">(</mo><mi>M</mi><mo>+</mo><mn>1</mn><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">V = (-1)^{S}*2^{E - 1023}*(M + 1)
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.1413309999999999em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">−</span><span class="mord">1</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8913309999999999em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.05764em;">S</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.891331em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.891331em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.05764em;">E</span><span class="mbin mtight">−</span><span class="mord mtight">1</span><span class="mord mtight">0</span><span class="mord mtight">2</span><span class="mord mtight">3</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mclose">)</span></span></span></span></span></p>
+<p>不过，看到这个公式可能心里会有疑问；二进制科学记数法是啥？为啥指数部分要减去<code>1023</code>？为啥有效数字中的整数部分不进行存储？</p>
+<h3 id="关于二进制科学记数法"><a class="markdownIt-Anchor" href="#关于二进制科学记数法"></a> 关于二进制科学记数法</h3>
+<p>可以联想一下我们熟知的<strong>十进制科学计数法</strong>：</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>N</mi><mo>=</mo><msub><mi>N</mi><mtext>有效数字</mtext></msub><mo>∗</mo><mn>1</mn><msup><mn>0</mn><mi>E</mi></msup></mrow><annotation encoding="application/x-tex">N = N_{有效数字}*10^{E}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.10903em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord cjk_fallback mtight">有</span><span class="mord cjk_fallback mtight">效</span><span class="mord cjk_fallback mtight">数</span><span class="mord cjk_fallback mtight">字</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8913309999999999em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord"><span class="mord">0</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8913309999999999em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.05764em;">E</span></span></span></span></span></span></span></span></span></span></span></span></span></p>
+<p>所谓的有效数字就是介于<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">[</mo><mn>1</mn><mo separator="true">,</mo><mn>10</mn><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">[1, 10)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord">1</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">1</span><span class="mord">0</span><span class="mclose">)</span></span></span></span>这个区间的数字（当然有可能带负号），而这个指数实际上可以看做是<strong>小数点的移动</strong>：</p>
+<ul>
+<li>当为正数时，小数点从有效数字<strong>往右移动相应的位数</strong>即可得到真实的数值；</li>
+<li>同理，当指数位负数时，小数点从有效数字<strong>往左移相应的位数</strong>即可得到真实的数值；</li>
+</ul>
+<p>按照这个原理，二进制科学记数法的指数也是用来移动有效数字小数点位置的，只不过这时<strong>有效数字用的是二进制来表示的</strong>。</p>
+<h3 id="为何只记录有效数字中的小数部分"><a class="markdownIt-Anchor" href="#为何只记录有效数字中的小数部分"></a> 为何只记录有效数字中的小数部分？</h3>
+<p>联系上面提到的二进制科学计数法，可以得到二进制的有效数字位于<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">[</mo><mn>1</mn><mo separator="true">,</mo><mn>2</mn><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">[1, 2)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord">1</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">2</span><span class="mclose">)</span></span></span></span>这个区间内，所以很明显这个区间内<font color=red><strong>有效数字部分的整数始终为</strong><code>1</code></font>！既然为常量，也不需要再进行存储了，这也是为何尾数<code>M</code>加上<code>1</code>的原因，目的就是补充有效数字的整数部分。</p>
+<h3 id="指数部分为何减去1023"><a class="markdownIt-Anchor" href="#指数部分为何减去1023"></a> 指数部分为何减去1023？</h3>
+<p>答案就是因为<strong>指数也有负数</strong>，而指数部分最大值为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>11</mn></msup><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">2^{11} - 1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span>（即<code>2047</code>），因此取一个中间数<code>1023</code>，使得<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">[</mo><mn>0</mn><mo separator="true">,</mo><mn>2047</mn><mo stretchy="false">]</mo></mrow><annotation encoding="application/x-tex">[0, 2047]</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord">0</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">2</span><span class="mord">0</span><span class="mord">4</span><span class="mord">7</span><span class="mclose">]</span></span></span></span>区间的数<strong>正负对半</strong>（大致对半，实际上区间变成了<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">[</mo><mo>−</mo><mn>1023</mn><mo separator="true">,</mo><mn>1024</mn><mo stretchy="false">]</mo></mrow><annotation encoding="application/x-tex">[-1023, 1024]</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord">−</span><span class="mord">1</span><span class="mord">0</span><span class="mord">2</span><span class="mord">3</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">1</span><span class="mord">0</span><span class="mord">2</span><span class="mord">4</span><span class="mclose">]</span></span></span></span>）。</p>
+<p><strong>思考</strong>：为何不像<code>sign bit</code>那样指定一个<em>指数符号位</em>？试想一下，如果把指数部分第一位变成表示符号的位，那么剩余位数只有<code>10</code>位了，因此能表达的区间就是<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">[</mo><mo>−</mo><mo stretchy="false">(</mo><msup><mn>2</mn><mn>10</mn></msup><mo>−</mo><mn>1</mn><mo stretchy="false">)</mo><mo separator="true">,</mo><msup><mn>2</mn><mn>10</mn></msup><mo>−</mo><mn>1</mn><mo stretchy="false">)</mo><mo stretchy="false">]</mo></mrow><annotation encoding="application/x-tex">[-(2^{10} - 1), 2^{10} - 1)]</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord">−</span><span class="mopen">(</span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span><span class="mord mtight">0</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mclose">)</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span><span class="mord mtight">0</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mclose">)</span><span class="mclose">]</span></span></span></span>，即<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">[</mo><mo>−</mo><mn>1023</mn><mo separator="true">,</mo><mn>1023</mn><mo stretchy="false">]</mo></mrow><annotation encoding="application/x-tex">[-1023, 1023]</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord">−</span><span class="mord">1</span><span class="mord">0</span><span class="mord">2</span><span class="mord">3</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">1</span><span class="mord">0</span><span class="mord">2</span><span class="mord">3</span><span class="mclose">]</span></span></span></span>。</p>
+<h2 id="小数部分二进制的转换"><a class="markdownIt-Anchor" href="#小数部分二进制的转换"></a> 小数部分二进制的转换</h2>
+<p>整数部分十进制转其它进制的套路都很熟了，也就是辗转相除法；但是小数部分的转换好像有点陌生，不过大概的套路和辗转相除法有点相似，只不过变成了乘法；</p>
+<ol>
+<li>将小数部分乘<code>2</code>，得到的数值其整数部分作为<strong>当前位</strong>进行存储；</li>
+<li>将上述得到的数值小数部分重复<code>1</code>步骤，直到小数部分为<code>0</code>；</li>
+</ol>
+<p>和整数部分进制转换相比，小数部分的进制转换是<strong>从高位到低位</strong>，因为<strong>小数部分的指数都是负数</strong>。下面是在<code>js</code>中进行小数部分二进制的转换：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 将浮点数的小数部分转为二进制小数表示</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> &#123;<span class="type">number</span>&#125; f 浮点数</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> &#123;<span class="type">number</span>&#125; maxLength 小数最大长度</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">decimalToBinary</span> (<span class="params">f, maxLength = <span class="number">57</span></span>) &#123;</span><br><span class="line">  <span class="keyword">let</span> res = <span class="string">&#x27;0.&#x27;</span></span><br><span class="line">  <span class="keyword">let</span> cur = <span class="number">0</span> <span class="comment">// 小数位</span></span><br><span class="line">  <span class="keyword">let</span> decimal = f &gt; <span class="number">1</span> ? f - <span class="title class_">Math</span>.<span class="title function_">floor</span>(f) : f <span class="comment">// 当前位对应的小数</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span> (cur &lt; maxLength &amp;&amp; decimal !== <span class="number">0</span>) &#123;</span><br><span class="line">    cur++</span><br><span class="line">    <span class="keyword">let</span> n = decimal * <span class="number">2</span></span><br><span class="line">    <span class="keyword">let</span> intNum = <span class="title class_">Math</span>.<span class="title function_">floor</span>(n) <span class="comment">// 取整数部分</span></span><br><span class="line">    decimal = n - intNum <span class="comment">// 去小数部分</span></span><br><span class="line">    res += intNum <span class="comment">// 将整数位补充到对应位上</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> res</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title function_">decimalToBinary</span>(<span class="number">0.1</span>)) <span class="comment">// 0.0001100110011001100110011001100110011001100110011001101</span></span><br></pre></td></tr></table></figure>
+<p>事实上可以利用<code>Number.prototype.toString()</code>方法转化二进制浮点数，因为该方法接受一个参数用来表示<strong>要转换的进制</strong>（默认进制就是<code>10</code>）；如：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title class_">Number</span>(<span class="number">0.1</span>).<span class="title function_">toString</span>(<span class="number">2</span>)) <span class="comment">// 0.0001100110011001100110011001100110011001100110011001101</span></span><br></pre></td></tr></table></figure>
+<p>经实践，通过<code>toString</code>转化的浮点数<strong>最大位数</strong>为<code>57</code>位。</p>
+<h3 id="如何将二进制小数转为十进制小数"><a class="markdownIt-Anchor" href="#如何将二进制小数转为十进制小数"></a> 如何将二进制小数转为十进制小数</h3>
+<p>这个方法跟整数部分的转换是一致的，只不过小数位的<strong>指数变成了负数</strong>；</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>D</mi><mo>=</mo><mstyle scriptlevel="0" displaystyle="true"><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msub><mi>k</mi><mi>i</mi></msub><mo>∗</mo><msup><mn>2</mn><mrow><mo>−</mo><mi>i</mi></mrow></msup><mo separator="true">,</mo><mtext> </mtext><mo stretchy="false">(</mo><msub><mi>k</mi><mi>i</mi></msub><mtext>为第i位小数</mtext><mo stretchy="false">)</mo></mstyle></mrow><annotation encoding="application/x-tex">D = \displaystyle\sum_{i=1}^{n}k_i * 2^{-i},\ (k_i\text{为第i位小数})
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:2.929066em;vertical-align:-1.277669em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.6513970000000002em;"><span style="top:-1.872331em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.050005em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span><span style="top:-4.3000050000000005em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.277669em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.03148em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.124664em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.874664em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mathnormal mtight">i</span></span></span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace"> </span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.03148em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord text"><span class="mord cjk_fallback">为第</span><span class="mord">i</span><span class="mord cjk_fallback">位小数</span></span><span class="mclose">)</span></span></span></span></span></p>
+<h2 id="精度丢失产生的原因"><a class="markdownIt-Anchor" href="#精度丢失产生的原因"></a> 精度丢失产生的原因</h2>
+<p>综上，由于双精度浮点数的尾数部分只有<code>52</code>位；因此，当浮点数的实际尾数超出<code>52</code>位时，就会进行截取，也就是第<code>52</code>位之后的<strong>尾数都会被舍去</strong>，且如果取到的尾数的最后一位是<code>1</code>时，还要<strong>进行进位</strong>（类似十进制的四舍五入）。</p>
+<p>由于上面的原因，可能导致某些浮点数在存储时发生了偏差，然后还原成十进制后数字也就自然不符合预期了。</p>
+<h3 id="分析-01-02-的结果"><a class="markdownIt-Anchor" href="#分析-01-02-的结果"></a> 分析 0.1 + 0.2 的结果</h3>
+<p><code>0.1</code>的双精度存储二进制表示<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup>如下：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200503093310.jpg?imageslim" alt="img" /></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">00111111 10111001 10011001 10011001</span><br><span class="line">10011001 10011001 10011001 10011010</span><br></pre></td></tr></table></figure>
+<p><code>0.2</code>的双精度存储二进制表示如下：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20200503093335.jpg?imageslim" alt="img" /></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">00111111 11001001 10011001 10011001</span><br><span class="line">10011001 10011001 10011001 10011010</span><br></pre></td></tr></table></figure>
+<p>可以根据获得的二进制存储信息来还原浮点数：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 根据双精度浮点数存储信息还原出原浮点数（十进制表示）</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> &#123;<span class="type">*</span>&#125; info 双精度浮点数存储信息</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">getFloat</span> (<span class="params">info</span>) &#123;</span><br><span class="line">  <span class="keyword">let</span> e = info.<span class="property">e</span>.<span class="title function_">toString</span>(<span class="number">10</span>) - <span class="number">1023</span> <span class="comment">// 计算指数</span></span><br><span class="line">  <span class="keyword">let</span> res = <span class="title class_">Math</span>.<span class="title function_">pow</span>(<span class="number">2</span>, e) * (info.<span class="property">i</span> !== <span class="literal">undefined</span> ? info.<span class="property">i</span> : <span class="number">1</span>) <span class="comment">// 有效数字的整数部分始终为1</span></span><br><span class="line"></span><br><span class="line">  info.<span class="property">m</span>.<span class="title function_">split</span>(<span class="string">&#x27;&#x27;</span>).<span class="title function_">forEach</span>(<span class="function">(<span class="params">item ,idx</span>) =&gt;</span> &#123;</span><br><span class="line">    res += <span class="title class_">Number</span>(item) * <span class="title class_">Math</span>.<span class="title function_">pow</span>(<span class="number">2</span>, -idx - <span class="number">1</span> + e) <span class="comment">// 计算尾数部分</span></span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> info.<span class="property">s</span> === <span class="number">0</span> ? res : -res <span class="comment">// 判断符号</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> n1 = &#123;</span><br><span class="line">  <span class="attr">s</span>: <span class="number">0</span>,</span><br><span class="line">  <span class="attr">e</span>: <span class="number">0b01111111011</span>,</span><br><span class="line">  <span class="attr">m</span>: <span class="string">&#x27;1001100110011001100110011001100110011001100110011010&#x27;</span></span><br><span class="line">&#125; <span class="comment">// 0.1的表示</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> n2 = &#123;</span><br><span class="line">  <span class="attr">s</span>: <span class="number">0</span>,</span><br><span class="line">  <span class="attr">e</span>: <span class="number">0b01111111100</span>,</span><br><span class="line">  <span class="attr">m</span>: <span class="string">&#x27;1001100110011001100110011001100110011001100110011010&#x27;</span></span><br><span class="line">&#125; <span class="comment">// 0.2的表示</span></span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title function_">getFloat</span>(n1)) <span class="comment">// 0.1</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title function_">getFloat</span>(n2)) <span class="comment">// 0.2</span></span><br></pre></td></tr></table></figure>
+<p>可以看出从<code>0.1</code>和<code>0.2</code>存储的二进制数据还原得到的结果是正确的，并没有精度丢失，但是为何相加之后得到的结果却不是<code>0.3</code>呢？</p>
+<p>由于<code>0.1</code>和<code>0.2</code>的尾数和符号都是相同的，不同的地方在指数部分（<code>0.2</code>的指数比<code>0.1</code>指数大<code>1</code>），但是二进制数相加时，要保证指数相同；因此先将<code>0.1</code>小数点<strong>左移一位</strong>得到：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> n3 = &#123;</span><br><span class="line">  <span class="attr">s</span>: <span class="number">0</span>,</span><br><span class="line">  <span class="attr">e</span>: <span class="number">0b01111111100</span>,</span><br><span class="line">  <span class="attr">i</span>: <span class="number">0</span>, <span class="comment">// 有效数字整数部分，仅作演示，实际只能是1</span></span><br><span class="line">  <span class="comment">// 由于小数点左移一位，原本的有效数整数部分1变成了尾数部分的第一位，尾数其他位的也依次右移一位</span></span><br><span class="line">  <span class="attr">m</span>: <span class="string">&#x27;1100110011001100110011001100110011001100110011001101&#x27;</span></span><br><span class="line">&#125; <span class="comment">// 0.1的另一种表示</span></span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title function_">getFloat</span>(n3)) <span class="comment">// 0.1</span></span><br></pre></td></tr></table></figure>
+<p>然后尾数部分进行相加，得到新的尾数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">10110011001100110011001100110011001100110011001100111</span><br></pre></td></tr></table></figure>
+<p>由于新的尾数超出了<code>52</code>位（<code>53</code>位），需要进<code>1</code>位：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1 + 1.0110011001100110011001100110011001100110011001100111 =</span><br><span class="line">10.0110011001100110011001100110011001100110011001100111</span><br></pre></td></tr></table></figure>
+<p>因此，最终<code>0.1 + 0.2</code>得到的二进制结果就是：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> n4 = &#123;</span><br><span class="line">  <span class="attr">s</span>: <span class="number">0</span>,</span><br><span class="line">  <span class="attr">e</span>: <span class="number">0b01111111101</span>, <span class="comment">// 指数加了1</span></span><br><span class="line">  <span class="attr">m</span>: <span class="string">&#x27;00110011001100110011001100110011001100110011001100111&#x27;</span> <span class="comment">// 尾数右移了，因此多了一位</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然而由于尾数部分超出了<code>52</code>位，因此只能截留<code>52</code>位，又因为截留的<font color=red>最后一位是<code>1</code></font>，因此要进<code>1</code>位，最终该结果的浮点数二进制表示为：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> n4 = &#123;</span><br><span class="line">  <span class="attr">s</span>: <span class="number">0</span>,</span><br><span class="line">  <span class="attr">e</span>: <span class="number">0b01111111101</span>,</span><br><span class="line">  <span class="attr">m</span>: <span class="string">&#x27;0011001100110011001100110011001100110011001100110100&#x27;</span></span><br><span class="line">&#125; <span class="comment">// 0.1 + 0.2 的二进制表示</span></span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title function_">getFloat</span>(n4)) <span class="comment">// 0.30000000000000004</span></span><br></pre></td></tr></table></figure>
+<p>所以，<code>0.1 + 0.2</code>最终得到的结果却是<code>0.30000000000000004</code>就是这么回事。</p>
+<h2 id="扩展如何修复精度丢失导致的计算问题"><a class="markdownIt-Anchor" href="#扩展如何修复精度丢失导致的计算问题"></a> 扩展：如何修复精度丢失导致的计算问题？</h2>
+<p><a target="_blank" rel="noopener" href="https://github.com/zhangxinxu/quiz/issues/74">JS基础测试47期 · Issue #74 · zhangxinxu/quiz</a></p>
+<h2 id="相关文档"><a class="markdownIt-Anchor" href="#相关文档"></a> 相关文档</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/camsong/blog/issues/9">JavaScript 浮点数陷阱及解法 · Issue #9 · camsong/blog</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.im/post/5b372f106fb9a00e6714aa21">js浮点数存储精度丢失原理 - 掘金</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/toString">Number.prototype.toString() - JavaScript | MDN</a></li>
+</ul>
+<hr class="footnotes-sep" />
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/zh-hans/IEEE_754">IEEE 754 - 维基百科，自由的百科全书</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E9%9B%99%E7%B2%BE%E5%BA%A6%E6%B5%AE%E9%BB%9E%E6%95%B8">双精度浮点数 - 维基百科，自由的百科全书</a> <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p><a target="_blank" rel="noopener" href="http://www.binaryconvert.com/result_double.html">Double (IEEE754 Double precision 64-bit)</a>：双精度浮点数<strong>存储</strong>计算可视化 <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/js-float/" title="JS浮点数及精度问题">https://note.xiexuefeng.cc/post/js-float/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/js/" rel="tag"># js</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/hexo-math-latex/" rel="prev" title="hexo增加数学公式的支持">
+                  <i class="fa fa-chevron-left"></i> hexo增加数学公式的支持
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/json-and-blob/" rel="next" title="JSON对象与Blob对象互相转换">
+                  JSON对象与Blob对象互相转换 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/js-float/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/js-float/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>
