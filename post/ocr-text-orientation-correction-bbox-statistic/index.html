@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 现在很多 OCR 模型实际上已经支持了一定程度内的旋转文本的识别，即图片中的非水平方向的文本可以正确识别其方向并按照正常的水平顺序返回该文本；但这仅限于每一个 Bounding Box 内的文本，因为 OCR 模型一般原始输出都是从图片中获取一个个单独的文本区域——即 Bounding Box，然后识别该区域的文本，并不会对这些 Bounding Box 进行拼接得到按正确顺序返回的完整文">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于Bounding Box和统计方法矫正OCR文本的方向">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/ocr-text-orientation-correction-bbox-statistic/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 现在很多 OCR 模型实际上已经支持了一定程度内的旋转文本的识别，即图片中的非水平方向的文本可以正确识别其方向并按照正常的水平顺序返回该文本；但这仅限于每一个 Bounding Box 内的文本，因为 OCR 模型一般原始输出都是从图片中获取一个个单独的文本区域——即 Bounding Box，然后识别该区域的文本，并不会对这些 Bounding Box 进行拼接得到按正确顺序返回的完整文">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202510231131743.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202510161229332.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202510231156289.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202510271213082.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202510271529200.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202510271727246.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202510290905964.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202510290943147.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202510301040765.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202510301041893.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202510301056106.png?imageslim">
+<meta property="article:published_time" content="2025-11-01T08:46:24.000Z">
+<meta property="article:modified_time" content="2025-11-01T08:54:56.304Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="OCR">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/202510231131743.png?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/ocr-text-orientation-correction-bbox-statistic/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/ocr-text-orientation-correction-bbox-statistic/","path":"post/ocr-text-orientation-correction-bbox-statistic/","title":"基于Bounding Box和统计方法矫正OCR文本的方向"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>基于Bounding Box和统计方法矫正OCR文本的方向 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+<style>
+.cardlink-wrapper {
+  margin: 1.5em 0;
+  overflow: hidden;
+}
+
+.cardlink {
+  display: flex;
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+  background: #fff;
+}
+
+.cardlink:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  border-color: #d1d5da;
+}
+
+.cardlink-image {
+  flex-shrink: 0;
+  width: 200px;
+  overflow: hidden;
+  background: #f6f8fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardlink-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+  margin-bottom: 0px;
+}
+
+.cardlink:hover .cardlink-image img {
+  transform: scale(1.05);
+}
+
+.cardlink-content {
+  flex: 1;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.cardlink-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #24292e;
+  margin-bottom: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.4;
+}
+
+.cardlink-description {
+  font-size: 14px;
+  color: #586069;
+  line-height: 1.5;
+  margin-bottom: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  flex: 1;
+}
+
+.cardlink-footer {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  color: #6a737d;
+}
+
+.cardlink-favicon {
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+  margin-bottom: 0px !important;
+  flex-shrink: 0;
+}
+
+.cardlink-host {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cardlink-error {
+  padding: 12px 16px;
+  border: 1px solid #f85149;
+  border-radius: 6px;
+  background: #fff1f0;
+  color: #d1242f;
+  margin: 1em 0;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .cardlink {
+    flex-direction: column;
+  }
+  
+  .cardlink-image {
+    width: 100%;
+  }
+  
+  .cardlink-content {
+    padding: 14px 16px;
+  }
+}
+
+/* 深色模式支持 */
+@media (prefers-color-scheme: dark) {
+  .cardlink {
+    background: #1e1e1e;
+    border-color: #30363d;
+  }
+  
+  .cardlink:hover {
+    border-color: #484f58;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+  
+  .cardlink-image {
+    background: #0d1117;
+  }
+  
+  .cardlink-title {
+    color: #c9d1d9;
+  }
+  
+  .cardlink-description {
+    color: #8b949e;
+  }
+  
+  .cardlink-footer {
+    color: #8b949e;
+  }
+  
+  .cardlink-error {
+    background: #2d1417;
+    border-color: #f85149;
+    color: #ff7b72;
+  }
+}
+</style>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#pca%E4%B8%BB%E6%88%90%E5%88%86%E5%88%86%E6%9E%90"><span class="nav-number">1.1.</span> <span class="nav-text"> PCA（主成分分析）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#bounding-box%E8%BE%B9%E7%95%8C%E6%A1%86%E5%8C%85%E5%9B%B4%E7%9B%92"><span class="nav-number">1.2.</span> <span class="nav-text"> Bounding Box（边界框&#x2F;包围盒）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E8%BF%87%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text"> 实现过程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E-bounding-box-%E8%AE%A1%E7%AE%97%E6%96%87%E6%9C%AC%E5%9D%97%E6%96%B9%E5%90%91"><span class="nav-number">2.1.</span> <span class="nav-text"> 基于 Bounding Box 计算文本块方向</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E6%96%87%E6%9C%AC%E5%9D%97%E6%96%B9%E5%90%91%E7%BB%9F%E8%AE%A1%E5%BE%97%E5%88%B0%E6%95%B4%E4%BD%93%E6%96%B9%E5%90%91"><span class="nav-number">2.2.</span> <span class="nav-text"> 基于文本块方向统计得到整体方向</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9F%AB%E6%AD%A3%E6%97%8B%E8%BD%AC%E6%96%B9%E5%90%91"><span class="nav-number">2.3.</span> <span class="nav-text"> 矫正旋转方向</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%89%E8%A1%8C%E8%81%9A%E5%90%88%E6%96%87%E6%9C%AC"><span class="nav-number">2.4.</span> <span class="nav-text"> 按行聚合文本</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%8E%E8%AF%9D"><span class="nav-number">3.</span> <span class="nav-text"> 后话</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E5%AF%B9%E4%BA%8E%E6%96%87%E6%9C%AC%E5%9D%97%E6%96%B9%E5%90%91%E7%9A%84%E8%AF%86%E5%88%AB"><span class="nav-number">3.1.</span> <span class="nav-text"> 模型对于文本块方向的识别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%BB%E9%87%8F%E7%BA%A7-ocr"><span class="nav-number">3.2.</span> <span class="nav-text"> 轻量级 OCR</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B4%E5%BC%BA%E5%A4%A7%E7%9A%84-ocr-%E6%A8%A1%E5%9E%8B"><span class="nav-number">3.3.</span> <span class="nav-text"> 更强大的 OCR 模型</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">111</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">84</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/ocr-text-orientation-correction-bbox-statistic/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="基于Bounding Box和统计方法矫正OCR文本的方向 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          基于Bounding Box和统计方法矫正OCR文本的方向
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-11-01 16:46:24" itemprop="dateCreated datePublished" datetime="2025-11-01T16:46:24+08:00">2025-11-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B8%9A%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">业务</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h1>
+<p>现在很多 OCR 模型实际上已经支持了一定程度内的旋转文本的识别，即图片中的非水平方向的文本可以正确识别其方向并按照正常的水平顺序返回该文本；但这仅限于每一个 Bounding Box 内的文本，因为 OCR 模型一般原始输出都是从图片中获取一个个单独的文本区域——即 Bounding Box，然后识别该区域的文本，并不会对这些 Bounding Box 进行拼接得到按正确顺序返回的完整文本，如：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202510231131743.png?imageslim" alt="image.png" /></p>
+<p>从图中右侧不难发现哪怕图片中的文本有一些旋转，OCR 模型也可以识别出这些文本块的方向，并返回正确的文本顺序；但是如果要以正确的顺序（从左至右，从上至下）返回所有的文本行，就需要自己去处理了。</p>
+<p>一般来说，我们可以假设图片中的文本旋转方向都是一样的（适用于常见的单页文本拍照或者扫描件），因此只需要得到一个<strong>整体</strong>的旋转方向，然后基于这个方向进行一个<strong>逆运算</strong>即可得到正常水平方向的 Bounding Box 位置，也就能拼接得到视觉层面上正常顺序的完整文本了。</p>
+<span id="more"></span>
+<h2 id="pca主成分分析"><a class="markdownIt-Anchor" href="#pca主成分分析"></a> PCA（主成分分析）</h2>
+<p>一开始我想到了 PCA，后面发现其实我有点望文生义了，我以为这个主成分指定的是从一堆数据样本中找到出现频率最高的那个数据，实际上 PCA 是对特征数据进行降维处理，重建更低数量的坐标轴，以更低的维度来描述特征数据😢。</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202510161229332.png?imageslim" alt="局部截取_20251016_122940.png" /></p>
+<p>所以我让 AI 使用 PCA 方法得到的效果也不尽如人意（毕竟方法就不适用），原因就是上面图中提到的 PCA 偏向于方差较大的情况，导致出现个别异常数据就会特别不准：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202510231156289.png?imageslim" alt="局部截取_20251023_115641.png" /></p>
+<p>关于 PCA 的具体原理和用法可以看看下面的文章：</p>
+<div class="cardlink-wrapper"><a href="https://zhuanlan.zhihu.com/p/37777074" class="cardlink" target="_blank" rel="noopener noreferrer"><div class="cardlink-content"><div class="cardlink-title">主成分分析（PCA）原理详解</div><div class="cardlink-description">目录： 相关背景数据降维PCA原理详解 3.1 PCA的概念 3.2 协方差 3.3 特征值与特征向量 3.4 SVD分解原理 3.5 PCA算法两种实现方法 (1) 基于特征值分解协方差矩阵实现PCA算法 (2) 基于SVD分解协方差矩阵实现PCA算法 …</div><div class="cardlink-footer"><span class="cardlink-host">知乎专栏</span></div></div></a></div>
+<h2 id="bounding-box边界框包围盒"><a class="markdownIt-Anchor" href="#bounding-box边界框包围盒"></a> Bounding Box（边界框/包围盒）</h2>
+<p>这个术语一般指的是包围某个物体的最小矩形，最常见的形式是一个轴对齐的矩形，即 AABB（axis-aligned Bounding box）。</p>
+<div class="cardlink-wrapper"><a href="https://paddlepedia.readthedocs.io/en/latest/tutorials/computer_vision/object_detection/Bounding_Box_Anchor.html" class="cardlink" target="_blank" rel="noopener noreferrer"><div class="cardlink-content"><div class="cardlink-title">边界框（Bounding box） — PaddleEdu  documentation</div><div class="cardlink-footer"><span class="cardlink-host">paddlepedia.readthedocs.io</span></div></div></a></div>
+<p>一般图像中的 AABB 是以<strong>左上角</strong>为原点，x 方向从左到右，y 方向从上至下为坐标系的。</p>
+<h1 id="实现过程"><a class="markdownIt-Anchor" href="#实现过程"></a> 实现过程</h1>
+<blockquote>
+<p>这里以 RpaidOCR + PP-OCRv5 mobile 模型为例。</p>
+</blockquote>
+<h2 id="基于-bounding-box-计算文本块方向"><a class="markdownIt-Anchor" href="#基于-bounding-box-计算文本块方向"></a> 基于 Bounding Box 计算文本块方向</h2>
+<p>RpaidOCR 输出的 Bounding Box 原始结果为四个点坐标，以顺时针方向进行排列，分别是左上、右上、右下和左下，如：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202510271213082.png?imageslim" alt="局部截取_20251027_121246.png" /></p>
+<p>上图红框标注的是原始结果中的第一个 Bounding Box，其坐标为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[[205.,   9.],</span><br><span class="line">[248.,  19.],</span><br><span class="line">[243.,  42.],</span><br><span class="line">[200.,  33.]]</span><br></pre></td></tr></table></figure>
+<p>由于坐标系是左手系加上返回的点的顺序是顺时针，所以这里我们可以假设长边的方向就是该 Bounding Box 的整体方向（因为大多数时候文字数量会超过一两个字，导致 Bounding Box 的宽度大于高度），即旋转量；对应的代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">get_orientation_vector</span>(<span class="params">box</span>):</span><br><span class="line">  <span class="string">&quot;&quot;&quot;根据矩形框较长的一边计算归一化的方向向量。&quot;&quot;&quot;</span></span><br><span class="line">  <span class="comment"># 假设box有4个点</span></span><br><span class="line">  p0, p1, p2 = box[<span class="number">0</span>], box[<span class="number">1</span>], box[<span class="number">2</span>]</span><br><span class="line"></span><br><span class="line">  <span class="comment"># 计算两条相邻边的平方长度以找到较长的一边</span></span><br><span class="line">  vec1 = np.array(p1) - np.array(p0)</span><br><span class="line">  vec2 = np.array(p2) - np.array(p1)</span><br><span class="line"></span><br><span class="line">  len_sq1 = np.dot(vec1, vec1)</span><br><span class="line">  len_sq2 = np.dot(vec2, vec2)</span><br><span class="line"></span><br><span class="line">  <span class="comment"># 选择较长边的向量</span></span><br><span class="line">  vec = vec1 <span class="keyword">if</span> len_sq1 &gt;= len_sq2 <span class="keyword">else</span> vec2</span><br><span class="line"></span><br><span class="line">  norm = np.linalg.norm(vec)</span><br><span class="line">  <span class="keyword">return</span> vec / norm <span class="keyword">if</span> norm &gt; <span class="number">0</span> <span class="keyword">else</span> np.array([<span class="number">1.0</span>, <span class="number">0.0</span>])</span><br></pre></td></tr></table></figure>
+<p>不过这个方法计算得到的方向只在 (-90°, 90°] 范围内是正确的，因为不知道文本到底是从左到右还是从右到左，所以这里假设的文本方向就是从左到右，因此一旦图像中的文本块发生了<strong>翻转</strong>，计算得到的方向就是其真正旋转方向完全相反的方向。</p>
+<h2 id="基于文本块方向统计得到整体方向"><a class="markdownIt-Anchor" href="#基于文本块方向统计得到整体方向"></a> 基于文本块方向统计得到整体方向</h2>
+<p>在使用上面的方法计算得到所有文本块的方向后，理论上就可以得到当前输入图像中文本的整体旋转方向了；正如前言中所说的，一开始我所想到的 PCA 方法并不适合，实际上对于当前任务只需要一个很简单的统计方法就可以得到想要的结果——统计文本块方向的<strong>中位数</strong>即可。</p>
+<p>因为在通常的单页文本图像中，所有的文本块方向理论上都是一样的，且宽度很短的文本块比较少，这样我们计算得到的 Bounding Box 方向实际上除了个别异常值，<strong>大部分的方向角度是很接近的</strong>：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202510271529200.png?imageslim" alt="image.png" /></p>
+<p>P.s：一开始我写这篇文章的时候还真以为算法是基于 PCA 实现的，结果一看代码，AI 中途换成了效果更好的中位数，我居然都没发现🙈</p>
+<h2 id="矫正旋转方向"><a class="markdownIt-Anchor" href="#矫正旋转方向"></a> 矫正旋转方向</h2>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202510271727246.png?imageslim" alt="局部截取_20251027_172732.png" /></p>
+<p>上面是二维平面中的旋转变换公式，其中 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi></mrow><annotation encoding="application/x-tex">\theta</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">θ</span></span></span></span> 就是旋转角度，上面计算得到的整体方向进行一个<strong>逆旋转</strong>就可以矫正文本为正常的水平方向了。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 步骤3: 计算旋转矩阵，将主方向旋转到水平方向(1, 0)</span></span><br><span class="line">cos_theta = np.cos(-principal_angle)</span><br><span class="line">sin_theta = np.sin(-principal_angle)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 旋转矩阵</span></span><br><span class="line">rotation_matrix = np.array([</span><br><span class="line">  [cos_theta, -sin_theta],</span><br><span class="line">  [sin_theta, cos_theta]</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 步骤4: 计算每个文本框在旋转后的坐标系中的边界</span></span><br><span class="line">box_info = []</span><br><span class="line"><span class="keyword">for</span> i, box <span class="keyword">in</span> <span class="built_in">enumerate</span>(boxes):</span><br><span class="line">  <span class="comment"># 获取所有顶点坐标</span></span><br><span class="line">  points = box  <span class="comment"># shape: (4, 2)</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment"># 旋转所有顶点</span></span><br><span class="line">  rotated_points = np.dot(points, rotation_matrix.T)</span><br><span class="line">  </span><br><span class="line">  <span class="comment"># 计算旋转后的边界框</span></span><br><span class="line">  x_coords = rotated_points[:, <span class="number">0</span>]</span><br><span class="line">  y_coords = rotated_points[:, <span class="number">1</span>]</span><br><span class="line">  x_min, x_max = np.<span class="built_in">min</span>(x_coords), np.<span class="built_in">max</span>(x_coords)</span><br><span class="line">  y_min, y_max = np.<span class="built_in">min</span>(y_coords), np.<span class="built_in">max</span>(y_coords)</span><br><span class="line">  </span><br><span class="line">  box_info.append(&#123;</span><br><span class="line">    <span class="string">&quot;index&quot;</span>: i,</span><br><span class="line">    <span class="string">&quot;x_min&quot;</span>: x_min,</span><br><span class="line">    <span class="string">&quot;x_max&quot;</span>: x_max,</span><br><span class="line">    <span class="string">&quot;y_min&quot;</span>: y_min,</span><br><span class="line">    <span class="string">&quot;y_max&quot;</span>: y_max,</span><br><span class="line">    <span class="string">&quot;x_center&quot;</span>: (x_min + x_max) / <span class="number">2</span>,</span><br><span class="line">    <span class="string">&quot;y_center&quot;</span>: (y_min + y_max) / <span class="number">2</span>,</span><br><span class="line">    <span class="string">&quot;width&quot;</span>: x_max - x_min,</span><br><span class="line">    <span class="string">&quot;height&quot;</span>: y_max - y_min</span><br><span class="line">  &#125;)</span><br></pre></td></tr></table></figure>
+<h2 id="按行聚合文本"><a class="markdownIt-Anchor" href="#按行聚合文本"></a> 按行聚合文本</h2>
+<p>在完成旋转方向之后，我们就得到了正常水平方向的文本图像了，这种情况下得到的文本块（Bounding Box）都遵循着<strong>从左往右，从上往下</strong>的排列，因此可以基于此规律来设计文本聚合算法。一种简单的思路就是根据 Bounding Box 在 x 和 y 方向上的重叠度来判断它们是否属于同一行：</p>
+<ul>
+<li>当在 y 方向（竖直方向）上重叠度超过某个阈值时可以初步认为是同一行</li>
+<li>当在 x 方向（水平方向）上重叠度超过某个阈值时可以认为<strong>不是</strong>同一行（因为同一行中的文本块之间不会出现太多重叠）</li>
+<li>同一行内的文本块按照 x 坐标（左边界）进行升序排序</li>
+<li>不同行之间则按 y 坐标（上边界）进行升序排序</li>
+</ul>
+<p>对应的算法实现大致如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 步骤5: 使用图算法将文本框分组到行中（在旋转后的坐标系中）</span></span><br><span class="line">adj = [[] <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(num_boxes)]</span><br><span class="line">connection_count = <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(num_boxes):</span><br><span class="line">  <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(i + <span class="number">1</span>, num_boxes):</span><br><span class="line">    box_i = box_info[i]</span><br><span class="line">    box_j = box_info[j]</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 检查1：垂直重叠是否足够（判断是否在同一行）</span></span><br><span class="line">    height_i = box_i[<span class="string">&quot;height&quot;</span>]</span><br><span class="line">    height_j = box_j[<span class="string">&quot;height&quot;</span>]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> height_i &lt; <span class="number">1e-6</span> <span class="keyword">or</span> height_j &lt; <span class="number">1e-6</span>:</span><br><span class="line">      <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">    y_overlap = <span class="built_in">max</span>(<span class="number">0</span>, <span class="built_in">min</span>(box_i[<span class="string">&quot;y_max&quot;</span>], box_j[<span class="string">&quot;y_max&quot;</span>]) - <span class="built_in">max</span>(box_i[<span class="string">&quot;y_min&quot;</span>], box_j[<span class="string">&quot;y_min&quot;</span>]))</span><br><span class="line">    y_overlap_ratio = y_overlap / <span class="built_in">min</span>(height_i, height_j)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> y_overlap_ratio &lt;= y_overlap_thresh:</span><br><span class="line">      <span class="keyword">continue</span>  <span class="comment"># 垂直重叠不够，不在同一行</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 检查2：水平重叠不能太多（避免重叠文字被错误分组）</span></span><br><span class="line">    width_i = box_i[<span class="string">&quot;width&quot;</span>]</span><br><span class="line">    width_j = box_j[<span class="string">&quot;width&quot;</span>]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> width_i &gt; <span class="number">1e-6</span> <span class="keyword">and</span> width_j &gt; <span class="number">1e-6</span>:</span><br><span class="line">      x_overlap = <span class="built_in">max</span>(<span class="number">0</span>, <span class="built_in">min</span>(box_i[<span class="string">&quot;x_max&quot;</span>], box_j[<span class="string">&quot;x_max&quot;</span>]) - <span class="built_in">max</span>(box_i[<span class="string">&quot;x_min&quot;</span>], box_j[<span class="string">&quot;x_min&quot;</span>]))</span><br><span class="line">      x_overlap_ratio = x_overlap / <span class="built_in">min</span>(width_i, width_j)</span><br><span class="line">      </span><br><span class="line">      <span class="keyword">if</span> x_overlap_ratio &gt; u_overlap_thresh:</span><br><span class="line">        <span class="keyword">continue</span>  <span class="comment"># 水平重叠太多，不在同一行</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 如果两个检查都通过，则连接它们</span></span><br><span class="line">    adj[i].append(j)</span><br><span class="line">    adj[j].append(i)</span><br><span class="line">    connection_count += <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 步骤6: 使用深度优先搜索找到连通分量（每个分量代表一行）</span></span><br><span class="line">visited = [<span class="literal">False</span>] * num_boxes</span><br><span class="line">lines_of_indices = []</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(num_boxes):</span><br><span class="line">  <span class="keyword">if</span> <span class="keyword">not</span> visited[i]:</span><br><span class="line">    component = []</span><br><span class="line">    stack = [i]</span><br><span class="line">    visited[i] = <span class="literal">True</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">while</span> stack:</span><br><span class="line">      u = stack.pop()</span><br><span class="line">      component.append(u)</span><br><span class="line">      <span class="keyword">for</span> v <span class="keyword">in</span> adj[u]:</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> visited[v]:</span><br><span class="line">          visited[v] = <span class="literal">True</span></span><br><span class="line">          stack.append(v)</span><br><span class="line">    </span><br><span class="line">    lines_of_indices.append(component)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 步骤7: 对每行内的文本框按水平位置排序，然后按行的垂直位置排序</span></span><br><span class="line">sorted_lines = []</span><br><span class="line"><span class="keyword">for</span> line_idx, line_indices <span class="keyword">in</span> <span class="built_in">enumerate</span>(lines_of_indices):</span><br><span class="line">  line_boxes = [box_info[i] <span class="keyword">for</span> i <span class="keyword">in</span> line_indices]</span><br><span class="line">  line_boxes.sort(key=<span class="keyword">lambda</span> b: b[<span class="string">&quot;x_center&quot;</span>])  <span class="comment"># 行内按水平位置排序</span></span><br><span class="line">  </span><br><span class="line">  line_text = [texts[b[<span class="string">&quot;index&quot;</span>]] <span class="keyword">for</span> b <span class="keyword">in</span> line_boxes]</span><br><span class="line">  avg_y = np.mean([b[<span class="string">&quot;y_center&quot;</span>] <span class="keyword">for</span> b <span class="keyword">in</span> line_boxes])</span><br><span class="line">  </span><br><span class="line">  sorted_lines.append(&#123;<span class="string">&quot;text&quot;</span>: line_text, <span class="string">&quot;y_pos&quot;</span>: avg_y&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 按垂直位置对行进行排序</span></span><br><span class="line">sorted_lines.sort(key=<span class="keyword">lambda</span> l: l[<span class="string">&quot;y_pos&quot;</span>])</span><br></pre></td></tr></table></figure>
+<p>上面的代码实际上是 AI 基于我给出的算法思路实现的，现在回过头来细细品味（最初实现的时候我都没咋 code review，直接一遍通过）确实代码写得比我好😂，我要想到基于图算法和深度优先遍历这种实现估计得花一会时间。</p>
+<p>最终聚合效果如下：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202510290905964.png?imageslim" alt="image.png" /></p>
+<h1 id="后话"><a class="markdownIt-Anchor" href="#后话"></a> 后话</h1>
+<h2 id="模型对于文本块方向的识别"><a class="markdownIt-Anchor" href="#模型对于文本块方向的识别"></a> 模型对于文本块方向的识别</h2>
+<p>如果 OCR 模型可以直接输出这些 Bounding Box 的方向向量，那么进行旋转矫正准确性就会更高了，其实从模型返回的原始识别结果来看，至少 PP-OCRv5 这个模型是可以识别出旋转角度超过 (-90°, 90°] 的文本的：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202510290943147.png?imageslim" alt="image.png" /></p>
+<p>可以看出文本块中返回的文本顺序是正确的。</p>
+<h2 id="轻量级-ocr"><a class="markdownIt-Anchor" href="#轻量级-ocr"></a> 轻量级 OCR</h2>
+<p>由于我的服务要运行在纯 CPU 环境，不能使用 GPU 进行推理，因此就选择了 Rapid OCR 这个轻量级且快速的 OCR 框架，其提供的模型大多是基于 PaddleOCR 的 onnx 版本，因此特别适合运行在 CPU 环境，尤其是 mobile 版本，模型大小只有 10M 左右，推理速度可达到 1~2s/每张图：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202510301040765.png?imageslim" alt="局部截取_20251030_104008.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202510301041893.png?imageslim" alt="局部截取_20251030_104053.png" /></p>
+<p>不过既然追求了推理速度，那么其识别<strong>精度</strong>肯定有所下降，尤其是对于一些分辨率比较低的图像。尽管 RapidOCR 提供了精度更高的服务端 onnx 模型，但是其推理速度已经不适合在 CPU 环境运行了，因为实测下来其推理时间大于 10s，这显然不符合实际业务接口的响应速度了。</p>
+<h2 id="更强大的-ocr-模型"><a class="markdownIt-Anchor" href="#更强大的-ocr-模型"></a> 更强大的 OCR 模型</h2>
+<p>当然，OCR 模型更适合的推理环境肯定是 GPU，有很多大参数的 OCR 只适用于有 GPU 的情况；此外，近年来也有很多<strong>多模态</strong>LLM 可以承担 OCR 的任务，比如 Qwen 的 VL 模型；最近（2025-10）deepseek 也推出了一个 3B 参数的 OCR 模型，除了传统的文字识别，还可以识别图表结构和指定特征等 <sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup><sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202510301056106.png?imageslim" alt="局部截取_20251030_105619.png" /></p>
+<hr class="footnotes-sep" />
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://huggingface.co/deepseek-ai/DeepSeek-OCR">https://huggingface.co/deepseek-ai/DeepSeek-OCR</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://huggingface.co/spaces/khang119966/DeepSeek-OCR-DEMO">https://huggingface.co/spaces/khang119966/DeepSeek-OCR-DEMO</a> <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/ocr-text-orientation-correction-bbox-statistic/" title="基于Bounding Box和统计方法矫正OCR文本的方向">https://note.xiexuefeng.cc/post/ocr-text-orientation-correction-bbox-statistic/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/OCR/" rel="tag"># OCR</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/sparse-vector-generation-with-bge-m3-onnx/" rel="prev" title="基于bge-m3 onnx模型获取稀疏向量">
+                  <i class="fa fa-chevron-left"></i> 基于bge-m3 onnx模型获取稀疏向量
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/ocr-text-orientation-correction-bbox-statistic/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/ocr-text-orientation-correction-bbox-statistic/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>
