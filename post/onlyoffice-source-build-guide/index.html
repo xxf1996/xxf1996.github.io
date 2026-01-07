@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 ONLYOFFICE 是一个可以用于在线编辑和查看 office 文档的工具，有免费的社区版和付费版的，哪怕是免费的社区版其功能也比较完善了，且可以自行部署。 由于社区版的源码进行了开源，因此如果需要进行私有化的定制改动则可以基于源码进行编译。不过官方的社区版编译文档十分简陋，根本没办法按照其说明的编译步骤正常进行编译，很多坑。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ONLYOFFICE源码编译不完全指南">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/onlyoffice-source-build-guide/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 ONLYOFFICE 是一个可以用于在线编辑和查看 office 文档的工具，有免费的社区版和付费版的，哪怕是免费的社区版其功能也比较完善了，且可以自行部署。 由于社区版的源码进行了开源，因此如果需要进行私有化的定制改动则可以基于源码进行编译。不过官方的社区版编译文档十分简陋，根本没办法按照其说明的编译步骤正常进行编译，很多坑。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202601071456337.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202601051741654.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202601071448988.png?imageslim">
+<meta property="article:published_time" content="2026-01-03T08:19:56.000Z">
+<meta property="article:modified_time" content="2026-01-07T09:36:45.294Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="编译">
+<meta property="article:tag" content="Docker">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/202601071456337.png?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/onlyoffice-source-build-guide/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/onlyoffice-source-build-guide/","path":"post/onlyoffice-source-build-guide/","title":"ONLYOFFICE源码编译不完全指南"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>ONLYOFFICE源码编译不完全指南 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E-docker-%E5%AE%B9%E5%99%A8%E8%BF%9B%E8%A1%8C%E7%BC%96%E8%AF%91"><span class="nav-number">2.</span> <span class="nav-text"> 基于 Docker 容器进行编译</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#nodejs-%E7%89%88%E6%9C%AC%E7%9A%84%E5%85%BC%E5%AE%B9%E6%80%A7"><span class="nav-number">2.1.</span> <span class="nav-text"> nodejs 版本的兼容性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ubuntu-%E7%89%88%E6%9C%AC%E7%9A%84%E5%85%BC%E5%AE%B9%E6%80%A7"><span class="nav-number">2.2.</span> <span class="nav-text"> Ubuntu 版本的兼容性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BA%90%E7%A0%81%E7%9A%84%E5%8A%A0%E8%BD%BD"><span class="nav-number">2.3.</span> <span class="nav-text"> 源码的加载</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0%E6%BA%90%E7%A0%81%E6%8C%82%E8%BD%BD"><span class="nav-number">2.3.1.</span> <span class="nav-text"> 本地源码挂载</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A0%E5%BF%AB%E7%BC%96%E8%AF%91%E9%80%9F%E5%BA%A6"><span class="nav-number">2.4.</span> <span class="nav-text"> 加快编译速度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E9%95%9C%E5%83%8F%E7%9A%84%E5%AE%8C%E6%95%B4-docker-%E9%85%8D%E7%BD%AE"><span class="nav-number">2.5.</span> <span class="nav-text"> 编译镜像的完整 Docker 配置</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9E%84%E5%BB%BA%E4%BA%A7%E7%89%A9%E7%9A%84%E9%83%A8%E5%88%86%E6%9B%BF%E6%8D%A2%E4%B8%8E%E5%85%A8%E9%87%8F%E6%9B%BF%E6%8D%A2"><span class="nav-number">3.</span> <span class="nav-text"> 构建产物的部分替换与全量替换</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E5%8F%82%E6%95%B0"><span class="nav-number">4.</span> <span class="nav-text"> 编译参数</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">112</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">85</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/onlyoffice-source-build-guide/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="ONLYOFFICE源码编译不完全指南 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ONLYOFFICE源码编译不完全指南
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-01-03 16:19:56" itemprop="dateCreated datePublished" datetime="2026-01-03T16:19:56+08:00">2026-01-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%B8%A9%E5%9D%91/" itemprop="url" rel="index"><span itemprop="name">踩坑</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h1>
+<p>ONLYOFFICE 是一个可以用于在线编辑和查看 office 文档的工具，有免费的社区版和付费版的，哪怕是免费的社区版其功能也比较完善了，且可以自行部署。</p>
+<p>由于社区版的源码进行了开源，因此如果需要进行私有化的定制改动则可以基于源码进行编译。不过官方的社区版编译文档十分简陋，根本没办法按照其说明的编译步骤正常进行编译，<strong>很多坑</strong>。</p>
+<span id="more"></span>
+<h1 id="基于-docker-容器进行编译"><a class="markdownIt-Anchor" href="#基于-docker-容器进行编译"></a> 基于 Docker 容器进行编译</h1>
+<p>根据官方的 <a target="_blank" rel="noopener" href="https://github.com/ONLYOFFICE/build_tools">编译工具项目</a> （build_tools）文档可知，目前编译只能在 Linux 环境进行（官方配置使用的是 Ubuntu 操作系统）。所以理论上有以下途径可以进行编译：</p>
+<ul>
+<li>原生 Linux 环境</li>
+<li>WSL</li>
+<li>Docker 容器</li>
+</ul>
+<p>我最后选择在 Windows 系统使用 Docker 容器进行编译，原因是官方提供了一个现成的编译环境的 Docker 配置（其实当时把 WSL 给忘了😅）。官方的编译环境 Docker 配置如下：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> ubuntu:<span class="number">20.04</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">ENV</span> TZ=Etc/UTC</span><br><span class="line"><span class="keyword">ENV</span> DEBIAN_FRONTEND=noninteractive</span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> <span class="built_in">ln</span> -snf /usr/share/zoneinfo/<span class="variable">$TZ</span> /etc/localtime &amp;&amp; <span class="built_in">echo</span> <span class="variable">$TZ</span> &gt; /etc/timezone</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> <span class="built_in">echo</span> <span class="string">&#x27;keyboard-configuration keyboard-configuration/layoutcode string us&#x27;</span> | debconf-set-selections &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    <span class="built_in">echo</span> <span class="string">&#x27;keyboard-configuration keyboard-configuration/modelcode string pc105&#x27;</span> | debconf-set-selections</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> apt-get -y update &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    apt-get -y install tar \</span></span><br><span class="line"><span class="language-bash">                       <span class="built_in">sudo</span> \</span></span><br><span class="line"><span class="language-bash">                       wget</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> wget https://github.com/Kitware/CMake/releases/download/v3.30.0/cmake-3.30.0-linux-x86_64.tar.gz &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    tar -xzf cmake-3.30.0-linux-x86_64.tar.gz -C /opt &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    <span class="built_in">ln</span> -s /opt/cmake-3.30.0-linux-x86_64/bin/cmake /usr/local/bin/cmake &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    <span class="built_in">ln</span> -s /opt/cmake-3.30.0-linux-x86_64/bin/ctest /usr/local/bin/ctest &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    <span class="built_in">rm</span> cmake-3.30.0-linux-x86_64.tar.gz</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">ADD</span><span class="language-bash"> . /build_tools</span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /build_tools</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> <span class="built_in">mkdir</span> -p /opt/python3 &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    wget -P /opt/python3/ https://github.com/ONLYOFFICE-data/build_tools_data/raw/refs/heads/master/python/python3.tar.gz &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    tar -xzf /opt/python3/python3.tar.gz -C /opt/python3 --strip-components=1</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">ENV</span> PATH=<span class="string">&quot;/opt/python3/bin:$&#123;PATH&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> <span class="built_in">ln</span> -s /opt/python3/bin/python3.10 /usr/bin/python</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">CMD</span><span class="language-bash"> [<span class="string">&quot;sh&quot;</span>, <span class="string">&quot;-c&quot;</span>, <span class="string">&quot;cd tools/linux &amp;&amp; python3 ./automate.py&quot;</span>]</span></span><br></pre></td></tr></table></figure>
+<p>理论上可以基于这份 Docker 配置构建一个专门的编译环境容器，然后在该容器内进行编译。如果这份 Docker 配置可以直接用也就不会有这篇文章了😂</p>
+<h2 id="nodejs-版本的兼容性"><a class="markdownIt-Anchor" href="#nodejs-版本的兼容性"></a> nodejs 版本的兼容性</h2>
+<p>不出意外的话，如果你按照官方文档写的步骤执行容器内编译时，首先会碰到下面这个报错：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">/usr/bin/env: ‘python\r’: No such file or directory</span><br><span class="line">Error (./configure.py): 127</span><br><span class="line">install dependencies...</span><br><span class="line">Installed Node.js version: 10.19</span><br><span class="line">Node.js version cannot be less 16</span><br><span class="line">Reinstall</span><br><span class="line">install qt...</span><br><span class="line">---------------------------------------------</span><br><span class="line">build branch: master</span><br><span class="line">---------------------------------------------</span><br><span class="line">---------------------------------------------</span><br><span class="line">build modules: desktop builder server</span><br><span class="line">---------------------------------------------</span><br></pre></td></tr></table></figure>
+<p>因为 Ubuntu20.04 内置的 nodejs 版本是 10.x，这个版本很低，所以需要在 Dockerfile 中手动安装<strong>≥16</strong>版本的 nodejs：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 安装 Node.js 20.x</span></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> curl -fsSL https://deb.nodesource.com/setup_20.x -o /tmp/nodesource_setup.sh &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    bash /tmp/nodesource_setup.sh &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    apt-get install -y nodejs &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    <span class="built_in">rm</span> /tmp/nodesource_setup.sh</span></span><br></pre></td></tr></table></figure>
+<p>这里我安装了 20.x 这个 LTS 版本。</p>
+<h2 id="ubuntu-版本的兼容性"><a class="markdownIt-Anchor" href="#ubuntu-版本的兼容性"></a> Ubuntu 版本的兼容性</h2>
+<p>一开始为了解决上面提到的 nodejs 版本过低问题，我想到了提升 Ubuntu 版本来解决这个问题，后面发现提升到 24.04 版本时会出现 C/C++ 编译相关的报错，因此可以认为当前 onlyoffice 源码编译并不兼容 Ubuntu24.04 系统。</p>
+<h2 id="源码的加载"><a class="markdownIt-Anchor" href="#源码的加载"></a> 源码的加载</h2>
+<p>由于 onlyoffice 实际上是由多个子项目组成的，而这些子项目每个都是单独的 git 项目，因此编译前需要先准备好这些源码。理论上可以把所有 git 项目先 clone 到本地，然后修改相应的源码进行编译，也可以直接使用编译脚本自带的更新功能进行实时更新源码进行编译。</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202601071456337.png?imageslim" alt="局部截取_20260107_145630.png" /></p>
+<h3 id="本地源码挂载"><a class="markdownIt-Anchor" href="#本地源码挂载"></a> 本地源码挂载</h3>
+<p>一开始我想的是先把 onlyoffice 项目全部 clone 到本地，然后再把这些源码挂载到编译容器中相应的位置，避免修改容器配置重新构建时丢失所有数据然后重新下载源码。但我的开发环境（宿主机）是 Windows，把源码挂载到 Ubuntu 容器中会出现因为换行符不兼容而导致的编译失败问题（因为 Windows 系统默认换行符为 CRLF，而 Linux 系统则是 LF）。</p>
+<p>同理，基于本地 build_tools 项目源码构建编译容器时，build_tools 中的源码也会出现因为宿主机和 Linux 容器换行符不一致而出现不能正常运行的问题，解决办法就是在 Dockerfile 中增加一个换行符转换的逻辑：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># dos2unix就是进行换行符转换所需要的工具</span></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> apt-get -y update &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    apt-get -y install tar \</span></span><br><span class="line"><span class="language-bash">                       <span class="built_in">sudo</span> \</span></span><br><span class="line"><span class="language-bash">                       wget \</span></span><br><span class="line"><span class="language-bash">                       dos2unix \</span></span><br><span class="line"><span class="language-bash">                       curl \</span></span><br><span class="line"><span class="language-bash">                       gnupg \</span></span><br><span class="line"><span class="language-bash">                       ca-certificates \</span></span><br><span class="line"><span class="language-bash">                       lsb-release \</span></span><br><span class="line"><span class="language-bash">                       git</span></span><br><span class="line">                       </span><br><span class="line"></span><br><span class="line"><span class="comment"># 修复所有脚本文件的换行符（关键步骤！）</span></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> find /onlyoffice/build_tools -<span class="built_in">type</span> f \( -name <span class="string">&quot;*.py&quot;</span> -o -name <span class="string">&quot;*.sh&quot;</span> -o -name <span class="string">&quot;configure.py&quot;</span> -o -name <span class="string">&quot;make.py&quot;</span> \) -<span class="built_in">exec</span> dos2unix &#123;&#125; \; 2&gt;/dev/null || <span class="literal">true</span></span></span><br></pre></td></tr></table></figure>
+<h2 id="加快编译速度"><a class="markdownIt-Anchor" href="#加快编译速度"></a> 加快编译速度</h2>
+<p>官方基于容器进行编译的做法是，启动容器后执行一次编译命令（通过 CMD 指令）。如果你正处理频繁调试容器配置和编译参数的阶段时，使用这个编译流程就会变得十分浪费时间。因为每次调整配置后容器就会被重新创建，然后又得重新编译 C/C++ 相关依赖包（这个过程可能需要几十分钟）。</p>
+<p>所以我构建了一个可以持久运行的编译容器，然后进入容器内部执行编译命令（跟 WSL 类似），这样频繁调整编译参数时就不需要重新构建编译容器了，而是可以在容器内反复编译。由于 C/C++ 相关依赖包在相同的容器实例内只需要编译一次，因此后续反复编译只会编译 nodejs 运行时二进制包和一些前端代码（这种编译就只需要几分钟到十几分钟），比起全量编译就会快很多。</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 容器启动时执行阻塞命令（保持运行）</span></span><br><span class="line"><span class="keyword">CMD</span><span class="language-bash"> [<span class="string">&quot;tail&quot;</span>, <span class="string">&quot;-f&quot;</span>, <span class="string">&quot;/dev/null&quot;</span>]</span></span><br></pre></td></tr></table></figure>
+<p>把容器启动命令改成上述命令就可以得到一个持久运行的编译容器了，之后通过 <code>docker exec</code> 命令进入容器执行相应命令即可。</p>
+<h2 id="编译镜像的完整-docker-配置"><a class="markdownIt-Anchor" href="#编译镜像的完整-docker-配置"></a> 编译镜像的完整 Docker 配置</h2>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> swr.cn-north-<span class="number">4</span>.myhuaweicloud.com/ddn-k8s/docker.io/ubuntu:<span class="number">20.04</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">ENV</span> TZ=Etc/UTC</span><br><span class="line"><span class="keyword">ENV</span> DEBIAN_FRONTEND=noninteractive</span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> <span class="built_in">ln</span> -snf /usr/share/zoneinfo/<span class="variable">$TZ</span> /etc/localtime &amp;&amp; <span class="built_in">echo</span> <span class="variable">$TZ</span> &gt; /etc/timezone</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> <span class="built_in">echo</span> <span class="string">&#x27;keyboard-configuration keyboard-configuration/layoutcode string us&#x27;</span> | debconf-set-selections &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    <span class="built_in">echo</span> <span class="string">&#x27;keyboard-configuration keyboard-configuration/modelcode string pc105&#x27;</span> | debconf-set-selections</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 替换为国内软件源加速 apt 安装</span></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> sed -i <span class="string">&#x27;s@//.*archive.ubuntu.com@//mirrors.ustc.edu.cn@g&#x27;</span> /etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    sed -i <span class="string">&#x27;s@//.*security.ubuntu.com@//mirrors.ustc.edu.cn@g&#x27;</span> /etc/apt/sources.list</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> apt-get -y update &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    apt-get -y install tar \</span></span><br><span class="line"><span class="language-bash">                       <span class="built_in">sudo</span> \</span></span><br><span class="line"><span class="language-bash">                       wget \</span></span><br><span class="line"><span class="language-bash">                       dos2unix \</span></span><br><span class="line"><span class="language-bash">                       curl \</span></span><br><span class="line"><span class="language-bash">                       gnupg \</span></span><br><span class="line"><span class="language-bash">                       ca-certificates \</span></span><br><span class="line"><span class="language-bash">                       lsb-release \</span></span><br><span class="line"><span class="language-bash">                       git</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> wget https://github.com/Kitware/CMake/releases/download/v3.30.0/cmake-3.30.0-linux-x86_64.tar.gz &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    tar -xzf cmake-3.30.0-linux-x86_64.tar.gz -C /opt &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    <span class="built_in">ln</span> -s /opt/cmake-3.30.0-linux-x86_64/bin/cmake /usr/local/bin/cmake &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    <span class="built_in">ln</span> -s /opt/cmake-3.30.0-linux-x86_64/bin/ctest /usr/local/bin/ctest &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    <span class="built_in">rm</span> cmake-3.30.0-linux-x86_64.tar.gz</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 先复制文件</span></span><br><span class="line"><span class="keyword">ADD</span><span class="language-bash"> . /onlyoffice/build_tools</span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /onlyoffice/build_tools</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 修复所有脚本文件的换行符（关键步骤！）</span></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> find /onlyoffice/build_tools -<span class="built_in">type</span> f \( -name <span class="string">&quot;*.py&quot;</span> -o -name <span class="string">&quot;*.sh&quot;</span> -o -name <span class="string">&quot;configure.py&quot;</span> -o -name <span class="string">&quot;make.py&quot;</span> \) -<span class="built_in">exec</span> dos2unix &#123;&#125; \; 2&gt;/dev/null || <span class="literal">true</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 将 build_tools 的 git origin 改为 HTTPS，避免 SSH 密钥问题</span></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> <span class="built_in">cd</span> /onlyoffice/build_tools &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    git remote set-url origin https://github.com/ONLYOFFICE/build_tools.git</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> <span class="built_in">mkdir</span> -p /opt/python3 &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    wget -P /opt/python3/ https://github.com/ONLYOFFICE-data/build_tools_data/raw/refs/heads/master/python/python3.tar.gz &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    tar -xzf /opt/python3/python3.tar.gz -C /opt/python3 --strip-components=1</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">ENV</span> PATH=<span class="string">&quot;/opt/python3/bin:$&#123;PATH&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> <span class="built_in">ln</span> -s /opt/python3/bin/python3.10 /usr/bin/python</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装 Node.js 20.x</span></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> curl -fsSL https://deb.nodesource.com/setup_20.x -o /tmp/nodesource_setup.sh &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    bash /tmp/nodesource_setup.sh &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    apt-get install -y nodejs &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    <span class="built_in">rm</span> /tmp/nodesource_setup.sh</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置 npm 使用国内镜像并安装全局包</span></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> npm config <span class="built_in">set</span> registry https://registry.npmmirror.com &amp;&amp; \</span></span><br><span class="line"><span class="language-bash">    npm install -g grunt-cli</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># CMD [&quot;sh&quot;, &quot;-c&quot;, &quot;cd tools/linux &amp;&amp; python3 ./automate.py server --update=0 --branch=release/v9.1.0 --git-protocol=https&quot;]</span></span><br><span class="line"><span class="comment"># 容器启动时执行阻塞命令（保持运行）</span></span><br><span class="line"><span class="keyword">CMD</span><span class="language-bash"> [<span class="string">&quot;tail&quot;</span>, <span class="string">&quot;-f&quot;</span>, <span class="string">&quot;/dev/null&quot;</span>]</span></span><br></pre></td></tr></table></figure>
+<p>这个 Docker 配置除了对上面提及的问题进行了修复，也对基础镜像和包的安装加了国内代理（避免国内构建镜像很慢），如果代理不能用了可以自行换成能用的代理地址。不过需要注意的是，这个编译容器的环境我只在 onlyoffice 9.1.0 这个版本成功构建过源码，不保证其它版本的源码也可以正常编译😂。</p>
+<h1 id="构建产物的部分替换与全量替换"><a class="markdownIt-Anchor" href="#构建产物的部分替换与全量替换"></a> 构建产物的部分替换与全量替换</h1>
+<p>理论上我们完成 onlyoffice 项目的完整编译后，可以参考官方的 <a target="_blank" rel="noopener" href="https://github.com/ONLYOFFICE/Docker-DocumentServer/blob/master/Dockerfile">Docker应用构建配置</a> 构建完整的 onlyoffice Docker 应用。但是我发现编译后的产物与官方 Docker 实例内部的文件不完全一致，有些文件缺失，而有些文件则是容器内不存在的文件的；具体文件的 diff 到底有多少我也没有进行详细对比，因为文件实在是太多了😂。</p>
+<p>为了避免自行编译的 Docker 应用无法正常启动（或引入其它未知运行时错误），我想到了一种办法——即直接把 onlyoffice Docker 镜像作为基础镜像，然后在镜像中替换修改过的源码的编译产物。这样就可以最大限度保证整个 Docker 应用的可靠性，因为只会替换官方镜像中极少的文件，不至于影响范围很广，后续出现问题也可以很快定位到是哪部分出现问题。</p>
+<p>对我而言，我只会修改 <a target="_blank" rel="noopener" href="https://github.com/ONLYOFFICE/server/tree/master">server</a> 这个子项目中的源码，该子项目编译出的产物如下图红框所示：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202601051741654.png?imageslim" alt="局部截取_20260105_174059.png" /></p>
+<p>server 文件夹中核心的几个文件就是基于 pkg 编译得到的包含 nodejs 运行时的二进制模块文件，而我修改的源码正好就是要修改这几个二进制文件的一些逻辑，且经测试编译后这几个二进制文件可以正常进行替换运行；下面就是我进行部分文件替换构建 Docker 应用的配置：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> onlyoffice-documentserver:<span class="number">9.1</span>.<span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 复制DocService</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> ./DocService/ /var/www/onlyoffice/documentserver/server/DocService/</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 复制FileConverter</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> ./FileConverter/converter /var/www/onlyoffice/documentserver/server/FileConverter/converter</span></span><br></pre></td></tr></table></figure>
+<p>总的来说，部分替换官方镜像的文件是更为可靠的做法，因为从 0 构建一个完整的 onlyoffice 应用镜像所需要进行的<strong>测试和校验工作</strong>实在太大了。</p>
+<h1 id="编译参数"><a class="markdownIt-Anchor" href="#编译参数"></a> 编译参数</h1>
+<p>编译是通过 <code>build_tools/tools/linux/automate.py</code> 这个脚本文件进行启动的：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202601071448988.png?imageslim" alt="局部截取_20260107_144828.png" /></p>
+<p>命令格式如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./automate.py &lt;appname&gt; --option1=v1 ... --optionN=vN</span><br></pre></td></tr></table></figure>
+<p>其中 appname 就是要编译的应用：</p>
+<ul>
+<li>server：即 <a target="_blank" rel="noopener" href="https://github.com/ONLYOFFICE/DocumentServer">DocumentServer</a> 这个应用；我这次编译的就是该应用</li>
+<li>desktop：即 <a target="_blank" rel="noopener" href="https://github.com/ONLYOFFICE/DesktopEditors">DesktopEditors</a> 这个应用</li>
+<li>builder：即 <a target="_blank" rel="noopener" href="https://github.com/ONLYOFFICE/DocumentBuilder">DocumentBuilder</a> 这个应用</li>
+</ul>
+<p>常用的编译参数有：</p>
+<ul>
+<li>update：是否在编译时自动更新所有项目的 git 源码（0 为不自动更新，1 为自动更新）；我只会在第一次编译使用自动更新来拉取所有子项目源码，后续都设置为 0 来固定源码，便于本地修改</li>
+<li>branch：指定编译时所有项目的 git 分支或者tag，如果某个项目不存在该分支则会退回到主分支，所以最好确保这个分支在所有项目中都存在</li>
+<li>git-protocol：指定拉取 git 代码时，使用的网络协议；默认会自动使用 build_tools 项目使用的协议，建议使用 https 协议（因为使用 ssh 协议还要加上秘钥）</li>
+<li>clean：是否重新编译所有的部分（开启后还会重新编译 C/C++ 相关包，即彻底重新编译，花费的时间会更长）</li>
+</ul>
+<p>完整可用的编译参数可以查看 build_tools 项目的 <a target="_blank" rel="noopener" href="https://github.com/ONLYOFFICE/build_tools/blob/master/configure.py">configure.py文件</a>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> optparse</span><br><span class="line"></span><br><span class="line">arguments = sys.argv[<span class="number">1</span>:]</span><br><span class="line"></span><br><span class="line">parser = optparse.OptionParser()</span><br><span class="line">parser.add_option(<span class="string">&quot;--update&quot;</span>, action=<span class="string">&quot;store&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;update&quot;</span>, default=<span class="string">&quot;1&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;defines whether it&#x27;s necessary to update/clone repos. If it&#x27;s set to true (1 === true), build_tools automatically get the necessary subrepos. If it&#x27;s set to false (0 === false), you should define which ones to use&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--update-light&quot;</span>, action=<span class="string">&quot;store&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;update-light&quot;</span>, default=<span class="string">&quot;&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;performs pull/clone without switching branches, can be used only if update is true.&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--branch&quot;</span>, action=<span class="string">&quot;store&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;branch&quot;</span>, default=<span class="string">&quot;master&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;branch/tag name, used only if update is true and update_light is not used. Updates/clones all the repos and switches the branch to the proper one deleting all the local changes&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--clean&quot;</span>, action=<span class="string">&quot;store&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;clean&quot;</span>, default=<span class="string">&quot;1&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;defines whether to build everything anew&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--module&quot;</span>, action=<span class="string">&quot;store&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;module&quot;</span>, default=<span class="string">&quot;builder&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;defines what modules to build. You can specify several of them, e.g. --module &#x27;core desktop builder server mobile&#x27;&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--develop&quot;</span>, action=<span class="string">&quot;store&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;develop&quot;</span>, default=<span class="string">&quot;0&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;defines develop mode&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--beta&quot;</span>, action=<span class="string">&quot;store&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;beta&quot;</span>, default=<span class="string">&quot;0&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;defines beta mode&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--platform&quot;</span>, action=<span class="string">&quot;store&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;platform&quot;</span>, default=<span class="string">&quot;native&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;defines the destination platform for your build [&#x27;win_64&#x27;, &#x27;win_32&#x27;, &#x27;win_64_xp&#x27;, &#x27;win_32_xp&#x27;, &#x27;win_arm64&#x27;, &#x27;linux_64&#x27;, &#x27;linux_32&#x27;, &#x27;mac_64&#x27;, &#x27;ios&#x27;, &#x27;android_arm64_v8a&#x27;, &#x27;android_armv7&#x27;, &#x27;android_x86&#x27;, &#x27;android_x86_64&#x27;; combinations: &#x27;native&#x27;: your current system (windows/linux/mac only); &#x27;all&#x27;: all available systems; &#x27;windows&#x27;: win_64 win_32 win_64_xp win_32_xp; &#x27;linux&#x27;: linux_64 linux_32; &#x27;mac&#x27;: mac_64; &#x27;android&#x27;: android_arm64_v8a android_armv7 android_x86 android_x86_64]&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--config&quot;</span>, action=<span class="string">&quot;store&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;config&quot;</span>, default=<span class="string">&quot;&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;provides ability to specify additional parameters for qmake&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--qt-dir&quot;</span>, action=<span class="string">&quot;store&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;qt-dir&quot;</span>, default=<span class="string">&quot;&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;defines qmake directory path. qmake can be found in qt-dir/compiler/bin directory&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--qt-dir-xp&quot;</span>, action=<span class="string">&quot;store&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;qt-dir-xp&quot;</span>, default=<span class="string">&quot;&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;defines qmake directory path for Windows XP. qmake can be found in &#x27;qt-dir/compiler/bin directory&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--external-folder&quot;</span>, action=<span class="string">&quot;store&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;external-folder&quot;</span>, default=<span class="string">&quot;&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;defines a directory with external folder&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--sql-type&quot;</span>, action=<span class="string">&quot;store&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;sql-type&quot;</span>, default=<span class="string">&quot;postgres&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;defines the sql type wich will be used&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--db-port&quot;</span>, action=<span class="string">&quot;store&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;db-port&quot;</span>, default=<span class="string">&quot;5432&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;defines the sql db-port wich will be used&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--db-name&quot;</span>, action=<span class="string">&quot;store&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;db-name&quot;</span>, default=<span class="string">&quot;onlyoffice&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;defines the sql db-name wich will be used&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--db-user&quot;</span>, action=<span class="string">&quot;store&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;db-user&quot;</span>, default=<span class="string">&quot;onlyoffice&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;defines the sql db-user wich will be used&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--db-pass&quot;</span>, action=<span class="string">&quot;store&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;db-pass&quot;</span>, default=<span class="string">&quot;onlyoffice&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;defines the sql db-pass wich will be used&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--compiler&quot;</span>, action=<span class="string">&quot;store&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;compiler&quot;</span>, default=<span class="string">&quot;&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;defines compiler name. It is not recommended to use it as it&#x27;s defined automatically (msvc2015, msvc2015_64, gcc, gcc_64, clang, clang_64, etc)&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--no-apps&quot;</span>, action=<span class="string">&quot;store&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;no-apps&quot;</span>, default=<span class="string">&quot;0&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;disables building desktop apps that use qt&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--themesparams&quot;</span>, action=<span class="string">&quot;store&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;themesparams&quot;</span>, default=<span class="string">&quot;&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;provides settings for generating presentation themes thumbnails&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--git-protocol&quot;</span>, action=<span class="string">&quot;store&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;git-protocol&quot;</span>, default=<span class="string">&quot;auto&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;can be used only if update is set to true - &#x27;https&#x27;, &#x27;ssh&#x27;&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--branding&quot;</span>, action=<span class="string">&quot;store&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;branding&quot;</span>, default=<span class="string">&quot;&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;provides branding path&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--branding-name&quot;</span>, action=<span class="string">&quot;store&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;branding-name&quot;</span>, default=<span class="string">&quot;&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;provides branding name&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--branding-url&quot;</span>, action=<span class="string">&quot;store&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;branding-url&quot;</span>, default=<span class="string">&quot;&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;provides branding url&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--sdkjs-addon&quot;</span>, action=<span class="string">&quot;append&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;sdkjs-addons&quot;</span>, default=[], <span class="built_in">help</span>=<span class="string">&quot;provides sdkjs addons&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--sdkjs-addon-desktop&quot;</span>, action=<span class="string">&quot;append&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;sdkjs-addons-desktop&quot;</span>, default=[], <span class="built_in">help</span>=<span class="string">&quot;provides sdkjs addons for desktop&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--server-addon&quot;</span>, action=<span class="string">&quot;append&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;server-addons&quot;</span>, default=[], <span class="built_in">help</span>=<span class="string">&quot;provides server addons&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--web-apps-addon&quot;</span>, action=<span class="string">&quot;append&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;web-apps-addons&quot;</span>, default=[], <span class="built_in">help</span>=<span class="string">&quot;provides web-apps addons&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--sdkjs-plugin&quot;</span>, action=<span class="string">&quot;append&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;sdkjs-plugin&quot;</span>, default=[<span class="string">&quot;default&quot;</span>], <span class="built_in">help</span>=<span class="string">&quot;provides plugins for server-based and desktop versions of the editors&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--sdkjs-plugin-server&quot;</span>, action=<span class="string">&quot;append&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;sdkjs-plugin-server&quot;</span>, default=[<span class="string">&quot;default&quot;</span>], <span class="built_in">help</span>=<span class="string">&quot;provides plugins for server-based version of the editors&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--features&quot;</span>, action=<span class="string">&quot;store&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;features&quot;</span>, default=<span class="string">&quot;&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;native features (config addon)&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--vs-version&quot;</span>, action=<span class="string">&quot;store&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;vs-version&quot;</span>, default=<span class="string">&quot;2015&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;version of visual studio&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--vs-path&quot;</span>, action=<span class="string">&quot;store&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;vs-path&quot;</span>, default=<span class="string">&quot;&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;path to vcvarsall&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--siteUrl&quot;</span>, action=<span class="string">&quot;store&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;siteUrl&quot;</span>, default=<span class="string">&quot;127.0.0.1&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;site url&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--multiprocess&quot;</span>, action=<span class="string">&quot;store&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;multiprocess&quot;</span>, default=<span class="string">&quot;1&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;provides ability to specify single process for make&quot;</span>)</span><br><span class="line">parser.add_option(<span class="string">&quot;--sysroot&quot;</span>, action=<span class="string">&quot;store&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;string&quot;</span>, dest=<span class="string">&quot;sysroot&quot;</span>, default=<span class="string">&quot;0&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;provides ability to use sysroot (ubuntu 16.04) to build c++ code. If value is \&quot;1\&quot;, then the sysroot from tools/linux/sysroot will be used, and if it is not there, it will download it and unpack it. You can also set value as the path to the your own sysroot (rarely used). Only for linux&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/onlyoffice-source-build-guide/" title="ONLYOFFICE源码编译不完全指南">https://note.xiexuefeng.cc/post/onlyoffice-source-build-guide/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E7%BC%96%E8%AF%91/" rel="tag"># 编译</a>
+              <a href="/tags/Docker/" rel="tag"># Docker</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/ocr-text-orientation-correction-bbox-statistic/" rel="prev" title="基于Bounding Box和统计方法矫正OCR文本的方向">
+                  <i class="fa fa-chevron-left"></i> 基于Bounding Box和统计方法矫正OCR文本的方向
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/onlyoffice-source-build-guide/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/onlyoffice-source-build-guide/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

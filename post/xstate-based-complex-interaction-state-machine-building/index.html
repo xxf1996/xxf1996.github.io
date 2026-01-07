@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="为什么要使用状态机？ 如果一个交互只简单地涉及到布尔状态或者是多选一，这类只通过一个状态变量即可确认当前状态的场景确实没必要使用状态机，毕竟无非只是使用if&#x2F;switch就能简单切换状态。如果一个交互逻辑复杂到需要使用多个状态变量来共同确认具体的状态节点，那么在涉及到状态切换时，对于判断当前具体状态节点的相关工作量就会呈现指数级的增长；">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于XState对复杂交互进行状态机的构建">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/xstate-based-complex-interaction-state-machine-building/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="为什么要使用状态机？ 如果一个交互只简单地涉及到布尔状态或者是多选一，这类只通过一个状态变量即可确认当前状态的场景确实没必要使用状态机，毕竟无非只是使用if&#x2F;switch就能简单切换状态。如果一个交互逻辑复杂到需要使用多个状态变量来共同确认具体的状态节点，那么在涉及到状态切换时，对于判断当前具体状态节点的相关工作量就会呈现指数级的增长；">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240319154440.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240319155913.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240320104436.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240320120236.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240320120319.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240320123209.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240320130559.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/20240320131056.png?imageslim">
+<meta property="article:published_time" content="2024-04-13T04:01:26.000Z">
+<meta property="article:modified_time" content="2026-01-07T09:29:47.774Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="交互">
+<meta property="article:tag" content="状态机">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/20240319154440.png?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/xstate-based-complex-interaction-state-machine-building/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/xstate-based-complex-interaction-state-machine-building/","path":"post/xstate-based-complex-interaction-state-machine-building/","title":"基于XState对复杂交互进行状态机的构建"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>基于XState对复杂交互进行状态机的构建 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BD%BF%E7%94%A8%E7%8A%B6%E6%80%81%E6%9C%BA"><span class="nav-number">1.</span> <span class="nav-text"> 为什么要使用状态机？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8Exstate%E6%9E%84%E5%BB%BA%E7%8A%B6%E6%80%81%E6%9C%BA"><span class="nav-number">2.</span> <span class="nav-text"> 基于XState构建状态机</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E5%BB%BA%E7%8A%B6%E6%80%81%E6%9C%BA"><span class="nav-number">2.1.</span> <span class="nav-text"> 构建状态机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%94%B9%E5%8F%98%E7%8A%B6%E6%80%81"><span class="nav-number">2.2.</span> <span class="nav-text"> 改变状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8A%B6%E6%80%81%E8%8A%82%E7%82%B9%E7%9A%84%E5%8F%98%E5%8C%96%E7%9B%91%E5%90%AC"><span class="nav-number">2.3.</span> <span class="nav-text"> 状态节点的变化监听</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%A8%E5%B1%80%E7%9B%91%E5%90%AC"><span class="nav-number">2.3.1.</span> <span class="nav-text"> 全局监听</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B7%E4%BD%93%E7%8A%B6%E6%80%81%E8%8A%82%E7%82%B9%E7%9A%84%E7%9B%91%E5%90%AC"><span class="nav-number">2.3.2.</span> <span class="nav-text"> 具体状态节点的监听</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8A%B6%E6%80%81%E6%9C%BA%E7%9A%84%E5%8F%AF%E8%A7%86%E5%8C%96"><span class="nav-number">2.4.</span> <span class="nav-text"> 状态机的可视化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E7%8A%B6%E6%80%81%E6%9C%BA%E7%9A%84%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="nav-number">2.5.</span> <span class="nav-text"> 关于状态机的上下文</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">2.6.</span> <span class="nav-text"> 一些注意事项</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ts%E7%B1%BB%E5%9E%8B%E6%8E%A8%E6%96%AD"><span class="nav-number">2.6.1.</span> <span class="nav-text"> TS类型推断</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#actor%E4%B8%8D%E8%83%BD%E9%87%8D%E5%90%AF"><span class="nav-number">2.6.2.</span> <span class="nav-text"> Actor不能重启</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B4%E5%A4%9A"><span class="nav-number">2.7.</span> <span class="nav-text"> 更多</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">112</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">85</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/xstate-based-complex-interaction-state-machine-building/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="基于XState对复杂交互进行状态机的构建 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          基于XState对复杂交互进行状态机的构建
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-04-13 12:01:26" itemprop="dateCreated datePublished" datetime="2024-04-13T12:01:26+08:00">2024-04-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">工具</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="为什么要使用状态机"><a class="markdownIt-Anchor" href="#为什么要使用状态机"></a> 为什么要使用状态机？</h1>
+<p>如果一个交互只简单地涉及到布尔状态或者是多选一，这类只通过一个状态变量即可确认当前状态的场景确实没必要使用状态机，毕竟无非只是使用if/switch就能简单切换状态。如果一个交互逻辑复杂到需要使用多个状态变量来共同确认具体的状态节点，那么在涉及到状态切换时，对于<strong>判断当前具体状态节点</strong>的相关工作量就会呈现指数级的增长；</p>
+<span id="more"></span>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240319154440.png?imageslim" alt="image.png" /></p>
+<p>如上图所示，在处理复杂状态下的状态转换时，如果使用松散即扁平的结构对状态进行管理时，会在状态节点的判断上要花费大量的工作，且由于关系复杂无法一眼看出节点之间的联系，在实际工作中很容易把自己绕晕，形成bug；那么基于状态机对复杂状态之间的关系建模会是什么样子？</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240319155913.png?imageslim" alt="image.png" /><br />
+如上图所示，在建立状态机之后，我们只需要关注<strong>具体状态节点之间的转换处理逻辑</strong>即可；如果把这种结构看成是图结构，那么其中的每一条有向边都是一个状态转换函数，这样对于实际逻辑处理流程也看的很清晰。</p>
+<p>关于状态机概念的介绍也可以看看 <code>XState</code>文档里的文章——<a target="_blank" rel="noopener" href="https://stately.ai/docs/state-machines-and-statecharts">What are state machines and statecharts? | Stately</a>；</p>
+<h1 id="基于xstate构建状态机"><a class="markdownIt-Anchor" href="#基于xstate构建状态机"></a> 基于XState构建状态机</h1>
+<p><a target="_blank" rel="noopener" href="https://xstate.js.org/">XState</a>就是一个状态机相关的工具库。</p>
+<h2 id="构建状态机"><a class="markdownIt-Anchor" href="#构建状态机"></a> 构建状态机</h2>
+<p>在理解了状态机的概念之后，构建状态机的关键就在于把复杂的任务拆解成一个清晰的流程，流程中的每一个节点就是状态节点，而流程的走向就是状态节点的转换（或者说联系）；</p>
+<p><code>XState</code>中通过<a target="_blank" rel="noopener" href="https://www.jsdocs.io/package/xstate#createMachine">createMachine</a>函数来创建状态机，其中的配置参数结构可以理解为一个树（即嵌套的），其中每层结构中常用的字段有：</p>
+<ul>
+<li><code>id</code>：标记当前状态节点的 <code>ID</code>标识，一般用于更方便地进行状态的切换；</li>
+<li><code>states</code>：可以理解为当前状态节点下的子状态机映射；<code>key</code>为 <code>name</code>，但跟 <code>id</code>字段不同，<code>key</code>只能用于<strong>同层状态节点</strong>之间的切换，<code>value</code>就是子状态机配置；</li>
+<li><code>initial</code>：当 <code>states</code>字段不为空时，该字段表示当前状态机的默认状态节点为指定的 <code>key</code>；</li>
+</ul>
+<p>只要掌握了以上几个字段的用法，也就能够构建出状态机中所有的状态节点了；不过光有状态节点还不能构成状态机，还需要构建状态节点之间的转换，配置中使用on字段来控制状态节点之间可以发生的转换，以及转换时需要做的事情，不过on字段本质上只是该状态节点的事件映射（即触发事件时不一定要发生节点的转换），其中key为事件的name，value是一个事件配置，常用的字段如下：</p>
+<ul>
+<li><code>target</code>：要切换到的状态节点，没有值则表示事件不会切换状态节点；如果是同层状态节点，可以用那个节点的 <code>key</code>，如果不是同层状态节点就要细分目标节点与当前节点的关系<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>：
+<ul>
+<li>同层节点的后代节点： <code>&#123; target: 'sibling.child.grandchild' &#125;</code></li>
+<li>后代节点: <code>&#123; target: '.child.grandchild' &#125;</code></li>
+<li>直接指定ID： <code>&#123; target: '#specificState' &#125;</code></li>
+</ul>
+</li>
+<li><code>actions</code>: 事件回调函数；</li>
+</ul>
+<blockquote>
+<p>当事件只是简单的切换状态节点并不涉及回调时，可以简化为 <code>value</code>就是 <code>target</code>的形式；</p>
+</blockquote>
+<p>掌握了这些就可以构建出状态机的基础形式了，如<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; createMachine, createActor &#125; <span class="keyword">from</span> <span class="string">&#x27;xstate&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> textMachine = <span class="title function_">createMachine</span>(&#123;</span><br><span class="line">  <span class="attr">context</span>: &#123;</span><br><span class="line">    <span class="attr">committedValue</span>: <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">    <span class="attr">value</span>: <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">initial</span>: <span class="string">&#x27;reading&#x27;</span>,</span><br><span class="line">  <span class="attr">states</span>: &#123;</span><br><span class="line">    <span class="attr">reading</span>: &#123;</span><br><span class="line">      <span class="attr">on</span>: &#123;</span><br><span class="line">        <span class="string">&#x27;text.edit&#x27;</span>: &#123; <span class="attr">target</span>: <span class="string">&#x27;editing&#x27;</span> &#125;,</span><br><span class="line">      &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">editing</span>: &#123;</span><br><span class="line">      <span class="attr">on</span>: &#123;</span><br><span class="line">        <span class="string">&#x27;text.change&#x27;</span>: &#123;</span><br><span class="line">          <span class="attr">actions</span>: <span class="title function_">assign</span>(&#123;</span><br><span class="line">            <span class="attr">value</span>: <span class="function">(<span class="params">&#123; event &#125;</span>) =&gt;</span> event.<span class="property">value</span>,</span><br><span class="line">          &#125;),</span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="string">&#x27;text.commit&#x27;</span>: &#123;</span><br><span class="line">          <span class="attr">actions</span>: <span class="title function_">assign</span>(&#123;</span><br><span class="line">            <span class="attr">committedValue</span>: <span class="function">(<span class="params">&#123; context &#125;</span>) =&gt;</span> context.<span class="property">value</span>,</span><br><span class="line">          &#125;),</span><br><span class="line">          <span class="attr">target</span>: <span class="string">&#x27;reading&#x27;</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="string">&#x27;text.cancel&#x27;</span>: &#123;</span><br><span class="line">          <span class="attr">actions</span>: <span class="title function_">assign</span>(&#123;</span><br><span class="line">            <span class="attr">value</span>: <span class="function">(<span class="params">&#123; context &#125;</span>) =&gt;</span> context.<span class="property">committedValue</span>,</span><br><span class="line">          &#125;),</span><br><span class="line">          <span class="attr">target</span>: <span class="string">&#x27;reading&#x27;</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">      &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>以上状态机可视化结果为：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240320104436.png?imageslim" alt="image.png" /></p>
+<h2 id="改变状态"><a class="markdownIt-Anchor" href="#改变状态"></a> 改变状态</h2>
+<p><code>XState</code>是基于<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E6%BC%94%E5%91%98%E6%A8%A1%E5%9E%8B">Actor model</a>进行设计的，因此状态的改变都是基于 <code>actor</code>，使用 <code>createActor</code>函数进行创建：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> textActor = <span class="title function_">createActor</span>(textMachine);</span><br></pre></td></tr></table></figure>
+<p>创建 <code>actor</code>后，需要调用 <code>start</code>方法启动状态机，进入<strong>初始状态</strong>：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">textActor.<span class="title function_">start</span>(); <span class="comment">// 进入初始状态，即reading</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240320120236.png?imageslim" alt="image.png" /></p>
+<p>而要切换到具体的状态节点，则需要使用 <code>send</code>方法触发状态机中指定了 <code>target</code>的那些事件：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">textActor.<span class="title function_">send</span>(&#123; <span class="attr">type</span>: <span class="string">&#x27;text.edit&#x27;</span> &#125;); <span class="comment">// 触发text.edit事件，进入editing</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240320120319.png?imageslim" alt="image.png" /></p>
+<p>不过如果 <code>send</code>方法传入的事件并不是<strong>当前状态节点</strong>中声明的事件（即 <code>on</code>字段中配置的事件），那么该事件则并不会触发。</p>
+<h2 id="状态节点的变化监听"><a class="markdownIt-Anchor" href="#状态节点的变化监听"></a> 状态节点的变化监听</h2>
+<h3 id="全局监听"><a class="markdownIt-Anchor" href="#全局监听"></a> 全局监听</h3>
+<p>当状态节点发生变化时，可以基于 <code>actor</code>的 <code>subscribe</code>方法注册回调进行全局的监听：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">textActor.<span class="title function_">subscribe</span>(<span class="function">(<span class="params">state</span>) =&gt;</span> &#123;  </span><br><span class="line">	<span class="variable language_">console</span>.<span class="title function_">log</span>(state.<span class="property">context</span>.<span class="property">value</span>);  </span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="具体状态节点的监听"><a class="markdownIt-Anchor" href="#具体状态节点的监听"></a> 具体状态节点的监听</h3>
+<p>在实际业务中，针对具体状态节点的变化才更有用，一般关注的就是当进入和离开某个状态节点时；而 <code>XState</code>在创建状态机的配置中正好提供了两种回调：</p>
+<ul>
+<li><code>entry</code>：进入该状态节点后的回调；</li>
+<li><code>exit</code>：离开该状态节点后的回调；</li>
+</ul>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; createMachine &#125; <span class="keyword">from</span> <span class="string">&#x27;xstate&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> machine = <span class="title function_">createMachine</span>(&#123;</span><br><span class="line">  <span class="attr">initial</span>: <span class="string">&#x27;someState&#x27;</span>,</span><br><span class="line">  <span class="attr">states</span>: &#123;</span><br><span class="line">    <span class="attr">someState</span>: &#123;</span><br><span class="line">      <span class="attr">entry</span>: <span class="function">() =&gt;</span> <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;someState entered&#x27;</span>), <span class="comment">// 进入该状态后触发</span></span><br><span class="line">      <span class="attr">exit</span>: <span class="function">() =&gt;</span> <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;someState exited&#x27;</span>), <span class="comment">// 离开该状态后触发</span></span><br><span class="line">      <span class="attr">on</span>: &#123;</span><br><span class="line">        <span class="string">&#x27;event.normal&#x27;</span>: &#123;</span><br><span class="line">          <span class="attr">target</span>: <span class="string">&#x27;someState&#x27;</span>, <span class="comment">// or no target</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="string">&#x27;event.thatReenters&#x27;</span>: &#123;</span><br><span class="line">          <span class="attr">target</span>: <span class="string">&#x27;someState&#x27;</span>, <span class="comment">// or no target</span></span><br><span class="line">          <span class="attr">reenter</span>: <span class="literal">true</span>,</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="状态机的可视化"><a class="markdownIt-Anchor" href="#状态机的可视化"></a> 状态机的可视化</h2>
+<p>其实如果状态机稍微复杂一点，写完状态机的配置后也不见得马上就能清楚的得到状态机的整个流程，因此如果能够把写的状态机逻辑可视化成一个流程图就能加快理解了和后续调整及维护了；</p>
+<p>好在XState正好提供了官方的可视化工具：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://stately.ai/viz">XState Visualizer</a>：直接把创建状态机的相关代码粘贴进去就能查看<br />
+<img src="https://pic.xiexuefeng.cc/markdown/20240320123209.png?imageslim" alt="image.png" /></li>
+<li><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=statelyai.stately-vscode">XState VSCode - Visual Studio Marketplace</a>：<code>XState</code>官方正好提供了 <code>VSCode</code>插件，不仅可以直接查看状态机的流程图，还可以直接在可视化状态下编辑状态机，强烈推荐安装</li>
+</ul>
+<h2 id="关于状态机的上下文"><a class="markdownIt-Anchor" href="#关于状态机的上下文"></a> 关于状态机的上下文</h2>
+<p>通常，状态机会有一些相关的数据在各种状态切换逻辑或事件中使用；而XState在构建状态机时也提供了上下文的配置，以便更直观地在各种事件中对数据进行操作和使用；如<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup>：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; createMachine, assign &#125; <span class="keyword">from</span> <span class="string">&#x27;xstate&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> feedbackMachine = <span class="title function_">createMachine</span>(&#123;</span><br><span class="line">  <span class="attr">context</span>: &#123;</span><br><span class="line">    <span class="attr">feedback</span>: <span class="string">&#x27;Some feedback&#x27;</span>,</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">on</span>: &#123;</span><br><span class="line">    <span class="string">&#x27;feedback.update&#x27;</span>: &#123;</span><br><span class="line">      <span class="attr">actions</span>: <span class="title function_">assign</span>(&#123;</span><br><span class="line">        <span class="attr">feedback</span>: <span class="function">(<span class="params">&#123; event &#125;</span>) =&gt;</span> event.<span class="property">feedback</span>,</span><br><span class="line">      &#125;),</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> feedbackActor = <span class="title function_">createActor</span>(feedbackMachine);</span><br><span class="line"></span><br><span class="line">feedbackActor.<span class="title function_">subscribe</span>(<span class="function">(<span class="params">state</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(state.<span class="property">context</span>.<span class="property">feedback</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">feedbackActor.<span class="title function_">start</span>();</span><br><span class="line"></span><br><span class="line"><span class="comment">// logs &#x27;Some feedback&#x27;</span></span><br><span class="line"></span><br><span class="line">feedbackActor.<span class="title function_">send</span>(&#123;</span><br><span class="line">  <span class="attr">type</span>: <span class="string">&#x27;feedback.update&#x27;</span>,</span><br><span class="line">  <span class="attr">feedback</span>: <span class="string">&#x27;Some other feedback&#x27;</span>,</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// logs &#x27;Some other feedback&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>如果用过 <code>Vue</code>相关的状态管理库 <code>Vuex</code>，就会对这种管理数据的 <code>API</code>和方式不陌生了；不过我个人认为不一定非要选择 <code>XState</code>自带的上下文来管理状态机相关数据，其实使用更贴近前端框架的数据形式会更好一点，比如直接选择使用 <code>Vue3</code>的Ref类型数据或者<a target="_blank" rel="noopener" href="https://pinia.vuejs.org/">Pinia</a>来管理。</p>
+<p>其实 <code>XState</code>也对相应的前端框架（<code>React/Vue</code>等）提供了框架相关的工具支持<sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup>，不过看了一下 <code>API</code>，涉及到的面还是挺少的。</p>
+<h2 id="一些注意事项"><a class="markdownIt-Anchor" href="#一些注意事项"></a> 一些注意事项</h2>
+<h3 id="ts类型推断"><a class="markdownIt-Anchor" href="#ts类型推断"></a> TS类型推断</h3>
+<p>目前遇到的比较大的槽点就在于 <code>XState</code>对于 <code>TS</code>的类型推断其实做得并不好，很多类型相关的参数并不能直接从配置对象中去推断，而是要自己去手动标注类型<sup class="footnote-ref"><a href="#fn5" id="fnref5">[5]</a></sup>……</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240320130559.png?imageslim" alt="image.png" /></p>
+<p>所以在实际使用 <code>actor</code>的 <code>send</code>发送事件时，<code>type</code>就是个粗暴的 <code>string</code>类型：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240320131056.png?imageslim" alt="image.png" /><br />
+不过这种情况也可以通过定义事件类型的枚举来解决一下。</p>
+<h3 id="actor不能重启"><a class="markdownIt-Anchor" href="#actor不能重启"></a> Actor不能重启</h3>
+<p>一旦状态机进入<a target="_blank" rel="noopener" href="https://stately.ai/docs/final-states">结束状态</a>或者被手动停止（调用 <code>stop</code>方法）时，就无法通过 <code>start</code>方法重新启动进入状态机了，就只能新建一个 <code>Actor</code>了，不知道这算是 <code>bug</code>还是 <code>feature</code>🤔？</p>
+<h2 id="更多"><a class="markdownIt-Anchor" href="#更多"></a> 更多</h2>
+<p>其实我这里提到的状态机相关的功能只是 <code>XState</code>中很基础的部分，<code>XState</code>还提供了很多更高阶的功能，建议多看看他们的官方文档——<a target="_blank" rel="noopener" href="https://stately.ai/docs">Stately + XState docs | Stately</a>。</p>
+<hr class="footnotes-sep" />
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://stately.ai/docs/transitions#transitions-to-any-state">https://stately.ai/docs/transitions#transitions-to-any-state</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://stately.ai/docs/xstate#create-a-more-complex-machine">https://stately.ai/docs/xstate#create-a-more-complex-machine</a> <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://stately.ai/docs/context#updating-context-with-assign">https://stately.ai/docs/context#updating-context-with-assign</a> <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://stately.ai/docs/xstate-react">https://stately.ai/docs/xstate-react</a> <a href="#fnref4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://stately.ai/docs/actors#actors-and-typescript">https://stately.ai/docs/actors#actors-and-typescript</a> <a href="#fnref5" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/xstate-based-complex-interaction-state-machine-building/" title="基于XState对复杂交互进行状态机的构建">https://note.xiexuefeng.cc/post/xstate-based-complex-interaction-state-machine-building/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E4%BA%A4%E4%BA%92/" rel="tag"># 交互</a>
+              <a href="/tags/%E7%8A%B6%E6%80%81%E6%9C%BA/" rel="tag"># 状态机</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/ts-morph-and-complier-context/" rel="prev" title="基于ts-morph构建统一编译上下文">
+                  <i class="fa fa-chevron-left"></i> 基于ts-morph构建统一编译上下文
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/alova-simple-usage-experience/" rel="next" title="Alova的简单使用心得">
+                  Alova的简单使用心得 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/xstate-based-complex-interaction-state-machine-building/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/xstate-based-complex-interaction-state-machine-building/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>
