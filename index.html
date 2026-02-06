@@ -157,7 +157,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">112</span>
+          <span class="site-state-item-count">113</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -168,7 +168,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">85</span>
+        <span class="site-state-item-count">87</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -202,6 +202,98 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/n8n-replace-uptime-kuma/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/post/n8n-replace-uptime-kuma/" class="post-title-link" itemprop="url">如何使用n8n替代uptime-kuma</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-02-01 16:01:52" itemprop="dateCreated datePublished" datetime="2026-02-01T16:01:52+08:00">2026-02-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">工具</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h1>
+<p>由于我只有一台内存 2G 的云服务器，上面也部署了一些 Docker 服务，加上近期启用了 n8n 实例，导致内存频繁达到 90% 的告警线：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202601301619931.png?imageslim" alt="局部截取_20260130_161851.png" /></p>
+<p>虽说我可以把告警上调至 95% 来避免这个问题，但是内存不足的问题并没有得到实际解决。于是稍微查了下服务器中哪些 Docker 服务比较占内存：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202601311140060.png?imageslim" alt="image.png" /></p>
+<p>尽管 n8n 占用的内存是最多的，但是我在上面搭建了一些工作流和接口服务，所以是必要的，无法被替代。其它的服务要么也是不可替代，要么占用内存极低，所以最显眼的就是 uptime-kuma 了。尽管它占用的内存严格来说也不算特别多，但谁叫我服务器内存不够呢😂，而且 uptime-kuma 是一个网络服务健康检测的工具，功能不算很复杂，但内存也是轻松超过 100M（据说是 nodejs 的锅，因为我部署的一些其它自带前后端的 Docker 服务，采用 Go 写的，内存就只有不到 30M）。</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202601311125410.png?imageslim" alt="image.png" /></p>
+<p>虽然 Uptime Kuma 的界面简洁，用来检测服务和证书的状态也很方便，但是现在也只能说再见了</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/post/n8n-replace-uptime-kuma/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -536,94 +628,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/post/modded-pbr-rendering-multi-light-optimization/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/vibe-coding-harmonyos-wearable-app/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/photo.jpg">
-      <meta itemprop="name" content="xuefeng">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="snowdream">
-      <meta itemprop="description" content="时不我待">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | snowdream">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/post/vibe-coding-harmonyos-wearable-app/" class="post-title-link" itemprop="url">当Vibe Coding遇上鸿蒙穿戴应用开发</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-03-30 14:55:16" itemprop="dateCreated datePublished" datetime="2025-03-30T14:55:16+08:00">2025-03-30</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E8%B8%A9%E5%9D%91/" itemprop="url" rel="index"><span itemprop="name">踩坑</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="tldr省流版"><a class="markdownIt-Anchor" href="#tldr省流版"></a> TLDR（省流版）</h1>
-<p><img src="https://pic.xiexuefeng.cc/markdown/202503291800124.png?imageslim" alt="image.png" /></p>
-<p>鸿蒙穿戴应用（即华为智能手表/手环）应用开发的技术栈太小众了，再加上华为这块的开发文档过于混乱和黑箱（一点都不 open），所以 Vibe 不了一点，<strong>全是坑</strong>，只能各种手动调试代码来保证功能的可行性。</p>
-<p>当然，即便如此，通过把鸿蒙穿戴应用开发的技术栈文档作为项目级别的知识库，Cursor 也能相对准确的辅助代码补全，提高这门小众技术栈开发的效率。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/post/vibe-coding-harmonyos-wearable-app/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>

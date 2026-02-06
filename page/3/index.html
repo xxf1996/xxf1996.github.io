@@ -157,7 +157,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">112</span>
+          <span class="site-state-item-count">113</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -168,7 +168,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">85</span>
+        <span class="site-state-item-count">87</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -202,6 +202,98 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/vue-app-performance-enhancement-record/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/post/vue-app-performance-enhancement-record/" class="post-title-link" itemprop="url">某Vue应用页面性能优化实录</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-05-17 17:19:12" itemprop="dateCreated datePublished" datetime="2024-05-17T17:19:12+08:00">2024-05-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%BC%98%E5%8C%96/" itemprop="url" rel="index"><span itemprop="name">优化</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h1>
+<p>此文原为对公司内部某个 <code>Vue2</code>应用存在的严重性能问题，进行优化后笔者进行的内部总结文档。个人觉得其中一些分析思路和方法还是值得回味的，且暴露的一些引发性能问题的做法也值得吸取经验，故而现在进行对其中一些数据进行脱敏后进行发布。</p>
+<h1 id="某编辑页性能问题表现"><a class="markdownIt-Anchor" href="#某编辑页性能问题表现"></a> 某编辑页性能问题表现</h1>
+<p><img src="https://pic.xiexuefeng.cc/markdown/20240517165722.png?imageslim" alt="image.png" /></p>
+<ul>
+<li>当 <code>tab</code>菜单切换时会出现<strong>肉眼可见的卡顿</strong></li>
+<li>浏览器页面内存随着切换次数的增长而增长（经测试，最高可占用 <code>3~4G</code>的内存），直至<strong>页面崩溃</strong></li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/post/vue-app-performance-enhancement-record/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -532,105 +624,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/post/worker-and-excel-export/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/vite-vue3-storybook/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/photo.jpg">
-      <meta itemprop="name" content="xuefeng">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="snowdream">
-      <meta itemprop="description" content="时不我待">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | snowdream">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/post/vite-vue3-storybook/" class="post-title-link" itemprop="url">vite、vue3和storybook</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2022-09-20 10:56:06" itemprop="dateCreated datePublished" datetime="2022-09-20T10:56:06+08:00">2022-09-20</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">工具</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="关于storybook"><a class="markdownIt-Anchor" href="#关于storybook"></a> 关于storybook</h2>
-<h3 id="storybook是什么"><a class="markdownIt-Anchor" href="#storybook是什么"></a> storybook是什么？</h3>
-<blockquote>
-<p>Storybook is a tool for UI development. It makes development faster and easier by isolating components. This allows you to work on one component at a time. You can develop entire UIs without needing to start up a complex dev stack, force certain data into your database, or navigate around your application.</p>
-</blockquote>
-<h3 id="storybook可以干什么"><a class="markdownIt-Anchor" href="#storybook可以干什么"></a> storybook可以干什么？</h3>
-<ul>
-<li>根据组件注释生成对应的文档信息</li>
-<li>根据组件<code>prop</code>类型自动生成对应类型的交互控制</li>
-<li>可以编写组件交互示例</li>
-<li>可以进行组件测试</li>
-<li><code>etc</code></li>
-</ul>
-<h3 id="概览"><a class="markdownIt-Anchor" href="#概览"></a> 概览</h3>
-<p><img src="https://pic.xiexuefeng.cc/markdown/image-20220118175711768.png?imageView2/2/w/1400" alt="image-20220118175711768" /></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/post/vite-vue3-storybook/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>

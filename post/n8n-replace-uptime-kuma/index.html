@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 由于我只有一台内存 2G 的云服务器，上面也部署了一些 Docker 服务，加上近期启用了 n8n 实例，导致内存频繁达到 90% 的告警线：  虽说我可以把告警上调至 95% 来避免这个问题，但是内存不足的问题并没有得到实际解决。于是稍微查了下服务器中哪些 Docker 服务比较占内存：  尽管 n8n 占用的内存是最多的，但是我在上面搭建了一些工作流和接口服务，所以是必要的，无法被替代">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何使用n8n替代uptime-kuma">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/n8n-replace-uptime-kuma/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 由于我只有一台内存 2G 的云服务器，上面也部署了一些 Docker 服务，加上近期启用了 n8n 实例，导致内存频繁达到 90% 的告警线：  虽说我可以把告警上调至 95% 来避免这个问题，但是内存不足的问题并没有得到实际解决。于是稍微查了下服务器中哪些 Docker 服务比较占内存：  尽管 n8n 占用的内存是最多的，但是我在上面搭建了一些工作流和接口服务，所以是必要的，无法被替代">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202601301619931.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202601311140060.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202601311125410.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202602051617725.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202602051612461.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202602051714066.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202602051721984.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202602061541674.png?imageslim">
+<meta property="og:image" content="https://opengraph.githubassets.com/c09852cf6e4f497a4af2a1e65309335e4e7540d8d545651974bbd97ecece5006/other-blowsnow/n8n-nodes-feishu-lite">
+<meta property="og:image" content="https://github.githubassets.com/favicons/favicon.svg">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202602061550767.png?imageslim">
+<meta property="article:published_time" content="2026-02-01T08:01:52.000Z">
+<meta property="article:modified_time" content="2026-02-06T08:17:46.691Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="工作流">
+<meta property="article:tag" content="n8n">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/202601301619931.png?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/n8n-replace-uptime-kuma/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/n8n-replace-uptime-kuma/","path":"post/n8n-replace-uptime-kuma/","title":"如何使用n8n替代uptime-kuma"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>如何使用n8n替代uptime-kuma | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+<style>
+.cardlink-wrapper {
+  margin: 1.5em 0;
+  overflow: hidden;
+}
+
+.cardlink {
+  display: flex;
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+  background: #fff;
+}
+
+.cardlink:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  border-color: #d1d5da;
+}
+
+.cardlink-image {
+  flex-shrink: 0;
+  width: 200px;
+  overflow: hidden;
+  background: #f6f8fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardlink-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+  margin-bottom: 0px;
+}
+
+.cardlink:hover .cardlink-image img {
+  transform: scale(1.05);
+}
+
+.cardlink-content {
+  flex: 1;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.cardlink-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #24292e;
+  margin-bottom: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.4;
+}
+
+.cardlink-description {
+  font-size: 14px;
+  color: #586069;
+  line-height: 1.5;
+  margin-bottom: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  flex: 1;
+}
+
+.cardlink-footer {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  color: #6a737d;
+}
+
+.cardlink-favicon {
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+  margin-bottom: 0px !important;
+  flex-shrink: 0;
+}
+
+.cardlink-host {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cardlink-error {
+  padding: 12px 16px;
+  border: 1px solid #f85149;
+  border-radius: 6px;
+  background: #fff1f0;
+  color: #d1242f;
+  margin: 1em 0;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .cardlink {
+    flex-direction: column;
+  }
+  
+  .cardlink-image {
+    width: 100%;
+  }
+  
+  .cardlink-content {
+    padding: 14px 16px;
+  }
+}
+
+/* 深色模式支持 */
+@media (prefers-color-scheme: dark) {
+  .cardlink {
+    background: #1e1e1e;
+    border-color: #30363d;
+  }
+  
+  .cardlink:hover {
+    border-color: #484f58;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+  
+  .cardlink-image {
+    background: #0d1117;
+  }
+  
+  .cardlink-title {
+    color: #c9d1d9;
+  }
+  
+  .cardlink-description {
+    color: #8b949e;
+  }
+  
+  .cardlink-footer {
+    color: #8b949e;
+  }
+  
+  .cardlink-error {
+    background: #2d1417;
+    border-color: #f85149;
+    color: #ff7b72;
+  }
+}
+</style>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#tldr"><span class="nav-number">2.</span> <span class="nav-text"> TLDR</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#data-table"><span class="nav-number">3.</span> <span class="nav-text"> Data Table</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E7%BD%91%E7%AB%99%E6%8E%A5%E5%8F%A3%E7%8A%B6%E6%80%81%E6%A3%80%E6%B5%8B"><span class="nav-number">4.</span> <span class="nav-text"> 服务（网站&#x2F;接口）状态检测</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ssl-%E8%AF%81%E4%B9%A6%E7%8A%B6%E6%80%81%E6%A3%80%E6%B5%8B"><span class="nav-number">5.</span> <span class="nav-text"> SSL 证书状态检测</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BE%9D%E6%AC%A1%E9%97%B4%E9%9A%94%E8%A7%A6%E5%8F%91"><span class="nav-number">6.</span> <span class="nav-text"> 依次间隔触发</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%82%E5%B8%B8%E6%81%A2%E5%A4%8D%E9%80%9A%E7%9F%A5"><span class="nav-number">7.</span> <span class="nav-text"> 异常&#x2F;恢复通知</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">113</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">87</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/n8n-replace-uptime-kuma/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="如何使用n8n替代uptime-kuma | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          如何使用n8n替代uptime-kuma
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-02-01 16:01:52" itemprop="dateCreated datePublished" datetime="2026-02-01T16:01:52+08:00">2026-02-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">工具</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h1>
+<p>由于我只有一台内存 2G 的云服务器，上面也部署了一些 Docker 服务，加上近期启用了 n8n 实例，导致内存频繁达到 90% 的告警线：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202601301619931.png?imageslim" alt="局部截取_20260130_161851.png" /></p>
+<p>虽说我可以把告警上调至 95% 来避免这个问题，但是内存不足的问题并没有得到实际解决。于是稍微查了下服务器中哪些 Docker 服务比较占内存：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202601311140060.png?imageslim" alt="image.png" /></p>
+<p>尽管 n8n 占用的内存是最多的，但是我在上面搭建了一些工作流和接口服务，所以是必要的，无法被替代。其它的服务要么也是不可替代，要么占用内存极低，所以最显眼的就是 uptime-kuma 了。尽管它占用的内存严格来说也不算特别多，但谁叫我服务器内存不够呢😂，而且 uptime-kuma 是一个网络服务健康检测的工具，功能不算很复杂，但内存也是轻松超过 100M（据说是 nodejs 的锅，因为我部署的一些其它自带前后端的 Docker 服务，采用 Go 写的，内存就只有不到 30M）。</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202601311125410.png?imageslim" alt="image.png" /></p>
+<p>虽然 Uptime Kuma 的界面简洁，用来检测服务和证书的状态也很方便，但是现在也只能说再见了</p>
+<span id="more"></span>
+<h1 id="tldr"><a class="markdownIt-Anchor" href="#tldr"></a> TLDR</h1>
+<p>先上结论，使用 Schedule Trigger + Data Table + 邮件通知/飞书通知（或者其它 webhook 类通知）即可完全达到 uptime-kuma 的功能。</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202602051617725.png?imageslim" alt="局部截取_20260205_161655.png" /></p>
+<h1 id="data-table"><a class="markdownIt-Anchor" href="#data-table"></a> Data Table</h1>
+<p>我在社区看到一些类似的 workflow 都是采用 Google sheet 存储数据，实际上现在 n8n 自带的 Data Table 也可以作为简易数据库进行使用，不必额外在其它地方维护数据了。</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202602051612461.png?imageslim" alt="局部截取_20260205_161224.png" /></p>
+<p>上面就是我针对我的健康检测需求设计的 Data Table：</p>
+<ul>
+<li>name：用于通知时的服务名称</li>
+<li>url：服务地址</li>
+<li>checkSSL：是否检测 SSL 状态（主要是看是否过期）</li>
+<li>normal：url 本身请求是否正常（根据 response 的 code 是否和设置 normalCode 一致）</li>
+<li>SSLExpired：SSL 证书是否过期</li>
+</ul>
+<h1 id="服务网站接口状态检测"><a class="markdownIt-Anchor" href="#服务网站接口状态检测"></a> 服务（网站/接口）状态检测</h1>
+<p>这个就比较简单了，直接采用 HTTP Request 节点请求 url，拿到状态码进行对比即可：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202602051714066.png?imageslim" alt="局部截取_20260205_171438.png" /></p>
+<p>需要注意的是该节点默认不会返回状态码，需要在 Response 开启。</p>
+<h1 id="ssl-证书状态检测"><a class="markdownIt-Anchor" href="#ssl-证书状态检测"></a> SSL 证书状态检测</h1>
+<p>一开始，我在一个 <a target="_blank" rel="noopener" href="https://n8n.io/workflows/4643-ssl-certificate-expiry-notifier-no-paid-apis/">社区工作流</a> 中发现了 <a target="_blank" rel="noopener" href="http://ssl-checker.io">ssl-checker.io</a> 这个网站，该网站传入指定的域名就可以返回该域名对应的 SSL 证书信息。然而实际运行一段时间后，发现该网站服务特别不稳定，很容易触发 504 报错：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202602051721984.png?imageslim" alt="局部截取_20260205_172047.png" /></p>
+<p>因此，后面我特地使用 Code 节点，使用 nodejs 自带的 tls 模块来获取 SSL 证书信息：</p>
+<blockquote>
+<p>注：以下代码完全由 AI 生成</p>
+</blockquote>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> tls = <span class="built_in">require</span>(<span class="string">&#x27;tls&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取上游节点传来的域名，或在此处硬编码测试</span></span><br><span class="line"><span class="keyword">const</span> domain = $input.<span class="title function_">first</span>().<span class="property">json</span>.<span class="property">domain</span>; </span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> socket = tls.<span class="title function_">connect</span>(<span class="number">443</span>, domain, &#123; <span class="attr">servername</span>: domain, <span class="attr">timeout</span>: <span class="number">5000</span> &#125;, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">const</span> cert = socket.<span class="title function_">getPeerCertificate</span>();</span><br><span class="line">      </span><br><span class="line">      <span class="keyword">if</span> (!cert || <span class="title class_">Object</span>.<span class="title function_">keys</span>(cert).<span class="property">length</span> === <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="title function_">resolve</span>(&#123; <span class="attr">json</span>: &#123; <span class="attr">error</span>: <span class="string">&quot;未能获取证书信息&quot;</span> &#125; &#125;);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">const</span> validTo = <span class="keyword">new</span> <span class="title class_">Date</span>(cert.<span class="property">valid_to</span>);</span><br><span class="line">      <span class="keyword">const</span> now = <span class="keyword">new</span> <span class="title class_">Date</span>();</span><br><span class="line">      <span class="comment">// 计算剩余天数 (毫秒转天数)</span></span><br><span class="line">      <span class="keyword">const</span> daysRemaining = <span class="title class_">Math</span>.<span class="title function_">floor</span>((validTo - now) / (<span class="number">1000</span> * <span class="number">60</span> * <span class="number">60</span> * <span class="number">24</span>));</span><br><span class="line"></span><br><span class="line">      <span class="title function_">resolve</span>(&#123;</span><br><span class="line">        <span class="attr">json</span>: &#123;</span><br><span class="line">          <span class="attr">domain</span>: domain,</span><br><span class="line">          <span class="attr">issuer</span>: cert.<span class="property">issuer</span>.<span class="property">O</span>,</span><br><span class="line">          <span class="attr">valid_from</span>: cert.<span class="property">valid_from</span>,</span><br><span class="line">          <span class="attr">valid_to</span>: cert.<span class="property">valid_to</span>,</span><br><span class="line">          <span class="attr">days_remaining</span>: daysRemaining,</span><br><span class="line">          <span class="attr">is_valid</span>: daysRemaining &gt; <span class="number">0</span>,</span><br><span class="line">          <span class="attr">status</span>: daysRemaining &lt; <span class="number">7</span> ? <span class="string">&quot;警告：即将过期&quot;</span> : <span class="string">&quot;正常&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;);</span><br><span class="line">      </span><br><span class="line">      socket.<span class="title function_">end</span>();</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    socket.<span class="title function_">on</span>(<span class="string">&#x27;error&#x27;</span>, <span class="function">(<span class="params">err</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="title function_">resolve</span>(&#123; <span class="attr">json</span>: &#123; <span class="attr">domain</span>: domain, <span class="attr">error</span>: err.<span class="property">message</span>, <span class="attr">status</span>: <span class="string">&quot;连接失败&quot;</span> &#125; &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    socket.<span class="title function_">on</span>(<span class="string">&#x27;timeout&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">      socket.<span class="title function_">destroy</span>();</span><br><span class="line">      <span class="title function_">resolve</span>(&#123; <span class="attr">json</span>: &#123; <span class="attr">domain</span>: domain, <span class="attr">error</span>: <span class="string">&quot;连接超时&quot;</span>, <span class="attr">status</span>: <span class="string">&quot;超时&quot;</span> &#125; &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">  &#125; <span class="keyword">catch</span> (error) &#123;</span><br><span class="line">    <span class="title function_">resolve</span>(&#123; <span class="attr">json</span>: &#123; <span class="attr">error</span>: error.<span class="property">message</span> &#125; &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>后续使用一段时间后发现该检测逻辑运行很稳定，没有出现异常。不过需要注意的是，n8n 自部署实例默认是不允许导入任何模块的（包括 nodejs 内置模块），但是可以通过设置 Docker 的环境变量来开启这个功能 <sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup><sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 单独启用tls模块</span></span><br><span class="line">NODE_FUNCTION_ALLOW_BUILTIN=tls</span><br></pre></td></tr></table></figure>
+<p>然后重启 Docker 实例即可。</p>
+<h1 id="依次间隔触发"><a class="markdownIt-Anchor" href="#依次间隔触发"></a> 依次间隔触发</h1>
+<p>在使用 Data Table 的 get rows 功能获取表格中所有的数据后，按照 n8n 的默认机制，单个 item 执行一次，多个 item 则会同时触发各自执行一次。因此如果不做间隔触发，可能会导致不必要的并发压力。</p>
+<p>一开始我想着 n8n 自带 wait 节点，且看着好像可以传入多个 item 时根据 itemIndex 设置依次增大的延迟时间，于是我就这么做了，哪知道这个设置压根不起作用，实际上设置多个延迟时间也会在<strong>第一个延迟时间达到时同时触发</strong>所有 item（只能说很不符合直觉了😅）</p>
+<p>最后只能使用 loop + wait 的形式实现：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202602061541674.png?imageslim" alt="局部截取_20260206_154144.png" /></p>
+<h1 id="异常恢复通知"><a class="markdownIt-Anchor" href="#异常恢复通知"></a> 异常/恢复通知</h1>
+<p>至于消息通知，n8n 内置发送邮件的的节点，也可以使用 HTTP Request 节点触发各种基于 webhook 进行触发的推送渠道。这里我推荐一个社区节点——n8n-nodes-feishu-lite：</p>
+<div class="cardlink-wrapper"><a href="https://github.com/other-blowsnow/n8n-nodes-feishu-lite" class="cardlink" target="_blank" rel="noopener noreferrer"><div class="cardlink-image"><img src="https://opengraph.githubassets.com/c09852cf6e4f497a4af2a1e65309335e4e7540d8d545651974bbd97ecece5006/other-blowsnow/n8n-nodes-feishu-lite" alt="GitHub - other-blowsnow/n8n-nodes-feishu-lite: n8n-飞书模块" loading="lazy"></div><div class="cardlink-content"><div class="cardlink-title">GitHub - other-blowsnow/n8n-nodes-feishu-lite: n8n-飞书模块</div><div class="cardlink-description">n8n-飞书模块. Contribute to other-blowsnow/n8n-nodes-feishu-lite development by creating an account on GitHub.</div><div class="cardlink-footer"><img src="https://github.githubassets.com/favicons/favicon.svg" class="cardlink-favicon" alt=""><span class="cardlink-host">github.com</span></div></div></a></div>
+<p>里面的功能可以说是量大管饱（多达上百个），涵盖飞书开放 API 的各个方面，只要去飞书上申请一个机器人即可：</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202602061550767.png?imageslim" alt="局部截取_20260206_155051.png" /></p>
+<p>后面我基于此在 n8n 上搭建了飞书助理机器人的 workflow，虽说不如 openClaw 那么智能化，但是够用了（主要是特别省 token🙈）</p>
+<hr class="footnotes-sep" />
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://docs.n8n.io/hosting/configuration/configuration-examples/modules-in-code-node/">https://docs.n8n.io/hosting/configuration/configuration-examples/modules-in-code-node/</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/?utm_source=n8n_app&amp;utm_medium=node_settings_modal-credential_link&amp;utm_campaign=n8n-nodes-base.code#built-in-methods-and-variables">https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/?utm_source=n8n_app&amp;utm_medium=node_settings_modal-credential_link&amp;utm_campaign=n8n-nodes-base.code#built-in-methods-and-variables</a> <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/n8n-replace-uptime-kuma/" title="如何使用n8n替代uptime-kuma">https://note.xiexuefeng.cc/post/n8n-replace-uptime-kuma/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E5%B7%A5%E4%BD%9C%E6%B5%81/" rel="tag"># 工作流</a>
+              <a href="/tags/n8n/" rel="tag"># n8n</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/onlyoffice-source-build-guide/" rel="prev" title="ONLYOFFICE源码编译不完全指南">
+                  <i class="fa fa-chevron-left"></i> ONLYOFFICE源码编译不完全指南
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/n8n-replace-uptime-kuma/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/n8n-replace-uptime-kuma/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>
