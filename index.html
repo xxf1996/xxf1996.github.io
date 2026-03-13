@@ -157,7 +157,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">113</span>
+          <span class="site-state-item-count">114</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -168,7 +168,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">87</span>
+        <span class="site-state-item-count">90</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -202,6 +202,102 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/deploy-openclaw-on-old-android-phone/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/post/deploy-openclaw-on-old-android-phone/" class="post-title-link" itemprop="url">低成本"养虾"之使用安卓旧手机部署</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-03-08 12:00:00" itemprop="dateCreated datePublished" datetime="2026-03-08T12:00:00+08:00">2026-03-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%B8%A9%E5%9D%91/" itemprop="url" rel="index"><span itemprop="name">踩坑</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h1>
+<p>最近 OpenClaw<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup> 的热度很高，作为一个开源的 AI 私人助手，它能在本地运行、对接各种 IM 平台（飞书、钉钉、QQ 等），全天候帮你处理消息、管理任务。社区里大家把部署 OpenClaw 戏称为“养虾”——因为它的 logo 是只🦞。</p>
+<p>“养虾”需要一台 24 小时运行的服务器，且听说对于内存的要求比较大，所以要部署搞不好还得去开个单独的云服务器。不过正好家里有一台闲置的<strong>红米 Note4X</strong>（骁龙 625、3GB 内存、4100mAh 电池），一直在吃灰。后来在 B 站上看到有人用<strong>PostmarketOS</strong>把旧安卓手机刷成了 Linux 服务器 <sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>，骁龙 625 又恰好是 PostmarketOS 支持较好的芯片平台之一，于是我决定试试在这台旧手机上跑 Docker 来部署 OpenClaw。</p>
+<h1 id="tldr"><a class="markdownIt-Anchor" href="#tldr"></a> TLDR</h1>
+<p>最终成功在红米 Note4X 上通过 PostmarketOS + Docker 部署了<strong>OpenClaw-Docker-CN-IM</strong><sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup> 服务。日常通过飞书等 IM 平台与 OpenClaw 交互，如果需要在外网访问管理界面可以额外配置 Tailscale。整个过程主要踩了这几个坑：</p>
+<ol>
+<li>fastboot 版本不兼容，刷写 <code>userdata</code> 分区时报错 <code>std::bad_alloc</code></li>
+<li>Docker 的 containerd 可执行文件路径与 systemd 配置不匹配，导致 Docker 无法启动</li>
+<li>需要给 Docker 配置网络代理才能正常拉取镜像</li>
+<li>OpenClaw Gateway 在非本地回环地址访问时需要配置 <code>allowedOrigins</code></li>
+</ol>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202603122120576.png?imageslim" alt="image.png" /></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/post/deploy-openclaw-on-old-android-phone/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -538,96 +634,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/post/sparse-vector-generation-with-bge-m3-onnx/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/modded-pbr-rendering-multi-light-optimization/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/photo.jpg">
-      <meta itemprop="name" content="xuefeng">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="snowdream">
-      <meta itemprop="description" content="时不我待">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | snowdream">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/post/modded-pbr-rendering-multi-light-optimization/" class="post-title-link" itemprop="url">魔改PBR渲染管线支持大量灯光场景</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-04-20 16:03:57" itemprop="dateCreated datePublished" datetime="2025-04-20T16:03:57+08:00">2025-04-20</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%8E%A2%E7%B4%A2/" itemprop="url" rel="index"><span itemprop="name">探索</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h1>
-<p>其实本来只打算写一下我是如何通过自定义材质来实现特定场景下突破 UBO 数量限制的，但是写着写着发现很有必要捋清楚 Babylonjs 内部着色器预编译的机制，不然连我自己都不清楚我为啥要这么做🙈。</p>
-<p>虽然我之前确实对 Babylonjs 的源码做过一些分析记录，但总体比较零散，完全无法在脑海中形成一个系统性的、清晰的流程。所以这次我就把 Babylonjs 的仓库 clone 到本地，使用 Cursor 将其作为<strong>本地知识库</strong>进行详细的源码分析，得到了多份分析报告文档，基于这些文档我才对 Babylonjs 内部一些机制有了更详细和全面的了解。</p>
-<p>而这些报告文档我都放到了 <a target="_blank" rel="noopener" href="https://github.com/xxf1996/babylonjs-research/tree/main/docs">Github</a> 上，感兴趣的可以去看一看，我觉得从里面确实可以学到不少关于 Babylonjs 源码的思路。</p>
-<h1 id="需求背景"><a class="markdownIt-Anchor" href="#需求背景"></a> 需求背景</h1>
-<p>我前不久独自开发了一个 <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/paxySM-ZtVwm3VL2WXfSLA">在线3D展览</a> 的项目，该项目的主要需求就是渲染展厅模型及展厅中的大量展品，也包含<strong>大量</strong>用来给展品打光的聚光灯。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/post/modded-pbr-rendering-multi-light-optimization/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>

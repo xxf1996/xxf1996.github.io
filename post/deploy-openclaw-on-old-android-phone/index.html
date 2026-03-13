@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"note.xiexuefeng.cc","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 最近 OpenClaw[1] 的热度很高，作为一个开源的 AI 私人助手，它能在本地运行、对接各种 IM 平台（飞书、钉钉、QQ 等），全天候帮你处理消息、管理任务。社区里大家把部署 OpenClaw 戏称为“养虾”——因为它的 logo 是只🦞。 “养虾”需要一台 24 小时运行的服务器，且听说对于内存的要求比较大，所以要部署搞不好还得去开个单独的云服务器。不过正好家里有一台闲置的红米">
+<meta property="og:type" content="article">
+<meta property="og:title" content="低成本&quot;养虾&quot;之使用安卓旧手机部署">
+<meta property="og:url" content="https://note.xiexuefeng.cc/post/deploy-openclaw-on-old-android-phone/index.html">
+<meta property="og:site_name" content="snowdream">
+<meta property="og:description" content="前言 最近 OpenClaw[1] 的热度很高，作为一个开源的 AI 私人助手，它能在本地运行、对接各种 IM 平台（飞书、钉钉、QQ 等），全天候帮你处理消息、管理任务。社区里大家把部署 OpenClaw 戏称为“养虾”——因为它的 logo 是只🦞。 “养虾”需要一台 24 小时运行的服务器，且听说对于内存的要求比较大，所以要部署搞不好还得去开个单独的云服务器。不过正好家里有一台闲置的红米">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202603122120576.png?imageslim">
+<meta property="og:image" content="https://i0.hdslb.com/bfs/archive/81e559fbc076d6cb60ba6202f873c197f18bce96.jpg@100w_100h_1c.png">
+<meta property="og:image" content="https://i1.hdslb.com/bfs/archive/6cfdfe35ee034d77934ccbded32c144cc999e8a2.jpg@100w_100h_1c.png">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202603131716105.jpg?imageView2/2/w/400">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202603122134542.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202602280032069.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202602280033301.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202603131711129.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202603131659557.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202603122126905.png?imageslim">
+<meta property="og:image" content="https://pic.xiexuefeng.cc/markdown/202603122125995.png?imageslim">
+<meta property="og:image" content="https://opengraph.githubassets.com/43dcad8f3aa8d388eceacfaa2f88983867fbc6e1e7100ac9121af089763a8cd8/hillerliao/install-openclaw-on-termux">
+<meta property="og:image" content="https://github.githubassets.com/favicons/favicon.svg">
+<meta property="article:published_time" content="2026-03-08T04:00:00.000Z">
+<meta property="article:modified_time" content="2026-03-13T09:39:08.866Z">
+<meta property="article:author" content="xuefeng">
+<meta property="article:tag" content="Agent">
+<meta property="article:tag" content="OpenClaw">
+<meta property="article:tag" content="PostmarketOS">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="Linux">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.xiexuefeng.cc/markdown/202603122120576.png?imageslim">
+
+
+<link rel="canonical" href="https://note.xiexuefeng.cc/post/deploy-openclaw-on-old-android-phone/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://note.xiexuefeng.cc/post/deploy-openclaw-on-old-android-phone/","path":"post/deploy-openclaw-on-old-android-phone/","title":"低成本\"养虾\"之使用安卓旧手机部署"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>低成本"养虾"之使用安卓旧手机部署 | snowdream</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+<style>
+.cardlink-wrapper {
+  margin: 1.5em 0;
+  overflow: hidden;
+}
+
+.cardlink {
+  display: flex;
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+  background: #fff;
+}
+
+.cardlink:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  border-color: #d1d5da;
+}
+
+.cardlink-image {
+  flex-shrink: 0;
+  width: 200px;
+  overflow: hidden;
+  background: #f6f8fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardlink-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+  margin-bottom: 0px;
+}
+
+.cardlink:hover .cardlink-image img {
+  transform: scale(1.05);
+}
+
+.cardlink-content {
+  flex: 1;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.cardlink-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #24292e;
+  margin-bottom: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.4;
+}
+
+.cardlink-description {
+  font-size: 14px;
+  color: #586069;
+  line-height: 1.5;
+  margin-bottom: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  flex: 1;
+}
+
+.cardlink-footer {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  color: #6a737d;
+}
+
+.cardlink-favicon {
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+  margin-bottom: 0px !important;
+  flex-shrink: 0;
+}
+
+.cardlink-host {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cardlink-error {
+  padding: 12px 16px;
+  border: 1px solid #f85149;
+  border-radius: 6px;
+  background: #fff1f0;
+  color: #d1242f;
+  margin: 1em 0;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .cardlink {
+    flex-direction: column;
+  }
+  
+  .cardlink-image {
+    width: 100%;
+  }
+  
+  .cardlink-content {
+    padding: 14px 16px;
+  }
+}
+
+/* 深色模式支持 */
+@media (prefers-color-scheme: dark) {
+  .cardlink {
+    background: #1e1e1e;
+    border-color: #30363d;
+  }
+  
+  .cardlink:hover {
+    border-color: #484f58;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+  
+  .cardlink-image {
+    background: #0d1117;
+  }
+  
+  .cardlink-title {
+    color: #c9d1d9;
+  }
+  
+  .cardlink-description {
+    color: #8b949e;
+  }
+  
+  .cardlink-footer {
+    color: #8b949e;
+  }
+  
+  .cardlink-error {
+    background: #2d1417;
+    border-color: #f85149;
+    color: #ff7b72;
+  }
+}
+</style>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">snowdream</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">record and share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#tldr"><span class="nav-number">2.</span> <span class="nav-text"> TLDR</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8B%94%E5%89%91%E5%9B%9B%E9%A1%BE%E5%BF%83%E8%8C%AB%E7%84%B6"><span class="nav-number">2.1.</span> <span class="nav-text"> 拔剑四顾心茫然</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%B7%E5%85%A5-postmarketos"><span class="nav-number">3.</span> <span class="nav-text"> 刷入 PostmarketOS</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-postmarketos"><span class="nav-number">3.1.</span> <span class="nav-text"> 什么是 PostmarketOS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="nav-number">3.2.</span> <span class="nav-text"> 准备工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#fastboot-%E7%9A%84%E7%89%88%E6%9C%AC%E9%99%B7%E9%98%B1"><span class="nav-number">3.3.</span> <span class="nav-text"> fastboot 的“版本陷阱”</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-docker"><span class="nav-number">4.</span> <span class="nav-text"> 安装 Docker</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#containerd-%E8%B7%AF%E5%BE%84%E4%B8%8D%E5%8C%B9%E9%85%8D"><span class="nav-number">4.1.</span> <span class="nav-text"> containerd 路径不匹配</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE-docker-%E9%95%9C%E5%83%8F%E4%BB%A3%E7%90%86"><span class="nav-number">4.2.</span> <span class="nav-text"> 配置 Docker 镜像代理</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%83%A8%E7%BD%B2-openclaw"><span class="nav-number">5.</span> <span class="nav-text"> 部署 OpenClaw</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E7%94%A8-docker-%E9%83%A8%E7%BD%B2"><span class="nav-number">5.1.</span> <span class="nav-text"> 为什么用 Docker 部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#openclaw-docker-cn-im"><span class="nav-number">5.2.</span> <span class="nav-text"> OpenClaw-Docker-CN-IM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#gateway-%E5%90%AF%E5%8A%A8%E6%8A%A5%E9%94%99"><span class="nav-number">5.3.</span> <span class="nav-text"> Gateway 启动报错</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F"><span class="nav-number">6.</span> <span class="nav-text"> 关于内网穿透</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E7%BA%AF%E5%86%85%E7%BD%91%E9%83%A8%E7%BD%B2%E5%B0%B1%E5%A4%9F%E4%BA%86"><span class="nav-number">6.1.</span> <span class="nav-text"> 为什么纯内网部署就够了</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8D%E5%BB%BA%E8%AE%AE%E9%9A%8F%E6%84%8F%E6%9A%B4%E9%9C%B2%E7%AB%AF%E5%8F%A3%E5%88%B0%E5%A4%96%E7%BD%91"><span class="nav-number">6.2.</span> <span class="nav-text"> 不建议随意暴露端口到外网</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A1%AE%E5%AE%9E%E9%9C%80%E8%A6%81%E5%A4%96%E7%BD%91%E8%AE%BF%E9%97%AE%E7%AE%A1%E7%90%86%E7%95%8C%E9%9D%A2%E7%9A%84%E6%83%85%E5%86%B5"><span class="nav-number">6.3.</span> <span class="nav-text"> 确实需要外网访问管理界面的情况</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%8E%E8%AF%9D"><span class="nav-number">7.</span> <span class="nav-text"> 后话</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E-astrbot"><span class="nav-number">7.1.</span> <span class="nav-text"> 关于 AstrBot</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#termux"><span class="nav-number">7.2.</span> <span class="nav-text"> Termux</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xuefeng"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">xuefeng</p>
+  <div class="site-description" itemprop="description">时不我待</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">114</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">90</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxf1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxf1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://note.xiexuefeng.cc/post/deploy-openclaw-on-old-android-phone/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="xuefeng">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="snowdream">
+      <meta itemprop="description" content="时不我待">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="低成本"养虾"之使用安卓旧手机部署 | snowdream">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          低成本"养虾"之使用安卓旧手机部署
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-03-08 12:00:00" itemprop="dateCreated datePublished" datetime="2026-03-08T12:00:00+08:00">2026-03-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%B8%A9%E5%9D%91/" itemprop="url" rel="index"><span itemprop="name">踩坑</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h1>
+<p>最近 OpenClaw<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup> 的热度很高，作为一个开源的 AI 私人助手，它能在本地运行、对接各种 IM 平台（飞书、钉钉、QQ 等），全天候帮你处理消息、管理任务。社区里大家把部署 OpenClaw 戏称为“养虾”——因为它的 logo 是只🦞。</p>
+<p>“养虾”需要一台 24 小时运行的服务器，且听说对于内存的要求比较大，所以要部署搞不好还得去开个单独的云服务器。不过正好家里有一台闲置的<strong>红米 Note4X</strong>（骁龙 625、3GB 内存、4100mAh 电池），一直在吃灰。后来在 B 站上看到有人用<strong>PostmarketOS</strong>把旧安卓手机刷成了 Linux 服务器 <sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>，骁龙 625 又恰好是 PostmarketOS 支持较好的芯片平台之一，于是我决定试试在这台旧手机上跑 Docker 来部署 OpenClaw。</p>
+<h1 id="tldr"><a class="markdownIt-Anchor" href="#tldr"></a> TLDR</h1>
+<p>最终成功在红米 Note4X 上通过 PostmarketOS + Docker 部署了<strong>OpenClaw-Docker-CN-IM</strong><sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup> 服务。日常通过飞书等 IM 平台与 OpenClaw 交互，如果需要在外网访问管理界面可以额外配置 Tailscale。整个过程主要踩了这几个坑：</p>
+<ol>
+<li>fastboot 版本不兼容，刷写 <code>userdata</code> 分区时报错 <code>std::bad_alloc</code></li>
+<li>Docker 的 containerd 可执行文件路径与 systemd 配置不匹配，导致 Docker 无法启动</li>
+<li>需要给 Docker 配置网络代理才能正常拉取镜像</li>
+<li>OpenClaw Gateway 在非本地回环地址访问时需要配置 <code>allowedOrigins</code></li>
+</ol>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202603122120576.png?imageslim" alt="image.png" /></p>
+<span id="more"></span>
+<h2 id="拔剑四顾心茫然"><a class="markdownIt-Anchor" href="#拔剑四顾心茫然"></a> 拔剑四顾心茫然</h2>
+<p>在还没有进入技术细节部分之前，我不得不说一些扫兴的话。尽管我通过上述方案成功地在内网手机上部署了一个 OpenClaw 服务，但最大的问题就是——<strong>找不到使用它的需求</strong>。目前（2026-03）这一波“龙虾”热有点过头了，大家都是处于拿着锤子找钉子的状态，并非真正有需求才去使用它，而是一方面觉得它是阿拉丁神灯，一方面觉得不用可能会落后于时代。</p>
+<p>OpenClaw 作为一个产品来说，现阶段仍处于很早期的阶段，有很多不完善的地方（比如安全性和产品易用性），最重要的是目前基于 Skills + 记忆机制，实际上就是把工作流（可固化为一套 SOP 的工作流程）转换成了一大段 AI 提示词。好处就是工作流复用门槛变得很低了，不再需要使用编程或者低代码方式进行固化，代价自然就是 token <strong>数量暴增</strong>。而我习惯把工作流放到 n8n 这类低代码平台上面进行实现，好处就是基于低代码节点执行逻辑需要的 token 就很少了。</p>
+<p>总之，除非你对于 token 的花费完全不在意且极其不喜欢借助编程和低代码的方式来搭建工作流，不然现阶段我不是很推荐使用 OpenClaw😅。</p>
+<h1 id="刷入-postmarketos"><a class="markdownIt-Anchor" href="#刷入-postmarketos"></a> 刷入 PostmarketOS</h1>
+<h2 id="什么是-postmarketos"><a class="markdownIt-Anchor" href="#什么是-postmarketos"></a> 什么是 PostmarketOS</h2>
+<p><strong>PostmarketOS</strong><sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup> 是一个基于 Alpine Linux 的移动端 Linux 发行版，目标是为旧手机提供长期维护的 Linux 系统。红米 Note4X 所用的骁龙 625（MSM8953）是其支持较好的芯片平台之一，WiFi、触屏、USB、蓝牙、音频等基础功能都能正常工作。刷入之后手机就变成了一台完整的 aarch64 Linux 设备，可以 SSH 连接、跑 Docker，甚至装桌面环境。</p>
+<h2 id="准备工作"><a class="markdownIt-Anchor" href="#准备工作"></a> 准备工作</h2>
+<p>主要参考了 B 站上的两个教程视频 <sup class="footnote-ref"><a href="#fn2" id="fnref2:1">[2:1]</a></sup><sup class="footnote-ref"><a href="#fn5" id="fnref5">[5]</a></sup>，整体流程大致如下：</p>
+<ol>
+<li><strong>解 BL 锁</strong>：红米 Note4X 需要先用小米官方的解锁工具解 Bootloader 锁</li>
+<li><strong>下载 PostmarketOS 镜像</strong>：从清华镜像站 <sup class="footnote-ref"><a href="#fn6" id="fnref6">[6]</a></sup> 下载预编译的镜像，选择 <code>qcom-msm8953</code> 通用设备</li>
+<li><strong>准备 fastboot 工具</strong>：下载 Android Platform Tools，用 fastboot 把镜像刷入手机各分区</li>
+</ol>
+<div class="cardlink-wrapper"><a href="https://www.bilibili.com/video/BV188mcBBE9s" class="cardlink" target="_blank" rel="noopener noreferrer"><div class="cardlink-image"><img src="https://i0.hdslb.com/bfs/archive/81e559fbc076d6cb60ba6202f873c197f18bce96.jpg@100w_100h_1c.png" alt="旧手机刷入linux！秒变小服务器！骁龙625通用！红米4高配版，红米note4刷入postmarketos 附修复触控_哔哩哔哩_bilibili" loading="lazy"></div><div class="cardlink-content"><div class="cardlink-title">旧手机刷入linux！秒变小服务器！骁龙625通用！红米4高配版，红米note4刷入postmarketos 附修复触控_哔哩哔哩_bilibili</div><div class="cardlink-description">参考链接https://postmarketos.org/https://wiki.postmarketos.org/wiki/Qualcomm_Snapdragon_625_(MSM8953)https://mirrors.tuna.tsinghua.edu.cn/postmarketOS-images/bpo/https://developer.android.google.cn/tools/, 视频播放量 40183、弹幕量 113、点赞数 730、投硬币枚数 186、收藏人数 1358、转发人数 136, 视频作者 憭尘kily, 作者简介 ，相关视频：旧手机刷Linux，流畅带屏秒杀树莓派，2025最新教程！安卓手机免Root安装Ubuntu Linux系统，手把手教学+桌面环境全演示，安卓电脑？Termux拜拜！谷歌居然在你的手机里藏了个完整Linux系统！安卓16测试版Android Linux Terminal Display，传奇耐刷王K20 Pro刷入最新类原生安卓16系统，初体验，我们红米K20Pro用户已经天下无敌了🤓🤓🤓，旧手机不要扔！教你搭建家用服务器，安卓16自带linux终端(originOS6)，百元成本废弃手机秒变骁龙888机顶盒+手游游戏机+高清播放机，Ubuntu手机，旧手机“再就业”指南，那些淘汰的旧手机们还能用来做什么？</div><div class="cardlink-footer"><span class="cardlink-host">www.bilibili.com</span></div></div></a></div>
+<p>详细刷机步骤可以参考上面这个视频，其中包含怎么开启 SSH。</p>
+<div class="cardlink-wrapper"><a href="https://www.bilibili.com/video/BV1JiC5YoECd" class="cardlink" target="_blank" rel="noopener noreferrer"><div class="cardlink-image"><img src="https://i1.hdslb.com/bfs/archive/6cfdfe35ee034d77934ccbded32c144cc999e8a2.jpg@100w_100h_1c.png" alt="【物尽其用】旧手机变身个人服务器，以红米 6Pro 刷 PostmarketOS 为例。_哔哩哔哩_bilibili" loading="lazy"></div><div class="cardlink-content"><div class="cardlink-title">【物尽其用】旧手机变身个人服务器，以红米 6Pro 刷 PostmarketOS 为例。_哔哩哔哩_bilibili</div><div class="cardlink-description">将旧手机变为一台 7*24 小时不间断运行的个人服务器。, 视频播放量 4302、弹幕量 3、点赞数 74、投硬币枚数 48、收藏人数 136、转发人数 7, 视频作者 谭大码畜, 作者简介 这家伙很懒，故意什么都没留下。，相关视频：旧手机or平板再利用! 以红米2为例用pmbootstrap构建linux，榨干旧手机2Pro：旧手机改服务器算π，怀旧手机图鉴，致敬我们的年少，为啥linux服务器，一般不装图形界面呢？，电脑蜂鸣器最有用的一集，禁止用Linux玩打字游戏！，计算机各项事物对比，十分之客观，各有各的美，，，，校招中的“熟悉linux操作系统”一般是指达到什么程度？，家里的旧手机，当Bro的Arch Linux一年没开居然没滚挂：</div><div class="cardlink-footer"><span class="cardlink-host">www.bilibili.com</span></div></div></a></div>
+<p>而这个视频后面讲了很多有关 linux 服务器实用工具的安装，也推荐看看。</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202603131716105.jpg?imageView2/2/w/400" alt="IMG_20260313_171602.jpg" /></p>
+<p>其中 1 和 2 都比较顺利，坑出在了第 3 步。</p>
+<h2 id="fastboot-的版本陷阱"><a class="markdownIt-Anchor" href="#fastboot-的版本陷阱"></a> fastboot 的“版本陷阱”</h2>
+<p>按照教程，进入手机的 fastboot 模式后，用 fastboot 把镜像依次刷入各个分区。前面的 <code>boot</code>、<code>system</code> 分区都刷得很顺利，结果刷 <code>userdata</code> 分区的时候报错了：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">libc++abi: terminating due to uncaught exception of type std::bad_alloc: std::bad_alloc</span><br></pre></td></tr></table></figure>
+<p>一开始以为是镜像文件损坏，重新下载了一遍，还是同样的报错。又怀疑是电脑内存不足，关了一堆程序释放内存，问题依旧。</p>
+<p>后来搜了一圈才发现，问题根源是<strong>fastboot 工具版本与手机不兼容</strong>。通过 <code>fastboot getvar all</code> 查询手机信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">version: 0.5</span><br><span class="line">product: mido</span><br><span class="line">max-download-size: 0x20000000</span><br></pre></td></tr></table></figure>
+<p>红米 Note4X 的 fastboot 协议版本是<strong>0.5</strong>（安卓 7/8 时代的老协议），而我用的是最新版 Platform Tools（适配协议 2.0）。新版工具在处理大容量 <code>userdata</code> 分区（约 24GB）时会出现内存分配异常。</p>
+<p><strong>解决方案</strong>：下载旧版 Platform Tools <strong>28.0.0</strong>，这个版本兼容 0.5 协议。换了旧版工具之后，所有分区一次刷写成功。</p>
+<blockquote>
+<p>注：红米 Note4X 的 <code>max-download-size</code> 为 512MB，如果 <code>userdata.img</code> 较大，可以用 <code>fastboot flash -S 512M userdata xxx.img</code> 进行分块刷写。另外建议使用电脑后置的 USB 2.0 接口，USB 3.0 口可能会出现断连的问题。</p>
+</blockquote>
+<h1 id="安装-docker"><a class="markdownIt-Anchor" href="#安装-docker"></a> 安装 Docker</h1>
+<p>PostmarketOS 基于 Alpine Linux，所以包管理器用的是 <code>apk</code>。Docker 和 docker-compose 都可以直接安装：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apk add docker docker-compose</span><br><span class="line"><span class="built_in">sudo</span> systemctl <span class="built_in">enable</span> docker</span><br><span class="line"><span class="built_in">sudo</span> systemctl start docker</span><br></pre></td></tr></table></figure>
+<p>但执行 <code>systemctl start docker</code> 后，Docker 并没有正常启动。</p>
+<h2 id="containerd-路径不匹配"><a class="markdownIt-Anchor" href="#containerd-路径不匹配"></a> containerd 路径不匹配</h2>
+<p>查看 Docker 服务状态：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl status docker.service -l</span><br></pre></td></tr></table></figure>
+<p>核心报错信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">failed to start daemon: failed to get containerd plugins: Unavailable: </span><br><span class="line">connection error: desc = &quot;transport: Error while dialing: dial unix:///run/containerd/containerd.sock: timeout&quot;</span><br></pre></td></tr></table></figure>
+<p>Docker 依赖的<strong>containerd</strong>服务没有运行，导致无法连接到 <code>/run/containerd/containerd.sock</code> 套接字。</p>
+<p>继续排查 containerd 本身的状态：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl status containerd.service -l</span><br></pre></td></tr></table></figure>
+<p>实际原因在这里：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ExecStart=/usr/local/bin/containerd (code=exited, status=203/EXEC)</span><br></pre></td></tr></table></figure>
+<p>状态码 <code>203/EXEC</code> 表示 systemd 找不到要执行的文件。通过 <code>apk</code> 安装的 containerd 实际路径是 <code>/usr/bin/containerd</code>，但 systemd 的 service 文件里写的是 <code>/usr/local/bin/containerd</code>——<strong>路径不匹配</strong>。（应该是 PostmarketOS 打包时遗留的问题）</p>
+<p><strong>解决方案</strong>：修改 containerd 的 systemd service 文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 确认containerd实际安装路径</span></span><br><span class="line"><span class="built_in">which</span> containerd</span><br><span class="line"><span class="comment"># 输出: /usr/bin/containerd</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改service文件</span></span><br><span class="line"><span class="built_in">sudo</span> vi /usr/lib/systemd/system/containerd.service</span><br></pre></td></tr></table></figure>
+<p>将 <code>ExecStart</code> 的路径从 <code>/usr/local/bin/containerd</code> 改为 <code>/usr/bin/containerd</code>：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 修改前</span></span><br><span class="line"><span class="attr">ExecStart</span>=/usr/local/bin/containerd</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改后</span></span><br><span class="line"><span class="attr">ExecStart</span>=/usr/bin/containerd</span><br></pre></td></tr></table></figure>
+<p>然后重新加载并启动：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> systemctl daemon-reload</span><br><span class="line"><span class="built_in">sudo</span> systemctl start containerd</span><br><span class="line"><span class="built_in">sudo</span> systemctl start docker</span><br><span class="line"></span><br><span class="line"><span class="comment"># 验证</span></span><br><span class="line">docker run --<span class="built_in">rm</span> hello-world</span><br></pre></td></tr></table></figure>
+<p>这次 Docker 正常启动了。</p>
+<h2 id="配置-docker-镜像代理"><a class="markdownIt-Anchor" href="#配置-docker-镜像代理"></a> 配置 Docker 镜像代理</h2>
+<p>Docker 服务起来了，但拉镜像又是个问题——手机连的是家里 WiFi，直接访问 Docker Hub 速度很慢。好在家里电脑上有代理服务，在 Docker 的 systemd service 文件中添加代理配置即可：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> vi /etc/systemd/system/multi-user.target.wants/docker.service</span><br></pre></td></tr></table></figure>
+<p>在 <code>[Service]</code> 段落中添加环境变量：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">Environment</span>=<span class="string">&quot;HTTP_PROXY=http://192.168.x.x:7890&quot;</span></span><br><span class="line"><span class="attr">Environment</span>=<span class="string">&quot;HTTPS_PROXY=http://192.168.x.x:7890&quot;</span></span><br><span class="line"><span class="attr">Environment</span>=<span class="string">&quot;NO_PROXY=localhost,127.0.0.1,192.168.x.0/24&quot;</span></span><br></pre></td></tr></table></figure>
+<p>其中 <code>192.168.x.x</code> 替换为运行代理的电脑 IP。改完之后重启 Docker：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> systemctl daemon-reload</span><br><span class="line"><span class="built_in">sudo</span> systemctl restart docker</span><br></pre></td></tr></table></figure>
+<p>现在 <code>docker pull</code> 可以正常加速拉取镜像了。</p>
+<blockquote>
+<p>需要注意的是你电脑上使用的代理软件需要开启<strong>允许局域网访问</strong>，如果是 Clash 类的软件，最好开启增强</p>
+</blockquote>
+<h1 id="部署-openclaw"><a class="markdownIt-Anchor" href="#部署-openclaw"></a> 部署 OpenClaw</h1>
+<h2 id="为什么用-docker-部署"><a class="markdownIt-Anchor" href="#为什么用-docker-部署"></a> 为什么用 Docker 部署</h2>
+<p>OpenClaw 本身支持直接安装运行，但我选择基于 Docker 来部署，除了方便之外还有一个重要原因：<strong>安全隔离</strong>。</p>
+<p>OpenClaw 作为 AI 助手，具备执行代码、运行 Shell 命令、读写文件等能力。如果直接跑在宿主系统上，一旦 AI 做出什么意料之外的操作（比如误删文件、修改系统配置），后果可能比较麻烦——尤其是在这台手机上，PostmarketOS 的环境本身就比较脆弱，恢复起来不像普通服务器那么方便。</p>
+<p>Docker 容器提供了一层天然的隔离：OpenClaw 的所有操作都被限制在容器内部，即使出了问题也不会直接影响到宿主系统。对于这种需要赋予 AI 较多权限的应用来说，跑在容器里是比较稳妥的做法。</p>
+<h2 id="openclaw-docker-cn-im"><a class="markdownIt-Anchor" href="#openclaw-docker-cn-im"></a> OpenClaw-Docker-CN-IM</h2>
+<p>OpenClaw 官方提供了多种部署方式，但对于国内用户来说，社区维护的<strong>OpenClaw-Docker-CN-IM</strong><sup class="footnote-ref"><a href="#fn3" id="fnref3:1">[3:1]</a></sup> 是比较省心的选择。这个项目预装并配置了飞书、钉钉、QQ 机器人、企业微信等主流 IM 平台的插件。</p>
+<p>部署步骤：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建工作目录</span></span><br><span class="line"><span class="built_in">mkdir</span> ~/openclaw &amp;&amp; <span class="built_in">cd</span> ~/openclaw</span><br><span class="line"></span><br><span class="line"><span class="comment"># 下载配置文件</span></span><br><span class="line">wget https://raw.githubusercontent.com/justlovemaki/OpenClaw-Docker-CN-IM/main/docker-compose.yml</span><br><span class="line">wget https://raw.githubusercontent.com/justlovemaki/OpenClaw-Docker-CN-IM/main/.env.example</span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置环境变量</span></span><br><span class="line"><span class="built_in">cp</span> .env.example .<span class="built_in">env</span></span><br><span class="line">vi .<span class="built_in">env</span></span><br></pre></td></tr></table></figure>
+<p><code>.env</code> 文件中至少需要配置以下几项：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># AI模型配置（必填）</span></span><br><span class="line">MODEL_ID=你的模型ID</span><br><span class="line">BASE_URL=你的API地址</span><br><span class="line">API_KEY=你的API密钥</span><br><span class="line"></span><br><span class="line"><span class="comment"># Gateway令牌（必填）</span></span><br><span class="line">OPENCLAW_GATEWAY_TOKEN=你的gateway令牌</span><br></pre></td></tr></table></figure>
+<p>配置完成后启动服务：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker-compose up -d</span><br><span class="line">docker-compose logs -f</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202603122134542.png?imageslim" alt="image.png" /></p>
+<h2 id="gateway-启动报错"><a class="markdownIt-Anchor" href="#gateway-启动报错"></a> Gateway 启动报错</h2>
+<p>容器启动后，查看日志发现 Gateway 报错：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Gateway failed to start: Error: non-loopback Control UI requires </span><br><span class="line">gateway.controlUi.allowedOrigins (set explicit origins), or set </span><br><span class="line">gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202602280032069.png?imageslim" alt="image.png" /></p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202602280033301.png?imageslim" alt="image.png" /></p>
+<p>原因是我通过局域网 IP（而不是 <code>localhost</code>）来访问 OpenClaw 的 Control UI，而 Gateway 出于安全考虑 <sup class="footnote-ref"><a href="#fn7" id="fnref7">[7]</a></sup> 默认不允许非本地回环地址的访问。</p>
+<p><strong>解决方案</strong>：在 <code>.env</code> 文件中添加允许的访问来源：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">OPENCLAW_GATEWAY_ALLOWED_ORIGINS=http://你的手机局域网IP:18789</span><br></pre></td></tr></table></figure>
+<p><code>18789</code> 是 Gateway 的默认端口。修改后重启容器：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
+<p>重启后 Gateway 正常运行。通过浏览器访问 <code>http://手机IP:18789</code> 可以进入 OpenClaw 的 Control UI。</p>
+<h1 id="关于内网穿透"><a class="markdownIt-Anchor" href="#关于内网穿透"></a> 关于内网穿透</h1>
+<p>到这里 OpenClaw 服务已经在手机上跑起来了。但手机连的是家里 WiFi，没有公网 IP，可能有人会问：外网访问不了怎么办？</p>
+<p>实际上，对于大多数使用场景来说，<strong>内网穿透并不是必须的</strong>。</p>
+<h2 id="为什么纯内网部署就够了"><a class="markdownIt-Anchor" href="#为什么纯内网部署就够了"></a> 为什么纯内网部署就够了</h2>
+<p>OpenClaw 的架构决定了日常交互并不依赖直接访问 Gateway 端口。配置好飞书、钉钉等 IM 平台之后，消息的流转路径是这样的：</p>
+<ol>
+<li>用户在 IM 客户端（如飞书）发送消息</li>
+<li>IM 平台的服务器将消息推送给 OpenClaw Gateway（通过长连接）</li>
+<li>OpenClaw 处理后，将回复通过 IM 平台的 API 返回</li>
+</ol>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202603131711129.png?imageslim" alt="局部截取_20260313_171110.png" /></p>
+<p>整个过程中，<strong>IM 平台充当了中间节点</strong>，用户始终通过 IM 客户端来与 OpenClaw 交互。只要手机能正常联网（连上家里 WiFi 即可），OpenClaw 就能通过 IM 平台收发消息，不需要从外网直接访问手机上的任何端口。</p>
+<p>而 Gateway 的 Control UI（<code>18789</code> 端口）本质上是一个管理和调试界面，并不是日常使用的入口。在家里通过局域网 IP 访问就够了。</p>
+<h2 id="不建议随意暴露端口到外网"><a class="markdownIt-Anchor" href="#不建议随意暴露端口到外网"></a> 不建议随意暴露端口到外网</h2>
+<p>从安全角度来说，如果没有明确需求，<strong>不建议将 Gateway 的管理端口暴露到外网</strong>。Control UI 提供了对 OpenClaw 的完整控制权限，将其暴露到公网会带来不必要的安全风险。</p>
+<h2 id="确实需要外网访问管理界面的情况"><a class="markdownIt-Anchor" href="#确实需要外网访问管理界面的情况"></a> 确实需要外网访问管理界面的情况</h2>
+<p>如果你确实有在外网访问 Control UI 的需求（比如经常需要在外面调整配置或排查问题），可以通过<strong>Tailscale</strong><sup class="footnote-ref"><a href="#fn8" id="fnref8">[8]</a></sup> 来实现。Tailscale 是一个基于 WireGuard 的虚拟组网工具，所有加入同一账号的设备会组成一个私有加密局域网（使用 <code>100.x.x.x</code> 网段），不需要公网 IP，也不需要改路由器设置。</p>
+<p>在 PostmarketOS 上安装：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apk add tailscale</span><br><span class="line"><span class="built_in">sudo</span> systemctl <span class="built_in">enable</span> tailscaled</span><br><span class="line"><span class="built_in">sudo</span> systemctl start tailscaled</span><br><span class="line"></span><br><span class="line"><span class="comment"># 登录</span></span><br><span class="line"><span class="built_in">sudo</span> tailscale up</span><br></pre></td></tr></table></figure>
+<p>执行 <code>tailscale up</code> 后会输出一个登录链接，在浏览器中打开完成认证即可。认证成功后手机会获得一个 Tailscale IP，之后在装了 Tailscale 客户端的设备上可以通过这个 IP 访问管理界面。</p>
+<p>相比直接暴露端口到公网，Tailscale 组建的是<strong>私有加密网络</strong>，只有同一账号下的设备才能互相访问，安全性上要好很多。如果想进一步限制，可以通过 Tailscale 后台的 ACL 策略或 <code>iptables</code> 只放行特定端口：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> iptables -A INPUT -s 100.64.0.0/10 -p tcp --dport 18789 -j ACCEPT</span><br><span class="line"><span class="built_in">sudo</span> iptables -A INPUT -s 100.64.0.0/10 -p tcp --dport 18790 -j ACCEPT</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202603131659557.png?imageslim" alt="局部截取_20260313_165919.png" /></p>
+<p>通过 Tailscale 的管理后台，可以在访问控制模块新增一个端口过滤规则，在 ip 中设置暴露的端口即可。</p>
+<h1 id="后话"><a class="markdownIt-Anchor" href="#后话"></a> 后话</h1>
+<p>折腾完之后，这台 2017 年的红米 Note4X 算是有了新的用途——作为一台 7×24 小时运行的 OpenClaw 服务器。骁龙 625 的性能跑 OpenClaw Gateway 足够了，4100mAh 的电池在断电时也能撑一段时间。</p>
+<p>整个方案的成本基本就是一台闲置旧手机和家里的 WiFi，算是比较低成本的“养虾”方式了。</p>
+<p>不过这个方案也有明显的局限性：3GB 的内存只能用来跑 Gateway，没法在手机上运行本地大模型。如果想在 OpenClaw 里用本地模型推理，还是得靠一台有独显的电脑来运行 LMStudio 之类的推理服务，手机只负责消息转发和调度。</p>
+<p>如果你也有闲置的旧手机（尤其是骁龙 625 平台的机型，如红米 Note4X、小米 5X、小米 A1 等），可以考虑试试这个方案。</p>
+<h2 id="关于-astrbot"><a class="markdownIt-Anchor" href="#关于-astrbot"></a> 关于 AstrBot</h2>
+<p>其实一开始我并不是直接上的 OpenClaw，而是先在手机上部署了<strong>AstrBot</strong><sup class="footnote-ref"><a href="#fn9" id="fnref9">[9]</a></sup>。AstrBot 是一个国产的 IM 聊天机器人框架，核心功能和 OpenClaw 差不多——对接各种 IM 平台、调用大模型、支持插件扩展，但整体更轻量，在手机上跑 Docker 也不会占用太多资源。</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202603122126905.png?imageslim" alt="image.png" /></p>
+<p>相比 OpenClaw，AstrBot 有一个明显的优势：<strong>管理界面好用得多</strong>。AstrBot 的 Web 面板设计得比较直观，配置 IM 平台、切换模型、管理插件这些操作都很容易上手。而 OpenClaw 目前的 Control UI 说实话不太好用，很多操作都不太直观，配置项也不容易找到，上手门槛比较高。</p>
+<p><img src="https://pic.xiexuefeng.cc/markdown/202603122125995.png?imageslim" alt="image.png" /></p>
+<p>如果你不需要 OpenClaw 那些比较高级的功能（比如长期记忆），只是想在旧手机上跑一个能对接 IM 的 AI 机器人，AstrBot 可能是一个更友好的选择。</p>
+<h2 id="termux"><a class="markdownIt-Anchor" href="#termux"></a> Termux</h2>
+<blockquote>
+<p>Termux 就是一个<strong>能在安卓手机上直接跑 Linux 系统的终端模拟器</strong>。</p>
+<p>不用 root、不用刷机，装上就能用：</p>
+<ul>
+<li>可以装 <strong>git、python、node、java、docker</strong> 等命令行工具</li>
+<li>能写代码、跑脚本、搭服务、做开发</li>
+<li>把手机变成一台<strong>随身 Linux 小服务器</strong></li>
+</ul>
+<p>简单说：<strong>手机秒变 Linux 电脑，纯命令行、超强、轻量、免费。</strong></p>
+</blockquote>
+<p>如果你的旧手机无法安装 PostmarketOS，可以推荐试试 Termux，社区也有基于 Termux 一键部署 OpenClaw 的脚本：</p>
+<div class="cardlink-wrapper"><a href="https://github.com/hillerliao/install-openclaw-on-termux" class="cardlink" target="_blank" rel="noopener noreferrer"><div class="cardlink-image"><img src="https://opengraph.githubassets.com/43dcad8f3aa8d388eceacfaa2f88983867fbc6e1e7100ac9121af089763a8cd8/hillerliao/install-openclaw-on-termux" alt="GitHub - hillerliao/install-openclaw-on-termux: This script is a deployment tool for Openclaw on Termux, designed to simplify the installation, configuration, and management of Openclaw in a Termux environment." loading="lazy"></div><div class="cardlink-content"><div class="cardlink-title">GitHub - hillerliao/install-openclaw-on-termux: This script is a deployment tool for Openclaw on Termux, designed to simplify the installation, configuration, and management of Openclaw in a Termux environment.</div><div class="cardlink-description">This script is a deployment tool for Openclaw on Termux, designed to simplify the installation, configuration, and management of Openclaw in a Termux environment. - hillerliao/install-openclaw-on-t...</div><div class="cardlink-footer"><img src="https://github.githubassets.com/favicons/favicon.svg" class="cardlink-favicon" alt=""><span class="cardlink-host">github.com</span></div></div></a></div>
+<hr class="footnotes-sep" />
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://github.com/openclaw/openclaw">OpenClaw - GitHub</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV188mcBBE9s">旧手机刷入linux！秒变小服务器！骁龙625通用！- B站</a> <a href="#fnref2" class="footnote-backref">↩︎</a> <a href="#fnref2:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://github.com/justlovemaki/OpenClaw-Docker-CN-IM">OpenClaw-Docker-CN-IM - GitHub</a> <a href="#fnref3" class="footnote-backref">↩︎</a> <a href="#fnref3:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://postmarketos.org/">PostmarketOS官网</a> <a href="#fnref4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1JiC5YoECd">旧手机变身个人服务器，以红米6Pro刷PostmarketOS为例 - B站</a> <a href="#fnref5" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn6" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/postmarketOS-images/bpo/">PostmarketOS清华镜像站</a> <a href="#fnref6" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn7" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://docs.openclaw.ai/gateway/security">OpenClaw Gateway Security文档</a> <a href="#fnref7" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn8" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://github.com/tailscale/tailscale">Tailscale - GitHub</a> <a href="#fnref8" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn9" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://github.com/AstrBotDevs/AstrBot">AstrBot - GitHub</a> <a href="#fnref9" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>xuefeng
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://note.xiexuefeng.cc/post/deploy-openclaw-on-old-android-phone/" title="低成本&quot;养虾&quot;之使用安卓旧手机部署">https://note.xiexuefeng.cc/post/deploy-openclaw-on-old-android-phone/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Agent/" rel="tag"># Agent</a>
+              <a href="/tags/OpenClaw/" rel="tag"># OpenClaw</a>
+              <a href="/tags/PostmarketOS/" rel="tag"># PostmarketOS</a>
+              <a href="/tags/Docker/" rel="tag"># Docker</a>
+              <a href="/tags/Linux/" rel="tag"># Linux</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/n8n-replace-uptime-kuma/" rel="prev" title="如何使用n8n替代uptime-kuma">
+                  <i class="fa fa-chevron-left"></i> 如何使用n8n替代uptime-kuma
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/post/deploy-openclaw-on-old-android-phone/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/post/deploy-openclaw-on-old-android-phone/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuefeng</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+  <script src='https://unpkg.com/mermaid@11.6.0/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'default' });
+    }
+  </script>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.2/katex.min.css" integrity="sha256-oWCabCfPd4Oi21wqZezBSz/anto4VYcJqc9sM9IzQTk=" crossorigin="anonymous">
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xxf1996/hexo-comment","issue_term":"pathname","theme":"github-dark"}</script>
+<script src="/js/third-party/comments/utterances.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>
